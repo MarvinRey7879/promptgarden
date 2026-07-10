@@ -127,12 +127,19 @@ promptgarden/
 - Deep Research #2 fertig (research/2026-07-10-deep-research-2.md): Top-10-Beginner-Fragen (HN/Algolia + Cursor-Forum; Reddit blockiert — transparent vermerkt), Top-5-Content-Gaps: (1) Setup/Install-Tutorial (2) Modell+Plan-Wahl (3) Git/GitHub-Basics (4) Deployment-Tutorial (5) Agent-Recovery. 4 frische News: China-Warnung/Alibaba-Bann zu Claude Code (CNBC/SCMP), Zhipu ZCode, Rowboat (Show HN), Claude Code v2.1.197
 - Commits 8 + 8b
 
-### It. 9 — Plan
+### It. 9 (10./11.07.2026) — Nachfrage-Guides + Welt 0 ✅ ABGESCHLOSSEN
+- China-Story SELBST verifiziert (WebSearch: CNBC/CBS/Tom's HW bestätigen MIIT-Warnung v2.1.91–196, Alibaba-Bann ab 10.07., Anthropic-Antwort Anti-Abuse-Experiment, PR-Entfernung 01.07.)
+- 3 neue Guides LIVE (26 Einträge/Sprache): claude-code-installieren, modell-und-plan-wahl, git-github-basics — Agent hat Install-Doku live geprüft und MEINE veralteten Annahmen korrigiert (nativer Installer statt npm empfohlen; npm-Pfad braucht Node 22+, nicht 18+) → Quellenpflicht zahlt sich aus
+- 3 neue Feed-Items (10/Sprache): china-claude-backdoor, zhipu-zcode, claude-code-2-1-197
+- Lernpfad WELT 0 „Loslegen" live (5 Kapitel: installieren → modellwahl → git → claude-code → claude-md), rendert nur bei ≥4 vorhandenen Kapiteln (saubere Degradation)
+- 172 Seiten, alle 5 Sprachen, Live-Tests ✅ (Learnings: /api/ am Edge cached länger — auf neuen Wert pollen statt einmal prüfen)
+- Commit 10
+
+### It. 10 — Plan
 1. Admin-Summary
-2. News-Verifikation (China/Alibaba-Story per WebFetch selbst prüfen!) → 3-4 neue Feed-Items, alle 5 Sprachen (Agent), Feed-Übersetzungs-Workflow wie gehabt
-3. NEUE GUIDES aus Research-Gaps (höchste Nachfrage): claude-code-installieren (Windows, Schritt für Schritt), modell-und-plan-wahl, git-github-basics — DE+EN via Agent mit verifizierten Quellen, dann es/fr/zh
-4. Lernpfad „Welt 0: Loslegen" aus den neuen Setup-Guides? (prüfen ob 3 Kapitel reichen — sonst It. 10)
-5. Artifact aktualisieren
+2. Kandidaten (nach Impact wählen): (a) Agent-Recovery-Guide („Agent festgefahren — was tun?", Research-Gap #5) + Deployment-Guide (Gap #4); (b) Insight-der-Woche dynamisch aus Feed; (c) Forum-Konzept prüfen (GitHub Discussions embed = $0); (d) OG-Image (statisch, 1 Bild)
+3. Wenn Marvin-Input (Domain? Spenden-Links?): sofort einarbeiten
+4. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { isLang, ui } from '@/lib/i18n';
-import { getEntries } from '@/lib/content';
+import { getEntries, getFeed } from '@/lib/content';
 import { notFound } from 'next/navigation';
 
 const CARD_COLORS = ['var(--lime)', 'var(--pink)', 'var(--blue)', 'var(--yellow)'];
@@ -11,6 +11,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   if (!isLang(lang)) notFound();
   const t = ui[lang];
   const count = getEntries(lang).length;
+  const latestNews = getFeed(lang)[0];
 
   return (
     <>
@@ -81,7 +82,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       </div>
 
       <div style={{ display: 'flex', gap: 18, paddingBottom: 10, flexWrap: 'wrap' }}>
-        <div
+        <Link
+          href={`/${lang}/feed/`}
           className="card"
           style={{
             flex: '1.4 1 300px',
@@ -111,10 +113,15 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <div>
             <p className="kicker">{t.insightLabel}</p>
             <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, lineHeight: 1.4 }}>
-              {t.insightText}
+              {latestNews ? latestNews.title : t.insightText}
+              {latestNews && (
+                <span className="mono" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 400 }}>
+                  {' '}→ Feed · {latestNews.date}
+                </span>
+              )}
             </p>
           </div>
-        </div>
+        </Link>
         <div
           style={{
             flex: '1 1 260px',
