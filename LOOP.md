@@ -112,12 +112,20 @@ promptgarden/
 - Learnings: Pages-Edge braucht nach Deploy bis ~60s (404/522 auf neuen Routen = warten, until-Loop statt sleep)
 - Commit 6
 
-### It. 7 — Plan
+### It. 7 (10.07.2026) — Loop-Galerie ✅ ABGESCHLOSSEN
+- Admin: 11 Views, nichts Neues
+- Loop-Galerie LIVE (/[lang]/loops/, alle 5 Sprachen): 3 annotierte Beispiele — (1) gute Loop = promptgarden-eigene Anatomie (7 Schritte, ehrlich meta), (2) schlechte Loop „Endlos-Bastler" (5 echte Fehler), (3) Mensch-in-der-Loop (asynchron, irreversibel=Mensch). Quellen: Anthropic building-effective-agents + Claude-Code-Hooks-Doku, beide selbst verifiziert (200). Content von MIR geschrieben (Loop über sich selbst), es/fr/zh via Agent (validiert)
+- Vergleiche jetzt in allen 5 Sprachen nativ (kein EN-Fallback mehr)
+- Home-Loops-Karte → /loops/ (alle 5 Dicts per Skript)
+- 157 Seiten, live-getestet, Commit 7
+- Newsletter-Frage an Marvin BEWUSST geparkt (hängt an Domain-Kauf; seine Ansage: erst Konstrukt bauen) — im Artifact als Punkt vermerkt
+
+### It. 8 — Plan
 1. Admin-Summary (Notes/Bugs/Traffic)
-2. „Loop-Galerie" (Marvins Kernwunsch „wie sieht eine gute Loop aus"): eigene Seite /[lang]/loops/ mit 2-3 annotierten Beispielen (gute Loop-Anatomie am echten promptgarden-Beispiel, schlechte Loop ohne Stop-Bedingung, Guardrails) — Content schreibe ICH (bin selbst die Loop), DE+EN, Übersetzung es/fr/zh via Agent
-3. Vergleiche-Übersetzungen es/fr/zh (kleiner Agent-Task)
-4. Newsletter-Versand: Marvin fragen (AskUserQuestion): Resend mit welcher Absender-Domain? (braucht Domain-Entscheidung) — oder weiter nur sammeln
-5. Deep Research #2 (neue Themen: Google Trends/Reddit-Pain-Points дieser Woche) wenn Budget übrig
+2. Deep Research #2: Google-Trends/Reddit-Pain-Points der Woche + neue Repos/Papers → 3-5 neue Feed-Items + 2-3 neue Einträge (voller Verifikations-Workflow)
+3. OG-Images/Social-Meta (Auffindbarkeit vorbereiten) + robots.txt sauber
+4. Quiz-Verbesserung: „Alle Quizze"-Übersicht oder Fortschritts-% auf Lexikon-Seite (Gamification vertiefen)
+5. Kandidat: MCP-Server/freie JSON-API für Agenten-Zugriff auf Content (Marvins Wunsch, statisch = einfach: /api/entries.json pro Sprache exportieren)
 6. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)

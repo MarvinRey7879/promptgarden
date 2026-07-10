@@ -113,9 +113,23 @@ export default function LexikonList({ lang, entries }: { lang: Lang; entries: En
         ))}
         <div
           className="mono"
-          style={{ padding: '13px 22px', fontSize: 12, color: 'var(--muted)', borderTop: '2px solid var(--ink)' }}
+          style={{
+            padding: '13px 22px',
+            fontSize: 12,
+            color: 'var(--muted)',
+            borderTop: '2px solid var(--ink)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 10,
+            flexWrap: 'wrap',
+          }}
         >
-          {t.showing(filtered.length, entries.length)}
+          <span>{t.showing(filtered.length, entries.length)}</span>
+          {completed.length > 0 && (
+            <span style={{ fontWeight: 700, color: 'var(--ink)' }}>
+              ✓ {entries.filter((e) => completed.includes(e.slug)).length}/{entries.length}
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -10,6 +10,22 @@ export function generateStaticParams() {
   return LANGS.flatMap((lang) => getEntries(lang).map((e) => ({ lang, slug: e.slug })));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; slug: string }>;
+}) {
+  const { lang, slug } = await params;
+  if (!isLang(lang)) return {};
+  const entry = getEntry(lang, slug);
+  if (!entry) return {};
+  return {
+    title: `${entry.title} — promptgarden 🌱`,
+    description: entry.teaser,
+    openGraph: { title: entry.title, description: entry.teaser, type: 'article' },
+  };
+}
+
 export default async function EntryPage({
   params,
 }: {
