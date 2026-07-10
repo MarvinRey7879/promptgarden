@@ -85,13 +85,24 @@ promptgarden/
 - /admin-Dashboard gebaut (nicht verlinkt): Key-gated, Views/Top-Seiten/Bugs/Feedback + Marvin-Prio-Feld → /v1/admin/note; zeigt Setup-Hinweis bis Backend deployed
 - Build 54 Seiten ✅, Smoke-Tests ✅, Commit 3
 
-### It. 4 — Plan
-1. Marvin-Input prüfen (Token? → Deploy-Runbook worker/DEPLOY.md komplett fahren)
-2. Einstiegs-Wizard („Wo stehst du?" → 3 Fragen → empfohlener Startpunkt/Pfad) — Kernfeature aus Marvins Spec
-3. Welt 2 des Lernpfads (Agenten: ki-agent → agent-loop → subagents → guardrails → loops) freischalten
-4. Sprache #3 vorbereiten (ES): UI-Strings + Content-Übersetzung via Agent + Stichproben-Validierung
-5. SEO-Grundlagen die ohne Domain safe sind: sitemap.xml + hreflang + schema.org (bleibt noindex)
-6. Artifact aktualisieren
+### It. 4 (10.07.2026) — 🚀 LIVE-DEPLOY ✅ ABGESCHLOSSEN
+- Marvin lieferte CF-Token (cfat_, EIGENER Account 25e76011f11e89c0b35b6ff0f10795db — nicht tm2!) → `CF_PAGES_TOKEN` + `CF_PROMPTGARDEN_ACCOUNT_ID` + `PG_ADMIN_KEY` in ~/.tm2-secrets/autopilot.env
+- D1 `promptgarden-db` (cac9087a-2671-40e2-b87c-7f6c0d138895) + Schema + ADMIN_KEY-Secret + Worker deployed; workers.dev-Subdomain „promptgarden" registriert
+- **Site LIVE: https://promptgarden.pages.dev** · **API LIVE: https://promptgarden-api.promptgarden.workers.dev**
+- Smoke-Tests: alle Seiten 200 (522er = Edge-Propagation, verschwanden), /v1/bug→D1 ✅, /v1/track ✅ (views_7d zählt), /v1/admin/summary ✅
+- Bug-Button + Tracking + /admin damit SCHARF (NEXT_PUBLIC_API_URL in .env.production)
+- Impressum live (/impressum): framefetch-Daten (Marvin Mez, Köln, USt-ID DE461538484) + Datenschutz-Kurzfassung — Marvin-Anweisung im Chat
+- Marvin-Entscheidungen neu: Domain kauft er noch; Spenden-Links bleiben Todo; Fokus = Konstrukt weiterbauen
+- ⚠️ Hinweis für alle Iterationen: erste Requests nach Pages-Deploy können 404/522 liefern → 10-15s warten, Retry
+
+### It. 5 — Plan
+1. Marvin-Notes von /admin abrufen (curl /v1/admin/summary mit PG_ADMIN_KEY) — ab jetzt JEDE Iteration Schritt 1
+2. Einstiegs-Wizard („Wo stehst du?" → 3 Fragen → empfohlener Startpunkt/Pfad)
+3. Welt 2 des Lernpfads (Agenten: ki-agent → agent-loop → subagents → guardrails-fuer-agenten → loops-fuer-agenten)
+4. Sprache #3 (ES): UI-Strings + Content-Übersetzung via Agent + Stichproben-Validierung
+5. SEO-Basics (sitemap.xml, hreflang, schema.org — noindex bleibt bis Domain)
+6. Newsletter-Signup-Formular aktivieren (Worker-Endpoint existiert) — Versand später
+7. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)

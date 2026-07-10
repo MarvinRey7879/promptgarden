@@ -26,8 +26,22 @@ export default async function EntryPage({
     .map((s) => getEntry(lang, s))
     .filter((e): e is NonNullable<typeof e> => Boolean(e));
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: entry.title,
+    description: entry.teaser,
+    inLanguage: lang,
+    author: { '@type': 'Organization', name: 'promptgarden' },
+    citation: (entry.sources ?? []).map((s) => s.url),
+  };
+
   return (
     <article style={{ maxWidth: 720, margin: '0 auto', padding: '30px 0' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <span className="chip" style={{ fontSize: 11.5 }}>
           {t.categories[entry.category]}

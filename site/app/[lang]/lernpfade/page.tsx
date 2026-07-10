@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PathBoard from '@/components/PathBoard';
-import { WORLD_1, getEntry } from '@/lib/content';
+import { WORLD_1, WORLD_2, getEntry } from '@/lib/content';
 import { isLang, ui } from '@/lib/i18n';
 
 export default async function LernpfadePage({ params }: { params: Promise<{ lang: string }> }) {
@@ -9,7 +9,10 @@ export default async function LernpfadePage({ params }: { params: Promise<{ lang
   if (!isLang(lang)) notFound();
   const t = ui[lang];
 
-  const chapters = WORLD_1.map((slug) => getEntry(lang, slug)).filter(
+  const world1 = WORLD_1.map((slug) => getEntry(lang, slug)).filter(
+    (e): e is NonNullable<typeof e> => Boolean(e),
+  );
+  const world2 = WORLD_2.map((slug) => getEntry(lang, slug)).filter(
     (e): e is NonNullable<typeof e> => Boolean(e),
   );
 
@@ -27,7 +30,15 @@ export default async function LernpfadePage({ params }: { params: Promise<{ lang
         </p>
       </div>
 
-      <PathBoard lang={lang} chapters={chapters} />
+      <PathBoard lang={lang} chapters={world1} />
+
+      <div id="welt2" style={{ textAlign: 'center', padding: '30px 0 0' }}>
+        <p className="kicker" style={{ letterSpacing: '.14em' }}>
+          {t.pathWorld2}
+        </p>
+      </div>
+
+      <PathBoard lang={lang} chapters={world2} />
 
       <div style={{ textAlign: 'center', paddingBottom: 20 }}>
         <Link href={`/${lang}/lexikon/`} className="btn secondary">

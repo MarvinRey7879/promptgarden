@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 
 export default function LangRedirect() {
   useEffect(() => {
-    const target = navigator.language?.toLowerCase().startsWith('de') ? '/de/' : '/en/';
+    const l = navigator.language?.toLowerCase() ?? '';
+    const target = l.startsWith('de') ? '/de/' : l.startsWith('es') ? '/es/' : '/en/';
     window.location.replace(target);
   }, []);
 

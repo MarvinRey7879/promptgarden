@@ -132,7 +132,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             {t.levelChips.map((chip, i) => (
               <Link
                 key={chip}
-                href={`/${lang}/${i === 0 ? 'lernpfade/' : 'lexikon/'}`}
+                href={`/${lang}/${i === 0 ? 'start/' : i === 1 ? 'lernpfade/' : 'lexikon/'}`}
                 style={{
                   background: i === 0 ? 'var(--bg)' : 'transparent',
                   color: i === 0 ? 'var(--ink)' : 'var(--bg)',

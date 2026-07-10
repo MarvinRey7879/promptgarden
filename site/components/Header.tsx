@@ -5,12 +5,21 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { type Lang, ui } from '@/lib/i18n';
 import { loadProgress, touchVisit, PROGRESS_EVENT, type Progress } from '@/lib/progress';
+import { API_URL, apiPost } from '@/lib/api';
 
 export default function Header({ lang }: { lang: Lang }) {
   const t = ui[lang];
   const pathname = usePathname();
   const [progress, setProgress] = useState<Progress | null>(null);
   const [showNews, setShowNews] = useState(false);
+  const [email, setEmail] = useState('');
+  const [newsState, setNewsState] = useState<'idle' | 'sent' | 'error'>('idle');
+
+  const signup = async () => {
+    const ok = await apiPost('/v1/newsletter', { email: email.trim(), lang });
+    setNewsState(ok ? 'sent' : 'error');
+    if (ok) setEmail('');
+  };
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -20,7 +29,9 @@ export default function Header({ lang }: { lang: Lang }) {
     return () => window.removeEventListener(PROGRESS_EVENT, onChange);
   }, [lang]);
 
-  const otherLang: Lang = lang === 'de' ? 'en' : 'de';
+  // Sprachwechsel: zyklisch durch alle Sprachen (de → en → es → de)
+  const langCycle: Lang[] = ['de', 'en', 'es'];
+  const otherLang: Lang = langCycle[(langCycle.indexOf(lang) + 1) % langCycle.length];
   const switchHref = pathname.replace(`/${lang}`, `/${otherLang}`) || `/${otherLang}/`;
 
   const navItems = [
@@ -81,12 +92,34 @@ export default function Header({ lang }: { lang: Lang }) {
         <div className="modal-back" onClick={() => setShowNews(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 800 }}>
-              {t.newsletterSoonTitle}
+              {t.newsletter} 🌱
             </h3>
-            <p style={{ margin: '0 0 16px', color: 'var(--muted)', fontSize: 14.5, lineHeight: 1.5 }}>
-              {t.newsletterSoonBody}
-            </p>
-            <button className="btn secondary" onClick={() => setShowNews(false)}>
+            {!API_URL || newsState === 'sent' ? (
+              <p style={{ margin: '0 0 16px', color: 'var(--muted)', fontSize: 14.5, lineHeight: 1.5 }}>
+                {newsState === 'sent' ? t.newsThanks : t.newsletterSoonBody}
+              </p>
+            ) : (
+              <>
+                <div style={{ display: 'flex', gap: 8, margin: '12px 0 8px' }}>
+                  <input
+                    className="field"
+                    type="email"
+                    placeholder={t.newsEmailPlaceholder}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && email.includes('@') && signup()}
+                  />
+                  <button className="btn" onClick={signup} disabled={!email.includes('@')}>
+                    {t.newsSubmit}
+                  </button>
+                </div>
+                <p style={{ margin: '0 0 14px', color: 'var(--muted)', fontSize: 12.5 }}>
+                  {t.newsHint}
+                  {newsState === 'error' && ' — Fehler, versuch es nochmal.'}
+                </p>
+              </>
+            )}
+            <button className="btn secondary" onClick={() => { setShowNews(false); setNewsState('idle'); }}>
               {t.close}
             </button>
           </div>
