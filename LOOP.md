@@ -104,12 +104,20 @@ promptgarden/
 - SEO: sitemap.xml (91 URLs) + JSON-LD (Article+citation) auf Eintragsseiten; hreflang BEWUSST verschoben bis Domain da (braucht finale absolute URLs)
 - Build 91 Seiten, live-getestet, Commit 5
 
-### It. 6 — Plan
-1. Admin-Summary abrufen (Notes/Bugs/Traffic)
-2. FR + ZH (Mandarin) — gleicher Agent-Workflow wie ES, dann alle 5 Sprachen komplett
-3. Vergleiche-Sektion (Claude Code vs Cursor vs Codex CLI vs Aider — ehrlich, datiert, mit Quellen; Basis Research #1 + eigene Verifikation)
-4. Newsletter-Versand-Konzept: Resend-Account? (Marvin fragen: eigene Domain nötig) ODER erstmal sammeln
-5. „Loop-Galerie"-Konzept (Beispiel „wie sieht eine gute Loop aus" — Marvins Kernwunsch aus Spec): erste Seite mit 2-3 annotierten Beispielen
+### It. 6 (10.07.2026) — Alle 5 Sprachen + Vergleiche ✅ ABGESCHLOSSEN
+- Admin: 10 Views, keine Notes/Bugs
+- 🌍 FR + ZH KOMPLETT (2 parallele Sonnet-Agenten, beide stark validiert: 61/61 UI-Keys, Quiz-Indizes identisch, 15 fr.wiki- + 15 zh.wiki-URLs alle 200) → ALLE 5 SPRACHEN LIVE (152 Seiten). Sprachwechsler zyklisch de→en→es→fr→zh
+- Vergleiche-Sektion LIVE (/[lang]/vergleiche/): Claude Code / Cursor / Codex CLI / Aider — Karten mit Typ/OpenSource/Preis-Chips, ✅Highlights + ⚠️Caveats, Quellen pro Karte, „Stand"-Datum; 4 Quellen-URLs selbst verifiziert. DE+EN nativ, es/fr/zh vorerst EN-Fallback (Übersetzung folgt)
+- Nav komplett: alle 4 Pills aktiv
+- Learnings: Pages-Edge braucht nach Deploy bis ~60s (404/522 auf neuen Routen = warten, until-Loop statt sleep)
+- Commit 6
+
+### It. 7 — Plan
+1. Admin-Summary (Notes/Bugs/Traffic)
+2. „Loop-Galerie" (Marvins Kernwunsch „wie sieht eine gute Loop aus"): eigene Seite /[lang]/loops/ mit 2-3 annotierten Beispielen (gute Loop-Anatomie am echten promptgarden-Beispiel, schlechte Loop ohne Stop-Bedingung, Guardrails) — Content schreibe ICH (bin selbst die Loop), DE+EN, Übersetzung es/fr/zh via Agent
+3. Vergleiche-Übersetzungen es/fr/zh (kleiner Agent-Task)
+4. Newsletter-Versand: Marvin fragen (AskUserQuestion): Resend mit welcher Absender-Domain? (braucht Domain-Entscheidung) — oder weiter nur sammeln
+5. Deep Research #2 (neue Themen: Google Trends/Reddit-Pain-Points дieser Woche) wenn Budget übrig
 6. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)

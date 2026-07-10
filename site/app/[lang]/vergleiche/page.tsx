@@ -1,18 +1,26 @@
 import { notFound } from 'next/navigation';
 import vglDe from '@/content/vergleiche.de.json';
 import vglEn from '@/content/vergleiche.en.json';
+import vglEs from '@/content/vergleiche.es.json';
+import vglFr from '@/content/vergleiche.fr.json';
+import vglZh from '@/content/vergleiche.zh.json';
 import { isLang, ui, type Lang } from '@/lib/i18n';
 
 type Vergleich = typeof vglDe;
 
-// DE + EN gepflegt; andere Sprachen fallen vorerst auf EN zurück (Übersetzung folgt)
-const byLang: Partial<Record<Lang, Vergleich>> = { de: vglDe, en: vglEn as Vergleich };
+const byLang: Record<Lang, Vergleich> = {
+  de: vglDe,
+  en: vglEn as Vergleich,
+  es: vglEs as Vergleich,
+  fr: vglFr as Vergleich,
+  zh: vglZh as Vergleich,
+};
 
 export default async function VergleichePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   const t = ui[lang];
-  const data = byLang[lang] ?? (vglEn as Vergleich);
+  const data = byLang[lang];
 
   return (
     <div style={{ maxWidth: 860, margin: '0 auto' }}>
