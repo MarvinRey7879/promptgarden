@@ -78,7 +78,22 @@ promptgarden/
 - Deep Research #1 fertig: research/2026-07-10-deep-research-1.md (65+ Bullets, alle mit Quellen). Top-Findings: Fable-5-Pull+Redeploy-Story, MCP-Spec-Rev 28.07., Gemini-CLI-Shutdown, Editor-Konsolidierung, Token-Kosten-Schock, Vibe-Coding-Security
 - ⚠️ Research-Claims (SpaceX/Cursor $60B, Uber-Budget etc.) VOR Veröffentlichung als Content selbst per WebFetch verifizieren — Sonnet-Research, Quellenpflicht gilt auch für mich
 
-### It. 3 — Plan
+### It. 3 (10.07.2026) — Feed + neue Einträge + /admin ✅ ABGESCHLOSSEN
+- Eigene Nach-Verifikation der Research-Claims per WebFetch (6 Fetches): 5 bestätigt, 1 Korrektur (SpaceX-IPO nicht Cursor-IPO), unbelegte Details (Gemini closed-source/20req) GESTRICHEN
+- Feed-Sektion LIVE: /[lang]/feed/, 7 Items DE+EN (MCP-Spec-RC, GPT-5.6, Fable-5-Redeploy, Gemini-CLI-Shutdown, SpaceX/Cursor, Opus 4.8, DB-Lösch-Vorfall), jedes mit verifizierten Quellen, Nav-Pill aktiviert
+- 5 neue Lexikon-Einträge (23 total pro Sprache): modell-lifecycle, kosten-kontrolle-agenten, vibe-coding-sicherheit, subagents, guardrails-fuer-agenten — 13 URLs alle 200-verifiziert
+- /admin-Dashboard gebaut (nicht verlinkt): Key-gated, Views/Top-Seiten/Bugs/Feedback + Marvin-Prio-Feld → /v1/admin/note; zeigt Setup-Hinweis bis Backend deployed
+- Build 54 Seiten ✅, Smoke-Tests ✅, Commit 3
+
+### It. 4 — Plan
+1. Marvin-Input prüfen (Token? → Deploy-Runbook worker/DEPLOY.md komplett fahren)
+2. Einstiegs-Wizard („Wo stehst du?" → 3 Fragen → empfohlener Startpunkt/Pfad) — Kernfeature aus Marvins Spec
+3. Welt 2 des Lernpfads (Agenten: ki-agent → agent-loop → subagents → guardrails → loops) freischalten
+4. Sprache #3 vorbereiten (ES): UI-Strings + Content-Übersetzung via Agent + Stichproben-Validierung
+5. SEO-Grundlagen die ohne Domain safe sind: sitemap.xml + hreflang + schema.org (bleibt noindex)
+6. Artifact aktualisieren
+
+### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)
 2. Feed-Sektion bauen: content/feed.<lang>.json + /[lang]/feed/ Seite — erste Items aus Research #1 (NUR selbst-verifizierte Claims, jede mit Quelle)
 3. Neue Lexikon-Einträge aus Research (Sonnet-Agent + Validierung): fable-5-lifecycle, cost-controls, vibe-coding-security, subagents, claude-artifacts

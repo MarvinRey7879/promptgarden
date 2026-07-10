@@ -25,7 +25,12 @@ export default function Footer({ lang }: { lang: Lang }) {
         className="wrap"
         style={{ display: 'flex', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}
       >
-        <p style={{ margin: 0, maxWidth: 520, lineHeight: 1.55 }}>{t.footerNote}</p>
+        <p style={{ margin: 0, maxWidth: 520, lineHeight: 1.55 }}>
+          {t.footerNote}{' '}
+          <a href="/impressum/" style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}>
+            Impressum
+          </a>
+        </p>
         <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           {live.length > 0 ? (
             live.map((d) => (
