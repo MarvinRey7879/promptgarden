@@ -95,14 +95,22 @@ promptgarden/
 - Marvin-Entscheidungen neu: Domain kauft er noch; Spenden-Links bleiben Todo; Fokus = Konstrukt weiterbauen
 - ⚠️ Hinweis für alle Iterationen: erste Requests nach Pages-Deploy können 404/522 liefern → 10-15s warten, Retry
 
-### It. 5 — Plan
-1. Marvin-Notes von /admin abrufen (curl /v1/admin/summary mit PG_ADMIN_KEY) — ab jetzt JEDE Iteration Schritt 1
-2. Einstiegs-Wizard („Wo stehst du?" → 3 Fragen → empfohlener Startpunkt/Pfad)
-3. Welt 2 des Lernpfads (Agenten: ki-agent → agent-loop → subagents → guardrails-fuer-agenten → loops-fuer-agenten)
-4. Sprache #3 (ES): UI-Strings + Content-Übersetzung via Agent + Stichproben-Validierung
-5. SEO-Basics (sitemap.xml, hreflang, schema.org — noindex bleibt bis Domain)
-6. Newsletter-Signup-Formular aktivieren (Worker-Endpoint existiert) — Versand später
-7. Artifact aktualisieren
+### It. 5 (10.07.2026) — Wizard + Welt 2 + Spanisch + SEO-Basics ✅ ABGESCHLOSSEN
+- Admin-Check: 9 Views live gezählt, keine Notes/echten Bugs
+- Einstiegs-Wizard LIVE (/[lang]/start/): 3 Fragen → beginner/intermediate/pro → Empfehlung + Link; Home-Chip „Neu hier" → /start; Ergebnis in localStorage pg_wizard
+- Lernpfad Welt 2 „Agenten" LIVE: ki-agent → agent-loop → vibe-coding → subagents → guardrails → loops (eigene Freischalt-Kette)
+- 🌍 SPANISCH KOMPLETT LIVE: 23 Einträge + 7 Feed + komplette UI (Sonnet-Agent, validiert: Slugs/Quiz-Indizes/URLs identisch); Sprachwechsler zyklisch de→en→es; /es/ in Root-Detection
+- Newsletter-Formular scharf (POST /v1/newsletter), ehrlicher Hinweis „Versand startet in Kürze"
+- SEO: sitemap.xml (91 URLs) + JSON-LD (Article+citation) auf Eintragsseiten; hreflang BEWUSST verschoben bis Domain da (braucht finale absolute URLs)
+- Build 91 Seiten, live-getestet, Commit 5
+
+### It. 6 — Plan
+1. Admin-Summary abrufen (Notes/Bugs/Traffic)
+2. FR + ZH (Mandarin) — gleicher Agent-Workflow wie ES, dann alle 5 Sprachen komplett
+3. Vergleiche-Sektion (Claude Code vs Cursor vs Codex CLI vs Aider — ehrlich, datiert, mit Quellen; Basis Research #1 + eigene Verifikation)
+4. Newsletter-Versand-Konzept: Resend-Account? (Marvin fragen: eigene Domain nötig) ODER erstmal sammeln
+5. „Loop-Galerie"-Konzept (Beispiel „wie sieht eine gute Loop aus" — Marvins Kernwunsch aus Spec): erste Seite mit 2-3 annotierten Beispielen
+6. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)

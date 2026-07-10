@@ -1,9 +1,13 @@
 import de from '@/content/entries.de.json';
 import en from '@/content/entries.en.json';
 import es from '@/content/entries.es.json';
+import fr from '@/content/entries.fr.json';
+import zh from '@/content/entries.zh.json';
 import feedDe from '@/content/feed.de.json';
 import feedEn from '@/content/feed.en.json';
 import feedEs from '@/content/feed.es.json';
+import feedFr from '@/content/feed.fr.json';
+import feedZh from '@/content/feed.zh.json';
 import type { Lang } from './i18n';
 
 export type Entry = {
@@ -26,6 +30,8 @@ const byLang: Record<Lang, Entry[]> = {
   de: de as Entry[],
   en: en as Entry[],
   es: es as Entry[],
+  fr: fr as Entry[],
+  zh: zh as Entry[],
 };
 
 export type FeedItem = {
@@ -41,6 +47,8 @@ const feedByLang: Record<Lang, FeedItem[]> = {
   de: feedDe as FeedItem[],
   en: feedEn as FeedItem[],
   es: feedEs as FeedItem[],
+  fr: feedFr as FeedItem[],
+  zh: feedZh as FeedItem[],
 };
 
 export function getFeed(lang: Lang): FeedItem[] {

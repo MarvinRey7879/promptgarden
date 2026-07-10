@@ -29,8 +29,8 @@ export default function Header({ lang }: { lang: Lang }) {
     return () => window.removeEventListener(PROGRESS_EVENT, onChange);
   }, [lang]);
 
-  // Sprachwechsel: zyklisch durch alle Sprachen (de → en → es → de)
-  const langCycle: Lang[] = ['de', 'en', 'es'];
+  // Sprachwechsel: zyklisch durch alle Sprachen (de → en → es → fr → zh → de)
+  const langCycle: Lang[] = ['de', 'en', 'es', 'fr', 'zh'];
   const otherLang: Lang = langCycle[(langCycle.indexOf(lang) + 1) % langCycle.length];
   const switchHref = pathname.replace(`/${lang}`, `/${otherLang}`) || `/${otherLang}/`;
 
@@ -38,6 +38,7 @@ export default function Header({ lang }: { lang: Lang }) {
     { label: t.nav.lexikon, href: `/${lang}/lexikon/` },
     { label: t.nav.lernpfade, href: `/${lang}/lernpfade/` },
     { label: t.nav.feed, href: `/${lang}/feed/` },
+    { label: t.nav.vergleiche, href: `/${lang}/vergleiche/` },
   ];
 
   return (
@@ -68,9 +69,6 @@ export default function Header({ lang }: { lang: Lang }) {
               {n.label}
             </Link>
           ))}
-          <span className="pill hide-mobile" style={{ opacity: 0.45 }} title="bald / soon">
-            {t.nav.vergleiche}
-          </span>
         </nav>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           {progress && (progress.xp > 0 || progress.streak > 1) && (

@@ -5,7 +5,15 @@ import { useEffect } from 'react';
 export default function LangRedirect() {
   useEffect(() => {
     const l = navigator.language?.toLowerCase() ?? '';
-    const target = l.startsWith('de') ? '/de/' : l.startsWith('es') ? '/es/' : '/en/';
+    const target = l.startsWith('de')
+      ? '/de/'
+      : l.startsWith('es')
+        ? '/es/'
+        : l.startsWith('fr')
+          ? '/fr/'
+          : l.startsWith('zh')
+            ? '/zh/'
+            : '/en/';
     window.location.replace(target);
   }, []);
 
