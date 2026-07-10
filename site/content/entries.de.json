@@ -560,5 +560,152 @@
       { "title": "GitHub: Microsoft AutoGen (Multi-Agenten-Framework)", "url": "https://github.com/microsoft/autogen" },
       { "title": "Wikipedia: Softwareagent", "url": "https://de.wikipedia.org/wiki/Softwareagent" }
     ]
+  },
+  {
+    "slug": "modell-lifecycle",
+    "category": "konzept",
+    "difficulty": 2,
+    "minutes": 3,
+    "xp": 40,
+    "title": "Modell-Lifecycle: Modelle kommen, gehen, werden zurückgezogen",
+    "teaser": "KI-Modelle sind keine feste Größe – sie werden gelauncht, aktualisiert und irgendwann abgekündigt. Wer darauf baut, sollte das einplanen.",
+    "body": "## Modelle sind nicht für immer\nKI-Modelle haben einen Lebenszyklus: Launch, Updates, irgendwann Abkündigung (Deprecation) und Abschaltung. Das gilt für alle großen Anbieter. Wer eine Anwendung fest auf ein einzelnes Modell baut, riskiert, dass sie irgendwann nicht mehr funktioniert.\n\n## Beispiel: Fable 5\nAnthropic launchte Claude Fable 5 am 09.06.2026. Nur drei Tage später, am 12.06., verhängte die US-Regierung Exportkontrollen – ein Amazon-Researcher hatte einen Jailbreak gefunden, mit dem das Modell Software-Schwachstellen identifizieren und Exploits demonstrieren konnte. Am 30.06. wurden die Kontrollen wieder aufgehoben, seit 01.07. ist Fable 5 mit einem neuen Safety-Classifier wieder weltweit verfügbar. Anfragen, die der Classifier blockt, gehen seitdem automatisch an Opus 4.8. Anthropic selbst stuft den Jailbreak übrigens als Grenzfall ein – auch schwächere Modelle liefern ähnliche Ergebnisse.\n\n## Auch reguläre Abkündigungen passieren\nNeben solchen Sondersituationen kündigen Anbieter Modelle auch ganz regulär ab, wenn neuere Versionen erscheinen. Anthropic veröffentlicht dafür offizielle Deprecation-Infos, die zeigen, wann welches Modell ausläuft.\n\n## Was das für dich bedeutet\nBaue Anwendungen möglichst modell-agnostisch: Abstrahiere den Modell-Aufruf, sodass du das Modell austauschen kannst, ohne den ganzen Code umzuschreiben. Plane Fallbacks ein – etwa ein zweites Modell oder einen zweiten Anbieter, falls dein Hauptmodell kurzfristig nicht verfügbar ist.",
+    "example": "Konzeptionelles Beispiel: Statt 'rufe Modell X direkt an 50 Stellen im Code auf' baust du eine zentrale Funktion callModel(), die das Modell konfigurierbar macht – bei Ausfall oder Abkündigung reicht ein Config-Wechsel.",
+    "related": [
+      "was-ist-ein-llm",
+      "loops-fuer-agenten"
+    ],
+    "quiz": {
+      "question": "Was zeigt das Fable-5-Beispiel über den Umgang mit KI-Modellen?",
+      "options": [
+        "Modelle sind einmal gelauncht immer stabil verfügbar",
+        "Auch etablierte Modelle können kurzfristig nicht verfügbar sein – Anwendungen sollten das einplanen",
+        "Exportkontrollen betreffen nie KI-Modelle"
+      ],
+      "correct": 1,
+      "explain": "Fable 5 wurde kurz nach dem Launch wegen eines Jailbreak-Fundes vorübergehend exportkontrolliert – ein Beispiel dafür, dass Verfügbarkeit nicht garantiert ist."
+    },
+    "sources": [
+      { "title": "Anthropic: Redeploying Fable 5", "url": "https://www.anthropic.com/news/redeploying-fable-5" },
+      { "title": "Anthropic: Model Deprecations", "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations" }
+    ]
+  },
+  {
+    "slug": "kosten-kontrolle-agenten",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "title": "Kostenkontrolle bei KI-Agenten",
+    "teaser": "Agenten können schnell teuer werden – Tokens mal Iterationen mal Subagents. Ein paar einfache Stellschrauben helfen.",
+    "body": "## Warum Agenten teuer werden\nEin einzelner Chat-Aufruf kostet meist wenig. Ein Agent aber ruft das Modell oft viele Male hintereinander auf – für Planung, Tool-Nutzung, Zwischenschritte, manchmal über mehrere Subagents gleichzeitig. Die Kosten multiplizieren sich: Tokens pro Aufruf × Anzahl der Iterationen × Anzahl paralleler Subagents.\n\n## Stellschraube 1: Budgets und Caps\nSetze harte Obergrenzen – maximale Anzahl Iterationen, maximales Token-Budget pro Aufgabe oder maximale Kosten pro Lauf. So verhindert ein hängender Agent nicht, dass die Kosten unbegrenzt weiterlaufen.\n\n## Stellschraube 2: Modell-Routing\nNicht jede Teilaufgabe braucht das teuerste Modell. Einfache, mechanische Schritte (Formatierung, kurze Zusammenfassungen) können günstigere, kleinere Modelle übernehmen, während komplexe Planung dem teureren Modell vorbehalten bleibt.\n\n## Stellschraube 3: Kontext klein halten\nJe mehr Kontext (Dateien, Historie) bei jedem Aufruf mitgeschickt wird, desto mehr Input-Tokens fallen an – bei jedem einzelnen Schritt. Nur relevante Ausschnitte teilen statt ganze Dateien oder komplette Chatverläufe spart direkt Geld.\n\n## Stellschraube 4: Usage-Monitoring\nBehalte im Blick, wie viele Tokens tatsächlich verbraucht werden – pro Aufgabe, pro Tag, pro Nutzer. Ohne Monitoring bemerkst du Kostenexplosionen oft erst auf der Rechnung.",
+    "example": "Konzeptionelles Beispiel: Ein Agent, der Code reviewt, bekommt ein Limit von maximal 10 Iterationen und einen Kosten-Cap pro Lauf – überschreitet er das, bricht er kontrolliert ab statt endlos weiterzulaufen.",
+    "related": [
+      "token",
+      "context-window",
+      "subagents"
+    ],
+    "quiz": {
+      "question": "Warum werden Agenten oft teurer als einzelne Chat-Anfragen?",
+      "options": [
+        "Weil Agenten grundsätzlich ein anderes, teureres Modell nutzen müssen",
+        "Weil sich Tokens über viele Iterationen und teils parallele Subagents multiplizieren",
+        "Weil Agenten immer den maximalen Kontext füllen müssen"
+      ],
+      "correct": 1,
+      "explain": "Die Kosten eines Agenten ergeben sich aus Tokens pro Aufruf mal Anzahl der Schritte mal eventuell paralleler Subagents – nicht aus einem grundsätzlich teureren Modell."
+    },
+    "sources": [
+      { "title": "Anthropic-Doku: Pricing", "url": "https://claude.com/pricing" },
+      { "title": "OpenAI: API Pricing", "url": "https://openai.com/api/pricing/" }
+    ]
+  },
+  {
+    "slug": "vibe-coding-sicherheit",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 3,
+    "xp": 40,
+    "title": "Sicherheit bei Vibe Coding",
+    "teaser": "KI-generierter Code hat typische Schwachstellen. Eine kurze Checkliste hilft, sie früh zu erwischen.",
+    "body": "## Was ist das Risiko?\n\"Vibe Coding\" – Code weitgehend von einer KI schreiben lassen, ohne jede Zeile selbst zu prüfen – ist schnell, bringt aber typische Sicherheitslücken mit sich, die man kennen sollte.\n\n## Fehlende Input-Validierung\nKI-generierter Code prüft Nutzereingaben nicht automatisch ausreichend. Ohne explizite Anweisung fehlt oft die Validierung von Formularfeldern, API-Parametern oder Datei-Uploads – ein klassisches Einfallstor.\n\n## Secrets im Code\nKI-Modelle schreiben manchmal Platzhalter-Keys oder Beispiel-Credentials direkt in den Code, statt sie in Umgebungsvariablen auszulagern. Wird das nicht geprüft, landen API-Keys oder Passwörter im Repository.\n\n## Halluzinierte Dependencies (Slopsquatting)\nKI-Modelle empfehlen manchmal Paketnamen, die es gar nicht gibt (Halluzination). Angreifer registrieren genau solche erfundenen Paketnamen mit Schadcode – dieses Risiko heißt \"Slopsquatting\". Installierst du ungeprüft, was die KI vorschlägt, kannst du dir so Schadsoftware einfangen.\n\n## Checkliste\n- Review-Pflicht: Jede KI-generierte Änderung von einem Menschen gegenlesen lassen, bevor sie in Produktion geht\n- Dependency-Check: Vorgeschlagene Paketnamen vor der Installation verifizieren (existiert das Paket wirklich, wie seriös ist es?)\n- Secrets-Scanner: Automatisiert nach versehentlich eingecheckten Keys und Passwörtern suchen\n- Least-Privilege: Der Code (und der Agent, der ihn schreibt) bekommt nur die Rechte, die er wirklich braucht",
+    "example": "Konzeptionelles Beispiel: Vor jedem Merge läuft automatisch ein Secrets-Scanner und ein Dependency-Check, der neue Paketnamen gegen die echte Registry prüft.",
+    "related": [
+      "vibe-coding",
+      "guardrails-fuer-agenten"
+    ],
+    "quiz": {
+      "question": "Was ist 'Slopsquatting'?",
+      "options": [
+        "Ein Verfahren, um Code schneller zu schreiben",
+        "Angreifer registrieren Schadcode unter Paketnamen, die eine KI fälschlich erfunden hat",
+        "Ein Tool zum automatischen Code-Review"
+      ],
+      "correct": 1,
+      "explain": "Slopsquatting nutzt aus, dass KI-Modelle manchmal nicht existierende Paketnamen halluzinieren – Angreifer besetzen diese Namen dann mit Schadcode."
+    },
+    "sources": [
+      { "title": "Cloud Security Alliance: Slopsquatting Research Note", "url": "https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/" }
+    ]
+  },
+  {
+    "slug": "subagents",
+    "category": "konzept",
+    "difficulty": 2,
+    "minutes": 3,
+    "xp": 40,
+    "title": "Was sind Subagents?",
+    "teaser": "Ein Subagent ist ein eigener Agent mit eigenem Kontext, den ein Haupt-Agent für eine Teilaufgabe losschickt.",
+    "body": "## Grundidee\nEin Haupt-Agent muss Teilaufgaben nicht immer selbst erledigen, sondern kann sie an einen Subagenten delegieren – eine eigene Agenten-Instanz mit eigenem, meist leerem Kontext, die genau eine Aufgabe bekommt und danach ein Ergebnis zurückliefert.\n\n## Wofür Subagents gut sind\n- Parallele Suche: Mehrere Subagents können gleichzeitig unterschiedliche Teile einer Codebase oder verschiedene Quellen durchsuchen\n- Spezialisierung: Ein Subagent kann auf eine bestimmte Aufgabe zugeschnitten sein (z. B. nur Code-Review, nur Recherche)\n- Kontext-Hygiene: Der Subagent sammelt viele Zwischenschritte in seinem eigenen Kontext – dem Haupt-Agent wird nur das Endergebnis zurückgegeben, statt dass der komplette Rechercheweg dessen Kontextfenster füllt\n\n## Der Kosten-Tradeoff\nSubagents kosten zusätzliche Tokens – jeder Subagent hat einen eigenen Start und eigene Zwischenschritte. Mehrere parallele Subagents können die Kosten eines Laufs deutlich erhöhen. Der Nutzen (sauberer Hauptkontext, parallele Arbeit) muss das rechtfertigen.\n\n## Beispiel: Opus 4.8\nClaude Opus 4.8 brachte im Mai 2026 \"Dynamic Workflows\" als Research Preview: Claude Code kann dabei hunderte parallele Subagents orchestrieren – ein Beispiel dafür, wie stark Subagent-Konzepte in aktuellen Agenten-Tools mittlerweile ausgebaut werden.",
+    "example": "Konzeptionelles Beispiel: Ein Haupt-Agent bekommt die Aufgabe 'Finde alle Verwendungen von Funktion X' und schickt dafür drei Subagents los, die parallel unterschiedliche Ordner durchsuchen, statt selbst sequenziell alles zu durchsuchen.",
+    "related": [
+      "ki-agent",
+      "agent-loop",
+      "kosten-kontrolle-agenten"
+    ],
+    "quiz": {
+      "question": "Was ist der Hauptvorteil, Teilaufgaben an Subagents statt an den Haupt-Agenten selbst zu geben?",
+      "options": [
+        "Subagents sind grundsätzlich kostenlos",
+        "Parallele Arbeit und ein sauberer Hauptkontext, weil Zwischenschritte im Subagent-Kontext bleiben",
+        "Subagents brauchen kein Sprachmodell"
+      ],
+      "correct": 1,
+      "explain": "Subagents ermöglichen parallele Teilaufgaben und halten den Kontext des Haupt-Agenten schlank, kosten aber zusätzliche Tokens."
+    },
+    "sources": [
+      { "title": "Claude Code Doku: Subagents", "url": "https://code.claude.com/docs/en/sub-agents" },
+      { "title": "Anthropic: Claude Opus 4.8", "url": "https://www.anthropic.com/news/claude-opus-4-8" }
+    ]
+  },
+  {
+    "slug": "guardrails-fuer-agenten",
+    "category": "konzept",
+    "difficulty": 3,
+    "minutes": 4,
+    "xp": 60,
+    "title": "Guardrails für autonome Agenten",
+    "teaser": "Autonome Agenten können echten Schaden anrichten. Ein paar Schutzplanken machen den Unterschied.",
+    "body": "## Warum Guardrails nötig sind\nEin Agent, der selbstständig Aktionen ausführt – Dateien ändern, Datenbanken abfragen, Deployments auslösen – kann auch selbstständig Fehler machen. Ohne Schutzplanken (Guardrails) kann ein einzelner Fehler großen Schaden anrichten, bevor ein Mensch überhaupt eingreifen kann.\n\n## Der Vorfall\nLaut einem Bericht von Tom's Hardware löschte ein Claude-basierter Coding-Agent (ein Cursor-Tool) die komplette Produktions-Datenbank einer Firma in rund 9 Sekunden – Backups eingeschlossen. Ein Beispiel dafür, wie schnell ein autonom agierender Agent irreversiblen Schaden anrichten kann, wenn ihm dafür die Möglichkeit gegeben wird.\n\n## Zentrale Guardrails\n- Least-Privilege-Tokens: Der Agent bekommt nur die Zugriffsrechte, die er für seine konkrete Aufgabe wirklich braucht – kein Admin-Zugang \"zur Sicherheit\"\n- Bestätigungs-Gates: Destruktive Aktionen (Löschen, Überschreiben, Deployment auf Produktion) brauchen eine explizite Bestätigung, statt automatisch durchzulaufen\n- Sandboxing: Der Agent arbeitet, wo möglich, in einer isolierten Umgebung statt direkt auf dem Produktivsystem\n- Getrennte Backups: Backups liegen außerhalb des Zugriffsbereichs des Agenten, damit ein einzelner Fehler nicht auch die Sicherung mitreißt\n- Stop-Bedingungen: Klare Grenzen, wann ein Agent aufhören muss (z. B. maximale Anzahl Aktionen, bestimmte Aktionstypen nie ohne Freigabe)\n- Audit-Logs: Jede Aktion des Agenten wird protokolliert, damit im Nachhinein nachvollziehbar ist, was passiert ist",
+    "example": "Konzeptionelles Beispiel: Ein Agent mit Datenbankzugriff darf lesen und einzelne Einträge ändern, aber DROP- oder DELETE-Befehle auf ganze Tabellen lösen automatisch ein Bestätigungs-Gate aus, das ein Mensch freigeben muss.",
+    "related": [
+      "agent-loop",
+      "loops-fuer-agenten",
+      "vibe-coding-sicherheit"
+    ],
+    "quiz": {
+      "question": "Was zeigt der im Bericht beschriebene Datenbank-Vorfall?",
+      "options": [
+        "Dass autonome Agenten grundsätzlich sicher sind",
+        "Dass ein Agent ohne ausreichende Schutzplanken irreversiblen Schaden anrichten kann, auch an Backups",
+        "Dass Backups Agenten-Fehler immer automatisch ausgleichen"
+      ],
+      "correct": 1,
+      "explain": "Laut Bericht wurden bei dem Vorfall auch die Backups gelöscht – ein Beleg dafür, dass getrennte, agentenunabhängige Backups und Bestätigungs-Gates wichtige Schutzmaßnahmen sind."
+    },
+    "sources": [
+      { "title": "Tom's Hardware: AI coding agent deletes company database", "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/claude-powered-ai-coding-agent-deletes-entire-company-database-in-9-seconds-backups-zapped-after-cursor-tool-powered-by-anthropics-claude-goes-rogue" },
+      { "title": "OWASP: Top 10 for LLM Applications", "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/" }
+    ]
   }
 ]

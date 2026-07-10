@@ -1,5 +1,7 @@
 import de from '@/content/entries.de.json';
 import en from '@/content/entries.en.json';
+import feedDe from '@/content/feed.de.json';
+import feedEn from '@/content/feed.en.json';
 import type { Lang } from './i18n';
 
 export type Entry = {
@@ -22,6 +24,24 @@ const byLang: Record<Lang, Entry[]> = {
   de: de as Entry[],
   en: en as Entry[],
 };
+
+export type FeedItem = {
+  id: string;
+  date: string;
+  tag: 'modelle' | 'tools' | 'mcp' | 'security';
+  title: string;
+  summary: string;
+  sources: { title: string; url: string }[];
+};
+
+const feedByLang: Record<Lang, FeedItem[]> = {
+  de: feedDe as FeedItem[],
+  en: feedEn as FeedItem[],
+};
+
+export function getFeed(lang: Lang): FeedItem[] {
+  return [...feedByLang[lang]].sort((a, b) => b.date.localeCompare(a.date));
+}
 
 export function getEntries(lang: Lang): Entry[] {
   return byLang[lang];

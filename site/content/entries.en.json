@@ -560,5 +560,152 @@
       { "title": "GitHub: Microsoft AutoGen (multi-agent framework)", "url": "https://github.com/microsoft/autogen" },
       { "title": "Wikipedia: Autonomous agent", "url": "https://en.wikipedia.org/wiki/Autonomous_agent" }
     ]
+  },
+  {
+    "slug": "modell-lifecycle",
+    "category": "konzept",
+    "difficulty": 2,
+    "minutes": 3,
+    "xp": 40,
+    "title": "Model Lifecycle: Models Launch, Change, and Get Retired",
+    "teaser": "AI models aren't a fixed constant - they launch, get updated, and eventually get deprecated. If you build on one, plan for that.",
+    "body": "## Models aren't forever\nAI models have a lifecycle: launch, updates, eventual deprecation, and shutdown. This applies across all major providers. If you build an application hard-wired to a single model, you risk it breaking down the line.\n\n## Example: Fable 5\nAnthropic launched Claude Fable 5 on 2026-06-09. Just three days later, on 2026-06-12, the US government imposed export controls after an Amazon researcher found a jailbreak that let the model identify software vulnerabilities and demonstrate exploits. The controls were lifted on 2026-06-30, and since 2026-07-01 Fable 5 has been available worldwide again, with a new safety classifier. Requests the classifier blocks are now automatically routed to Opus 4.8. Anthropic itself considers the jailbreak a borderline case - weaker models produce similar results too.\n\n## Regular deprecations happen too\nBeyond special situations like this, providers also retire models through ordinary deprecation cycles as newer versions ship. Anthropic publishes official deprecation information showing when each model reaches end of life.\n\n## What this means for you\nBuild applications to be as model-agnostic as possible: abstract the model call so you can swap models without rewriting your whole codebase. Plan for fallbacks - a second model or a second provider - in case your primary model becomes unavailable on short notice.",
+    "example": "Conceptual example: instead of calling model X directly in 50 places in your code, build a central callModel() function that makes the model configurable - if it's down or deprecated, a config change is enough.",
+    "related": [
+      "was-ist-ein-llm",
+      "loops-fuer-agenten"
+    ],
+    "quiz": {
+      "question": "What does the Fable 5 example show about working with AI models?",
+      "options": [
+        "Once launched, models are always stably available",
+        "Even established models can become unavailable on short notice - applications should plan for that",
+        "Export controls never affect AI models"
+      ],
+      "correct": 1,
+      "explain": "Fable 5 was temporarily subject to export controls shortly after launch due to a discovered jailbreak - an example that availability isn't guaranteed."
+    },
+    "sources": [
+      { "title": "Anthropic: Redeploying Fable 5", "url": "https://www.anthropic.com/news/redeploying-fable-5" },
+      { "title": "Anthropic: Model Deprecations", "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations" }
+    ]
+  },
+  {
+    "slug": "kosten-kontrolle-agenten",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "title": "Cost Control for AI Agents",
+    "teaser": "Agents can get expensive fast - tokens times iterations times subagents. A few simple controls help.",
+    "body": "## Why agents get expensive\nA single chat call usually costs little. An agent, though, often calls the model many times in a row - for planning, tool use, intermediate steps, sometimes across several subagents at once. Costs multiply: tokens per call times number of iterations times number of parallel subagents.\n\n## Lever 1: Budgets and caps\nSet hard limits - a maximum number of iterations, a maximum token budget per task, or a maximum cost per run. That way a stuck agent can't let costs run indefinitely.\n\n## Lever 2: Model routing\nNot every subtask needs the most expensive model. Simple, mechanical steps (formatting, short summaries) can run on cheaper, smaller models, while complex planning stays reserved for the pricier one.\n\n## Lever 3: Keep context small\nThe more context (files, history) gets sent with every call, the more input tokens you pay for - on every single step. Sharing only the relevant excerpts instead of whole files or full chat histories saves money directly.\n\n## Lever 4: Usage monitoring\nTrack how many tokens actually get used - per task, per day, per user. Without monitoring, you often only notice a cost blowup once the bill arrives.",
+    "example": "Conceptual example: a code-review agent gets a limit of at most 10 iterations and a cost cap per run - if it exceeds that, it stops in a controlled way instead of running forever.",
+    "related": [
+      "token",
+      "context-window",
+      "subagents"
+    ],
+    "quiz": {
+      "question": "Why do agents often end up more expensive than single chat requests?",
+      "options": [
+        "Because agents always have to use a different, pricier model",
+        "Because tokens multiply across many iterations and sometimes parallel subagents",
+        "Because agents always have to fill the maximum context"
+      ],
+      "correct": 1,
+      "explain": "An agent's cost comes from tokens per call times number of steps times possibly parallel subagents - not from an inherently pricier model."
+    },
+    "sources": [
+      { "title": "Anthropic docs: Pricing", "url": "https://claude.com/pricing" },
+      { "title": "OpenAI: API Pricing", "url": "https://openai.com/api/pricing/" }
+    ]
+  },
+  {
+    "slug": "vibe-coding-sicherheit",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 3,
+    "xp": 40,
+    "title": "Security in Vibe Coding",
+    "teaser": "AI-generated code comes with typical vulnerabilities. A short checklist helps catch them early.",
+    "body": "## What's the risk?\n\"Vibe coding\" - letting an AI write most of the code without reviewing every line yourself - is fast, but it brings along typical security gaps worth knowing about.\n\n## Missing input validation\nAI-generated code doesn't automatically validate user input enough. Without explicit instructions, validation for form fields, API parameters, or file uploads is often missing - a classic attack surface.\n\n## Secrets in the code\nAI models sometimes write placeholder keys or example credentials directly into the code instead of moving them into environment variables. If this isn't checked, API keys or passwords end up in the repository.\n\n## Hallucinated dependencies (slopsquatting)\nAI models sometimes recommend package names that don't actually exist (hallucination). Attackers register exactly these made-up package names with malicious code - this risk is called \"slopsquatting.\" If you install whatever the AI suggests without checking, you can pull in malware this way.\n\n## Checklist\n- Review requirement: have a human check every AI-generated change before it goes to production\n- Dependency check: verify suggested package names before installing (does the package actually exist, how reputable is it?)\n- Secrets scanner: automatically scan for accidentally committed keys and passwords\n- Least privilege: the code (and the agent writing it) only gets the permissions it actually needs",
+    "example": "Conceptual example: before every merge, a secrets scanner and a dependency check run automatically, verifying new package names against the real registry.",
+    "related": [
+      "vibe-coding",
+      "guardrails-fuer-agenten"
+    ],
+    "quiz": {
+      "question": "What is 'slopsquatting'?",
+      "options": [
+        "A technique for writing code faster",
+        "Attackers registering malicious code under package names an AI falsely hallucinated",
+        "A tool for automatic code review"
+      ],
+      "correct": 1,
+      "explain": "Slopsquatting exploits the fact that AI models sometimes hallucinate package names that don't exist - attackers then claim those names with malicious code."
+    },
+    "sources": [
+      { "title": "Cloud Security Alliance: Slopsquatting Research Note", "url": "https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/" }
+    ]
+  },
+  {
+    "slug": "subagents",
+    "category": "konzept",
+    "difficulty": 2,
+    "minutes": 3,
+    "xp": 40,
+    "title": "What Are Subagents?",
+    "teaser": "A subagent is its own agent instance with its own context, sent out by a main agent to handle a subtask.",
+    "body": "## Core idea\nInstead of doing a subtask itself, a main agent can delegate it to a subagent - a separate agent instance with its own, usually empty context, that gets exactly one task and reports back a result.\n\n## What subagents are good for\n- Parallel search: multiple subagents can search different parts of a codebase or different sources at the same time\n- Specialization: a subagent can be tailored to one specific job (e.g. only code review, only research)\n- Context hygiene: the subagent accumulates many intermediate steps in its own context - the main agent only gets the final result back, instead of the whole research trail filling its context window\n\n## The cost tradeoff\nSubagents cost extra tokens - each one has its own startup and its own intermediate steps. Multiple parallel subagents can noticeably raise the cost of a run. The benefit (a clean main context, parallel work) has to justify that.\n\n## Example: Opus 4.8\nClaude Opus 4.8 introduced \"Dynamic Workflows\" as a research preview in May 2026: Claude Code can orchestrate hundreds of parallel subagents - an example of how far subagent concepts have been pushed in current agent tools.",
+    "example": "Conceptual example: a main agent gets the task 'find all uses of function X' and sends out three subagents that search different folders in parallel, instead of searching everything itself sequentially.",
+    "related": [
+      "ki-agent",
+      "agent-loop",
+      "kosten-kontrolle-agenten"
+    ],
+    "quiz": {
+      "question": "What's the main benefit of giving subtasks to subagents instead of the main agent itself?",
+      "options": [
+        "Subagents are fundamentally free",
+        "Parallel work and a clean main context, since intermediate steps stay in the subagent's context",
+        "Subagents don't need a language model"
+      ],
+      "correct": 1,
+      "explain": "Subagents enable parallel subtasks and keep the main agent's context lean, but they cost extra tokens."
+    },
+    "sources": [
+      { "title": "Claude Code docs: Subagents", "url": "https://code.claude.com/docs/en/sub-agents" },
+      { "title": "Anthropic: Claude Opus 4.8", "url": "https://www.anthropic.com/news/claude-opus-4-8" }
+    ]
+  },
+  {
+    "slug": "guardrails-fuer-agenten",
+    "category": "konzept",
+    "difficulty": 3,
+    "minutes": 4,
+    "xp": 60,
+    "title": "Guardrails for Autonomous Agents",
+    "teaser": "Autonomous agents can cause real damage. A few guardrails make the difference.",
+    "body": "## Why guardrails are needed\nAn agent that takes actions on its own - changing files, querying databases, triggering deployments - can also make mistakes on its own. Without guardrails, a single mistake can cause major damage before a human even gets a chance to step in.\n\n## The incident\nAccording to a report by Tom's Hardware, a Claude-based coding agent (a Cursor tool) deleted a company's entire production database in about 9 seconds - backups included. An example of how quickly an autonomously acting agent can cause irreversible damage if it's given the chance.\n\n## Core guardrails\n- Least-privilege tokens: the agent only gets the access rights it actually needs for its specific task - no admin access \"just in case\"\n- Confirmation gates: destructive actions (deleting, overwriting, deploying to production) require explicit confirmation instead of running automatically\n- Sandboxing: the agent works in an isolated environment where possible, instead of directly on the production system\n- Separate backups: backups live outside the agent's reach, so a single mistake can't take out the backup too\n- Stop conditions: clear limits on when an agent must stop (e.g. a maximum number of actions, certain action types never without approval)\n- Audit logs: every action the agent takes gets logged, so what happened can be reconstructed afterward",
+    "example": "Conceptual example: an agent with database access can read and edit individual records, but DROP or DELETE commands on whole tables automatically trigger a confirmation gate that a human has to approve.",
+    "related": [
+      "agent-loop",
+      "loops-fuer-agenten",
+      "vibe-coding-sicherheit"
+    ],
+    "quiz": {
+      "question": "What does the database incident described in the report show?",
+      "options": [
+        "That autonomous agents are fundamentally safe",
+        "That an agent without sufficient guardrails can cause irreversible damage, including to backups",
+        "That backups always automatically offset agent mistakes"
+      ],
+      "correct": 1,
+      "explain": "According to the report, the incident also wiped the backups - evidence that separate, agent-independent backups and confirmation gates are important safeguards."
+    },
+    "sources": [
+      { "title": "Tom's Hardware: AI coding agent deletes company database", "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/claude-powered-ai-coding-agent-deletes-entire-company-database-in-9-seconds-backups-zapped-after-cursor-tool-powered-by-anthropics-claude-goes-rogue" },
+      { "title": "OWASP: Top 10 for LLM Applications", "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/" }
+    ]
   }
 ]

@@ -26,6 +26,7 @@ export default function Header({ lang }: { lang: Lang }) {
   const navItems = [
     { label: t.nav.lexikon, href: `/${lang}/lexikon/` },
     { label: t.nav.lernpfade, href: `/${lang}/lernpfade/` },
+    { label: t.nav.feed, href: `/${lang}/feed/` },
   ];
 
   return (
@@ -56,9 +57,6 @@ export default function Header({ lang }: { lang: Lang }) {
               {n.label}
             </Link>
           ))}
-          <span className="pill hide-mobile" style={{ opacity: 0.45 }} title="bald / soon">
-            {t.nav.feed}
-          </span>
           <span className="pill hide-mobile" style={{ opacity: 0.45 }} title="bald / soon">
             {t.nav.vergleiche}
           </span>
