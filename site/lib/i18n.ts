@@ -36,6 +36,7 @@ type Dict = {
   quizWrong: string;
   related: string;
   example: string;
+  sources: string;
   pathWorld: string;
   pathTitle: string;
   pathSub: string;
@@ -90,6 +91,7 @@ export const ui: Record<Lang, Dict> = {
     quizWrong: 'Nicht ganz —',
     related: 'Verwandte Themen',
     example: 'Beispiel',
+    sources: 'Quellen',
     pathWorld: 'WELT 1 · GRUNDLAGEN',
     pathTitle: 'Dein Weg zum Agenten-Flüsterer',
     pathSub: 'Kein Account nötig zum Lesen — XP & Streaks gibt es optional obendrauf. Gespeichert nur in deinem Browser.',
@@ -142,6 +144,7 @@ export const ui: Record<Lang, Dict> = {
     quizWrong: 'Not quite —',
     related: 'Related topics',
     example: 'Example',
+    sources: 'Sources',
     pathWorld: 'WORLD 1 · BASICS',
     pathTitle: 'Your path to agent whisperer',
     pathSub: 'No account needed to read — XP & streaks are optional on top. Stored only in your browser.',

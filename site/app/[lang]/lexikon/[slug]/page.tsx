@@ -65,6 +65,35 @@ export default async function EntryPage({
         <CompleteButton lang={lang} slug={entry.slug} xp={entry.xp} />
       </div>
 
+      {entry.sources && entry.sources.length > 0 && (
+        <div
+          style={{
+            marginTop: 40,
+            borderTop: '2px solid var(--ink)',
+            paddingTop: 18,
+          }}
+        >
+          <p className="kicker">{t.sources.toUpperCase()}</p>
+          <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13.5, lineHeight: 1.7 }}>
+            {entry.sources.map((s) => (
+              <li key={s.url}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}
+                >
+                  {s.title}
+                </a>{' '}
+                <span className="mono" style={{ fontSize: 11, color: 'var(--muted)' }}>
+                  ↗ {new URL(s.url).hostname}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {related.length > 0 && (
         <div style={{ marginTop: 40 }}>
           <p className="kicker">{t.related.toUpperCase()}</p>
