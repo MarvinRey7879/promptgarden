@@ -40,6 +40,7 @@ type Dict = {
   feedTitle: string;
   feedSub: string;
   feedTags: Record<string, string>;
+  pathWorld0: string;
   pathWorld: string;
   pathWorld2: string;
   pathTitle: string;
@@ -110,6 +111,7 @@ export const ui: Record<Lang, Dict> = {
     feedTitle: 'Feed',
     feedSub: 'Was gerade in der KI-Welt passiert — kuratiert, verifiziert, mit Quellen.',
     feedTags: { modelle: 'Modelle', tools: 'Tools', mcp: 'MCP', security: 'Security' },
+    pathWorld0: "WELT 0 · LOSLEGEN",
     pathWorld: 'WELT 1 · GRUNDLAGEN',
     pathWorld2: 'WELT 2 · AGENTEN',
     pathTitle: 'Dein Weg zum Agenten-Flüsterer',
@@ -186,6 +188,7 @@ export const ui: Record<Lang, Dict> = {
     feedTitle: 'Feed',
     feedSub: 'What is happening in the AI world right now — curated, verified, with sources.',
     feedTags: { modelle: 'Models', tools: 'Tools', mcp: 'MCP', security: 'Security' },
+    pathWorld0: "WORLD 0 · GETTING STARTED",
     pathWorld: 'WORLD 1 · BASICS',
     pathWorld2: 'WORLD 2 · AGENTS',
     pathTitle: 'Your path to agent whisperer',
@@ -262,6 +265,7 @@ export const ui: Record<Lang, Dict> = {
     feedTitle: 'Feed',
     feedSub: 'Lo que está pasando ahora en el mundo de la IA — curado, verificado, con fuentes.',
     feedTags: { modelle: 'Modelos', tools: 'Herramientas', mcp: 'MCP', security: 'Seguridad' },
+    pathWorld0: "MUNDO 0 · PRIMEROS PASOS",
     pathWorld: 'MUNDO 1 · FUNDAMENTOS',
     pathWorld2: 'MUNDO 2 · AGENTES',
     pathTitle: 'Tu camino para susurrar a los agentes',
@@ -338,6 +342,7 @@ export const ui: Record<Lang, Dict> = {
     feedTitle: 'Feed',
     feedSub: "Ce qui se passe en ce moment dans le monde de l'IA — sélectionné, vérifié, avec sources.",
     feedTags: { modelle: 'Modèles', tools: 'Outils', mcp: 'MCP', security: 'Sécurité' },
+    pathWorld0: "MONDE 0 · DÉMARRER",
     pathWorld: 'MONDE 1 · BASES',
     pathWorld2: 'MONDE 2 · AGENTS',
     pathTitle: "Ton chemin pour devenir un chuchoteur d'agents",
@@ -414,6 +419,7 @@ export const ui: Record<Lang, Dict> = {
     feedTitle: '资讯',
     feedSub: 'AI 世界正在发生的事 —— 精选、核实、附来源。',
     feedTags: { modelle: '模型', tools: '工具', mcp: 'MCP', security: '安全' },
+    pathWorld0: "第 0 关 · 入门",
     pathWorld: '第一部分 · 基础',
     pathWorld2: '第二部分 · Agent',
     pathTitle: '你的 agent 驯服之路',

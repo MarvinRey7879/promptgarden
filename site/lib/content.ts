@@ -63,6 +63,15 @@ export function getEntry(lang: Lang, slug: string): Entry | undefined {
   return byLang[lang].find((e) => e.slug === slug);
 }
 
+/** Welt 0 — Loslegen: Setup-Pfad für absolute Anfänger (Slugs existieren ab It. 9) */
+export const WORLD_0: string[] = [
+  'claude-code-installieren',
+  'modell-und-plan-wahl',
+  'git-github-basics',
+  'claude-code',
+  'claude-md',
+];
+
 /** Welt 1 — Grundlagen: geordneter Lernpfad (Kapitel-Slugs) */
 export const WORLD_1: string[] = [
   'was-ist-ein-llm',

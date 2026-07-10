@@ -120,13 +120,19 @@ promptgarden/
 - 157 Seiten, live-getestet, Commit 7
 - Newsletter-Frage an Marvin BEWUSST geparkt (hängt an Domain-Kauf; seine Ansage: erst Konstrukt bauen) — im Artifact als Punkt vermerkt
 
-### It. 8 — Plan
-1. Admin-Summary (Notes/Bugs/Traffic)
-2. Deep Research #2: Google-Trends/Reddit-Pain-Points der Woche + neue Repos/Papers → 3-5 neue Feed-Items + 2-3 neue Einträge (voller Verifikations-Workflow)
-3. OG-Images/Social-Meta (Auffindbarkeit vorbereiten) + robots.txt sauber
-4. Quiz-Verbesserung: „Alle Quizze"-Übersicht oder Fortschritts-% auf Lexikon-Seite (Gamification vertiefen)
-5. Kandidat: MCP-Server/freie JSON-API für Agenten-Zugriff auf Content (Marvins Wunsch, statisch = einfach: /api/entries.json pro Sprache exportieren)
-6. Artifact aktualisieren
+### It. 8 (10.07.2026) — Agenten-API + Research #2 ✅ ABGESCHLOSSEN
+- Admin: 14 Views, nichts Neues
+- 🤖 FREIE AGENTEN-API LIVE: /api/index.json + 20 Content-JSONs (alle Sprachen/Typen), llms.txt (Agenten-Einstieg), robots.txt — prebuild-Script scripts/build-api.mjs kopiert content/→public/api/
+- OG-Meta pro Eintragsseite (generateMetadata), Quiz-Fortschritt ✓X/23 im Lexikon-Footer
+- Deep Research #2 fertig (research/2026-07-10-deep-research-2.md): Top-10-Beginner-Fragen (HN/Algolia + Cursor-Forum; Reddit blockiert — transparent vermerkt), Top-5-Content-Gaps: (1) Setup/Install-Tutorial (2) Modell+Plan-Wahl (3) Git/GitHub-Basics (4) Deployment-Tutorial (5) Agent-Recovery. 4 frische News: China-Warnung/Alibaba-Bann zu Claude Code (CNBC/SCMP), Zhipu ZCode, Rowboat (Show HN), Claude Code v2.1.197
+- Commits 8 + 8b
+
+### It. 9 — Plan
+1. Admin-Summary
+2. News-Verifikation (China/Alibaba-Story per WebFetch selbst prüfen!) → 3-4 neue Feed-Items, alle 5 Sprachen (Agent), Feed-Übersetzungs-Workflow wie gehabt
+3. NEUE GUIDES aus Research-Gaps (höchste Nachfrage): claude-code-installieren (Windows, Schritt für Schritt), modell-und-plan-wahl, git-github-basics — DE+EN via Agent mit verifizierten Quellen, dann es/fr/zh
+4. Lernpfad „Welt 0: Loslegen" aus den neuen Setup-Guides? (prüfen ob 3 Kapitel reichen — sonst It. 10)
+5. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)
