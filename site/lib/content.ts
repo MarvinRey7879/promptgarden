@@ -1,0 +1,46 @@
+import de from '@/content/entries.de.json';
+import en from '@/content/entries.en.json';
+import type { Lang } from './i18n';
+
+export type Entry = {
+  slug: string;
+  title: string;
+  category: 'begriff' | 'prompt-pattern' | 'konzept' | 'guide' | 'vergleich';
+  difficulty: 1 | 2 | 3;
+  minutes: number;
+  xp: number;
+  teaser: string;
+  body: string;
+  example: string;
+  related: string[];
+  quiz: { question: string; options: string[]; correct: number; explain: string };
+};
+
+const byLang: Record<Lang, Entry[]> = {
+  de: de as Entry[],
+  en: en as Entry[],
+};
+
+export function getEntries(lang: Lang): Entry[] {
+  return byLang[lang];
+}
+
+export function getEntry(lang: Lang, slug: string): Entry | undefined {
+  return byLang[lang].find((e) => e.slug === slug);
+}
+
+/** Welt 1 — Grundlagen: geordneter Lernpfad (Kapitel-Slugs) */
+export const WORLD_1: string[] = [
+  'was-ist-ein-llm',
+  'token',
+  'context-window',
+  'prompt',
+  'kontext-fuettern',
+  'system-prompt',
+  'halluzination',
+  'erst-plan-dann-code',
+];
+
+export function difficultyDots(d: 1 | 2 | 3): string {
+  return '●'.repeat(d) + '○'.repeat(3 - d);
+}
