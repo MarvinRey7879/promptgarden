@@ -180,11 +180,17 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - ⭐ Research-Empfehlung übernommen: KEINE Zahlen auf der Plattform einbetten (veralten in Wochen, mehrere „offizielle" Scores pro Benchmark) → Explainer „Benchmarks lesen" + Mini-Cards (Name/misst was/wer/Link zum Live-Leaderboard)
 - Commits 16
 
-### It. 16 — Plan (Benchmarks-Säule bauen)
-1. Admin-Summary + Marvin-Input
-2. Benchmarks-Sektion nach Research-Empfehlung: (a) Eintrag „benchmarks-lesen" (Explainer mit Kritik-Punkten, difficulty 2), (b) content/benchmarks.<lang>.json mit 10 Mini-Cards + /[lang]/benchmarks/-Seite (Karten-Grid im 1d-Look, Links auf offizielle Leaderboards, KEINE Zahlen), Nav ggf. unter Vergleiche verlinken statt neuem Pill (Nav voll)
-3. Content-Agent DE+EN aus Research-Report (nur verifizierte Fakten) → Übersetzung es/fr/zh
-4. Artifact aktualisieren
+### It. 16 (11.07.2026) — Benchmarks-Säule ✅ ABGESCHLOSSEN
+- /[lang]/benchmarks/ LIVE (alle 5 Sprachen, 202 Seiten): 10 Benchmark-Karten (SWE-bench, Terminal-Bench, Aider Polyglot, LiveCodeBench, LMArena, HumanEval-legacy, AA Coding Agent Index, ARC-AGI-2, MMLU, METR) — misst-was/wer/⚠️Caveat/Live-Leaderboard-Link, bewusst NULL Zahlen (Digit-Scan verifiziert)
+- Guide „benchmarks-lesen" (31 Einträge/Sprache): 7 Kritik-Punkte + Praxis-Regeln, 4 verifizierte Quellen
+- Verlinkung: Vergleiche-Seite → Benchmarks, Benchmarks → Guide, sitemap
+- Marvins Spec-Punkt „ihre benchmarks" damit abgedeckt — wartungsarm designt
+- Commit 17
+
+### It. 17 — Plan
+1. Admin-Summary + Marvin-Input (Forum A/B/C? Domain? Spenden?)
+2. Kandidaten: (a) Qualitäts-Audit #2 (PSI-API statt Lighthouse-CLI, Link-Checker-Rerun); (b) Deep Research #4 (Feed-Nachschub: News seit 10.07.); (c) „How-to-Video"-Ersatz: animierte Terminal-Demos als Text-Schrittfolgen (Marvins Spec nennt Videos — statisch+günstig anfangen: „Beispiel-Session"-Blöcke in Guides)
+3. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)
