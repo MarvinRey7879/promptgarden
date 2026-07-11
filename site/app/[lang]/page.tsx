@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { isLang, ui } from '@/lib/i18n';
-import { getEntries, getFeed } from '@/lib/content';
+import { getEntries, getFeed, getEntry, WORLD_0, WORLD_1, WORLD_2 } from '@/lib/content';
+import ContinueCard from '@/components/ContinueCard';
 import { notFound } from 'next/navigation';
 
 const CARD_COLORS = ['var(--lime)', 'var(--pink)', 'var(--blue)', 'var(--yellow)'];
@@ -12,6 +13,12 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const t = ui[lang];
   const count = getEntries(lang).length;
   const latestNews = getFeed(lang)[0];
+  const pathChapters = [...WORLD_0, ...WORLD_1, ...WORLD_2]
+    .map((slug) => {
+      const e = getEntry(lang, slug);
+      return e ? { slug: e.slug, title: e.title } : null;
+    })
+    .filter((c): c is { slug: string; title: string } => Boolean(c));
 
   return (
     <>
@@ -51,6 +58,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           {t.heroSub}
         </p>
       </div>
+
+      <ContinueCard lang={lang} chapters={pathChapters} />
 
       <div
         style={{
