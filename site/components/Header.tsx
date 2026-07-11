@@ -39,6 +39,7 @@ export default function Header({ lang }: { lang: Lang }) {
     { label: t.nav.lernpfade, href: `/${lang}/lernpfade/` },
     { label: t.nav.feed, href: `/${lang}/feed/` },
     { label: t.nav.vergleiche, href: `/${lang}/vergleiche/` },
+    { label: 'Forum', href: `/${lang}/forum/` },
   ];
 
   return (

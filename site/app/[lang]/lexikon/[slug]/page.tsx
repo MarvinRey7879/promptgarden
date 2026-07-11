@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
 import TokenPlayground from '@/components/TokenPlayground';
+import Comments from '@/components/Comments';
 import { getEntries, getEntry, difficultyDots } from '@/lib/content';
 import { LANGS, isLang, ui } from '@/lib/i18n';
 
@@ -128,6 +129,8 @@ export default async function EntryPage({
           </ul>
         </div>
       )}
+
+      <Comments lang={lang} />
 
       {related.length > 0 && (
         <div style={{ marginTop: 40 }}>
