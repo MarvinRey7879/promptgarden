@@ -187,10 +187,16 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Marvins Spec-Punkt „ihre benchmarks" damit abgedeckt — wartungsarm designt
 - Commit 17
 
-### It. 17 — Plan
-1. Admin-Summary + Marvin-Input (Forum A/B/C? Domain? Spenden?)
-2. Kandidaten: (a) Qualitäts-Audit #2 (PSI-API statt Lighthouse-CLI, Link-Checker-Rerun); (b) Deep Research #4 (Feed-Nachschub: News seit 10.07.); (c) „How-to-Video"-Ersatz: animierte Terminal-Demos als Text-Schrittfolgen (Marvins Spec nennt Videos — statisch+günstig anfangen: „Beispiel-Session"-Blöcke in Guides)
-3. Artifact aktualisieren
+### It. 17 (11.07.2026) — Beispiel-Sessions + Kadenz-Anpassung ✅ ABGESCHLOSSEN
+- „So sieht das aus"-Blöcke (Terminal-/Chat-Transkripte, ```text) in 3 Kern-Guides, alle 5 Sprachen — Agent arbeitete mit String-Literal-Replace, Nicht-Ziel-Einträge byte-identisch verifiziert, Backups im Scratchpad
+- Commit 18
+- ⚙️ KADENZ-ENTSCHEIDUNG der Loop: Fundament komplett (alle ohne Marvin machbaren Spec-Punkte abgedeckt: Design/5 Sprachen/Quellen/Gamification/Wizard/Feed/Vergleiche/Benchmarks/Loop-Galerie/API/Backend/Admin/Impressum/31 Einträge). Größte Hebel hängen an Marvin: DOMAIN (→SEO/hreflang/Indexierung/Newsletter-Versand/Ads/Search-Console), FORUM A/B/C, SPENDEN-Links. → Takt auf ~60 Min, Iterationen fokussieren auf: täglich 1× Research/Feed-Refresh, 1× Qualitäts-Check, Content nur bei klarem Mehrwert. Marvin-Nachricht weckt sofort und beschleunigt wieder.
+
+### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
+1. Admin-Summary (Notes = sofort umsetzen)
+2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz
+3. Artifact nur bei Substanz aktualisieren (nicht jede Iteration neu publishen ohne Änderung)
+4. Wakeup 3600s
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)
