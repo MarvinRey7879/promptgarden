@@ -168,11 +168,17 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - 187 Seiten, Commit 14
 - Marvins Spec-Punkt „wofür verschiedene Befehle in Claude da sind" damit abgedeckt
 
-### It. 14 — Plan
-1. Admin-Summary + Marvin-Input (Forum? Domain? → Nachtmodus endet wenn Marvin aktiv)
-2. Kandidat A (Feature): Quiz-Fortschritt auf Lernpfade-Seite + XP-Level-Stufen (🌱→🌿→🌳 ab XP-Schwellen) — vertieft Gamification aus 1i
-3. Kandidat B (Content): Eintrag „skills" (Claude Code Skills — neues Konzept, custom commands wurden dorthin gemerged laut Doku) + „mcp-server-bauen" Kurz-Guide
-4. Kandidat C: Hermes/OpenClaw-Einträge inhaltlich vertiefen falls verifizierbare Primärquellen auffindbar (aktuell bewusst konzeptionell)
+### It. 14 (11.07.2026, Nachtmodus) — Gamification-Vertiefung ✅ ABGESCHLOSSEN
+- XP-Level als Emoji im Header-Chip: 🌱 Start → 🌿 ab 200 XP → 🌳 ab 600 XP (sprachneutral, kein i18n nötig)
+- Welten-Fortschritt „✓ n/m" (+🎉 bei komplett) über jedem Lernpfad-Board
+- 187 Seiten, deployed, Commit 15
+- Views weiter 14 (nur Eigen-Traffic — erwartbar bis Domain/Indexierung)
+
+### It. 15 — Plan
+1. Admin-Summary + Marvin-Input
+2. Kandidat A (Content): „skills"-Eintrag (Claude Code Skills, Doku-verifiziert — Custom Commands wurden dorthin gemerged) + ggf. „mcp-server-bauen"-Guide
+3. Kandidat B (Research): Deep Research #3 fällig wenn 24h seit #2 (Research-Rhythmus) — Fokus: Benchmarks-Thema (Marvins Spec: „ihre benchmarks") als neue Content-Säule evaluieren
+4. Tagsüber: Marvin-Fragen offen halten (Forum A/B/C, Domain, Spenden-Links)
 5. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
