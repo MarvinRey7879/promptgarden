@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   description:
     'Kostenlose Lern-Plattform für Coden mit KI: Begriffe, Prompts, Agenten, Loops. Simpel erklärt, immer aktuell.',
   robots: { index: false, follow: false }, // noindex bis Domain-Entscheidung
+  openGraph: {
+    siteName: 'promptgarden',
+    images: [{ url: '/og.png', width: 1200, height: 630 }],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

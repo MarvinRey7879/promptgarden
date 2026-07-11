@@ -59,6 +59,14 @@ promptgarden/
 - Backend (It. 2+): CF Worker + D1: bug-reports, feedback, newsletter-signups, view-tracking (cookieless)
 - Feedback-Feld für Marvin: auf der Site unter /admin (Artifact kann wegen CSP nicht POSTen) — bis dahin: Chat
 
+## Standard-Zyklus (ab It. 11 — Wochen-Rhythmus statt „jede Iteration alles")
+Rotierende Schwerpunkte, damit die Loop nachhaltig bleibt:
+1. **Research-Iteration** (~1×/Woche): Deep Research (Trends, News, Pain-Points, Repos, Papers) → research/-Report
+2. **Content-Iteration** (~2×/Woche): Neue Einträge/Feed-Items aus letztem Research, voller Verifikations- + Übersetzungs-Workflow
+3. **Qualitäts-Iteration** (~1×/Woche): Link-Checker über alle sources-URLs (tote Links → fixen), Fakten-Aging (Einträge mit Datumsbezug prüfen), Lighthouse, Traffic-Auswertung → beliebte Themen vertiefen
+4. **Feature-Iteration** (nach Bedarf): Neue Sektionen/Funktionen aus TODO.md-Prios
+Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artifact am Ende.
+
 ## Iterations-Protokoll
 ### It. 1 (10.07.2026) — Fundament ✅ ABGESCHLOSSEN
 - Design importiert (DesignSync), 1d/1h/1i analysiert
@@ -135,11 +143,19 @@ promptgarden/
 - 172 Seiten, alle 5 Sprachen, Live-Tests ✅ (Learnings: /api/ am Edge cached länger — auf neuen Wert pollen statt einmal prüfen)
 - Commit 10
 
-### It. 10 — Plan
-1. Admin-Summary
-2. Kandidaten (nach Impact wählen): (a) Agent-Recovery-Guide („Agent festgefahren — was tun?", Research-Gap #5) + Deployment-Guide (Gap #4); (b) Insight-der-Woche dynamisch aus Feed; (c) Forum-Konzept prüfen (GitHub Discussions embed = $0); (d) OG-Image (statisch, 1 Bild)
-3. Wenn Marvin-Input (Domain? Spenden-Links?): sofort einarbeiten
-4. Artifact aktualisieren
+### It. 10 (11.07.2026, Nachtmodus) — Research-Gaps geschlossen ✅ ABGESCHLOSSEN
+- 2 letzte Gap-Guides LIVE (28 Einträge/Sprache): agent-festgefahren (Recovery-Playbook: Stop→Diff lesen→Reset→git-Undo→kleiner schneiden→Ansatz wechseln→selbst machen), projekt-deployen (static vs server, Free-Tier-Pfad, Secrets, vendor-neutral) — 5 Quellen verifiziert
+- ALLE 5 Research-#2-Gaps damit abgedeckt (Install, Modellwahl, Git, Deployment, Recovery)
+- Insight-Karte auf Home jetzt DYNAMISCH: zeigt neuestes Feed-Item (Titel+Datum), verlinkt /feed/ — Label „AKTUELL IM FEED" in 5 Sprachen
+- 182 Seiten, Live-Tests ✅, Commit 11
+
+### It. 11 — Plan (Kandidaten nach Impact)
+1. Admin-Summary + Marvin-Input
+2. Forum-$0-Konzept: GitHub-Repo public machen? → GitHub Discussions als Forum (kostenlos, spam-geschützt, SEO) — braucht Marvin-Entscheidung (Repo public = Code offen). Alternativ giscus-Embed. KONZEPT ins Artifact, Marvin entscheidet
+3. OG-Image statisch (1 Brand-Bild für Social Shares)
+4. Lexikon-Kategorie-Sprungmarken von Home-Karten (cat-Filter funktioniert schon via ?cat=)
+5. Überlegen: Wochen-Rhythmus etablieren — 1× Deep Research, 1× Content-Nachschub, 1× Qualitäts-Audit (Links, Fakten-Aging, Lighthouse) → in LOOP.md als Standard-Zyklus verankern
+6. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)
