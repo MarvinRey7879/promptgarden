@@ -73,3 +73,10 @@ export function completeEntry(slug: string, xp: number): Progress {
 export function isCompleted(slug: string): boolean {
   return loadProgress().completed.includes(slug);
 }
+
+/** XP-Level (sprachneutral als Emoji): 🌱 Start, 🌿 ab 200 XP, 🌳 ab 600 XP */
+export function levelEmoji(xp: number): string {
+  if (xp >= 600) return '🌳';
+  if (xp >= 200) return '🌿';
+  return '🌱';
+}

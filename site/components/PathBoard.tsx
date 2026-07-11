@@ -25,9 +25,19 @@ export default function PathBoard({ lang, chapters }: { lang: Lang; chapters: En
   }, []);
 
   const currentIdx = chapters.findIndex((c) => !completed.includes(c.slug));
+  const doneCount = chapters.filter((c) => completed.includes(c.slug)).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0, margin: '30px 0' }}>
+      {mounted && doneCount > 0 && (
+        <p
+          className="mono"
+          style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)', margin: '0 0 14px' }}
+        >
+          ✓ {doneCount}/{chapters.length}
+          {doneCount === chapters.length && ' 🎉'}
+        </p>
+      )}
       {chapters.map((c, i) => {
         const isDone = completed.includes(c.slug);
         const isCurrent = mounted ? i === currentIdx : i === 0;

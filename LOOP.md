@@ -163,11 +163,16 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Lighthouse-CLI defekt (Chrome-Headless-Crash) → nächstes Qualitäts-Audit via PageSpeed-Insights-API
 - Commit 13
 
-### It. 13 — Plan (Content- oder Feature-Iteration)
-1. Admin-Summary + Marvin-Input (Forum-Antwort? Domain?)
-2. Kandidat A (Content): Kategorie-Seite „Claude-Befehle/CLI-Referenz" — Marvins Spec nennt explizit „wofür verschiedene Befehle in Claude da sind": Eintrag/Guide zu Slash-Commands (/loop, /schedule, /code-review, ...), Hooks, Subagents-Befehlen mit Quellen aus code.claude.com-Doku
-3. Kandidat B (Feature): Quiz-XP-Belohnungsanimation + „Alle Quizze"-Fortschritt auf Lernpfade-Seite
-4. Nachtmodus beenden sobald Marvin aktiv (30-Min-Takt wieder)
+### It. 13 (11.07.2026, Nachtmodus) — CLI-Befehle-Guide ✅ ABGESCHLOSSEN
+- Guide „Slash-Befehle, Hooks & Co" LIVE (29 Einträge/Sprache): 6 echte Built-ins (/help /config /compact /model /permissions /clear, verbatim aus code.claude.com/docs/en/commands), Custom Commands (.claude/commands/*.md — Doku-Note: in Skills gemerged, alte Files funktionieren weiter), Hooks (PreToolUse/PostToolUse/SessionStart), Subagents-Verweis, Mental Model „Befehle=steuern, Hooks=Automatik, Subagents=Delegation"
+- 187 Seiten, Commit 14
+- Marvins Spec-Punkt „wofür verschiedene Befehle in Claude da sind" damit abgedeckt
+
+### It. 14 — Plan
+1. Admin-Summary + Marvin-Input (Forum? Domain? → Nachtmodus endet wenn Marvin aktiv)
+2. Kandidat A (Feature): Quiz-Fortschritt auf Lernpfade-Seite + XP-Level-Stufen (🌱→🌿→🌳 ab XP-Schwellen) — vertieft Gamification aus 1i
+3. Kandidat B (Content): Eintrag „skills" (Claude Code Skills — neues Konzept, custom commands wurden dorthin gemerged laut Doku) + „mcp-server-bauen" Kurz-Guide
+4. Kandidat C: Hermes/OpenClaw-Einträge inhaltlich vertiefen falls verifizierbare Primärquellen auffindbar (aktuell bewusst konzeptionell)
 5. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)

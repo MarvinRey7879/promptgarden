@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { type Lang, ui } from '@/lib/i18n';
-import { loadProgress, touchVisit, PROGRESS_EVENT, type Progress } from '@/lib/progress';
+import { loadProgress, touchVisit, levelEmoji, PROGRESS_EVENT, type Progress } from '@/lib/progress';
 import { API_URL, apiPost } from '@/lib/api';
 
 export default function Header({ lang }: { lang: Lang }) {
@@ -73,6 +73,7 @@ export default function Header({ lang }: { lang: Lang }) {
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           {progress && (progress.xp > 0 || progress.streak >= 1) && (
             <span className="chip" title="XP & Streak — nur in deinem Browser gespeichert">
+              <span>{levelEmoji(progress.xp)}</span>
               <span style={{ color: 'var(--accent)' }}>⚡ {progress.xp} {t.xp}</span>
               <span style={{ color: 'var(--muted)' }}>·</span>
               <span>🔥 {t.streakDays(progress.streak)}</span>
