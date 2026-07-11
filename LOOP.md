@@ -219,6 +219,13 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - 6 Kapitel: claude-code-befehle → claude-skills → mcp → kosten-kontrolle-agenten → projekt-deployen → benchmarks-lesen; jetzt 4 Welten / 25 von 31 Einträgen in Pfaden; Views 27
 - Commit 22
 
+### It. 24 (11.07.) — Forum A+B umgesetzt ✅ (siehe Forum-Setup-Block oben)
+### It. 25 (11.07.) — Feed-Refresh ✅
+- Neues Item chatgpt-work (10.07., CGTN primär-verifiziert: GPT-5.6-Super-App = Chatbot+Codex, vs Claude Cowork, GPT-5.6 war zuvor auf US-Regierungswunsch verzögert) — 11 News × 5 Sprachen; Home-Insight-Karte zeigt es automatisch
+- Cowork-Web/Mobile-Story bewusst NICHT übernommen (nur Aggregator-Quelle, nicht auf anthropic.com/news verifizierbar)
+- Forum: nur eigene Test-Posts, Spam-Blocking bestätigt (2 blocked)
+- Commit 24, gepusht
+
 ### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
 1. Admin-Summary (Notes = sofort umsetzen)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz

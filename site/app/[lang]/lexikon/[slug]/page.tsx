@@ -22,7 +22,7 @@ export async function generateMetadata({
   const entry = getEntry(lang, slug);
   if (!entry) return {};
   return {
-    title: `${entry.title} — promptgarden 🌱`,
+    title: `${entry.title} — promptgarten 🌱`,
     description: entry.teaser,
     openGraph: { title: entry.title, description: entry.teaser, type: 'article' },
   };

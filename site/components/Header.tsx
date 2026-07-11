@@ -58,7 +58,7 @@ export default function Header({ lang }: { lang: Lang }) {
           href={`/${lang}/`}
           style={{ fontWeight: 800, fontSize: 20, letterSpacing: '-.03em' }}
         >
-          prompt<span style={{ color: 'var(--accent)' }}>garden</span> 🌱
+          prompt<span style={{ color: 'var(--accent)' }}>garten</span> 🌱
         </Link>
         <nav style={{ display: 'flex', gap: 6 }}>
           {navItems.map((n) => (

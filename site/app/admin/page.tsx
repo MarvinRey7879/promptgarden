@@ -73,7 +73,7 @@ export default function AdminPage() {
 
   return (
     <div className="wrap" style={{ maxWidth: 760, padding: '40px 20px' }}>
-      <h1 style={{ fontWeight: 800, letterSpacing: '-.02em' }}>🌱 promptgarden Admin</h1>
+      <h1 style={{ fontWeight: 800, letterSpacing: '-.02em' }}>🌱 promptgarten Admin</h1>
 
       {!summary ? (
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>

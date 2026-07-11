@@ -18,9 +18,9 @@ for (const f of files) {
 }
 
 const index = {
-  name: 'promptgarden free content API',
+  name: 'promptgarten free content API',
   description:
-    'Free, no-auth JSON access to all promptgarden learning content. CC-BY-style reuse: link back to promptgarden. Content language variants: de, en, es, fr, zh.',
+    'Free, no-auth JSON access to all promptgarten learning content. CC-BY-style reuse: link back to promptgarten. Content language variants: de, en, es, fr, zh.',
   base: '/api/',
   endpoints: {
     'entries.<lang>.json': 'All glossary/learning entries (title, teaser, body markdown, difficulty 1-3, quiz, sources).',

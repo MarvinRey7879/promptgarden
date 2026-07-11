@@ -15,12 +15,12 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'promptgarden 🌱 — Pflanze dein KI-Wissen an',
+  title: 'promptgarten 🌱 — Pflanze dein KI-Wissen an',
   description:
     'Kostenlose Lern-Plattform für Coden mit KI: Begriffe, Prompts, Agenten, Loops. Simpel erklärt, immer aktuell.',
   robots: { index: false, follow: false }, // noindex bis Domain-Entscheidung
   openGraph: {
-    siteName: 'promptgarden',
+    siteName: 'promptgarten',
     images: [{ url: '/og.png', width: 1200, height: 630 }],
   },
 };

@@ -1,4 +1,4 @@
-export const metadata = { title: 'Impressum — promptgarden' };
+export const metadata = { title: 'Impressum — promptgarten' };
 
 export default function Impressum() {
   return (
@@ -35,7 +35,7 @@ export default function Impressum() {
 
       <h2 style={{ fontSize: 18, fontWeight: 800, marginTop: 32 }}>Datenschutz (Kurzfassung)</h2>
       <p style={{ lineHeight: 1.7 }}>
-        promptgarden verwendet keine Cookies und kein personenbezogenes Tracking. Erfasst werden
+        promptgarten verwendet keine Cookies und kein personenbezogenes Tracking. Erfasst werden
         ausschließlich anonyme Seitenaufrufe (Pfad, Sprache, Herkunftsland, Datum) — ohne
         IP-Adressen, ohne Nutzer-IDs, ohne Profile. Lernfortschritt (XP, Streak) wird nur lokal in
         deinem Browser gespeichert und nie übertragen. Freiwillige Eingaben (Bug-Meldungen,
