@@ -156,11 +156,18 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Learning: IMMER cd site/ vor npm-Befehlen prüfen (ENOENT-Timeout gekostet)
 - Commit 12
 
-### It. 12 — Plan (Qualitäts-Iteration, erste im neuen Rhythmus)
-1. Admin-Summary + Marvin-Input (Forum-Antwort?)
-2. QUALITÄTS-AUDIT: Link-Checker-Script über ALLE sources-URLs aller content-Files (tote/redirectende Links melden+fixen); Lighthouse-Run auf Live-Site; stichprobenartige Fakten-Prüfung ältester Einträge
-3. Traffic-Auswertung (views nach Pfad) → beliebteste Themen notieren (noch wenig Daten, Baseline etablieren)
-4. Kleines Feature falls Zeit: Streak-Anzeige auch bei streak=1 zeigen (aktuell erst ab 2 sichtbar — Gamification-Feedback fehlt Erstbesuchern)
+### It. 12 (11.07.2026, Nachtmodus) — Qualitäts-Audit #1 ✅ ABGESCHLOSSEN
+- 🔍 LINK-AUDIT: 91 distinct sources-URLs aus allen 30 Content-Files geprüft → **91/91 = HTTP 200, 0 tote Links** (Script: data/check-links.sh, wiederverwendbar)
+- Streak-Chip ab Tag 1 sichtbar (vorher erst ab Tag 2) — Gamification-Feedback für Erstbesucher
+- Traffic-Baseline: 14 Views/7d (13× /en/, 1× /de/) — noch praktisch nur eigene Besuche, echte Auswertung erst nach Domain+Indexierung sinnvoll
+- Lighthouse-CLI defekt (Chrome-Headless-Crash) → nächstes Qualitäts-Audit via PageSpeed-Insights-API
+- Commit 13
+
+### It. 13 — Plan (Content- oder Feature-Iteration)
+1. Admin-Summary + Marvin-Input (Forum-Antwort? Domain?)
+2. Kandidat A (Content): Kategorie-Seite „Claude-Befehle/CLI-Referenz" — Marvins Spec nennt explizit „wofür verschiedene Befehle in Claude da sind": Eintrag/Guide zu Slash-Commands (/loop, /schedule, /code-review, ...), Hooks, Subagents-Befehlen mit Quellen aus code.claude.com-Doku
+3. Kandidat B (Feature): Quiz-XP-Belohnungsanimation + „Alle Quizze"-Fortschritt auf Lernpfade-Seite
+4. Nachtmodus beenden sobald Marvin aktiv (30-Min-Takt wieder)
 5. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
