@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { marked } from 'marked';
 import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
+import TokenPlayground from '@/components/TokenPlayground';
 import { getEntries, getEntry, difficultyDots } from '@/lib/content';
 import { LANGS, isLang, ui } from '@/lib/i18n';
 
@@ -87,6 +88,10 @@ export default async function EntryPage({
             {entry.example}
           </p>
         </div>
+      )}
+
+      {(entry.slug === 'token' || entry.slug === 'context-window') && (
+        <TokenPlayground lang={lang} />
       )}
 
       <Quiz lang={lang} slug={entry.slug} xp={entry.xp} quiz={entry.quiz} />
