@@ -7,6 +7,7 @@ const TAG_COLORS: Record<string, string> = {
   tools: 'var(--blue)',
   mcp: 'var(--yellow)',
   security: 'var(--pink)',
+  papers: '#e0d4f7',
 };
 
 export default async function FeedPage({ params }: { params: Promise<{ lang: string }> }) {

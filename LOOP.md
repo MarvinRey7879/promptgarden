@@ -41,6 +41,12 @@ Papers, GitHub-Repos, Begriffe (MCP, API, …), Claude Code, Hermes, OpenClaw, B
 - Ab jetzt JEDE Iteration: forum_recent im Admin-Check mitlesen (Nutzer-Vorschläge = Arbeitsaufträge)
 - Git-Remote: ab jetzt nach Commits auch `git push origin main`
 
+## 🌐 DOMAIN promptgarten.com (11.07., Marvin bei Namecheap gekauft)
+- Brand umbenannt: promptgarden → **promptgarten** (It. 26, live; technische URLs/Repo/Worker unverändert)
+- Tokens: CF_PG_ZONE_TOKEN (cfut_, in autopilot.env) — kann DNS-Edit, aber KEIN zone.create (CF-UI-Falle: Permission muss in Account-Sektion); CF_PAGES_TOKEN ebenso nicht
+- 🔴 MARVIN-SCHRITT OFFEN: CF-Dashboard → promptgarden-Account → „Add a domain" → promptgarten.com → Free → die 2 gezeigten Nameserver bei Namecheap eintragen (Domain → Nameservers → Custom DNS)
+- LOOP-AUTOMATIK sobald Zone existiert (JEDE Iteration prüfen: GET /zones): (1) DNS: CNAME @ + www → promptgarden.pages.dev (proxied) via Pages-Custom-Domain-API `POST /accounts/{acc}/pages/projects/promptgarden/domains {"name":"promptgarten.com"}` + www; (2) warten bis Zone active; (3) DANN: noindex ENTFERNEN, metadataBase+hreflang (alternates.languages de/en/es/fr/zh je Pfad), sitemap BASE + robots Sitemap + llms.txt-URLs auf https://promptgarten.com, OG absolute URL; (4) Redirect www→apex (Bulk Redirect oder Pages macht's); (5) Search-Console-Vorbereitung (braucht später Marvins Google-Account)
+
 ## Blocker / Warte auf Marvin
 - 🔴 **CF-API-Token mit `Cloudflare Pages:Edit`** (Account-Level) — keiner der vorhandenen Tokens kann Pages.
   Anleitung an Marvin geschickt (Iteration 1). Ohne Token: Build lokal fertig, Deploy pending.

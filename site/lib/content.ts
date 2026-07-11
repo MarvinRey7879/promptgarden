@@ -37,7 +37,7 @@ const byLang: Record<Lang, Entry[]> = {
 export type FeedItem = {
   id: string;
   date: string;
-  tag: 'modelle' | 'tools' | 'mcp' | 'security';
+  tag: 'modelle' | 'tools' | 'mcp' | 'security' | 'papers';
   title: string;
   summary: string;
   sources: { title: string; url: string }[];
