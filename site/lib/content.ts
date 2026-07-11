@@ -94,6 +94,16 @@ export const WORLD_2: string[] = [
   'loops-fuer-agenten',
 ];
 
+/** Welt 3 — Werkzeugkasten: Praxis-Guides als Pfad */
+export const WORLD_3: string[] = [
+  'claude-code-befehle',
+  'claude-skills',
+  'mcp',
+  'kosten-kontrolle-agenten',
+  'projekt-deployen',
+  'benchmarks-lesen',
+];
+
 export function difficultyDots(d: 1 | 2 | 3): string {
   return '●'.repeat(d) + '○'.repeat(3 - d);
 }

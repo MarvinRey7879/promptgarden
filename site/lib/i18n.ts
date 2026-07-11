@@ -43,6 +43,7 @@ type Dict = {
   pathWorld0: string;
   pathWorld: string;
   pathWorld2: string;
+  pathWorld3: string;
   pathTitle: string;
   pathSub: string;
   pathContinue: string;
@@ -113,6 +114,7 @@ export const ui: Record<Lang, Dict> = {
     feedTags: { modelle: 'Modelle', tools: 'Tools', mcp: 'MCP', security: 'Security' },
     pathWorld0: "WELT 0 · LOSLEGEN",
     pathWorld: 'WELT 1 · GRUNDLAGEN',
+    pathWorld3: "WELT 3 · WERKZEUGKASTEN",
     pathWorld2: 'WELT 2 · AGENTEN',
     pathTitle: 'Dein Weg zum Agenten-Flüsterer',
     pathSub: 'Kein Account nötig zum Lesen — XP & Streaks gibt es optional obendrauf. Gespeichert nur in deinem Browser.',
@@ -190,6 +192,7 @@ export const ui: Record<Lang, Dict> = {
     feedTags: { modelle: 'Models', tools: 'Tools', mcp: 'MCP', security: 'Security' },
     pathWorld0: "WORLD 0 · GETTING STARTED",
     pathWorld: 'WORLD 1 · BASICS',
+    pathWorld3: "WORLD 3 · TOOLBOX",
     pathWorld2: 'WORLD 2 · AGENTS',
     pathTitle: 'Your path to agent whisperer',
     pathSub: 'No account needed to read — XP & streaks are optional on top. Stored only in your browser.',
@@ -267,6 +270,7 @@ export const ui: Record<Lang, Dict> = {
     feedTags: { modelle: 'Modelos', tools: 'Herramientas', mcp: 'MCP', security: 'Seguridad' },
     pathWorld0: "MUNDO 0 · PRIMEROS PASOS",
     pathWorld: 'MUNDO 1 · FUNDAMENTOS',
+    pathWorld3: "MUNDO 3 · CAJA DE HERRAMIENTAS",
     pathWorld2: 'MUNDO 2 · AGENTES',
     pathTitle: 'Tu camino para susurrar a los agentes',
     pathSub: 'No hace falta cuenta para leer — XP y rachas son opcionales, además. Se guardan solo en tu navegador.',
@@ -344,6 +348,7 @@ export const ui: Record<Lang, Dict> = {
     feedTags: { modelle: 'Modèles', tools: 'Outils', mcp: 'MCP', security: 'Sécurité' },
     pathWorld0: "MONDE 0 · DÉMARRER",
     pathWorld: 'MONDE 1 · BASES',
+    pathWorld3: "MONDE 3 · BOÎTE À OUTILS",
     pathWorld2: 'MONDE 2 · AGENTS',
     pathTitle: "Ton chemin pour devenir un chuchoteur d'agents",
     pathSub: "Pas besoin de compte pour lire — XP et séries sont en option, en plus. Sauvegardé seulement dans ton navigateur.",
@@ -421,6 +426,7 @@ export const ui: Record<Lang, Dict> = {
     feedTags: { modelle: '模型', tools: '工具', mcp: 'MCP', security: '安全' },
     pathWorld0: "第 0 关 · 入门",
     pathWorld: '第一部分 · 基础',
+    pathWorld3: "第 3 关 · 工具箱",
     pathWorld2: '第二部分 · Agent',
     pathTitle: '你的 agent 驯服之路',
     pathSub: '阅读不需要账号 —— XP 和连续打卡是可选的附加功能，只保存在你的浏览器里。',
