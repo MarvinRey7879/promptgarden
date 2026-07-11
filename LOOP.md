@@ -174,12 +174,17 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - 187 Seiten, deployed, Commit 15
 - Views weiter 14 (nur Eigen-Traffic — erwartbar bis Domain/Indexierung)
 
-### It. 15 — Plan
+### It. 15 (11.07.2026) — Skills-Eintrag + Benchmark-Research ✅ ABGESCHLOSSEN
+- Eintrag „Skills" LIVE (30 Einträge × 5 Sprachen, 192 Seiten): Doku + Anthropic-Engineering-Blog verifiziert
+- Deep Research #3 Benchmarks fertig (research/2026-07-11-…-benchmarks.md): 10 Benchmarks mit verifizierten offiziellen URLs (SWE-bench, Terminal-Bench, Aider Polyglot, LiveCodeBench, LMArena→arena.ai, HumanEval legacy, Artificial-Analysis Coding Agent Index, ARC-AGI-2, MMLU, METR Time Horizons), 8 Kritik-Punkte (Kontamination, Saturation, SWE-bench-Gaming 32,67% Leakage, Vendor-Cherry-Picking, 15-30% Real-World-Gap), 4 verifizierte Top-Ergebnisse
+- ⭐ Research-Empfehlung übernommen: KEINE Zahlen auf der Plattform einbetten (veralten in Wochen, mehrere „offizielle" Scores pro Benchmark) → Explainer „Benchmarks lesen" + Mini-Cards (Name/misst was/wer/Link zum Live-Leaderboard)
+- Commits 16
+
+### It. 16 — Plan (Benchmarks-Säule bauen)
 1. Admin-Summary + Marvin-Input
-2. Kandidat A (Content): „skills"-Eintrag (Claude Code Skills, Doku-verifiziert — Custom Commands wurden dorthin gemerged) + ggf. „mcp-server-bauen"-Guide
-3. Kandidat B (Research): Deep Research #3 fällig wenn 24h seit #2 (Research-Rhythmus) — Fokus: Benchmarks-Thema (Marvins Spec: „ihre benchmarks") als neue Content-Säule evaluieren
-4. Tagsüber: Marvin-Fragen offen halten (Forum A/B/C, Domain, Spenden-Links)
-5. Artifact aktualisieren
+2. Benchmarks-Sektion nach Research-Empfehlung: (a) Eintrag „benchmarks-lesen" (Explainer mit Kritik-Punkten, difficulty 2), (b) content/benchmarks.<lang>.json mit 10 Mini-Cards + /[lang]/benchmarks/-Seite (Karten-Grid im 1d-Look, Links auf offizielle Leaderboards, KEINE Zahlen), Nav ggf. unter Vergleiche verlinken statt neuem Pill (Nav voll)
+3. Content-Agent DE+EN aus Research-Report (nur verifizierte Fakten) → Übersetzung es/fr/zh
+4. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)

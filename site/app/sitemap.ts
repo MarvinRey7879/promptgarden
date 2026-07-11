@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const urls: MetadataRoute.Sitemap = [];
 
   for (const lang of LANGS) {
-    for (const path of ['', 'lexikon/', 'lernpfade/', 'feed/', 'start/', 'vergleiche/', 'loops/']) {
+    for (const path of ['', 'lexikon/', 'lernpfade/', 'feed/', 'start/', 'vergleiche/', 'loops/', 'benchmarks/']) {
       urls.push({ url: `${BASE}/${lang}/${path}`, lastModified: now });
     }
     for (const e of getEntries(lang)) {

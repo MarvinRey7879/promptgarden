@@ -31,7 +31,10 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
         {data.intro}
       </p>
       <p className="mono" style={{ margin: '0 0 26px', fontSize: 12, color: 'var(--muted)' }}>
-        Stand / as of: {data.updated}
+        Stand / as of: {data.updated} ·{' '}
+        <a href={`/${lang}/benchmarks/`} style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}>
+          {lang === 'de' ? 'Benchmarks-Übersicht →' : 'Benchmark overview →'}
+        </a>
       </p>
 
       <div
