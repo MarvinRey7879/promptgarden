@@ -71,7 +71,7 @@ export default function Header({ lang }: { lang: Lang }) {
           ))}
         </nav>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {progress && (progress.xp > 0 || progress.streak > 1) && (
+          {progress && (progress.xp > 0 || progress.streak >= 1) && (
             <span className="chip" title="XP & Streak — nur in deinem Browser gespeichert">
               <span style={{ color: 'var(--accent)' }}>⚡ {progress.xp} {t.xp}</span>
               <span style={{ color: 'var(--muted)' }}>·</span>

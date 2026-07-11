@@ -149,13 +149,19 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Insight-Karte auf Home jetzt DYNAMISCH: zeigt neuestes Feed-Item (Titel+Datum), verlinkt /feed/ — Label „AKTUELL IM FEED" in 5 Sprachen
 - 182 Seiten, Live-Tests ✅, Commit 11
 
-### It. 11 — Plan (Kandidaten nach Impact)
-1. Admin-Summary + Marvin-Input
-2. Forum-$0-Konzept: GitHub-Repo public machen? → GitHub Discussions als Forum (kostenlos, spam-geschützt, SEO) — braucht Marvin-Entscheidung (Repo public = Code offen). Alternativ giscus-Embed. KONZEPT ins Artifact, Marvin entscheidet
-3. OG-Image statisch (1 Brand-Bild für Social Shares)
-4. Lexikon-Kategorie-Sprungmarken von Home-Karten (cat-Filter funktioniert schon via ?cat=)
-5. Überlegen: Wochen-Rhythmus etablieren — 1× Deep Research, 1× Content-Nachschub, 1× Qualitäts-Audit (Links, Fakten-Aging, Lighthouse) → in LOOP.md als Standard-Zyklus verankern
-6. Artifact aktualisieren
+### It. 11 (11.07.2026, Nachtmodus) — OG-Image + Rhythmus + Forum-Vorlage ✅ ABGESCHLOSSEN
+- OG-Image live (/og.png, 1d-Look via Playwright-Screenshot von data/og-template.html) + openGraph-Metadata
+- Standard-Zyklus in LOOP.md verankert (Research/Content/Qualität/Feature rotierend)
+- Forum-Entscheidungskarte im Statusboard: A giscus (empfohlen, braucht public Repo) / B eigenes D1-Forum / C Discord — WARTET auf Marvin
+- Learning: IMMER cd site/ vor npm-Befehlen prüfen (ENOENT-Timeout gekostet)
+- Commit 12
+
+### It. 12 — Plan (Qualitäts-Iteration, erste im neuen Rhythmus)
+1. Admin-Summary + Marvin-Input (Forum-Antwort?)
+2. QUALITÄTS-AUDIT: Link-Checker-Script über ALLE sources-URLs aller content-Files (tote/redirectende Links melden+fixen); Lighthouse-Run auf Live-Site; stichprobenartige Fakten-Prüfung ältester Einträge
+3. Traffic-Auswertung (views nach Pfad) → beliebteste Themen notieren (noch wenig Daten, Baseline etablieren)
+4. Kleines Feature falls Zeit: Streak-Anzeige auch bei streak=1 zeigen (aktuell erst ab 2 sichtbar — Gamification-Feedback fehlt Erstbesuchern)
+5. Artifact aktualisieren
 
 ### Alter It. 3 — Plan (erledigt, Referenz)
 1. Marvin-Input prüfen (Token? → volles Deploy nach worker/DEPLOY.md; Site + Worker + D1)
