@@ -37,6 +37,8 @@ type Dict = {
   related: string;
   example: string;
   sources: string;
+  exercise: string;
+  selfCheck: string;
   feedTitle: string;
   feedSub: string;
   feedTags: Record<string, string>;
@@ -109,6 +111,8 @@ export const ui: Record<Lang, Dict> = {
     related: 'Verwandte Themen',
     example: 'Beispiel',
     sources: 'Quellen',
+    exercise: 'Übung — mach das bei dir',
+    selfCheck: 'Selbst-Check',
     feedTitle: 'Feed',
     feedSub: 'Was gerade in der KI-Welt passiert — kuratiert, verifiziert, mit Quellen.',
     feedTags: { modelle: 'Modelle', tools: 'Tools', mcp: 'MCP', security: 'Security' , papers: 'Papers' },
@@ -187,6 +191,8 @@ export const ui: Record<Lang, Dict> = {
     related: 'Related topics',
     example: 'Example',
     sources: 'Sources',
+    exercise: 'Exercise — try it yourself',
+    selfCheck: 'Self-check',
     feedTitle: 'Feed',
     feedSub: 'What is happening in the AI world right now — curated, verified, with sources.',
     feedTags: { modelle: 'Models', tools: 'Tools', mcp: 'MCP', security: 'Security' , papers: 'Papers' },
@@ -265,6 +271,8 @@ export const ui: Record<Lang, Dict> = {
     related: 'Temas relacionados',
     example: 'Ejemplo',
     sources: 'Fuentes',
+    exercise: 'Ejercicio — pruébalo tú',
+    selfCheck: 'Autoevaluación',
     feedTitle: 'Feed',
     feedSub: 'Lo que está pasando ahora en el mundo de la IA — curado, verificado, con fuentes.',
     feedTags: { modelle: 'Modelos', tools: 'Herramientas', mcp: 'MCP', security: 'Seguridad' , papers: 'Papers' },
@@ -343,6 +351,8 @@ export const ui: Record<Lang, Dict> = {
     related: 'Sujets liés',
     example: 'Exemple',
     sources: 'Sources',
+    exercise: 'Exercice — à toi de jouer',
+    selfCheck: 'Auto-vérification',
     feedTitle: 'Feed',
     feedSub: "Ce qui se passe en ce moment dans le monde de l'IA — sélectionné, vérifié, avec sources.",
     feedTags: { modelle: 'Modèles', tools: 'Outils', mcp: 'MCP', security: 'Sécurité' , papers: 'Papers' },
@@ -421,6 +431,8 @@ export const ui: Record<Lang, Dict> = {
     related: '相关主题',
     example: '示例',
     sources: '来源',
+    exercise: '练习——自己动手试试',
+    selfCheck: '自查清单',
     feedTitle: '资讯',
     feedSub: 'AI 世界正在发生的事 —— 精选、核实、附来源。',
     feedTags: { modelle: '模型', tools: '工具', mcp: 'MCP', security: '安全' , papers: '论文' },

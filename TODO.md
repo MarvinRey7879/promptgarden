@@ -16,7 +16,7 @@ Live: https://promptgarden.pages.dev · 207 Seiten · 31 Einträge · 17 News ·
 - [ ] 🔔 28.07.: MCP-Spec 2026-07-28 final erschienen? → Feed-Item aktualisieren
 
 ## P2 — Content/Features (unblockiert, Rotation der Iterationen)
-- [ ] Übungen zum Nachmachen („mach das in deinem Claude Code/Cursor") + Selbst-Check — in 2–3 Guides einbauen
+- [x] Übungen zum Nachmachen + Selbst-Check — LIVE in 3 Guides seit It. 47 (Muster steht; bei Bedarf weitere Einträge bestücken)
 - [ ] „Prompt-Battle": gleicher Task, 2 Prompts, User rät, welcher besser lief
 - [ ] Lexikon nach Bedarf erweitern (Feed-/Forum-Signale beobachten)
 - [ ] Performance-Messung: PSI-API-Key (free) besorgen oder Lighthouse-Alternative — Windows-Headless-Crash umgehen

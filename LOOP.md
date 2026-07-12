@@ -263,6 +263,14 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Korrekt nachgeprüft: wirklich 0 Notes/Bugs/Feedback offen — nichts von Marvin verpasst. Forum: nur eigener Test-Post öffentlich, Troll/Spam-Testposts (It. 24) korrekt shadow-geblockt.
 - **Lektion (Guard-Prinzip):** Poll-Skripte müssen auf `j.error` HART failen statt Defaults zu liefern — leere Antwort und Fehler-Antwort dürfen nie gleich aussehen.
 
+### It. 45–46 (12.07.) — Erhaltung + Housekeeping ✅
+- It. 45: Live-Smoke 5/5 grün, bewusst keine Änderung. It. 46: TODO.md komplett neu (war Stand It. 1)
+
+### It. 47 (12.07., 13:57) — Übungen zum Nachmachen ✅ (P2-Feature)
+- Neues Entry-Feld `exercise` {task, steps[3], selfCheck[3]} + Lime-Card-Render nach Beispiel-Block + i18n-Labels (exercise/selfCheck, 5 Sprachen)
+- 3 Guides bestückt: erst-plan-dann-code, claude-code-befehle (/help, /doctor, /usage — Fakten aus offiziellen W21/W28-Digests von heute), kontext-fuettern — je ×5 Sprachen, live verifiziert DE/ZH/ES
+- Muster für weitere Übungen etabliert: Übung = im EIGENEN Tool nachmachen, 3 Schritte, 3 Selbst-Check-Fragen, keine erfundenen Behauptungen über Tool-Verhalten
+
 ### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
 1. Admin-Summary (Notes = sofort umsetzen) — KORREKTER Aufruf:
    `curl -s .../v1/admin/summary -H "X-Admin-Key: $PG_ADMIN_KEY"` + im Parser `if(j.error) throw` (NIE Bearer, nie stumm defaulten)

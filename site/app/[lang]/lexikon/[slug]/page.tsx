@@ -95,6 +95,30 @@ export default async function EntryPage({
         <TokenPlayground lang={lang} />
       )}
 
+      {entry.exercise && (
+        <div className="card" style={{ padding: '18px 22px', marginTop: 26, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
+          <p className="kicker" style={{ color: 'var(--ink)' }}>
+            🛠️ {t.exercise.toUpperCase()}
+          </p>
+          <p style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 700, lineHeight: 1.5 }}>
+            {entry.exercise.task}
+          </p>
+          <ol style={{ margin: '0 0 14px', paddingLeft: 22, fontSize: 14.5, lineHeight: 1.7 }}>
+            {entry.exercise.steps.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ol>
+          <p className="kicker" style={{ color: 'var(--ink)', marginBottom: 6 }}>
+            ✅ {t.selfCheck.toUpperCase()}
+          </p>
+          <ul style={{ margin: 0, paddingLeft: 4, fontSize: 14, lineHeight: 1.7, listStyle: 'none' }}>
+            {entry.exercise.selfCheck.map((s, i) => (
+              <li key={i}>☐ {s}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <Quiz lang={lang} slug={entry.slug} xp={entry.xp} quiz={entry.quiz} />
 
       <div style={{ marginTop: 26 }}>

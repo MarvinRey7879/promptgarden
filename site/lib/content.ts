@@ -24,6 +24,8 @@ export type Entry = {
   quiz: { question: string; options: string[]; correct: number; explain: string };
   /** Harte Regel (Marvin 10.07): Quellen IMMER sichtbar auf der Seite. Optional nur bis Retrofit abgeschlossen. */
   sources?: { title: string; url: string }[];
+  /** Übung zum Nachmachen im eigenen Tool (Claude Code/Cursor/…) + Selbst-Check */
+  exercise?: { task: string; steps: string[]; selfCheck: string[] };
 };
 
 const byLang: Record<Lang, Entry[]> = {
