@@ -244,6 +244,11 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - **Lektion:** Feed-date = Ereignisdatum, NIE Versions-/Ankündigungsdatum in der Zukunft; „veröffentlicht" nur schreiben, wenn Quelle den finalen Release belegt
 - 🔔 MERKER: Am/nach 28.07. prüfen, ob MCP-Spec final erschienen → Feed-Update
 
+### It. 41 (12.07., 07:29) — Link-Audit #2 ✅
+- Zone offen, 0 Notes/Bugs/Forum
+- URL-Liste aus Content neu generiert (91→115 durch Benchmarks/Hermes/OpenClaw/Feed-Wachstum), alle 115 = HTTP 200
+- Lektion bestätigt: Liste vor jedem Audit frisch generieren, nicht die alte wiederverwenden
+
 ### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
 1. Admin-Summary (Notes = sofort umsetzen)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz
