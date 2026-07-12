@@ -258,8 +258,14 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Neu live: grok-4-5-cursor, claude-code-desktop-browser, cursor-3-11-side-chats — 17 News × 5 Sprachen, Home-Insight zeigt Cursor 3.11
 - x.ai/news liefert WebFetch-403, curl mit Browser-UA 200 → Quelle ok (bekanntes Muster)
 
+### It. 44 (12.07., 10:49) — 🔧 Blinder Admin-Poll gefunden + gefixt ✅
+- **Bug in meinem eigenen Iterations-Poll:** seit It. 40 `Authorization: Bearer` gesendet, Worker erwartet `X-Admin-Key` → `{"error":"unauthorized"}`, und mein Parser maskierte das als „0 Notes/0 Bugs". Iterationen 40–43 waren auf dem Notes-Kanal blind.
+- Korrekt nachgeprüft: wirklich 0 Notes/Bugs/Feedback offen — nichts von Marvin verpasst. Forum: nur eigener Test-Post öffentlich, Troll/Spam-Testposts (It. 24) korrekt shadow-geblockt.
+- **Lektion (Guard-Prinzip):** Poll-Skripte müssen auf `j.error` HART failen statt Defaults zu liefern — leere Antwort und Fehler-Antwort dürfen nie gleich aussehen.
+
 ### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
-1. Admin-Summary (Notes = sofort umsetzen)
+1. Admin-Summary (Notes = sofort umsetzen) — KORREKTER Aufruf:
+   `curl -s .../v1/admin/summary -H "X-Admin-Key: $PG_ADMIN_KEY"` + im Parser `if(j.error) throw` (NIE Bearer, nie stumm defaulten)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz
 3. Artifact nur bei Substanz aktualisieren (nicht jede Iteration neu publishen ohne Änderung)
 4. Wakeup 3600s
