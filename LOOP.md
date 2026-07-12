@@ -249,6 +249,15 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - URL-Liste aus Content neu generiert (91→115 durch Benchmarks/Hermes/OpenClaw/Feed-Wachstum), alle 115 = HTTP 200
 - Lektion bestätigt: Liste vor jedem Audit frisch generieren, nicht die alte wiederverwenden
 
+### It. 42 (12.07., 08:33) — Statusboard-Refresh ✅
+- Artifact auf It.-42-Stand (Karte 40–42, erledigte Forum-Entscheidungs-Karte entfernt), gleiche URL
+
+### It. 43 (12.07., 09:38–10:10) — Feed-Refresh: 3 neue News ✅
+- Sonnet-Research-Agent → 3 Kandidaten; ALLE Kern-Claims selbst nachverifiziert (WebFetch): TechCrunch (Grok-4.5-Preise $2/$6, Musk „Opus-class/vergleichbar Opus 4.7"), Cursor-Blog (Ko-Training SpaceXAI+Cursor, Billionen Cursor-Tokens), offizieller W28-Digest, Cursor-Changelog
+- **Quellenpflicht-Korrektur am Agent-Output:** Browser-Item behauptete „eigenes Profil ohne Logins" + „explizite Freigabe für Schreibaktionen" — Digest sagt tatsächlich „sandboxed, Persistenz wählbar, Safety-Classifier prüfen Aktionen" → ersetzt; 9to5Mac-Quelle gestrichen (nicht selbst verifiziert), offizieller Digest als Quelle
+- Neu live: grok-4-5-cursor, claude-code-desktop-browser, cursor-3-11-side-chats — 17 News × 5 Sprachen, Home-Insight zeigt Cursor 3.11
+- x.ai/news liefert WebFetch-403, curl mit Browser-UA 200 → Quelle ok (bekanntes Muster)
+
 ### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
 1. Admin-Summary (Notes = sofort umsetzen)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz
