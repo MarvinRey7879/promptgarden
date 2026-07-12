@@ -2,13 +2,24 @@
  * Baut die freie JSON-API für KI-Agenten: kopiert Content nach public/api/
  * und erzeugt einen Index. Läuft als prebuild-Step — public/ landet 1:1 in out/.
  */
-import { cpSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { cpSync, writeFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const contentDir = join(root, 'content');
 const apiDir = join(root, 'public', 'api');
+
+// Sanity-Gate: Feed-Datum = Ereignisdatum, nie Versions-/Zukunftsdatum
+// (Lektion It. 40: MCP-Spec-Item trug Spec-Versionsdatum in der Zukunft und klebte oben).
+const today = new Date().toISOString().slice(0, 10);
+for (const f of readdirSync(contentDir).filter((x) => x.startsWith('feed.') && x.endsWith('.json'))) {
+  const bad = JSON.parse(readFileSync(join(contentDir, f), 'utf8')).filter((i) => i.date > today);
+  if (bad.length) {
+    console.error(`FEHLER ${f}: Zukunftsdatum in ${bad.map((i) => `${i.id}(${i.date})`).join(', ')}`);
+    process.exit(1);
+  }
+}
 
 mkdirSync(apiDir, { recursive: true });
 

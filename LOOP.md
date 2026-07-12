@@ -232,6 +232,18 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Forum: nur eigene Test-Posts, Spam-Blocking bestätigt (2 blocked)
 - Commit 24, gepusht
 
+### It. 26–39 (11.–12.07., Kurzprotokoll)
+- Benchmarks-Redesign (keine eingebetteten Scores), promptgarten-Rebrand (Domain promptgarten.com von Marvin gekauft), README public, giscus vorbereitet (wartet auf Marvins App-Install), OG-Image, Statusboard-Artifact aktualisiert
+- Zone-Blocker: kein Token kann zone.create (CF-UI-Falle, Account-Sektion) → Fallback: Marvin muss im Dashboard „Add a domain" klicken; seit It. 33 stündliches Polling (Nachtmodus), Zone weiterhin nicht angelegt
+
+### It. 40 (12.07., 06:22) — Feed-Faktenkorrektur MCP-Spec ✅
+- Admin-Summary: 0 Notes, 0 Bugs, 0 Forum. Zone: weiter offen.
+- **Fehler gefunden:** Feed-Item mcp-spec-2026-07-28 trug Zukunftsdatum (Spec-Versionsname als date) + behauptete „final erschienen". Primärquelle (MCP-Blog) verifiziert: Status = Release Candidate seit 21.05., final erst 28.07.2026, „contains breaking changes".
+- Fix in allen 5 Sprachen (date→2026-07-09, Titel/Summary → RC-Status), deployed + live verifiziert (API, DE- und ZH-Seite)
+- **Neuer Guard:** build-api.mjs bricht Build ab, wenn ein Feed-Item date > heute hat
+- **Lektion:** Feed-date = Ereignisdatum, NIE Versions-/Ankündigungsdatum in der Zukunft; „veröffentlicht" nur schreiben, wenn Quelle den finalen Release belegt
+- 🔔 MERKER: Am/nach 28.07. prüfen, ob MCP-Spec final erschienen → Feed-Update
+
 ### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
 1. Admin-Summary (Notes = sofort umsetzen)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz
