@@ -1,39 +1,36 @@
-# promptgarden TODO — nach Prio
+# promptgarten TODO — nach Prio (Stand It. 46, 12.07.2026)
 
-## P0 — blockiert / wartet auf Marvin
-- [ ] CF-API-Token mit `Cloudflare Pages:Edit` → dann sofort Deploy (It. 1 gebaut)
-- [ ] Spenden-Links: PayPal.me-Handle, Ko-fi-URL, GitHub-Sponsors-Handle (Platzhalter eingebaut)
-- [ ] Domain-Entscheidung promptgarden.ai (Marvin)
+Erledigtes ist raus — Historie steht in LOOP.md (Protokoll It. 1–45) und DECISIONS.md.
+Live: https://promptgarden.pages.dev · 207 Seiten · 31 Einträge · 17 News · 4 Welten · Forum · freie JSON-API — alles ×5 Sprachen, laufende Kosten 0 €.
 
-## P1 — nächste Iterationen
-- [ ] 🔴 QUELLENPFLICHT umsetzen (Marvin-Regel 10.07): `sources`-Feld (title+url) im Entry-Schema, Quellen-Block unten auf jeder Eintragsseite, alle 18 Bestandseinträge nachrüsten (Agent recherchiert echte Quellen, ich validiere Links), Pflichtfeld für allen künftigen Content
-- [ ] Deploy auf CF Pages + Live-Smoke-Test + Lighthouse ≥95
-- [ ] Backend-Worker (CF Workers + D1): POST /bug, /feedback (Marvin-Prio-Feld), /newsletter, /track (cookieless)
-- [ ] /admin-Dashboard (Token-geschützt): Traffic, beliebte Themen, Feedback-Inbox, Marvin-Prio-Feld
-- [ ] Deep Research #1: neue Modelle/CLIs/Repos/Papers/Pain-Points → Feed + 10 neue Einträge
-- [ ] Newsletter real (Resend? Double-Opt-in, DSGVO)
-- [ ] Bug-Report von mailto auf Worker umstellen
+## P0 — wartet auf Marvin (blockiert die nächste Stufe)
+- [ ] **Domain-Klick (30 Sek):** dash.cloudflare.com → „Add a domain" → promptgarten.com → Free → die 2 gezeigten Nameserver bei Namecheap eintragen (Domain List → Manage → Nameservers → Custom DNS). Loop pollt stündlich und übernimmt danach ALLES automatisch.
+- [ ] **giscus-App (1 Klick):** github.com/apps/giscus → Install → Repo „promptgarden". Danach kurz im Chat melden → Loop setzt NEXT_PUBLIC_GISCUS=on + Rebuild.
+- [ ] **Spenden-Handles:** PayPal.me / Ko-fi / GitHub Sponsors (Platzhalter im Footer warten).
 
-## P2
-- [ ] Sprachen ES/FR/ZH (Struktur steht, Content übersetzen via Sonnet-Agents + Stichproben-Validierung)
-- [ ] Einstiegs-Wizard: "Was hast du schon gemacht? Vibe-Coder oder Programmierer?" → personalisierter Startpunkt
-- [ ] Vergleiche-Sektion (Claude Code vs Cursor vs Codex vs Aider …, ehrlich, aktuell datiert)
-- [ ] Feed-Sektion: News der großen KI-Player, kuratiert pro Woche
-- [ ] SEO: sitemap.xml, hreflang, schema.org (Course/DefinedTerm), OG-Images; noindex ENTFERNEN erst nach Domain
-- [ ] Mehr Lernpfad-Welten (Welt 2: Agenten, Welt 3: Loops & Orchestrierung)
+## P1 — Domain-Automatik (läuft von selbst, sobald Zone existiert; Spec in LOOP.md „Domain-Automatisierung")
+- [ ] Zone aktiv abwarten → Pages-Custom-Domain (apex + www) per API
+- [ ] noindex entfernen, metadataBase + hreflang-Alternates (absolute URLs)
+- [ ] sitemap BASE / robots.txt / llms.txt / OG-URLs auf https://promptgarten.com
+- [ ] www→apex-Redirect, SSL-Check, Search-Console-Vorbereitung
+- [ ] 🔔 28.07.: MCP-Spec 2026-07-28 final erschienen? → Feed-Item aktualisieren
 
-## P3
-- [ ] MCP-Server + freie JSON-API für Agenten-Zugriff auf Content
-- [ ] Forum (günstigste Option prüfen: GitHub Discussions embed vs Discourse vs eigenes auf D1)
-- [ ] Optionale Accounts (Sync von XP/Streak), localStorage bleibt Default
-- [ ] Ads (AdSense) + Ad-free-Bezahlversion — erst ab Domain + echtem Traffic
-- [ ] How-to-Videos / animierte Beispiele
-- [ ] Cookie-Consent-Layer sobald optionales Tracking existiert (nicht-optional = cookieless, kein Banner nötig)
-- [ ] Google Search Console + Reddit-Distribution (Marvins Accounts, human-like via Playwright)
+## P2 — Content/Features (unblockiert, Rotation der Iterationen)
+- [ ] Übungen zum Nachmachen („mach das in deinem Claude Code/Cursor") + Selbst-Check — in 2–3 Guides einbauen
+- [ ] „Prompt-Battle": gleicher Task, 2 Prompts, User rät, welcher besser lief
+- [ ] Lexikon nach Bedarf erweitern (Feed-/Forum-Signale beobachten)
+- [ ] Performance-Messung: PSI-API-Key (free) besorgen oder Lighthouse-Alternative — Windows-Headless-Crash umgehen
+
+## P3 — braucht Domain + Traffic
+- [ ] Newsletter-Versand (Resend, Double-Opt-in, DSGVO) — braucht Absender-Domain
+- [ ] Wöchentlicher Digest als Newsletter-Content
+- [ ] Google Search Console + Sitemap einreichen; Reddit/HN-Distribution (Marvins Accounts, menschlich via Playwright)
+- [ ] Ads (AdSense) + werbefreie Bezahlversion
+- [ ] Optionale Accounts (XP/Streak-Sync), localStorage bleibt Default
+- [ ] Cookie-Consent-Layer erst, wenn optionales Tracking existiert (Status quo cookieless = kein Banner nötig)
 
 ## Ideen-Parkplatz (Loop-Brainstorms)
-- „Loop-Galerie": echte gute/schlechte Loop-Beispiele mit Annotationen
-- Interaktiver Token-Zähler / Context-Window-Visualisierer
-- „Prompt-Battle": gleicher Task, 2 Prompts, User rät welcher besser lief
-- Wöchentliches „Was ist diese Woche passiert"-Digest = Newsletter-Content
-- Playground-freie Übungen: Aufgaben, die man im eigenen Claude Code/Cursor nachmacht + Selbst-Check
+- How-to-Videos / animierte Beispiele
+- Context-Window-Visualisierer als eigenes Tool (Token-Schätzer existiert bereits in 2 Einträgen)
+- „Agent-Fails der Woche" — Lernformat aus echten öffentlichen Vorfällen (Quellenpflicht!)
+- MCP-Server, der die JSON-API spiegelt (Agenten können promptgarten als Wissensquelle mounten)
