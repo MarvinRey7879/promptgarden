@@ -327,6 +327,14 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Überall raus, dass eine KI die Seite baut — MARVIN ist der Macher. Zusätzlich überall kommunizieren: Seite ist absichtlich KI-freundlich UND Scrape-freundlich („ich will, dass jeder lernt").
 - Umgesetzt It. 67: footerNote ×5 („gebaut von Marvin … ausdrücklich KI- und Scraping-freundlich"), loops-Galerie neutralisiert (Beispiel 1 = generische Bau-Loop, kein Selbstbezug, LOOP.md→Notiz-Datei), llms.txt + README (neuer „AI-friendly & scrape-friendly — on purpose"-Abschnitt, Marvin als Builder). REGEL für alle künftigen Inhalte: nie KI-Autorschaft behaupten, Marvin ist Absender.
 
+### It. 68–69 (13.07 abends) — 📚 KAPITEL-BATCH 1 + DETAIL-TOGGLE LIVE ✅ (Commit 849d0d0)
+- **41 Einträge ×5 Sprachen** (+10 neue: rag, embeddings, fine-tuning, prompt-injection, structured-outputs, evals, git-worktrees, hooks, multi-agent-patterns, kontext-strategien — 26 Quellen verifiziert, 5 selbst stichprobengeprüft)
+- **Detail-Toggle 🌱/🔬 LIVE** (BodyToggle-Komponente, localStorage pg_detail_level): 10 Kern-Einträge haben bodyDetail in allen 5 Sprachen (llm, token, context-window, mcp, prompt, ki-agent, agent-loop, subagents, claude-code, halluzination)
+- WORLD_2 → 8 Kapitel (+multi-agent-patterns, kontext-strategien), WORLD_3 → 9 (+hooks, git-worktrees, evals)
+- Pipeline-Muster bewährt: 2 Authoring-Agents parallel → 3 Übersetzungs-Agents parallel → Merge mit Konsistenz-Validierung (slug-Sets, quiz.correct, sources identisch) → EIN Deploy
+- URL-Liste 140→162 · Statusboard auf It. 69
+- OFFEN: bodyDetail-Batches 2-4 (restliche 31 Einträge) · Kapitel-Batch 2 (weitere 10 Themen: Ideen: system-prompts-vertieft, tool-use, computer-use, sandboxing, agent-sicherheit, model-routing, caching-strategien, o.ä.) · Visualisierung Batch 3 (Context-Window) · Cursor CLI · Feed 14.07 · wöchentl. Link-Audit ~19.07
+
 ### It. 67 (13.07 abends) — 📊 Admin-Dashboard V2 LIVE + Autorschafts-Rebrand ✅ (Commit b14b973)
 - Worker-Summary erweitert: views_by_day (30d), views_by_lang, views_by_country (cookieless via CF-Header), top_refs, views_total, newsletter_recent, donations, revenue_total_cents
 - NEU: Tabelle donations + POST /v1/kofi-webhook (aktiv erst mit KOFI_TOKEN-Secret — auf Marvins Ko-fi-Verification-Token warten, dann `wrangler secret put KOFI_TOKEN`) + POST /v1/admin/donation (manuell)
