@@ -6,6 +6,7 @@ import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
 import TokenPlayground from '@/components/TokenPlayground';
 import ContextWindowDiagram from '@/components/ContextWindowDiagram';
+import ExampleVideo from '@/components/ExampleVideo';
 import Comments from '@/components/Comments';
 import { getEntries, getEntry, difficultyDots } from '@/lib/content';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
@@ -98,6 +99,9 @@ export default async function EntryPage({
       {(entry.slug === 'token' || entry.slug === 'context-window') && (
         <>
           <ContextWindowDiagram lang={lang} />
+          {entry.slug === 'context-window' && (
+            <ExampleVideo lang={lang} name="context-window" label={entry.title} />
+          )}
           <TokenPlayground lang={lang} />
         </>
       )}

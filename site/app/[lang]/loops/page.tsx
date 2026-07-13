@@ -6,6 +6,7 @@ import loopsFr from '@/content/loops.fr.json';
 import loopsZh from '@/content/loops.zh.json';
 import { isLang, langAlternates, type Lang } from '@/lib/i18n';
 import { GoodBadLoopDiagram, LoopCycleDiagram, type LoopDiagramLabels } from '@/components/LoopDiagram';
+import ExampleVideo from '@/components/ExampleVideo';
 
 type LoopsData = typeof loopsDe;
 
@@ -54,6 +55,7 @@ export default async function LoopsPage({ params }: { params: Promise<{ lang: st
       {'diagram' in data && (
         <>
           <LoopCycleDiagram t={(data as { diagram: LoopDiagramLabels }).diagram} />
+          <ExampleVideo lang={lang} name="loop-zyklus" label={(data as { diagram: LoopDiagramLabels }).diagram.cycleTitle} />
           <GoodBadLoopDiagram t={(data as { diagram: LoopDiagramLabels }).diagram} />
         </>
       )}

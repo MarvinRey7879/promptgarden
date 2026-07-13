@@ -471,3 +471,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - 🛡️ Adversarial-Review-Pipeline 2. Erfolg: fand 1 BLOCK (8 Slug-Kollisionen slash↔sub — hätte Routing gebrochen, getKommando .find() = zweiter Treffer unerreichbar) + 6 FIX (Quellen-Lücken fork/rewind/model/bedrock/login, rewind-Alias-Bedingung, mcp-Menü-Präzisierung). Alle vor Übersetzung gefixt; Sub-Slugs jetzt agent-update/-resume/-about/-help/-logout/-mcp/-sandbox/-bedrock.
 - Übersetzer ES/FR/ZH je 80 Einträge, alle mit MD5-Drift-Check + Node-Skript-Generierung (kein Hand-JSON); platforms-Eintrag cursor-cli ×5.
 - Known-good Deploy: 53790d7d.promptgarden.pages.dev · Live-Verify auf Summary-Strings DE+ZH + Hub.
+
+### It. 77 (14.07.26 ~00:30) — 🎬 REMOTION-PILOT LIVE (Direktive 12) ✅
+- Remotion-Projekt videos/ (remotion@4, 2 Compositions 1280×720/30fps/15s, 1d-Design-Tokens, Labels als lang-Props): LoopZyklus (Denken→Handeln→Prüfen animiert, Rückschleife, Fertig-Finale) + ContextWindow (Segmente wachsen, 90%-Warn-Blinken, Kompaktierungs-Finale).
+- 10 mp4 gerendert (2 Comps × 5 Sprachen, crf28, je ~0,75–0,87 MB, stumm) → site/public/videos/; videos/.gitignore (node_modules, out).
+- components/ExampleVideo.tsx (kicker ×5, <video controls preload=metadata>, kein Autoplay) — eingebettet auf /loops (unter Zyklus-SVG) + Lexikon context-window (unter Diagramm).
+- Live verifiziert: Video-URL 200 + Content-Type video/mp4, Embeds auf /de/loops/ + /zh/lexikon/context-window/.
+- Remotion-Setup-Learnings: create-video nicht nötig — 6 Dateien reichen (package.json, tsconfig, index/Root/Comps); npm-allow-scripts-Warnung harmlos, Compositor lief; Render ~60s/Clip lokal.
+- Known-good Deploy: 959c555e.promptgarden.pages.dev
