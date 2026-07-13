@@ -62,7 +62,7 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 ~880 Seiten live auf promptgarten.com: 41 Kapitel ×5 (+Quiz/Übungen/Toggle), 108 Befehle ×5, 12 Addons ×5 mit Detailseiten, 4 Welten, Benchmarks, Vergleiche, Loop-Galerie, Feed (17 News), Forum, freie API, Admin V2 (Revenue/Länder/Zeitreihe), Landing NEU (CTA/How-it-works/Trust/Course-Schema). Traffic: views_7d ~109, DE/US/FR/PL.
 
 ## Rotation (nächste Arbeit)
-① Cursor CLI (Research läuft It. 75) → Authoring/Review/Übersetzung/Merge ② Remotion-Pilot (Direktive 12: Projekt videos/ aufsetzen, 1–2 Clips rendern: Loop-Zyklus animiert + Context-Window-Füllung, auf /loops + Lexikon einbetten) ③ Feed 14.07 früh ④ bodyDetail-Batch 3 (restliche 21 alte Kapitel) ⑤ Remotion-Review (wiederkehrend: Qualität prüfen, weitere Stellen bestücken) ⑥ Link-Audit ~19.07 ⑦ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (It. 74), Visualisierung Batch 3 Context-Window (It. 75).
+① Feed 14.07 (Research-Agent, 2–4 verifizierte News ×5) ② bodyDetail-Batch 3 (restliche 21 alte Kapitel) ③ Remotion-Review (wiederkehrend: Qualität prüfen, weitere Stellen — Befehls-Demos/Terminal-Clips) ④ Link-Audit ~19.07 (188 Befehle = viele neue URLs) ⑤ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (74), Context-Window-SVG (75), Cursor CLI 80 Befehle (76), Remotion-Pilot 10 Clips (77).
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - #2 GitHub Sponsors anmelden → Footer-Link
