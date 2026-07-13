@@ -334,6 +334,13 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ### 🔴 MARVIN 13.07 (Direktive 5): ADDON-DETAILSEITEN
 - Addons/GitHub-Repos/CLI-Tools sind auf /addons zu schmal erklärt → JEDES Addon bekommt eine EIGENE Seite (/addons/[id]/) mit ausführlicher Erklärung: was es ist, wie es funktioniert, Setup/Installation, wann nutzen/wann nicht, Beispiel, Quellen — 5 Sprachen, Quellenpflicht (Setup-Fakten aus offizieller Doku/README).
 
+### It. 71 (13.07 abends) — 📱 Mobile-Polish-Pass 1 ✅ (Commit 99fc6ae)
+- 375px-Audit per Playwright-Screenshots (Home/Eintrag/Lexikon/Befehl): Home+Eintrag+Befehl sauber; **Lexikon-Tabelle war kaputt** (Titel auf ~80px gequetscht, inline gridTemplateColumns reservierte 150px für versteckte Spalte) → Fix: .lex-row-Klasse mit Media Query (mobil nur Titel+Level), live verifiziert per Nach-Screenshot
+- Befehlsseiten: doppelter Summary-Satz entfernt (what beginnt oft mit summary → Rest-Slice)
+- Lektion: Inline-Styles mit gridTemplateColumns sind media-query-resistent — responsive Grids IMMER als CSS-Klasse; Fixed-Position-Elemente (BugButton) erscheinen in Full-Page-Screenshots mitten im Content = Artefakt, kein Bug
+- bodyDetail-Batch 2 DE+EN gemerged (20/41 mit Detail-Version); ES/FR/ZH-Agent läuft
+- OFFEN: Batch-2-ES/FR/ZH mergen+deploy, Kapitel-Batch 2, Feed 14.07, Cursor CLI, Visualisierung Batch 3
+
 ### It. 70 (13.07 abends) — 🧩 ADDON-DETAILSEITEN LIVE ✅ (Commit 57e18ec) — Marvin-Direktive 5 erfüllt
 - 60 neue Seiten: /[lang]/addons/[id]/ für alle 12 Addons ×5 Sprachen — how (aus READMEs), 🔧 Setup-Schritte (exakte Befehle aus offizieller Doku), ✅/⛔-Blöcke, Quellen (26 Links verifiziert); Hub-Karten mit „→ Details"; Sitemap erweitert
 - Faktenkorrektur nebenbei: VS-Code-Extension 2 Mio → 20 Mio+ Installs (Live-Marketplace, Agent-Fund)
