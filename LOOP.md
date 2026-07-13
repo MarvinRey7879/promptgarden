@@ -323,6 +323,18 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 3. **ZWEI DETAIL-LEVEL pro Inhalt**: leichte Erklärung + detailreiche Erklärung, Nutzer stellt selbst ein (Toggle 🌱 Einfach / 🔬 Im Detail, localStorage pg_detail_level). Schema: Entry.bodyDetail (optional), Client-Toggle-Komponente auf Eintragsseiten; bodyDetail-Retrofit für 31 Einträge ×5 batch-weise (Quellenpflicht: Details nur belegt/vertiefend, keine neuen unbelegten Fakten).
 Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail-Batches → parallel Content-Batches (mehr Kapitel) → Visualisierung Batch 3 + Cursor CLI in Rotation.
 
+### 🔴 MARVIN 13.07 (abends, Direktive 4): AUTORSCHAFT
+- Überall raus, dass eine KI die Seite baut — MARVIN ist der Macher. Zusätzlich überall kommunizieren: Seite ist absichtlich KI-freundlich UND Scrape-freundlich („ich will, dass jeder lernt").
+- Umgesetzt It. 67: footerNote ×5 („gebaut von Marvin … ausdrücklich KI- und Scraping-freundlich"), loops-Galerie neutralisiert (Beispiel 1 = generische Bau-Loop, kein Selbstbezug, LOOP.md→Notiz-Datei), llms.txt + README (neuer „AI-friendly & scrape-friendly — on purpose"-Abschnitt, Marvin als Builder). REGEL für alle künftigen Inhalte: nie KI-Autorschaft behaupten, Marvin ist Absender.
+
+### It. 67 (13.07 abends) — 📊 Admin-Dashboard V2 LIVE + Autorschafts-Rebrand ✅ (Commit b14b973)
+- Worker-Summary erweitert: views_by_day (30d), views_by_lang, views_by_country (cookieless via CF-Header), top_refs, views_total, newsletter_recent, donations, revenue_total_cents
+- NEU: Tabelle donations + POST /v1/kofi-webhook (aktiv erst mit KOFI_TOKEN-Secret — auf Marvins Ko-fi-Verification-Token warten, dann `wrangler secret put KOFI_TOKEN`) + POST /v1/admin/donation (manuell)
+- /admin-UI: KPI-Chips (7d/gesamt/Revenue), 30-Tage-Balkenchart (SVG), Sprach-/Länder-Verteilungsbalken, Referrer-Liste, Spenden-Karte mit Manuell-Erfassung + Ko-fi-Hinweis
+- Erste echte Insights: DE 81 · US 13 · FR 2 · PL 1 Views (7d) — internationale Besucher da!
+- ⚠️ Lektion ERNEUT: build|tail maskierte TS-Fehler → stale Deploy; danach gefixt (Dist-Typing) und sauber deployed. TODO: Deploy-Wrapper-Skript mit hartem Exit bauen
+- OFFEN aus Direktiven: MEHR KAPITEL (Content-Batches) + Detail-Level-Toggle (Entry.bodyDetail) — nächste Iterationen
+
 ### It. 66 (13.07) — 🎨 Visualisierung Batch 2: Addons-Diagramme LIVE ✅ (Commit d8c172e)
 - components/AddonDiagrams.tsx: GraphifyDiagram (📁 Code → 🌳 Tree-sitter → 🕸️ Graph ⇄ 🤖 Agent, „ohne LLM-Calls") + ObsidianClaudeDiagram (Vault ⇄ Local REST API /mcp/ ⇄ Claude) — auf /addons über dem Karten-Grid, Labels addons.<lang>.json.diagrams ×5, live verifiziert DE+ZH
 - Batch 3 offen: Context-Window-Visual (Lexikon token/context-window) · dann Cursor-CLI-Research · Feed 14.07 morgen früh
