@@ -313,6 +313,10 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Marvins „ALLE Befehle"-Wunsch damit für beide Start-Plattformen erfüllt; weitere Plattformen (Cursor CLI, Aider, …) als nächste Ausbaustufe
 - NÄCHSTE ARBEIT: ① Addons-Sektion (research/befehle/addons-2026-07-12.md → eigene Seite/Sektion + Graphify/Obsidian-Lexikon) ② /admin abhakbare Marvin-Todo-Liste ③ Sitemap um /befehle-Routen erweitern ④ Statusboard ⑤ Feed-Refresh täglich weiter ⑥ Zone-Poll
 
+### 🔴 MARVIN 13.07 (nachmittags): VISUALISIERUNGEN
+- Themen wie Loops (mit Beispielen), Graphify, Obsidian etc. sollen **verständliche, aber hochwertige Visualisierungen** bekommen — Diagramme/Grafiken direkt auf den Seiten, nicht nur Text.
+- Umsetzungsplan: eigene SVG-Diagramm-Komponenten im 1d-Design (dicke Border, harte Schatten, Farben aus der Palette), KEINE Fremd-Bilder (Quellen-/Lizenzfrage). Startpunkte: ① Loop-Galerie (Denken→Handeln→Prüfen-Zyklus, gute vs. kaputte Loop als Diagramm) ② Agent-Loop-/Subagent-Lexikoneinträge ③ Addons: Graphify-Funktionsprinzip (Code→AST→Graph→Agent), Obsidian↔Claude-Verbindungsdiagramm ④ Context-Window-Visualisierung. Batch-weise in Rotation einbauen, inline-SVG in Seiten (kein Client-JS nötig).
+
 ### It. 64 (13.07) — SEO-Phase 2: canonical + hreflang ÜBERALL ✅ (Commit cc7a961)
 - langAlternates()-Helper (lib/i18n.ts) + Agent-Edit aller 14 [lang]-Routen: canonical absolut + 5×hreflang + x-default(en), via metadataBase
 - Verifiziert im Build-Output UND live auf promptgarten.com (Achtung: SSR rendert hrefLang camelCase — HTML-case-insensitiv, grep entsprechend)
