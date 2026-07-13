@@ -28,8 +28,38 @@ export default async function LernpfadePage({ params }: { params: Promise<{ lang
     (e): e is NonNullable<typeof e> => Boolean(e),
   );
 
+  // Course-List Structured Data (Google unterstützt Course aktiv; FAQPage-Rich-Results
+  // wurden Mai 2026 eingestellt — deshalb bewusst nur Course-Schema).
+  // Quelle: https://developers.google.com/search/docs/appearance/structured-data/course
+  const courseLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: [
+      { name: t.pathWorld0, desc: world0.map((e) => e.title).join(' · ') },
+      { name: t.pathWorld, desc: world1.map((e) => e.title).join(' · ') },
+      { name: t.pathWorld2, desc: world2.map((e) => e.title).join(' · ') },
+      { name: t.pathWorld3, desc: world3.map((e) => e.title).join(' · ') },
+    ].map((w, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Course',
+        name: w.name,
+        description: w.desc,
+        url: `https://promptgarten.com/${lang}/lernpfade/`,
+        provider: { '@type': 'Organization', name: 'promptgarten', sameAs: 'https://promptgarten.com' },
+        offers: { '@type': 'Offer', category: 'Free', price: 0, priceCurrency: 'EUR' },
+        hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'Online', courseWorkload: 'PT2H' },
+      },
+    })),
+  };
+
   return (
     <div style={{ maxWidth: 640, margin: '0 auto' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseLd) }}
+      />
       <div style={{ textAlign: 'center', padding: '36px 0 6px' }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(30px,5vw,42px)', fontWeight: 800, letterSpacing: '-.025em' }}>
           {t.pathTitle}
