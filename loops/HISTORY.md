@@ -465,3 +465,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - ⚠️ cwd-Vorfall #3: grep+wrangler-Deploy liefen aus ~ (Shell-cwd resettet zwischen Calls) → Deploy passierte GAR NICHT, Verify schlug laut fehl (Guard wirkte). Regel verschärft: JEDER Repo-Befehl mit explizitem cd im selben Call.
 - Poll: 0 Notes/Feedback/Forum, views_7d 133 (↑), Top-Paths: /en/ 26, /de/lernpfade/ 16, /de/ 13, /de/addons/ 13, /de/lexikon/ 12.
 - Known-good Deploy: ba6b650a.promptgarden.pages.dev
+
+### It. 76 (13.07.26 nachts) — 🖱️ CURSOR CLI = 3. Plattform der Befehls-Referenz LIVE ✅
+- **188 Befehle × 5 Sprachen** (92 Claude Code + 16 Codex + 80 Cursor CLI): 47 Slash-Befehle (12 Changelog-only, gekennzeichnet) + 32 Subcommands + global-options-Sammeleintrag. 1332 Seiten (+405). Binary heißt `agent` (nicht mehr cursor-agent) — Research 19 URLs verifiziert, 8 Doku-Lücken dokumentiert (research/befehle/cursor-cli-2026-07.json).
+- 🛡️ Adversarial-Review-Pipeline 2. Erfolg: fand 1 BLOCK (8 Slug-Kollisionen slash↔sub — hätte Routing gebrochen, getKommando .find() = zweiter Treffer unerreichbar) + 6 FIX (Quellen-Lücken fork/rewind/model/bedrock/login, rewind-Alias-Bedingung, mcp-Menü-Präzisierung). Alle vor Übersetzung gefixt; Sub-Slugs jetzt agent-update/-resume/-about/-help/-logout/-mcp/-sandbox/-bedrock.
+- Übersetzer ES/FR/ZH je 80 Einträge, alle mit MD5-Drift-Check + Node-Skript-Generierung (kein Hand-JSON); platforms-Eintrag cursor-cli ×5.
+- Known-good Deploy: 53790d7d.promptgarden.pages.dev · Live-Verify auf Summary-Strings DE+ZH + Hub.

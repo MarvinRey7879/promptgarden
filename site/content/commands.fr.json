@@ -11,6 +11,12 @@
       "name": "Codex CLI",
       "tagline": "L’agent de programmation d’OpenAI pour le terminal — sous-commandes, options et commandes slash interactives.",
       "docsUrl": "https://developers.openai.com/codex/cli"
+    },
+    {
+      "id": "cursor-cli",
+      "name": "Cursor CLI",
+      "tagline": "L'agent terminal de Cursor — s'exécute comme binaire »agent« dans le terminal, les scripts et la CI.",
+      "docsUrl": "https://cursor.com/docs/cli"
     }
   ],
   "commands": [
@@ -3265,6 +3271,2420 @@
         {
           "title": "Codex CLI Doku: Reference",
           "url": "https://developers.openai.com/codex/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "model",
+      "name": "/model",
+      "summary": "Change le modèle d'IA actif dans la session CLI en cours.",
+      "what": "/model ouvre le sélecteur de modèle (recherche floue via [filter]) dans une session Cursor Agent en cours. La touche Tab permet de modifier l'entrée sélectionnée. Les changements de mode rapide, d'effort de raisonnement ou de contexte sont conservés lors d'un changement de modèle. Le modèle peut aussi être défini au démarrage avec --model.",
+      "whenGood": [
+        {
+          "title": "Monter en gamme pour une tâche difficile",
+          "example": "/model opus — avant un refactor complexe sur plusieurs fichiers"
+        },
+        {
+          "title": "Choisir un modèle plus rapide pour des tâches routinières",
+          "example": "/model — passer à un modèle moins cher pour, par ex., rédiger des messages de commit"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le modèle doit déjà être fixé au démarrage",
+          "why": "si l'on sait déjà quel modèle est nécessaire, pas besoin de passer par la session pour le changer ensuite",
+          "alternative": "définir le modèle directement via un flag, par ex. agent --model opus"
+        },
+        {
+          "title": "Juste basculer rapidement entre des familles de modèles connues",
+          "why": "la recherche floue complète de /model demande plus d'effort qu'un saut rapide vers un modèle connu",
+          "alternative": "utiliser un raccourci de modèle comme /opus ou /composer"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        },
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "run-everything",
+      "name": "/run-everything",
+      "summary": "Bascule le mode autopilote 'Run Everything', qui exécute les commandes sans demander de confirmation.",
+      "what": "/run-everything (alias /auto-run) active/désactive le mode Run Everything, ou affiche l'état actuel avec status. Dans ce mode, l'agent exécute les commandes sans demande de confirmation individuelle.",
+      "whenGood": [
+        {
+          "title": "Beaucoup d'étapes répétitives et sans danger d'affilée",
+          "example": "/run-everything on — par ex. pour une longue série de corrections de lint sur de nombreux fichiers"
+        },
+        {
+          "title": "Vérifier l'état actuel de l'autopilote avant une tâche",
+          "example": "/run-everything status — coup d'œil rapide avant des étapes plus risquées"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Des commandes destructives ou en production arrivent",
+          "why": "sans confirmation, l'agent peut supprimer des données ou modifier des systèmes de prod par erreur",
+          "alternative": "utiliser /sandbox ou /auto-review pour des autorisations contrôlées"
+        },
+        {
+          "title": "Seule une commande risquée doit passer",
+          "why": "activer tout l'autopilote pour ça ouvre plus que nécessaire",
+          "alternative": "confirmer normalement la demande unique plutôt que d'accorder une autorisation globale"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "plan",
+      "name": "/plan",
+      "summary": "Bascule en mode Plan, où l'agent élabore d'abord un plan avant d'agir.",
+      "what": "/plan bascule en mode Plan, affiche le plan actuel ou envoie un prompt directement en mode Plan. Le mode Plan a un menu de plan persistant avec les options 'Build Locally' et 'Build in Cloud' ; les plans sont enregistrés sur disque et peuvent être transférés vers des agents cloud.",
+      "whenGood": [
+        {
+          "title": "Clarifier la stratégie avant une grosse refonte",
+          "example": "/plan Migrer le système d'auth vers OAuth2 — relire le plan avant de toucher au code"
+        },
+        {
+          "title": "Structurer une tâche à plusieurs étapes avant que l'agent ne démarre",
+          "example": "/plan — consulter et ajuster le plan actuel avant de choisir 'Build Locally'"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Juste une modification courte et sans ambiguïté",
+          "why": "pour une simple modification d'une ligne, passer par un plan est superflu",
+          "alternative": "prompter directement en mode agent normal"
+        },
+        {
+          "title": "On veut seulement lire et comprendre, pas planifier",
+          "why": "/plan vise la planification d'exécution, pas la simple recherche sans intention de mise en œuvre",
+          "alternative": "utiliser /ask pour des questions en lecture seule"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "ask",
+      "name": "/ask",
+      "summary": "Bascule le mode Ask, dans lequel l'agent lit seulement et n'apporte aucune modification.",
+      "what": "/ask bascule le mode Ask pour les questions en lecture seule. En mode Ask, l'agent peut explorer le code et répondre aux questions, mais ne peut ni modifier de fichiers ni exécuter de commandes avec effets de bord. Démarrable aussi directement avec --mode ask.",
+      "whenGood": [
+        {
+          "title": "Comprendre une base de code avant de planifier des modifications",
+          "example": "/ask — puis demander 'Comment est structuré le middleware d'auth ?'"
+        },
+        {
+          "title": "S'assurer que rien n'est modifié par accident",
+          "example": "/ask — recherche dans un dépôt inconnu, sans risque d'écriture"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "L'agent doit réellement modifier du code",
+          "why": "en mode Ask, les modifications sont bloquées, la tâche n'avance pas",
+          "alternative": "revenir au mode agent normal, ou utiliser /plan pour une mise en œuvre structurée"
+        },
+        {
+          "title": "Un plan à plusieurs étapes doit être produit",
+          "why": "/ask ne donne que des réponses, pas une planification étape par étape",
+          "alternative": "utiliser /plan"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "debug",
+      "name": "/debug",
+      "summary": "Bascule le mode Debug, conçu pour reproduire et cerner des bugs.",
+      "what": "/debug bascule le mode Debug, ou envoie un prompt directement en mode Debug. Les cartes d'étapes de reproduction s'affichent avec leur propre accent (rouge) en mode Debug, pour que le mode actif reste clair.",
+      "whenGood": [
+        {
+          "title": "Cerner un bug précis",
+          "example": "/debug Le login échoue après une réinitialisation de mot de passe"
+        },
+        {
+          "title": "Passer en revue les étapes de reproduction de façon systématique",
+          "example": "/debug — activer le mode avant de coller un rapport de bug avec une stack trace"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Il faut construire directement une nouvelle fonctionnalité",
+          "why": "le mode Debug est conçu pour la recherche et la délimitation de bugs, pas pour du nouveau développement",
+          "alternative": "utiliser le mode agent normal ou /plan pour du travail sur des fonctionnalités"
+        },
+        {
+          "title": "Le bug est déjà clairement localisé",
+          "why": "si la cause et le correctif sont déjà clairs, le mode Debug n'apporte rien",
+          "alternative": "demander directement le correctif en mode agent"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "logs",
+      "name": "/logs",
+      "summary": "Affiche le chemin du fichier de log de debug actuel et le copie dans le presse-papiers.",
+      "what": "/logs affiche le chemin du fichier de log de debug de la session en cours et le copie dans le presse-papiers. Des logs de debug sont écrits en continu pour chaque session.",
+      "whenGood": [
+        {
+          "title": "Préparer une demande de support avec un fichier de log",
+          "example": "/logs — copier le chemin et le joindre à un ticket de support"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On a seulement besoin du dernier ID de requête, pas du fichier de log complet",
+          "why": "/logs donne un chemin de fichier, pas un ID unique",
+          "alternative": "utiliser /copy-request-id pour le dernier ID de requête"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "update",
+      "name": "/update",
+      "summary": "Met à jour Cursor Agent vers la dernière version directement depuis la session en cours.",
+      "what": "/update met à jour la CLI sur place, sans quitter la session. La même chose fonctionne aussi via agent update dans le terminal.",
+      "whenGood": [
+        {
+          "title": "Vouloir utiliser une nouvelle fonctionnalité du changelog",
+          "example": "/update — puis redémarrer la session pour charger la nouvelle version"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "En plein milieu d'une tâche critique en cours",
+          "why": "une mise à jour en cours de route peut perturber l'état de la session actuelle",
+          "alternative": "reporter la mise à jour à après la fin de la tâche, ou exécuter agent update séparément dans le terminal"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "max-mode",
+      "name": "/max-mode",
+      "summary": "Bascule le 'Max Mode' pour le modèle actuellement sélectionné, si celui-ci le prend en charge.",
+      "what": "/max-mode bascule le Max Mode pour le modèle actuellement sélectionné. L'état s'affiche dans le pied de page et persiste entre les sessions.",
+      "whenGood": [
+        {
+          "title": "Puissance maximale du modèle pour une tâche complexe",
+          "example": "/max-mode — activer avant une grande analyse d'architecture"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le modèle actuel ne prend pas en charge Max Mode",
+          "why": "le bouton n'a d'effet que sur les modèles qui proposent Max Mode",
+          "alternative": "passer d'abord à un modèle compatible Max Mode avec /model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "rename",
+      "name": "/rename",
+      "summary": "Renomme la session de chat en cours.",
+      "what": "/rename attribue un nouveau nom à la session de chat en cours.",
+      "whenGood": [
+        {
+          "title": "Distinguer plusieurs sessions parallèles",
+          "example": "/rename Auth-Refactor — avant de basculer entre plusieurs chats ouverts"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Une seule session, de courte durée",
+          "why": "pour un chat jetable, renommer n'en vaut généralement pas la peine",
+          "alternative": "garder le nom par défaut, le retrouver plus tard avec /resume si besoin"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "clear",
+      "name": "/clear",
+      "summary": "Démarre une nouvelle session de chat vide.",
+      "what": "/clear démarre une nouvelle session de chat. /new, /new-chat et /newchat sont des alias.",
+      "whenGood": [
+        {
+          "title": "Libérer la fenêtre de contexte pour un sujet totalement nouveau",
+          "example": "/clear — une fois la tâche précédente terminée"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le contexte précédent est encore nécessaire",
+          "why": "/clear efface entièrement l'historique de conversation de la session en cours",
+          "alternative": "utiliser /summarize pour libérer de la place sans perdre complètement le contexte"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "resume",
+      "name": "/resume",
+      "summary": "Ouvre une liste des chats récents sur tous les workspaces et permet d'en reprendre un.",
+      "what": "/resume ouvre par défaut tous les chats sur tous les workspaces (Gauche/Droite bascule vers 'This workspace'). Les chats d'autres répertoires affichent une étiquette de dossier ; reprendre l'un d'eux charge la conversation complète plutôt qu'une session vide.",
+      "whenGood": [
+        {
+          "title": "Continuer une tâche commencée hier",
+          "example": "/resume — choisir dans la liste la session correspondante d'hier"
+        },
+        {
+          "title": "Retrouver un chat d'un autre dépôt",
+          "example": "/resume — filtrer par étiquette de dossier pour trouver la bonne session de workspace"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Seule la session la plus récemment utilisée doit continuer",
+          "why": "/resume affiche d'abord une liste de choix, une étape inutile quand on sait déjà quelle session est visée",
+          "alternative": "utiliser --continue au démarrage (raccourci pour --resume=-1)"
+        },
+        {
+          "title": "On veut une session entièrement nouvelle",
+          "why": "/resume reprend des chats existants, mais ne démarre rien de nouveau",
+          "alternative": "utiliser /clear"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "fork",
+      "name": "/fork",
+      "summary": "Crée une branche du chat en cours dans une nouvelle session, l'original reste intact.",
+      "what": "/fork transforme la conversation en cours en une copie et permet d'y suivre un chemin différent. Alias selon le changelog : /branch, /duplicate.",
+      "whenGood": [
+        {
+          "title": "Essayer deux approches de résolution différentes en parallèle",
+          "example": "/fork — puis tester un chemin d'implémentation alternatif dans le nouveau chat"
+        },
+        {
+          "title": "Sécuriser une tentative risquée sans mettre en danger la session principale",
+          "example": "/fork — créer une branche avant un refactor expérimental"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le chemin actuel doit simplement se poursuivre",
+          "why": "un fork crée une session supplémentaire à gérer, alors qu'on veut juste continuer de façon linéaire",
+          "alternative": "continuer normalement à écrire dans le chat en cours"
+        },
+        {
+          "title": "D'anciens essais ratés doivent complètement disparaître",
+          "why": "/fork conserve l'original, il ne nettoie rien",
+          "alternative": "utiliser /rewind pour revenir à un état antérieur"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        },
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "summarize",
+      "name": "/summarize",
+      "summary": "Résume la conversation pour libérer de la place dans la fenêtre de contexte.",
+      "what": "/summarize compresse la conversation passée pour libérer du contexte. La commande a été renommée depuis /compress (alignement avec l'IDE) ; /compact et /compress fonctionnent toujours comme alias.",
+      "whenGood": [
+        {
+          "title": "Une longue session menace de dépasser la fenêtre de contexte",
+          "example": "/summarize — après de nombreux tours, avant que l'agent ne perde le fil"
+        },
+        {
+          "title": "Faire le ménage avant un changement de sujet dans la même session",
+          "example": "/summarize — garder les points clés, se débarrasser du bruit de détail"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Des informations détaillées importantes ne doivent pas être perdues",
+          "why": "résumer fait perdre la fidélité de détail et les formulations exactes des messages précédents",
+          "alternative": "noter explicitement les faits importants au préalable, ou utiliser /fork pour garder une copie avec l'historique complet"
+        },
+        {
+          "title": "Le contexte est encore petit",
+          "why": "un résumé sur des sessions courtes fait à peine gagner de la place, mais coûte des nuances",
+          "alternative": "simplement continuer normalement"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "rewind",
+      "name": "/rewind",
+      "summary": "Revient à un message antérieur via une timeline interactive et restaure fichiers/conversation.",
+      "what": "/rewind ouvre une timeline interactive pour ramener fichiers et état de conversation à un tour antérieur, avec un diff par tour et la possibilité de ne restaurer que la conversation (sans les fichiers). Actif par défaut. Alias selon le changelog : /undo, /restore (doivent d'abord être activés dans /config). Les pièces jointes image des tours antérieurs sont aussi restaurées lors du retour en arrière.",
+      "whenGood": [
+        {
+          "title": "Une approche ratée doit être complètement annulée",
+          "example": "/rewind — revenir au tour précédant le refactor raté"
+        },
+        {
+          "title": "Ne réinitialiser que l'état de conversation, en gardant les fichiers",
+          "example": "/rewind — choisir l'option 'conversation-only restore'"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Seule une simple faute de frappe doit être corrigée",
+          "why": "revenir en arrière sur toute la timeline est excessif pour une petite correction",
+          "alternative": "donner directement une nouvelle instruction de correction dans le chat"
+        },
+        {
+          "title": "Deux chemins de résolution doivent être conservés en parallèle",
+          "why": "/rewind écrase l'état ultérieur au lieu de le conserver en parallèle",
+          "alternative": "utiliser /fork au préalable pour garder une copie"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        },
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "vim",
+      "name": "/vim",
+      "summary": "Bascule les raccourcis clavier Vim dans le champ de saisie.",
+      "what": "/vim bascule les raccourcis clavier Vim dans le champ de saisie du prompt, y compris les déplacements de recherche et le mode visuel ; l'édition peut être déclenchée depuis n'importe quelle position du curseur dans le prompt, pas seulement sur un champ vide.",
+      "whenGood": [
+        {
+          "title": "Utiliser des mouvements Vim familiers en écrivant de longs prompts",
+          "example": "/vim — puis naviguer dans le champ de saisie avec hjkl/dw/ct."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On est plus à l'aise avec les raccourcis standard",
+          "why": "les raccourcis Vim changent le comportement de touches familières comme i, dd ou Échap",
+          "alternative": "relancer /vim pour le désactiver"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "line-numbers",
+      "name": "/line-numbers",
+      "summary": "Bascule les numéros de ligne dans les blocs de code affichés.",
+      "what": "/line-numbers bascule l'affichage des numéros de ligne dans les blocs de code de la session.",
+      "whenGood": [
+        {
+          "title": "Vouloir référencer des lignes précises pendant une revue",
+          "example": "/line-numbers — activer avant de dire 'vérifie la ligne 42'"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Juste de courts extraits de code sans référence de ligne",
+          "why": "sur de courts extraits, les numéros de ligne gênent plus qu'ils n'aident",
+          "alternative": "laisser /line-numbers désactivé pour un affichage plus compact"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "show-thinking",
+      "name": "/show-thinking",
+      "summary": "Bascule l'affichage des blocs de réflexion (Thinking) du modèle.",
+      "what": "/show-thinking active/désactive l'affichage visible des blocs de réflexion internes du modèle dans la session.",
+      "whenGood": [
+        {
+          "title": "Comprendre pourquoi l'agent prend une décision précise",
+          "example": "/show-thinking — activer avant une décision d'architecture complexe"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Seul le résultat final intéresse, pas le raisonnement",
+          "why": "les blocs de réflexion allongent inutilement la sortie visible quand seul le résultat compte",
+          "alternative": "laisser /show-thinking désactivé pour une session plus compacte"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "status-indicators",
+      "name": "/status-indicators",
+      "summary": "Bascule les indicateurs de statut dans le titre du terminal.",
+      "what": "/status-indicators active/désactive l'affichage du statut de l'agent (par ex. en attente, au travail) dans le titre de la fenêtre du terminal.",
+      "whenGood": [
+        {
+          "title": "Repérer le statut de l'agent même avec une fenêtre de terminal réduite",
+          "example": "/status-indicators — activé pendant qu'une longue tâche tourne en arrière-plan"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le titre du terminal est utilisé autrement, par ex. par un script personnel",
+          "why": "l'indicateur de statut écrase alors le texte du titre personnalisé",
+          "alternative": "laisser /status-indicators désactivé"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "shell",
+      "name": "/shell",
+      "summary": "Bascule en mode Shell pour exécuter de courtes commandes directement, sans quitter la conversation.",
+      "what": "/shell bascule en mode Shell pour de courtes commandes au sein de la session. Alias : /sh, /run.",
+      "whenGood": [
+        {
+          "title": "Vérifier rapidement le statut Git sans quitter le contexte du chat",
+          "example": "/shell git status"
+        },
+        {
+          "title": "Inspecter brièvement un fichier avant que l'agent continue",
+          "example": "/sh ls -la src/"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La commande doit faire partie d'une tâche à plusieurs étapes planifiée par l'agent",
+          "why": "/shell exécute la commande isolément, sans l'intégrer à la planification de tâches de l'agent",
+          "alternative": "formuler la commande comme un prompt normal, pour que l'agent l'exécute dans son contexte"
+        },
+        {
+          "title": "Il faut un accès réseau/écriture durable avec des limites claires",
+          "why": "/shell suit la politique normale de session, mais n'offre pas de limites explicites de chemins/réseau",
+          "alternative": "utiliser agent sandbox run avec --allow-paths/--network"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "about",
+      "name": "/about",
+      "summary": "Affiche la version de la CLI, des infos système et de compte, et les copie dans le presse-papiers.",
+      "what": "/about affiche la version, des informations système et de compte, et les copie en plus dans le presse-papiers.",
+      "whenGood": [
+        {
+          "title": "Rassembler des infos de diagnostic pour un rapport de bug",
+          "example": "/about — coller directement la sortie dans un ticket de support"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On a seulement besoin du numéro de version",
+          "why": "/about fournit tout un bloc d'infos, plus que nécessaire pour une simple vérification de version",
+          "alternative": "exécuter agent --version dans le terminal"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "setup-terminal",
+      "name": "/setup-terminal",
+      "summary": "Configure les raccourcis clavier du terminal pour les retours à la ligne, adaptés au terminal détecté.",
+      "what": "/setup-terminal configure automatiquement les combinaisons de touches pour les retours à la ligne (par ex. Option+Entrée), adaptées au programme de terminal détecté.",
+      "whenGood": [
+        {
+          "title": "Pouvoir écrire confortablement des prompts sur plusieurs lignes",
+          "example": "/setup-terminal — exécuter une fois après l'installation"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le programme de terminal ne prend pas en charge la reconfiguration",
+          "why": "tous les terminaux ne permettent pas de définir automatiquement ce type de raccourcis",
+          "alternative": "configurer manuellement les retours à la ligne dans le programme de terminal"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "help",
+      "name": "/help",
+      "summary": "Affiche l'aide ; avec un nom de commande en argument, affiche les détails de cette commande.",
+      "what": "/help affiche une vue d'ensemble des commandes disponibles ; /help <command> affiche les détails d'une commande précise.",
+      "whenGood": [
+        {
+          "title": "Consulter la syntaxe d'une commande rarement utilisée",
+          "example": "/help mcp"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On sait déjà exactement quelle commande est nécessaire",
+          "why": "passer par l'aide ne fait alors que perdre du temps",
+          "alternative": "appeler directement la commande"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "feedback",
+      "name": "/feedback",
+      "summary": "Envoie un retour directement à l'équipe Cursor.",
+      "what": "/feedback envoie un message en tant que retour à l'équipe Cursor.",
+      "whenGood": [
+        {
+          "title": "Signaler directement un bug ou une fonctionnalité manquante",
+          "example": "/feedback /rewind saute parfois deux tours en arrière au lieu d'un"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Il s'agit d'une demande de support individuelle et urgente",
+          "why": "les messages de feedback ne sont pas conçus pour un support 1:1 rapide",
+          "alternative": "utiliser le canal de support officiel de Cursor"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "open",
+      "name": "/open",
+      "summary": "Ouvre le répertoire racine Git du dépôt en cours dans l'éditeur Cursor.",
+      "what": "/open ouvre le répertoire racine Git du dépôt dans Cursor. Alias : /cursor.",
+      "whenGood": [
+        {
+          "title": "Continuer visuellement dans l'éditeur après du travail en CLI",
+          "example": "/open — une fois que l'agent a proposé les modifications"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Cursor (l'éditeur) n'est pas du tout installé ou souhaité",
+          "why": "/open suppose une installation locale de Cursor",
+          "alternative": "relire les modifications directement dans le terminal via /changes"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "copy-request-id",
+      "name": "/copy-request-id",
+      "summary": "Copie l'ID de la dernière requête dans le presse-papiers.",
+      "what": "/copy-request-id copie l'ID de requête de la dernière requête dans le presse-papiers, utile pour le support et le débogage.",
+      "whenGood": [
+        {
+          "title": "Signaler un problème précis au support",
+          "example": "/copy-request-id — coller l'ID directement dans un ticket de support"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Il s'agit de toute la conversation, pas d'une seule requête",
+          "why": "l'ID de requête ne concerne que la dernière requête individuelle",
+          "alternative": "utiliser /copy-conversation-id"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "copy-conversation-id",
+      "name": "/copy-conversation-id",
+      "summary": "Copie l'ID de la conversation en cours dans le presse-papiers.",
+      "what": "/copy-conversation-id copie l'ID de conversation de la session en cours dans le presse-papiers.",
+      "whenGood": [
+        {
+          "title": "Retrouver ou référencer plus tard une session précise par son ID",
+          "example": "/copy-conversation-id — enregistrer l'ID dans une note"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Il s'agit d'une seule requête, pas de toute la session",
+          "why": "l'ID de conversation identifie toute la session, pas une seule requête",
+          "alternative": "utiliser /copy-request-id"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "logout",
+      "name": "/logout",
+      "summary": "Déconnecte le compte Cursor actuel.",
+      "what": "/logout déconnecte la CLI du compte Cursor actuellement connecté.",
+      "whenGood": [
+        {
+          "title": "Retirer le compte sur une machine partagée",
+          "example": "/logout — avant de passer à un autre compte Cursor"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste terminer brièvement la session, pas déconnecter le compte",
+          "why": "/logout supprime la connexion, un nouveau flux de connexion est ensuite nécessaire",
+          "alternative": "utiliser /quit ou /exit pour juste terminer la session"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "quit",
+      "name": "/quit",
+      "summary": "Quitte la session CLI en cours.",
+      "what": "/quit quitte la session CLI.",
+      "whenGood": [
+        {
+          "title": "Le travail est terminé pour cette session",
+          "example": "/quit — une fois toutes les modifications appliquées"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut continuer plus tard exactement cette session",
+          "why": "après /quit, la session doit d'abord être retrouvée via /resume",
+          "alternative": "utiliser /rename au préalable pour retrouver plus facilement la session plus tard"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "exit",
+      "name": "/exit",
+      "summary": "Quitte la session CLI en cours, identique à /quit.",
+      "what": "/exit quitte la session CLI, fonctionnellement identique à /quit.",
+      "whenGood": [
+        {
+          "title": "Le travail est terminé pour cette session",
+          "example": "/exit — une fois toutes les modifications appliquées"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Mélanger les deux commandes par habitude",
+          "why": "/exit et /quit font exactement la même chose, l'une des deux suffit",
+          "alternative": "utiliser l'une des deux de façon cohérente"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "mcp",
+      "name": "/mcp",
+      "summary": "Gère les serveurs MCP via un menu interactif : connexion, liste, affichage des tools.",
+      "what": "/mcp ouvre un menu pour gérer les serveurs MCP : filtrer, se connecter, lister les tools d'un serveur, voir les détails d'un serveur. Les serveurs sont groupés par portée (User/Project/Team), et les serveurs en échec affichent leur véritable message d'erreur.",
+      "whenGood": [
+        {
+          "title": "Vérifier les tools d'un nouveau serveur MCP avant de l'utiliser",
+          "example": "/mcp list-tools github"
+        },
+        {
+          "title": "Effectuer une connexion OAuth pour un serveur MCP d'équipe",
+          "example": "/mcp — sélectionner le serveur, puis 'Login'"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Tous les serveurs MCP doivent être autorisés automatiquement au démarrage",
+          "why": "/mcp est conçu pour une gestion interactive, pas pour une autorisation automatisée dans des scripts",
+          "alternative": "utiliser --approve-mcps au démarrage"
+        },
+        {
+          "title": "Un serveur doit disparaître durablement de la configuration",
+          "why": "/mcp ne gère que le statut de connexion et les autorisations à l'exécution",
+          "alternative": "supprimer directement l'entrée du serveur dans mcp.json"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "plugin",
+      "name": "/plugin",
+      "summary": "Gère les plugins et les marketplaces de plugins.",
+      "what": "/plugin gère les plugins et les marketplaces : ajouter un marketplace par URL Git (/plugin marketplace add), parcourir, installer et désinstaller des plugins par portée. Les skills, commandes slash, sous-agents et serveurs MCP des plugins sont aussi chargés dans la session.",
+      "whenGood": [
+        {
+          "title": "Intégrer un marketplace d'équipe",
+          "example": "/plugin marketplace add https://github.com/team/cursor-plugins"
+        },
+        {
+          "title": "Installer un plugin pour ce seul projet",
+          "example": "/plugin — sélectionner le plugin, définir la portée sur 'Project'"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Tester juste un dossier de plugin local, sans marketplace",
+          "why": "passer par une entrée de marketplace pour ça n'est pas nécessaire",
+          "alternative": "utiliser --plugin-dir <path> au démarrage"
+        },
+        {
+          "title": "Les plugins doivent être imposés de façon centralisée pour toute l'équipe",
+          "why": "/plugin est une gestion locale et interactive par utilisateur",
+          "alternative": "définir une configuration de plugins pour toute l'équipe via les paramètres admin de Cursor"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "config",
+      "name": "/config",
+      "summary": "Ouvre un éditeur interactif pour les paramètres de la CLI.",
+      "what": "/config ouvre un éditeur de paramètres complet dans la CLI, avec une page version et compte, au lieu d'éditer cli-config.json à la main. On peut par ex. y activer/désactiver les raccourcis de modèle ou Rewind.",
+      "whenGood": [
+        {
+          "title": "Ajuster plusieurs paramètres au même endroit",
+          "example": "/config — par ex. régler le sandbox par défaut et la barre de statut en une fois"
+        },
+        {
+          "title": "Chercher un paramètre flou sans connaître la structure JSON",
+          "example": "/config — parcourir les catégories plutôt que fouiller cli-config.json"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le même paramètre doit être défini automatiquement pour de nombreuses machines",
+          "why": "l'édition interactive par session ne s'adapte pas aux déploiements",
+          "alternative": "éditer et distribuer cli-config.json directement de façon scriptable"
+        },
+        {
+          "title": "Seules les options de sandbox doivent être ajustées",
+          "why": "/config affiche toutes les catégories, plus que nécessaire pour un seul paramètre de sandbox",
+          "alternative": "utiliser /sandbox directement"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "copy",
+      "name": "/copy",
+      "summary": "Copie un ancien message personnel dans le presse-papiers.",
+      "what": "/copy copie un ancien message envoyé par soi-même dans la session vers le presse-papiers.",
+      "whenGood": [
+        {
+          "title": "Réutiliser un prompt déjà utilisé dans une autre session",
+          "example": "/copy — sélectionner le message correspondant, puis le coller dans un nouveau chat"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La réponse complète de l'agent doit être copiée, pas son propre message",
+          "why": "/copy concerne les messages personnels, pas les réponses de l'agent",
+          "alternative": "sélectionner et copier manuellement la réponse de l'agent dans le terminal"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "sandbox",
+      "name": "/sandbox",
+      "summary": "Configure le mode sandbox et l'accès réseau via un menu interactif.",
+      "what": "/sandbox ouvre un menu pour configurer le mode sandbox et les paramètres d'accès réseau. Les fichiers de politique sandbox (~/.cursor/sandbox.json, .cursor/sandbox.json) sont pris en compte, y compris via SSH ; un proxy réseau à refus par défaut s'applique aux commandes sandboxées.",
+      "whenGood": [
+        {
+          "title": "Restreindre l'accès en écriture tant qu'on fait confiance à un dépôt inconnu",
+          "example": "/sandbox — activer avant que l'agent ne travaille sur un projet étranger"
+        },
+        {
+          "title": "Autoriser l'accès réseau spécifiquement pour une tâche donnée",
+          "example": "/sandbox — ajuster le mode réseau avant une installation de paquet"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Une seule commande doit tourner isolée avec ses propres règles de chemins, pas toute la session",
+          "why": "/sandbox définit la politique pour la session en cours, pas pour une commande ponctuelle",
+          "alternative": "utiliser agent sandbox run --allow-paths <paths> pour une seule commande"
+        },
+        {
+          "title": "Tout doit simplement tourner sans aucune confirmation",
+          "why": "sandbox restreint délibérément, ce qui contredit un fonctionnement totalement autonome",
+          "alternative": "utiliser --yolo ou /run-everything"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "bedrock",
+      "name": "/bedrock",
+      "summary": "Configure AWS Bedrock comme backend de modèle, si la fonctionnalité Bedrock est activée.",
+      "what": "/bedrock configure AWS Bedrock comme backend de modèle, soit avec ses propres identifiants AWS, soit avec un rôle IAM d'équipe. Ne fonctionne que si la fonctionnalité Bedrock est activée pour le compte.",
+      "whenGood": [
+        {
+          "title": "Configurer Bedrock comme backend avec ses propres clés AWS",
+          "example": "/bedrock — renseigner ses propres identifiants"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le compte n'utilise pas du tout AWS Bedrock",
+          "why": "sans la fonctionnalité Bedrock activée, la commande n'a aucun effet",
+          "alternative": "choisir un modèle normalement via /model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Slash Commands",
+          "url": "https://cursor.com/docs/cli/reference/slash-commands"
+        },
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "add-dir",
+      "name": "/add-dir",
+      "summary": "Ajoute un répertoire supplémentaire à une session multi-racine, à la volée.",
+      "what": "/add-dir ajoute un répertoire supplémentaire à la session en cours pour travailler sur plusieurs dépôts à la fois. Les skills slash et commandes personnalisées du nouveau répertoire se rafraîchissent immédiatement ; un redémarrage n'est nécessaire que pour que l'agent découvre automatiquement de nouveaux skills. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Intégrer un second dépôt lié à la session en cours",
+          "example": "/add-dir ../shared-lib — pour coordonner des modifications dans les deux dépôts en même temps"
+        },
+        {
+          "title": "Réutiliser plus tard la combinaison de répertoires",
+          "example": "/add-dir ../shared-lib — puis l'enregistrer comme ensemble avec /save-workspace"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La combinaison multi-racine est déjà connue avant le démarrage",
+          "why": "l'ajouter après coup en cours de session est alors une étape superflue",
+          "alternative": "utiliser --add-dir <path> au démarrage (répétable, combinable avec --workspace)"
+        },
+        {
+          "title": "Travailler seulement sur un seul répertoire",
+          "why": "un répertoire racine supplémentaire agrandit le contexte que l'agent doit surveiller",
+          "alternative": "ne pas utiliser /add-dir, rester sur un seul workspace"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "save-workspace",
+      "name": "/save-workspace",
+      "summary": "Enregistre les répertoires multi-racine actuellement actifs comme un ensemble de workspace nommé.",
+      "what": "/save-workspace enregistre sous un nom l'ensemble des répertoires actuellement ajoutés via /add-dir, pour pouvoir les recharger plus tard. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Nommer une combinaison de dépôts récurrente",
+          "example": "/save-workspace backend-plus-shared-lib"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La combinaison de répertoires n'est nécessaire qu'une seule fois",
+          "why": "pour une session ponctuelle, enregistrer un ensemble nommé n'en vaut pas la peine",
+          "alternative": "utiliser simplement /add-dir sans /save-workspace"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "load-workspace",
+      "name": "/load-workspace",
+      "summary": "Charge un ensemble de workspace multi-racine précédemment enregistré avec /save-workspace.",
+      "what": "/load-workspace recharge dans la session une combinaison de répertoires précédemment enregistrée. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Retrouver rapidement l'environnement multi-dépôt habituel",
+          "example": "/load-workspace backend-plus-shared-lib"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Aucun ensemble de workspace n'a encore été enregistré",
+          "why": "/load-workspace suppose un appel préalable à /save-workspace",
+          "alternative": "ajouter les répertoires manuellement avec /add-dir"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "auto-review",
+      "name": "/auto-review",
+      "summary": "Bascule le mode d'exécution 'Auto-review', un compromis entre liste blanche et Run Everything.",
+      "what": "/auto-review active le mode Auto-review. Un classificateur vérifie dans l'ordre les appels shell, MCP et fetch : les appels en liste blanche s'exécutent immédiatement, les appels compatibles sandbox tournent dans la sandbox, le reste va au classificateur, qui autorise, essaie une autre approche ou demande confirmation. Pilotable aussi via --auto-review ou dans /config ; des règles allow/block dans permissions.json permettent de guider le classificateur. Les limites d'autorisation strictes existantes restent inchangées. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Moins de demandes de confirmation, sans passer complètement en 'Run Everything'",
+          "example": "/auto-review — pour une longue session avec un mélange de commandes anodines et sensibles"
+        },
+        {
+          "title": "Utiliser des règles allow/block fixes par équipe",
+          "example": "/auto-review — combiné avec des entrées correspondantes dans permissions.json"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Contrôle manuel total souhaité sur chaque commande",
+          "why": "Auto-review réduit délibérément le nombre de demandes de confirmation",
+          "alternative": "laisser Auto-review désactivé, rester en mode liste blanche par défaut"
+        },
+        {
+          "title": "On veut vraiment aucune demande de confirmation",
+          "why": "Auto-review continue de demander dans les cas ambigus",
+          "alternative": "utiliser /run-everything"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "context",
+      "name": "/context",
+      "summary": "Visualise ce qui occupe actuellement la fenêtre de contexte, réparti par catégorie.",
+      "what": "/context affiche une répartition de ce qui occupe la fenêtre de contexte de la session en cours, par ex. par catégorie comme fichiers, sorties de tools ou conversation. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Comprendre avant un /summarize ce qui prend le plus de place",
+          "example": "/context — vérifier si, par ex., de grandes sorties de tools remplissent le contexte"
+        },
+        {
+          "title": "Évaluer combien de place reste pour d'autres tours",
+          "example": "/context — avant une grande revue de fichiers planifiée"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La fenêtre de contexte doit vraiment être réduite, pas juste analysée",
+          "why": "/context affiche seulement la répartition, sans rien changer",
+          "alternative": "utiliser /summarize pour réellement libérer de la place"
+        },
+        {
+          "title": "Il s'agit juste d'une évaluation rapide oui/non en plein tour",
+          "why": "/context ouvre sa propre vue détaillée, ce qui est plus que nécessaire pour une brève question annexe",
+          "alternative": "utiliser /btw pour une question annexe rapide en lecture seule"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "full-conversation",
+      "name": "/full-conversation",
+      "summary": "Désactive le rendu court optimisé pour la performance et affiche l'historique complet de la conversation.",
+      "what": "Les longues conversations ne sont par défaut redessinées que partiellement (seulement les derniers tours), pour garder les redimensionnements et reprises rapides. /full-conversation désactive ce comportement et réaffiche l'historique complet. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Faire défiler l'historique complet d'une session très longue",
+          "example": "/full-conversation — activer pour revoir d'anciens tours"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ne travailler que sur les tours récents, la performance compte davantage",
+          "why": "l'historique complet ralentit sensiblement les redimensionnements et reprises sur de longues sessions",
+          "alternative": "laisser /full-conversation désactivé (par défaut)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "btw",
+      "name": "/btw",
+      "summary": "Pose une question annexe rapide en lecture seule en plein tour, sans charger l'historique du chat.",
+      "what": "/btw pose une question annexe en plein tour ; la réponse s'affiche dans une superposition dédiée et refermable, avec le contexte complet de la conversation, et n'atterrit pas dans l'historique de chat proprement dit. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Clarifier brièvement une question de compréhension sans interrompre la tâche en cours",
+          "example": "/btw Quel fichier viens-tu de modifier en dernier ?"
+        },
+        {
+          "title": "Poser une question de détail sans remplir l'historique principal de choses annexes",
+          "example": "/btw Pourquoi cette bibliothèque a-t-elle été choisie plutôt qu'une autre ?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La réponse doit faire durablement partie de la conversation",
+          "why": "les réponses de /btw atterrissent dans la superposition, pas dans l'historique de chat, et sont perdues comme contexte pour les tours suivants",
+          "alternative": "poser la question comme un message normal dans le chat à la place"
+        },
+        {
+          "title": "La question doit réellement modifier des fichiers",
+          "why": "/btw est explicitement en lecture seule",
+          "alternative": "utiliser un message normal en mode agent"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "skills",
+      "name": "/skills",
+      "summary": "Parcourt les skills disponibles ; certains skills peuvent aussi être appelés directement via /skill-name.",
+      "what": "/skills propose un menu de navigation pour les skills disponibles, y compris des skills intégrés sélectionnés. Des skills individuels peuvent aussi être appelés directement en ligne via /skill-name. Les skills sont détectés entre autres dans .cursor/skills ainsi que dans .claude/skills, .agents/skills et .codex/skills, y compris imbriqués dans des sous-répertoires. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Découvrir les skills disponibles dans un projet inconnu",
+          "example": "/skills — parcourir les skills définis dans le dépôt"
+        },
+        {
+          "title": "Appeler directement un skill connu",
+          "example": "/skill-name — directement plutôt que via le menu de navigation"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Un skill doit être disponible pour le modèle mais ne pas apparaître dans l'auto-complétion",
+          "why": "/skills et /skill-name affichent tous les skills invocables par l'utilisateur",
+          "alternative": "définir user-invocable: false dans le frontmatter SKILL.md du skill"
+        },
+        {
+          "title": "Il s'agit de ses propres commandes personnalisées, pas de skills",
+          "why": "/skills affiche les skills, pas les commandes personnalisées auto-définies",
+          "alternative": "utiliser /commands"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "rules",
+      "name": "/rules",
+      "summary": "Navigateur interactif pour consulter et éditer les Cursor Rules chargées.",
+      "what": "/rules ouvre un navigateur interactif pour les Cursor Rules actuellement chargées, avec édition en ligne. Les rules de .cursor/rules dans les sous-répertoires sont détectées partout, comme dans l'IDE. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Vérifier quelles règles sont actives dans la session en cours",
+          "example": "/rules — vérifier avant une tâche quelles conventions de projet s'appliquent"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Il s'agit de skills ou de commandes personnalisées, pas de rules",
+          "why": "/rules n'affiche que les Cursor Rules",
+          "alternative": "utiliser /skills ou /commands"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "commands",
+      "name": "/commands",
+      "summary": "Navigateur interactif pour consulter et éditer ses propres commandes personnalisées.",
+      "what": "/commands ouvre un navigateur interactif pour les commandes personnalisées auto-définies, avec édition en ligne. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Consulter une commande personnalisée existante avant de l'utiliser",
+          "example": "/commands — parcourir les commandes personnalisées définies dans le projet"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Il s'agit de skills intégrés, pas de commandes auto-définies",
+          "why": "/commands n'affiche que ses propres commandes personnalisées",
+          "alternative": "utiliser /skills"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "changes",
+      "name": "/changes",
+      "summary": "Ouvre l'interface de revue unifiée pour les modifications de fichiers proposées (Ctrl+R).",
+      "what": "/changes (raccourci Ctrl+R) ouvre l'interface de revue pour les modifications proposées. L'onglet 'Session' n'affiche que les modifications de la session en cours ; o/O permet d'ouvrir les diffs dans l'éditeur, avec un bouton zen pour la revue. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Vérifier toutes les modifications proposées ensemble avant de commiter",
+          "example": "/changes — parcourir l'onglet Session avant que l'agent n'écrive les fichiers de façon définitive"
+        },
+        {
+          "title": "Examiner de plus près un diff précis dans son éditeur habituel",
+          "example": "/changes — sélectionner un fichier, puis appuyer sur o pour l'ouvrir dans l'éditeur"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Juste confirmer brièvement une modification unique déjà connue",
+          "why": "l'interface de revue complète est plus lourde que nécessaire pour une simple confirmation unique",
+          "alternative": "confirmer normalement la demande directe dans le chat"
+        },
+        {
+          "title": "Les modifications de sessions antérieures doivent aussi être vérifiées",
+          "why": "l'onglet Session n'affiche volontairement que la session en cours",
+          "alternative": "vérifier git diff ou l'historique Git complet dans le terminal"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "opus-composer-fast",
+      "name": "/opus, /composer, /fast",
+      "summary": "Raccourcis de modèle : sauter directement vers une famille de modèles ou basculer le mode Fast, sans ouvrir le sélecteur de modèle.",
+      "what": "/opus et /composer sautent directement vers la famille de modèles correspondante, chaque raccourci mémorisant la dernière variante choisie ; /fast bascule le mode Fast, si le modèle actuel le prend en charge. Désactivable sous 'Model slash commands' dans /config. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "whenGood": [
+        {
+          "title": "Passer rapidement à un modèle connu sans ouvrir le sélecteur",
+          "example": "/opus"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Un modèle inconnu ou utilisé pour la première fois doit être recherché",
+          "why": "les raccourcis sautent directement vers une famille fixe, sans recherche parmi d'autres modèles",
+          "alternative": "utiliser /model [filter] pour la recherche floue de modèles"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent",
+      "name": "agent [prompt...]",
+      "summary": "Démarre la CLI Cursor en mode agent par défaut, éventuellement directement avec un prompt en argument.",
+      "what": "agent sans sous-commande démarre une session interactive en mode agent — le mode par défaut avec accès complet aux outils (lecture, écriture, commandes shell, web). Un argument de prompt optionnel est envoyé directement comme premier message, par ex. agent \"refactor the auth module to use JWT tokens\". Sans argument, une fenêtre de chat vide s'ouvre. Pour les exécutions non interactives (scripts, CI), le flag -p/--print fait en plus n'afficher que la réponse finale.",
+      "whenGood": [
+        {
+          "title": "Démarrer directement avec une tâche concrète, sans avoir à la taper ensuite",
+          "example": "agent \"fix the failing tests in src/auth\""
+        },
+        {
+          "title": "Démarrer une session interactive pour un travail exploratoire sans tâche fixe",
+          "example": "agent — puis clarifier objectifs et questions étape par étape dans le chat"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "L'exécution doit tourner sans surveillance dans un script ou un job CI",
+          "why": "le mode agent par défaut demande une confirmation interactive avant d'exécuter des commandes, ce qui bloque les exécutions sans surveillance",
+          "alternative": "combiner -p avec --force, par ex. agent -p --force \"<prompt>\" (voir l'entrée collective Global Options)"
+        },
+        {
+          "title": "Seule la lecture/l'analyse est souhaitée, pas de modification de fichiers",
+          "why": "le mode par défaut a un accès complet en écriture et au shell",
+          "alternative": "définir --mode ask au démarrage, ou utiliser /ask après le démarrage"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI Overview",
+          "url": "https://cursor.com/docs/cli/overview"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "login",
+      "name": "agent login",
+      "summary": "Authentifie la CLI avec le compte Cursor via le flux de connexion dans le navigateur.",
+      "what": "agent login ouvre le flux de connexion dans le navigateur et relie la CLI au compte Cursor. L'authentification sans navigateur est aussi possible via --api-key (ou la variable d'environnement CURSOR_API_KEY) ou --auth-token (CURSOR_AUTH_TOKEN). Avec NO_OPEN_BROWSER=1, seule l'URL de connexion est affichée au lieu d'ouvrir automatiquement un navigateur, pratique pour des serveurs distants sans interface graphique.",
+      "whenGood": [
+        {
+          "title": "Première configuration de la CLI sur une nouvelle machine",
+          "example": "agent login"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "La CLI tourne en headless sur un serveur sans accès navigateur",
+          "why": "agent login suppose normalement un flux de navigateur interactif",
+          "alternative": "définir l'authentification via --api-key/CURSOR_API_KEY, ou exporter NO_OPEN_BROWSER=1 pour que seule l'URL de connexion soit affichée"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — Authentication",
+          "url": "https://cursor.com/docs/cli/reference/authentication"
+        },
+        {
+          "title": "Cursor Docs — ACP",
+          "url": "https://cursor.com/docs/cli/acp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-logout",
+      "name": "agent logout",
+      "summary": "Déconnecte la CLI du compte Cursor et efface les identifiants stockés localement.",
+      "what": "agent logout déconnecte l'installation CLI en cours et supprime les identifiants stockés localement (par défaut depuis le trousseau macOS ; avec AGENT_CLI_CREDENTIAL_STORE=file, depuis un fichier non chiffré à la place).",
+      "whenGood": [
+        {
+          "title": "Changement de compte sur une machine partagée",
+          "example": "agent logout — puis agent login avec l'autre compte"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste vérifier le statut d'authentification, pas se déconnecter",
+          "why": "agent logout supprime immédiatement les identifiants stockés",
+          "alternative": "utiliser agent status ou agent whoami pour juste consulter le statut"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "status",
+      "name": "agent status | agent whoami",
+      "summary": "Affiche le statut d'authentification actuel ainsi que les infos de compte et d'endpoint.",
+      "what": "agent status (alias : agent whoami) indique si et avec quel compte la CLI est connectée, y compris la configuration d'endpoint. --format json renvoie la sortie en JSON exploitable par machine au lieu du format texte par défaut.",
+      "whenGood": [
+        {
+          "title": "Vérifier si la CLI est connectée avant une exécution de script",
+          "example": "agent status --format json"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut changer de compte, pas juste consulter",
+          "why": "agent status ne change rien, il affiche seulement l'état actuel",
+          "alternative": "utiliser agent logout suivi de agent login"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-about",
+      "name": "agent about",
+      "summary": "Affiche la version, des infos système et de compte de l'installation CLI.",
+      "what": "agent about affiche un aperçu de la version CLI installée, du système et du compte connecté. --format json rend la sortie exploitable par machine. /about fait la même chose en mode interactif et copie en plus les infos dans le presse-papiers.",
+      "whenGood": [
+        {
+          "title": "Rassembler des infos de diagnostic pour une demande de support",
+          "example": "agent about --format json"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On a seulement besoin du numéro de version",
+          "why": "agent about renvoie plus d'infos que nécessaire pour une simple vérification de version",
+          "alternative": "utiliser agent -v ou agent --version à la place (voir Global Options)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "models",
+      "name": "agent models",
+      "summary": "Liste tous les modèles disponibles pour le compte.",
+      "what": "agent models affiche la liste des modèles utilisables par le compte actuellement connecté. C'est le même résultat que agent --list-models. Un modèle est ensuite choisi séparément, soit avec --model <model> au démarrage, soit via /model dans une session en cours.",
+      "whenGood": [
+        {
+          "title": "Vérifier le nom exact du modèle à utiliser avant une exécution de script",
+          "example": "agent models"
+        },
+        {
+          "title": "Rediriger les modèles disponibles vers un autre outil ou script",
+          "example": "agent --list-models > models.txt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste changer de modèle pour la session en cours",
+          "why": "agent models ne fait que lister les modèles, il n'en change aucun",
+          "alternative": "utiliser /model dans le chat en cours, ou définir --model <model> au démarrage"
+        },
+        {
+          "title": "On est déjà dans une session interactive et on veut changer rapidement",
+          "why": "un nouvel appel à agent models signifierait une nouvelle session ou un nouveau processus",
+          "alternative": "utiliser /model directement dans la session en cours"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-mcp",
+      "name": "agent mcp",
+      "summary": "Commande parente pour gérer les serveurs MCP configurés (connexion, liste, tools, activer/désactiver).",
+      "what": "agent mcp regroupe toutes les sous-commandes de gestion des serveurs Model Context Protocol : login, list, list-tools, enable, disable. La CLI utilise la même configuration mcp.json que l'éditeur Cursor (niveau projet et global) et récupère automatiquement les serveurs des répertoires parents. agent mcp list (ou /mcp list en mode interactif) ouvre un menu de sélection interactif.",
+      "whenGood": [
+        {
+          "title": "Avoir une vue d'ensemble des serveurs MCP configurés",
+          "example": "agent mcp list"
+        },
+        {
+          "title": "Ignorer toutes les demandes d'autorisation MCP lors d'une exécution scriptée",
+          "example": "agent --approve-mcps -p \"query my database for recent errors\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Un tool MCP doit être utilisé directement, pas seulement géré",
+          "why": "agent mcp ne gère que la configuration des serveurs, il n'appelle pas de tools lui-même",
+          "alternative": "envoyer un prompt normal à agent ou agent -p — les tools MCP sont sollicités automatiquement quand c'est pertinent"
+        },
+        {
+          "title": "Un nouveau serveur MCP doit être mis en place pour la première fois",
+          "why": "agent mcp ne gère que les serveurs déjà inscrits dans mcp.json",
+          "alternative": "d'abord ajouter le serveur dans .cursor/mcp.json ou ~/.cursor/mcp.json, puis l'autoriser avec agent mcp enable"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI MCP",
+          "url": "https://cursor.com/docs/cli/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-sandbox",
+      "name": "agent sandbox",
+      "summary": "Commande parente, masquée de l'aide par défaut, pour configurer le mode sandbox ou exécuter une commande isolément.",
+      "what": "agent sandbox regroupe les sous-commandes enable, disable, reset et run, qui configurent le mode sandbox de la CLI ou exécutent une seule commande isolément. Selon la doc, agent sandbox est 'hidden' en tant que commande de premier niveau et n'apparaît donc pas dans l'aide par défaut (agent help). La même configuration peut aussi être pilotée de façon interactive via /sandbox ou le flag --sandbox <mode>.",
+      "whenGood": [
+        {
+          "title": "Activer le mode sandbox globalement pour toutes les futures sessions",
+          "example": "agent sandbox enable"
+        },
+        {
+          "title": "Tester isolément une commande unique potentiellement risquée",
+          "example": "agent sandbox run npm install"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le mode sandbox ne doit s'appliquer qu'à une seule session",
+          "why": "agent sandbox enable/disable modifie un paramètre persistant qui perdure entre les sessions",
+          "alternative": "définir --sandbox enabled ou --sandbox disabled uniquement pour cet appel agent"
+        },
+        {
+          "title": "On veut juste vérifier quel mode sandbox est actuellement actif",
+          "why": "agent sandbox sans sous-commande ouvre directement un menu de configuration au lieu de simplement afficher le statut",
+          "alternative": "ouvrir /sandbox en mode interactif et consulter l'état actuel sans rien changer"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI Overview",
+          "url": "https://cursor.com/docs/cli/overview"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "worker",
+      "name": "agent worker",
+      "summary": "Commande parente pour démarrer un worker cloud privé qui exécute des tâches d'agent dans son propre environnement.",
+      "what": "agent worker connecte sa propre machine à Cursor et laisse les tâches de cloud agent tourner là plutôt que dans l'environnement cloud propre de Cursor (self-hosted). Contient les sous-commandes start et debug. Le worker se configure via des flags comme --worker-dir, --name, --label ou --labels-file, --pool ou --pool-name, et --idle-release-timeout.",
+      "whenGood": [
+        {
+          "title": "Fournir son propre matériel/environnement pour les exécutions de cloud agent (confidentialité, outillage spécifique)",
+          "example": "agent worker start --name build-worker-1 --worker-dir ~/repos/myapp"
+        },
+        {
+          "title": "Enregistrer plusieurs workers comme un pool auquel les cloud agents peuvent puiser",
+          "example": "agent worker start --pool --pool-name ci-pool"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Une seule exécution locale d'agent suffit",
+          "why": "agent worker démarre un processus durable connecté à Cursor pour des passations de cloud agent, pas une exécution ponctuelle",
+          "alternative": "utiliser une session interactive normale avec agent ou agent -p"
+        },
+        {
+          "title": "La configuration/connectivité doit être vérifiée avant le démarrage effectif",
+          "why": "agent worker start se connecte immédiatement en production, sans vérification préalable",
+          "alternative": "exécuter d'abord agent worker debug pour voir les diagnostics préalables"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "acp",
+      "name": "agent acp",
+      "summary": "Démarre la CLI en mode serveur ACP (Agent Client Protocol) pour les intégrations éditeur et client.",
+      "what": "agent acp démarre Cursor Agent comme serveur ACP via stdio, avec des messages JSON-RPC 2.0 délimités par des retours à la ligne, par ex. pour des intégrations éditeur comme Zed ou JetBrains. Selon la doc, la commande est 'hidden' et destinée à la construction de clients personnalisés, pas à une utilisation normale du terminal. L'authentification se fait au préalable via agent login, --api-key/CURSOR_API_KEY ou --auth-token/CURSOR_AUTH_TOKEN ; les options d'endpoint et TLS (-e, -k) sont ajoutées avant acp, par ex. agent -e https://api2.cursor.sh acp.",
+      "whenGood": [
+        {
+          "title": "Construire son propre client ou une intégration éditeur avec Cursor Agent",
+          "example": "agent acp — puis envoyer initialize/session/new/session/prompt via JSON-RPC sur stdin/stdout"
+        },
+        {
+          "title": "S'authentifier au préalable avec une clé API plutôt que de se connecter via le flux ACP",
+          "example": "agent --api-key \"$CURSOR_API_KEY\" acp"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Utilisation normale du terminal sans construire de client",
+          "why": "agent acp ne renvoie que des messages JSON-RPC bruts sur stdout, pas une interface de chat lisible",
+          "alternative": "utiliser simplement agent (mode interactif) ou agent -p pour des scripts"
+        },
+        {
+          "title": "Des outils/données externes doivent être mis à disposition de l'agent",
+          "why": "ACP est destiné aux intégrations client, pas au branchement d'outils sur l'agent",
+          "alternative": "utiliser agent mcp pour connecter des serveurs MCP et donner accès à des tools"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI ACP",
+          "url": "https://cursor.com/docs/cli/acp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-update",
+      "name": "agent update",
+      "summary": "Met à jour Cursor Agent vers la dernière version.",
+      "what": "agent update télécharge et installe la dernière version de la CLI. Les mises à jour automatiques en arrière-plan sont activées par défaut ; /update fait la même chose directement depuis une session interactive en cours.",
+      "whenGood": [
+        {
+          "title": "Mettre à jour manuellement vers la dernière version, par ex. pour utiliser un nouveau feature flag",
+          "example": "agent update"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Les mises à jour automatiques en arrière-plan ne sont pas souhaitées (par ex. version figée en CI)",
+          "why": "agent update est une commande manuelle ponctuelle et n'affecte pas le comportement de mise à jour automatique",
+          "alternative": "définir --disable-auto-update pour désactiver entièrement les mises à jour en arrière-plan (voir Global Options)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "ls",
+      "name": "agent ls",
+      "summary": "Ouvre une liste des chats précédents pour en choisir un à reprendre.",
+      "what": "agent ls affiche les sessions de chat précédentes à choisir, comme /resume en mode interactif. Le nom est un peu trompeur : malgré 'ls', la commande ne liste pas des fichiers, mais des sessions.",
+      "whenGood": [
+        {
+          "title": "On n'est pas sûr de quelle session récente reprendre",
+          "example": "agent ls"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On sait déjà que ce doit être la session la plus récemment utilisée",
+          "why": "agent ls affiche d'abord une liste de sélection, ce qui ajoute une étape",
+          "alternative": "utiliser agent resume ou agent --continue pour reprendre directement la dernière session"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-resume",
+      "name": "agent resume",
+      "summary": "Reprend directement la session de chat la plus récemment utilisée, sans afficher de liste de sélection.",
+      "what": "agent resume charge la session la plus récemment utilisée, avec son contexte précédent, et continue la conversation à cet endroit. Cela équivaut à --continue ou à la commande slash /resume, tous deux des raccourcis pour --resume=-1.",
+      "whenGood": [
+        {
+          "title": "Reprendre directement la dernière conversation après une interruption",
+          "example": "agent resume"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Une session plus ancienne, pas la plus récente, doit être reprise",
+          "why": "agent resume ne charge toujours que la session la plus récemment utilisée",
+          "alternative": "utiliser agent ls pour choisir une session antérieure précise, ou définir --resume [chatId] avec un ID concret"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "create-chat",
+      "name": "agent create-chat",
+      "summary": "Crée un nouveau chat vide et renvoie son ID, par ex. pour un usage dans des scripts.",
+      "what": "agent create-chat crée une session de chat vide et affiche son ID dans la console, sans démarrer directement une session interactive. L'ID peut ensuite être ciblé à nouveau avec --resume [chatId], par exemple depuis un script.",
+      "whenGood": [
+        {
+          "title": "Réserver un ID de session à l'avance pour le cibler plus tard depuis un script via --resume",
+          "example": "CHAT_ID=$(agent create-chat); agent --resume \"$CHAT_ID\" -p \"start task\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste se lancer et discuter tout de suite avec l'agent",
+          "why": "agent create-chat crée seulement une session vide, il ne démarre pas de conversation",
+          "alternative": "utiliser simplement agent ou agent \"<prompt>\""
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "generate-rule",
+      "name": "agent generate-rule | agent rule",
+      "summary": "Guide via des prompts interactifs pour générer une nouvelle Cursor Rule.",
+      "what": "agent generate-rule (alias : agent rule) guide de façon interactive dans la création d'une nouvelle rule, qui atterrit ensuite dans le système de rules de la CLI (.cursor/rules). La CLI charge automatiquement les rules depuis .cursor/rules et les applique au démarrage ; AGENTS.md et CLAUDE.md à la racine du projet sont aussi lus comme des rules.",
+      "whenGood": [
+        {
+          "title": "Capturer un comportement de projet récurrent comme une rule durable",
+          "example": "agent generate-rule — par ex. créer une rule pour le test runner préféré du projet"
+        },
+        {
+          "title": "Rendre des conventions d'équipe disponibles de façon cohérente pour toutes les sessions",
+          "example": "agent rule — générer une rule sur le format des messages de commit ou le nommage des branches"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "L'instruction ne s'applique qu'à la session en cours, pas durablement",
+          "why": "une rule générée atterrit dans .cursor/rules et s'applique à tout le projet pour les futures sessions",
+          "alternative": "formuler simplement l'instruction directement dans le prompt plutôt que créer une rule"
+        },
+        {
+          "title": "Une rule existante doit être éditée, pas une nouvelle créée",
+          "why": "agent generate-rule crée toujours une nouvelle rule via le flux interactif",
+          "alternative": "éditer directement le fichier dans .cursor/rules, ou utiliser /rules en mode interactif pour parcourir et éditer"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "install-shell-integration",
+      "name": "agent install-shell-integration",
+      "summary": "Installe l'intégration shell de la CLI dans ~/.zshrc.",
+      "what": "agent install-shell-integration met en place l'intégration shell dans ~/.zshrc. Selon la doc, cela vise explicitement zsh ; aucune routine d'installation distincte n'est documentée pour d'autres shells.",
+      "whenGood": [
+        {
+          "title": "Configurer l'intégration shell une fois après l'installation de la CLI",
+          "example": "agent install-shell-integration"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "L'intégration shell doit être à nouveau supprimée",
+          "why": "agent install-shell-integration ne fait qu'installer, il ne supprime rien",
+          "alternative": "utiliser agent uninstall-shell-integration"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "uninstall-shell-integration",
+      "name": "agent uninstall-shell-integration",
+      "summary": "Retire à nouveau l'intégration shell de la CLI de ~/.zshrc.",
+      "what": "agent uninstall-shell-integration annule ce que agent install-shell-integration a mis en place et retire les entrées correspondantes de ~/.zshrc.",
+      "whenGood": [
+        {
+          "title": "Réinitialiser proprement l'intégration shell en cas de problème",
+          "example": "agent uninstall-shell-integration"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "L'intégration shell doit juste être mise en pause brièvement, pas supprimée",
+          "why": "agent uninstall-shell-integration supprime entièrement la configuration au lieu de simplement la désactiver",
+          "alternative": "commenter manuellement le bloc concerné dans ~/.zshrc"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-help",
+      "name": "agent help [command]",
+      "summary": "Affiche l'aide de la CLI ou d'une commande précise.",
+      "what": "agent help [command] affiche l'aide générale, ou, avec un nom de commande en argument, l'aide détaillée pour exactement cette commande. Cela équivaut fonctionnellement au flag global -h/--help, utilisable sur n'importe quelle commande individuelle.",
+      "whenGood": [
+        {
+          "title": "Consulter les options disponibles d'une sous-commande",
+          "example": "agent help worker"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste voir rapidement les options de la commande qu'on est en train de taper",
+          "why": "agent help command signifie un appel séparé plutôt que directement sur la commande",
+          "alternative": "ajouter -h ou --help directement à la commande, par ex. agent worker --help"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "mcp-login",
+      "name": "agent mcp login <identifier>",
+      "summary": "S'authentifie auprès d'un serveur MCP configuré dans mcp.json.",
+      "what": "agent mcp login <identifier> démarre un flux de connexion avec gestion automatique du callback pour un serveur MCP configuré dans .cursor/mcp.json ou ~/.cursor/mcp.json. Une fois la connexion réussie, l'agent a immédiatement accès aux tools authentifiés du serveur.",
+      "whenGood": [
+        {
+          "title": "Rendre utilisable pour la première fois un serveur MCP avec sa propre authentification (par ex. OAuth)",
+          "example": "agent mcp login linear"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le serveur est déjà configuré mais doit juste être autorisé localement",
+          "why": "agent mcp login gère l'authentification, pas l'autorisation du serveur",
+          "alternative": "utiliser agent mcp enable <identifier>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI MCP",
+          "url": "https://cursor.com/docs/cli/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "mcp-list",
+      "name": "agent mcp list",
+      "summary": "Liste les serveurs MCP configurés et leur statut (connecté/déconnecté, source, transport).",
+      "what": "agent mcp list ouvre un menu interactif avec tous les serveurs MCP configurés : nom, statut de connexion, source de configuration (projet ou global) et méthode de transport (stdio, HTTP, SSE). En mode interactif, /mcp list donne le même aperçu.",
+      "whenGood": [
+        {
+          "title": "Vérifier quels serveurs MCP sont actuellement connectés avant une tâche",
+          "example": "agent mcp list"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut voir les paramètres d'un tool précis, pas juste la liste des serveurs",
+          "why": "agent mcp list n'affiche que le statut des serveurs, pas les détails des tools",
+          "alternative": "utiliser agent mcp list-tools <identifier> pour un serveur précis"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI MCP",
+          "url": "https://cursor.com/docs/cli/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "mcp-list-tools",
+      "name": "agent mcp list-tools <identifier>",
+      "summary": "Liste les tools disponibles et leurs paramètres pour un serveur MCP précis.",
+      "what": "agent mcp list-tools <identifier> affiche, pour un seul serveur MCP, les noms de tools, leurs descriptions ainsi que les paramètres requis/optionnels avec leurs types.",
+      "whenGood": [
+        {
+          "title": "Vérifier quels paramètres un tool MCP attend avant de l'utiliser",
+          "example": "agent mcp list-tools playwright"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On ne connaît pas encore l'identifiant du serveur",
+          "why": "agent mcp list-tools nécessite un identifiant concret en argument",
+          "alternative": "utiliser d'abord agent mcp list pour voir les identifiants configurés"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI MCP",
+          "url": "https://cursor.com/docs/cli/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "mcp-enable",
+      "name": "agent mcp enable <identifier>",
+      "summary": "Ajoute un serveur MCP à la liste approuvée localement.",
+      "what": "agent mcp enable <identifier> place un serveur MCP configuré sur la liste approuvée localement, afin qu'il puisse être utilisé sans demande d'autorisation répétée.",
+      "whenGood": [
+        {
+          "title": "Autoriser durablement un serveur déjà digne de confiance",
+          "example": "agent mcp enable github"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Tous les serveurs configurés doivent être autorisés d'un coup pour une seule exécution de script",
+          "why": "agent mcp enable agit par serveur et de façon durable, pas pour une seule exécution",
+          "alternative": "utiliser le flag --approve-mcps sur cet appel agent précis"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI MCP",
+          "url": "https://cursor.com/docs/cli/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "mcp-disable",
+      "name": "agent mcp disable <identifier>",
+      "summary": "Désactive un serveur MCP, qui cesse de se charger ou de demander une autorisation.",
+      "what": "agent mcp disable <identifier> désactive entièrement un serveur MCP configuré ; il ne se chargera plus ni ne demandera d'autorisation à l'avenir.",
+      "whenGood": [
+        {
+          "title": "Éteindre un serveur MCP défaillant ou inutile",
+          "example": "agent mcp disable old-server"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le serveur ne doit être ignoré que brièvement pour une exécution",
+          "why": "agent mcp disable est un paramètre durable, propre au serveur",
+          "alternative": "ne simplement pas solliciter ce serveur dans le prompt concerné, ou ajuster un mcp.json spécifique au projet"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI MCP",
+          "url": "https://cursor.com/docs/cli/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "sandbox-enable",
+      "name": "agent sandbox enable",
+      "summary": "Active le mode sandbox pour l'exécution des commandes.",
+      "what": "agent sandbox enable active le mode sandbox : les commandes tournent alors avec un accès lecture/écriture au workspace, mais isolées du reste du système (réseau désactivé par défaut). Le paramètre persiste entre les sessions.",
+      "whenGood": [
+        {
+          "title": "Activer durablement l'exécution isolée des commandes pour toutes les futures sessions",
+          "example": "agent sandbox enable"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le sandbox ne doit s'appliquer qu'à une seule commande, pas durablement",
+          "why": "agent sandbox enable modifie la configuration persistante pour toutes les futures exécutions",
+          "alternative": "utiliser agent sandbox run <cmd> pour n'exécuter isolément qu'une seule commande"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "sandbox-disable",
+      "name": "agent sandbox disable",
+      "summary": "Désactive le mode sandbox et bascule à la place sur le mode liste blanche.",
+      "what": "agent sandbox disable désactive le mode sandbox. La CLI retombe alors sur le mode liste blanche, où chaque commande doit être approuvée manuellement plutôt que de tourner isolée automatiquement.",
+      "whenGood": [
+        {
+          "title": "Les restrictions du sandbox (par ex. pas de réseau) gênent durablement un workflow précis",
+          "example": "agent sandbox disable"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "L'accès réseau n'est nécessaire que pour une seule exécution en sandbox",
+          "why": "agent sandbox disable désactive entièrement le sandbox au lieu de simplement autoriser le réseau",
+          "alternative": "utiliser agent sandbox run <cmd> --network pour autoriser le réseau spécifiquement pour cette exécution"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "sandbox-reset",
+      "name": "agent sandbox reset",
+      "summary": "Réinitialise la configuration du sandbox à ses valeurs par défaut.",
+      "what": "agent sandbox reset abandonne la configuration sandbox personnalisée (par ex. chemins allow/readonly, paramètre réseau) et restaure les valeurs par défaut.",
+      "whenGood": [
+        {
+          "title": "Retrouver un point de départ propre après plusieurs expérimentations avec des chemins/règles",
+          "example": "agent sandbox reset"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Un seul paramètre doit changer, pas tous",
+          "why": "agent sandbox reset réinitialise toute la configuration, pas une seule valeur",
+          "alternative": "utiliser agent sandbox enable/disable ou les flags --allow-paths/--network sur sandbox run de façon ciblée"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "sandbox-run",
+      "name": "agent sandbox run <cmd> [args...]",
+      "summary": "Exécute une seule commande dans un sandbox avec accès lecture/écriture au workspace.",
+      "what": "agent sandbox run <cmd> [args...] exécute exactement une commande isolément, par défaut avec accès lecture/écriture au workspace (--sandbox, vrai par défaut) et sans accès réseau (--network, faux par défaut). Des chemins supplémentaires peuvent être exposés via --allow-paths ou --readonly-paths, et des fichiers indésirables bloqués via --blocked-patterns (syntaxe gitignore) ; --sb-debug écrit des logs de debug dans un dossier temporaire.",
+      "whenGood": [
+        {
+          "title": "Tester isolément un script d'installation/build inconnu avant qu'il ne touche le vrai workspace",
+          "example": "agent sandbox run npm install"
+        },
+        {
+          "title": "Exécuter une commande avec accès réseau alors que le sandbox le bloque autrement",
+          "example": "agent sandbox run --network curl https://example.com/healthz"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Plusieurs commandes doivent tourner isolées durablement, pas seulement une",
+          "why": "agent sandbox run est prévu pour exactement une seule commande",
+          "alternative": "utiliser agent sandbox enable pour que la politique sandbox s'applique à toutes les futures commandes exécutées par la CLI"
+        },
+        {
+          "title": "La commande a besoin d'un accès en dehors du répertoire workspace",
+          "why": "sans flags supplémentaires, l'accès est limité au workspace",
+          "alternative": "indiquer --allow-paths ou --readonly-paths avec les chemins supplémentaires nécessaires"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "sandbox-help",
+      "name": "agent sandbox help [command]",
+      "summary": "Affiche l'aide des sous-commandes sandbox.",
+      "what": "agent sandbox help [command] affiche l'aide des sous-commandes sandbox (enable, disable, reset, run), en détail pour une seule sous-commande si précisé.",
+      "whenGood": [
+        {
+          "title": "Consulter les options disponibles de sandbox run",
+          "example": "agent sandbox help run"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste voir rapidement les options de la commande sandbox qu'on est en train de taper",
+          "why": "agent sandbox help command est un appel séparé",
+          "alternative": "ajouter -h ou --help directement, par ex. agent sandbox run --help"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "worker-start",
+      "name": "agent worker start",
+      "summary": "Démarre le worker privé et le connecte à Cursor.",
+      "what": "agent worker start démarre le processus worker privé et le connecte à Cursor, afin que les tâches de cloud agent tournent dans son propre environnement plutôt que dans le cloud de Cursor. Il se configure via des flags comme --worker-dir (racine du workspace, répétable, la première valeur détermine l'identité d'assignation), --name, --label/--labels-file, --pool/--pool-name, --idle-release-timeout et --management-addr pour /healthz, /readyz, /metrics. --verbose active des logs de démarrage détaillés.",
+      "whenGood": [
+        {
+          "title": "Exposer plusieurs dépôts à la fois comme workspaces de worker",
+          "example": "agent worker start --worker-dir ~/repos/app-a --worker-dir ~/repos/app-b"
+        },
+        {
+          "title": "Exposer des endpoints health/metrics pour surveiller le worker",
+          "example": "agent worker start --management-addr 0.0.0.0:9100"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut vérifier au préalable si l'auth et le réseau fonctionneraient déjà",
+          "why": "agent worker start se connecte immédiatement en production, sans vérification préalable",
+          "alternative": "exécuter d'abord agent worker debug, puis agent worker start"
+        },
+        {
+          "title": "Seule une exécution d'agent unique et courte est nécessaire",
+          "why": "agent worker start démarre un processus durable connecté à Cursor",
+          "alternative": "utiliser une session normale avec agent ou agent -p plutôt que de faire tourner un worker"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "worker-debug",
+      "name": "agent worker debug",
+      "summary": "Exécute des diagnostics préalables du worker privé (auth, confidentialité, routage).",
+      "what": "agent worker debug vérifie avant le démarrage effectif l'authentification, les paramètres de confidentialité et le routage du worker privé, et affiche un rapport de diagnostic. --json permet d'afficher le rapport en JSON exploitable par machine.",
+      "whenGood": [
+        {
+          "title": "Repérer des erreurs de configuration avant le premier démarrage en production d'un nouveau worker",
+          "example": "agent worker debug --json"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Le worker doit juste tourner directement en production, sans vérification préalable",
+          "why": "agent worker debug ne démarre pas le worker, il ne fait que vérifier les prérequis",
+          "alternative": "utiliser directement agent worker start une fois la configuration déjà connue pour fonctionner"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "worker-help",
+      "name": "agent worker help [command]",
+      "summary": "Affiche l'aide des sous-commandes worker.",
+      "what": "agent worker help [command] affiche l'aide des sous-commandes worker (start, debug), en détail pour une sous-commande précise si indiqué.",
+      "whenGood": [
+        {
+          "title": "Consulter les flags disponibles de worker start, par ex. pour la configuration de pool",
+          "example": "agent worker help start"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste voir rapidement les options de la commande worker qu'on est en train de taper",
+          "why": "agent worker help command est un appel séparé",
+          "alternative": "ajouter -h ou --help directement, par ex. agent worker start --help"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "agent-bedrock",
+      "name": "agent bedrock",
+      "summary": "Configure AWS Bedrock comme backend de modèle avec ses propres identifiants ou un rôle IAM d'équipe.",
+      "what": "Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes. Selon l'entrée du changelog (février 2026), agent bedrock configure l'accès à AWS Bedrock soit via ses propres access keys, soit via un rôle IAM d'équipe, et fonctionne à travers les sessions interactives, headless et éditeur. En tant que commande slash /bedrock, elle est aussi listée dans le document de référence des commandes slash ; en tant que sous-commande CLI de premier niveau, elle manque dans reference/parameters.",
+      "whenGood": [
+        {
+          "title": "Configurer Bedrock comme backend de modèle bring-your-own-key plutôt que les modèles par défaut de Cursor",
+          "example": "agent bedrock"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "On veut juste changer de modèle pour une exécution, pas le backend",
+          "why": "agent bedrock configure le backend lui-même, pas juste un seul modèle pour une session",
+          "alternative": "utiliser --model <model> ou /model si on veut seulement choisir un autre modèle déjà disponible"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
+        }
+      ]
+    },
+    {
+      "platform": "cursor-cli",
+      "slug": "global-options",
+      "name": "Global Options (Flags)",
+      "summary": "Rassemble les flags globaux les plus importants de la CLI Cursor, combinables avec n'importe quelle commande.",
+      "what": "Les options globales peuvent être combinées avec n'importe quelle commande (agent, agent mcp list, agent sandbox run, ...). Les plus importantes :\n-p, --print : mode non interactif, affiche la réponse dans la console (pour scripts/CI) ; a un accès complet à l'écriture et au shell\n--output-format <format> : text (par défaut), json ou stream-json — fonctionne uniquement avec --print\n--model <model> : définit le modèle à utiliser\n--mode <mode> : plan ou ask (par défaut, le mode agent complet s'applique sans ce flag) ; --plan est un raccourci pour --mode=plan\n-f, --force (alias --yolo) : autorise automatiquement les commandes sauf interdiction explicite — saute les demandes de confirmation\n--sandbox <mode> : enabled ou disabled\n--approve-mcps : approuve automatiquement tous les serveurs MCP configurés\n--trust : fait confiance au workspace sans demander (pertinent seulement en mode headless/print)\n--add-dir <path> : ajoute un répertoire supplémentaire pour une session multi-racine au démarrage (changelog uniquement)\n--auto-review : active le mode d'exécution auto-review, un classificateur décide des autorisations au lieu d'une liste blanche fixe (changelog uniquement)\n--image : joint une image à la session (changelog uniquement)\n-w, --worktree [name] : exécute l'agent dans un nouveau Git worktree au lieu d'éditer directement le checkout en cours\n--resume [chatId] / --continue : reprend une session de chat existante ou la plus récemment utilisée\n--workspace <path> : définit le répertoire de projet à utiliser\n-h, --help : affiche l'aide de la commande concernée",
+      "whenGood": [
+        {
+          "title": "Utiliser -p dans des scripts et des pipelines CI",
+          "example": "agent -p \"find and fix performance issues\" --model \"gpt-5\" --output-format json"
+        },
+        {
+          "title": "Combiner plusieurs flags de façon ciblée plutôt que de choisir un mode inutilement large",
+          "example": "agent -p --mode ask \"summarize the auth module\" — lecture seule, sortie structurée pour un script"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Définir --force ou --yolo par défaut à chaque exécution, sans vérifier les modifications",
+          "why": "cela autorise aussi automatiquement des commandes risquées sans que personne ne les voie au préalable",
+          "alternative": "relire les modifications après l'exécution de façon ciblée (Ctrl+R ou /changes), ou définir en plus --sandbox enabled pour au moins isoler l'exécution"
+        },
+        {
+          "title": "Définir --mode ask mais attendre ensuite des modifications de fichiers",
+          "why": "en mode ask, l'agent n'effectue aucune modification de fichier ; un script qui attend ensuite un accès en écriture ne trouvera rien",
+          "alternative": "utiliser le mode agent par défaut (sans flag --mode) pour les exécutions nécessitant des modifications de fichiers, ou --plan pour planifier au préalable"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Cursor Docs — CLI Reference: Parameters",
+          "url": "https://cursor.com/docs/cli/reference/parameters"
+        },
+        {
+          "title": "Cursor Docs — CLI Changelog",
+          "url": "https://cursor.com/docs/cli/changelog"
         }
       ]
     }
