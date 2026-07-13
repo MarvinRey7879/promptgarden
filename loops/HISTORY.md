@@ -457,3 +457,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - NEU site/scripts/merge-entries.mjs (validierendes Merge-Tool, ersetzt ad-hoc-Merges = Quelle der früheren cwd-Vorfälle); Merge 5 Sprachen in einem Zug, lint-content-Gate grün, BUILD_EXIT=0, Live-Verify auf Titel-Strings (Lektion erneut: leere grep-Pattern = false positive — Variablen im Verify IMMER erst echoen).
 - Poll: 0 Notes/Feedback, views_7d 127, Todo-Felder heißen title/detail.
 - Known-good Deploy: 2484ef6f.promptgarden.pages.dev
+
+### It. 75 (13.07.26 ~20:30) — 🎨 Visualisierung Batch 3 LIVE + Cursor-CLI-Research gestartet + NEUE DIREKTIVE Remotion ✅
+- ContextWindowDiagram (Inline-SVG, 1d-Stil, Inline-Dict ×5): segmentierte Fenster-Bar (System-Prompt/Regeln/Verlauf/Tool-Ergebnisse/frei) + 90%-Warn-Marker — auf Lexikon token+context-window über dem TokenPlayground. Live verifiziert DE+FR.
+- Cursor-CLI-Research-Agent läuft (offizielle Doku, alle Befehle+Flags, curl-verifizierte URLs → research/befehle/cursor-cli-2026-07.json).
+- 🔴 MARVIN-DIREKTIVE 12 (mid-turn): REMOTION — Beispiel-/How-to-Videos mit Remotion rendern, an passenden Stellen einbetten, wiederkehrend reviewen/ausbauen. In LOOP.md verankert + Rotation (Pilot: Loop-Zyklus-Animation + Context-Window-Füllung; Constraint Pages 25MB/Datei → kurze Clips <10MB).
+- ⚠️ cwd-Vorfall #3: grep+wrangler-Deploy liefen aus ~ (Shell-cwd resettet zwischen Calls) → Deploy passierte GAR NICHT, Verify schlug laut fehl (Guard wirkte). Regel verschärft: JEDER Repo-Befehl mit explizitem cd im selben Call.
+- Poll: 0 Notes/Feedback/Forum, views_7d 133 (↑), Top-Paths: /en/ 26, /de/lernpfade/ 16, /de/ 13, /de/addons/ 13, /de/lexikon/ 12.
+- Known-good Deploy: ba6b650a.promptgarden.pages.dev

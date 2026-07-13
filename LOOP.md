@@ -22,9 +22,10 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 9. **Admin-Dashboard richtig stark** (✅ V2) + Monetarisierungs-Todos mit Schritt-für-Schritt in /admin.
 10. **Responsiveness + Wow** immer; erledigte Todos raus aus Statusboard-Todo-Sektion.
 11. **Landing ausbauen** (✅ It. 73 nach research/landing-cro-seo-2026-07.md).
+12. **Remotion-Beispiel-Videos** (NEU 13.07 abends): Mit Remotion (React-Video-Framework, Skill remotion-video-creation vorhanden) kurze Beispiel-/How-to-Videos rendern und dort einbetten, wo sie passen (z. B. Loop-Zyklus animiert auf /loops, Context-Window-Füllung, Befehls-Demos). IMMER WIEDER reviewen und ausbauen (fester Rotations-Punkt, nicht einmalig). Constraints: Cloudflare Pages 25MB/Datei → kurze Clips (10–25s, 720p, stumm ok, <10MB), `<video>`-Tag mit poster+controls, kein Autoplay mit Ton; Videos versioniert in videos/ (Remotion-Projekt) + gerenderte mp4 in site/public/videos/.
 
 ## 🔴 Harte Arbeitsregeln (Fehler-erprobt)
-- **cwd**: JEDES node/npm mit explizitem `cd /c/Users/marvi/promptgarden/site && …` (2× ENOENT-Vorfall + False-Positive-Verify).
+- **cwd**: JEDER Repo-Befehl (node/npm/grep/deploy/ls) mit explizitem `cd /c/Users/marvi/promptgarden/site && …` in DEMSELBEN Call — Shell-cwd resettet zwischen Calls (3× Vorfall, zuletzt It. 75: Deploy lief aus ~ und passierte gar nicht).
 - **Build-Exit separat**: `npm run build > /tmp/build.log 2>&1; echo "BUILD_EXIT=$?"` — NIE `| tail` (maskierte 2× TS-Fehler → stale Deploy).
 - **Live-Verify auf INHALTS-Strings** pollen, nie Status-200/UI-Labels (RSC-Payload → False Positives; Edge braucht ~60s).
 - **Responsive Grids als CSS-Klasse** mit Media Query, nie inline gridTemplateColumns.
@@ -61,7 +62,7 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 ~880 Seiten live auf promptgarten.com: 41 Kapitel ×5 (+Quiz/Übungen/Toggle), 108 Befehle ×5, 12 Addons ×5 mit Detailseiten, 4 Welten, Benchmarks, Vergleiche, Loop-Galerie, Feed (17 News), Forum, freie API, Admin V2 (Revenue/Länder/Zeitreihe), Landing NEU (CTA/How-it-works/Trust/Course-Schema). Traffic: views_7d ~109, DE/US/FR/PL.
 
 ## Rotation (nächste Arbeit)
-① Kapitel-Batch 2 (tool-use, computer-use, sandboxing, agent-sicherheit, model-routing, caching-strategien, plugins, headless-non-interactive, permissions-modes, artifacts) ② Feed 14.07 früh ③ bodyDetail-Batch 3 (restliche 21) ④ Cursor CLI (3. Plattform) ⑤ Visualisierung Batch 3 (Context-Window) ⑥ Link-Audit ~19.07 ⑦ Statusboard.
+① Cursor CLI (Research läuft It. 75) → Authoring/Review/Übersetzung/Merge ② Remotion-Pilot (Direktive 12: Projekt videos/ aufsetzen, 1–2 Clips rendern: Loop-Zyklus animiert + Context-Window-Füllung, auf /loops + Lexikon einbetten) ③ Feed 14.07 früh ④ bodyDetail-Batch 3 (restliche 21 alte Kapitel) ⑤ Remotion-Review (wiederkehrend: Qualität prüfen, weitere Stellen bestücken) ⑥ Link-Audit ~19.07 ⑦ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (It. 74), Visualisierung Batch 3 Context-Window (It. 75).
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - #2 GitHub Sponsors anmelden → Footer-Link
