@@ -334,6 +334,13 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ### 🔴 MARVIN 13.07 (Direktive 5): ADDON-DETAILSEITEN
 - Addons/GitHub-Repos/CLI-Tools sind auf /addons zu schmal erklärt → JEDES Addon bekommt eine EIGENE Seite (/addons/[id]/) mit ausführlicher Erklärung: was es ist, wie es funktioniert, Setup/Installation, wann nutzen/wann nicht, Beispiel, Quellen — 5 Sprachen, Quellenpflicht (Setup-Fakten aus offizieller Doku/README).
 
+### It. 70 (13.07 abends) — 🧩 ADDON-DETAILSEITEN LIVE ✅ (Commit 57e18ec) — Marvin-Direktive 5 erfüllt
+- 60 neue Seiten: /[lang]/addons/[id]/ für alle 12 Addons ×5 Sprachen — how (aus READMEs), 🔧 Setup-Schritte (exakte Befehle aus offizieller Doku), ✅/⛔-Blöcke, Quellen (26 Links verifiziert); Hub-Karten mit „→ Details"; Sitemap erweitert
+- Faktenkorrektur nebenbei: VS-Code-Extension 2 Mio → 20 Mio+ Installs (Live-Marketplace, Agent-Fund)
+- Muster „Route parken bei leeren Daten" (site/_hold/) hat funktioniert — Build blieb grün während Content-Produktion
+- 877 Seiten gesamt. AdSense-Todo #5 + Bing-Todo #6 mit Schritt-für-Schritt in /admin geseedet
+- ROTATION OFFEN: Mobile-Polish-Pass (RESPONSIVENESS+WOW-Direktive!), bodyDetail-Batch 2 (nächste 10), Kapitel-Batch 2 (10 neue Themen), Feed 14.07, Visualisierung Batch 3, Cursor CLI
+
 ### It. 68–69 (13.07 abends) — 📚 KAPITEL-BATCH 1 + DETAIL-TOGGLE LIVE ✅ (Commit 849d0d0)
 - **41 Einträge ×5 Sprachen** (+10 neue: rag, embeddings, fine-tuning, prompt-injection, structured-outputs, evals, git-worktrees, hooks, multi-agent-patterns, kontext-strategien — 26 Quellen verifiziert, 5 selbst stichprobengeprüft)
 - **Detail-Toggle 🌱/🔬 LIVE** (BodyToggle-Komponente, localStorage pg_detail_level): 10 Kern-Einträge haben bodyDetail in allen 5 Sprachen (llm, token, context-window, mcp, prompt, ki-agent, agent-loop, subagents, claude-code, halluzination)
