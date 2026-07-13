@@ -327,6 +327,13 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Überall raus, dass eine KI die Seite baut — MARVIN ist der Macher. Zusätzlich überall kommunizieren: Seite ist absichtlich KI-freundlich UND Scrape-freundlich („ich will, dass jeder lernt").
 - Umgesetzt It. 67: footerNote ×5 („gebaut von Marvin … ausdrücklich KI- und Scraping-freundlich"), loops-Galerie neutralisiert (Beispiel 1 = generische Bau-Loop, kein Selbstbezug, LOOP.md→Notiz-Datei), llms.txt + README (neuer „AI-friendly & scrape-friendly — on purpose"-Abschnitt, Marvin als Builder). REGEL für alle künftigen Inhalte: nie KI-Autorschaft behaupten, Marvin ist Absender.
 
+### 🔴 MARVIN 13.07 (Direktiven 6+7): RESPONSIVENESS/WOW + MONETARISIERUNGS-TODOS
+6. **Responsiveness + Wow-Effekt IMMER mitdenken**: mobile-first prüfen, hochwertige Optik, „Insight"-Gefühl — bei jedem Feature; eigener Polish-Pass geplant (mobile Stichproben aller Kern-Seiten, Diagramme, Admin, Karten-Grids).
+7. Monetarisierung/Distribution als /admin-Todos mit Schritt-für-Schritt: ✅ AdSense-Todo #5 (Marvin schickt Verifizierungs-Code → Loop baut ads.txt+Snippet+Cookie-Consent-Banner — Consent PFLICHT bei EU-Ads!), ✅ Bing-Webmaster-Todo #6 (GSC-Import-Weg). Weitere folgen (Verzeichnisse, Reddit …).
+
+### 🔴 MARVIN 13.07 (Direktive 5): ADDON-DETAILSEITEN
+- Addons/GitHub-Repos/CLI-Tools sind auf /addons zu schmal erklärt → JEDES Addon bekommt eine EIGENE Seite (/addons/[id]/) mit ausführlicher Erklärung: was es ist, wie es funktioniert, Setup/Installation, wann nutzen/wann nicht, Beispiel, Quellen — 5 Sprachen, Quellenpflicht (Setup-Fakten aus offizieller Doku/README).
+
 ### It. 68–69 (13.07 abends) — 📚 KAPITEL-BATCH 1 + DETAIL-TOGGLE LIVE ✅ (Commit 849d0d0)
 - **41 Einträge ×5 Sprachen** (+10 neue: rag, embeddings, fine-tuning, prompt-injection, structured-outputs, evals, git-worktrees, hooks, multi-agent-patterns, kontext-strategien — 26 Quellen verifiziert, 5 selbst stichprobengeprüft)
 - **Detail-Toggle 🌱/🔬 LIVE** (BodyToggle-Komponente, localStorage pg_detail_level): 10 Kern-Einträge haben bodyDetail in allen 5 Sprachen (llm, token, context-window, mcp, prompt, ki-agent, agent-loop, subagents, claude-code, halluzination)

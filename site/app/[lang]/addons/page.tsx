@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 import { GraphifyDiagram, ObsidianClaudeDiagram, type AddonDiagramLabels } from '@/components/AddonDiagrams';
@@ -16,6 +17,7 @@ type Addon = {
   what: string;
   why: string;
   source: { title: string; url: string };
+  detail?: unknown;
 };
 
 const byLang: Record<Lang, { items: Addon[] }> = {
@@ -107,7 +109,12 @@ export default async function AddonsPage({ params }: { params: Promise<{ lang: s
             </h2>
             <p style={{ margin: '0 0 8px', fontSize: 14, lineHeight: 1.55 }}>{a.what}</p>
             <p style={{ margin: '0 0 12px', fontSize: 13.5, lineHeight: 1.55, color: 'var(--muted)' }}>{a.why}</p>
-            <p style={{ margin: 'auto 0 0', fontSize: 12.5 }}>
+            <p style={{ margin: 'auto 0 0', fontSize: 12.5, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              {a.detail != null && (
+                <Link href={`/${lang}/addons/${a.id}/`} style={{ fontWeight: 800, textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                  → Details
+                </Link>
+              )}
               <a
                 href={a.source.url}
                 target="_blank"

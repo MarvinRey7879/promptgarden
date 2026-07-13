@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { LANGS } from '@/lib/i18n';
 import { getEntries } from '@/lib/content';
 import { getCommands, getPlatforms } from '@/lib/commands';
+import addonsDe from '@/content/addons.de.json';
 
 export const dynamic = 'force-static';
 
@@ -24,6 +25,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
     for (const c of getCommands(lang)) {
       urls.push({ url: `${BASE}/${lang}/befehle/${c.platform}/${c.slug}/`, lastModified: now });
+    }
+    for (const a of (addonsDe.items as { id: string; detail?: unknown }[]).filter((x) => x.detail)) {
+      urls.push({ url: `${BASE}/${lang}/addons/${a.id}/`, lastModified: now });
     }
   }
   return urls;
