@@ -4,7 +4,7 @@ import vglEn from '@/content/vergleiche.en.json';
 import vglEs from '@/content/vergleiche.es.json';
 import vglFr from '@/content/vergleiche.fr.json';
 import vglZh from '@/content/vergleiche.zh.json';
-import { isLang, ui, type Lang } from '@/lib/i18n';
+import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 
 type Vergleich = typeof vglDe;
 
@@ -15,6 +15,12 @@ const byLang: Record<Lang, Vergleich> = {
   fr: vglFr as Vergleich,
   zh: vglZh as Vergleich,
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'vergleiche/') };
+}
 
 export default async function VergleichePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

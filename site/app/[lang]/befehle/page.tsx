@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCommands, getPlatforms } from '@/lib/commands';
-import { isLang, ui } from '@/lib/i18n';
+import { isLang, langAlternates, ui } from '@/lib/i18n';
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'befehle/') };
+}
 
 export default async function BefehleHub({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

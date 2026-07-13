@@ -4,7 +4,7 @@ import loopsEn from '@/content/loops.en.json';
 import loopsEs from '@/content/loops.es.json';
 import loopsFr from '@/content/loops.fr.json';
 import loopsZh from '@/content/loops.zh.json';
-import { isLang, type Lang } from '@/lib/i18n';
+import { isLang, langAlternates, type Lang } from '@/lib/i18n';
 
 type LoopsData = typeof loopsDe;
 
@@ -15,6 +15,12 @@ const byLang: Record<Lang, LoopsData> = {
   fr: loopsFr as LoopsData,
   zh: loopsZh as LoopsData,
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'loops/') };
+}
 
 export default async function LoopsPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

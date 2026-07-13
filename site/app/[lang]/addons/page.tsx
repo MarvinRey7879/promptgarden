@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { isLang, ui, type Lang } from '@/lib/i18n';
+import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 import de from '@/content/addons.de.json';
 import en from '@/content/addons.en.json';
 import es from '@/content/addons.es.json';
@@ -35,7 +35,11 @@ const CAT_COLORS: Record<string, string> = {
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLang(lang)) return {};
-  return { title: `${ui[lang].addonsTitle} — promptgarten 🌱`, description: ui[lang].addonsSub };
+  return {
+    title: `${ui[lang].addonsTitle} — promptgarten 🌱`,
+    description: ui[lang].addonsSub,
+    alternates: langAlternates(lang, 'addons/'),
+  };
 }
 
 export default async function AddonsPage({ params }: { params: Promise<{ lang: string }> }) {

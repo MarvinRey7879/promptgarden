@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCommand, getCommands, getPlatform } from '@/lib/commands';
-import { LANGS, isLang, ui } from '@/lib/i18n';
+import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 
 export function generateStaticParams() {
   return LANGS.flatMap((lang) =>
@@ -18,7 +18,11 @@ export async function generateMetadata({
   if (!isLang(lang)) return {};
   const c = getCommand(lang, platform, slug);
   if (!c) return {};
-  return { title: `${c.name} — promptgarten 🌱`, description: c.summary };
+  return {
+    title: `${c.name} — promptgarten 🌱`,
+    description: c.summary,
+    alternates: langAlternates(lang, `befehle/${platform}/${slug}/`),
+  };
 }
 
 export default async function CommandPage({

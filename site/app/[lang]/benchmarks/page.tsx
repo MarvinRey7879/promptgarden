@@ -5,7 +5,7 @@ import bmEn from '@/content/benchmarks.en.json';
 import bmEs from '@/content/benchmarks.es.json';
 import bmFr from '@/content/benchmarks.fr.json';
 import bmZh from '@/content/benchmarks.zh.json';
-import { isLang, type Lang } from '@/lib/i18n';
+import { isLang, langAlternates, type Lang } from '@/lib/i18n';
 
 type BmData = typeof bmDe;
 
@@ -16,6 +16,12 @@ const byLang: Record<Lang, BmData> = {
   fr: bmFr as BmData,
   zh: bmZh as BmData,
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'benchmarks/') };
+}
 
 export default async function BenchmarksPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

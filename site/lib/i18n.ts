@@ -529,3 +529,15 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} 天`,
   },
 };
+
+/**
+ * SEO: canonical + hreflang für eine Seite. `path` = Pfad NACH dem Sprachsegment,
+ * mit trailing slash (z.B. 'lexikon/mcp/' oder '' für die Sprach-Startseite).
+ * Absolute URLs entstehen über metadataBase (https://promptgarten.com).
+ */
+export function langAlternates(lang: Lang, path: string) {
+  const languages: Record<string, string> = {};
+  for (const l of LANGS) languages[l] = `/${l}/${path}`;
+  languages['x-default'] = `/en/${path}`;
+  return { canonical: `/${lang}/${path}`, languages };
+}

@@ -1,6 +1,12 @@
 import { notFound } from 'next/navigation';
 import Wizard from '@/components/Wizard';
-import { isLang, ui } from '@/lib/i18n';
+import { isLang, langAlternates, ui } from '@/lib/i18n';
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'start/') };
+}
 
 export default async function StartPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

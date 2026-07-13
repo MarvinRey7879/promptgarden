@@ -2,7 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PathBoard from '@/components/PathBoard';
 import { WORLD_0, WORLD_1, WORLD_2, WORLD_3, getEntry } from '@/lib/content';
-import { isLang, ui } from '@/lib/i18n';
+import { isLang, langAlternates, ui } from '@/lib/i18n';
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'lernpfade/') };
+}
 
 export default async function LernpfadePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

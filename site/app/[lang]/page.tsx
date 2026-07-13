@@ -1,11 +1,17 @@
 import Link from 'next/link';
-import { isLang, ui } from '@/lib/i18n';
+import { isLang, langAlternates, ui } from '@/lib/i18n';
 import { getEntries, getFeed, getEntry, WORLD_0, WORLD_1, WORLD_2 } from '@/lib/content';
 import ContinueCard from '@/components/ContinueCard';
 import { notFound } from 'next/navigation';
 
 const CARD_COLORS = ['var(--lime)', 'var(--pink)', 'var(--blue)', 'var(--yellow)'];
 const CARD_TILT = ['-1.2deg', '.8deg', '-.6deg', '1deg'];
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, '') };
+}
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

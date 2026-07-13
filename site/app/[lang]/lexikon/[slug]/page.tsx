@@ -6,7 +6,7 @@ import CompleteButton from '@/components/CompleteButton';
 import TokenPlayground from '@/components/TokenPlayground';
 import Comments from '@/components/Comments';
 import { getEntries, getEntry, difficultyDots } from '@/lib/content';
-import { LANGS, isLang, ui } from '@/lib/i18n';
+import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 
 export function generateStaticParams() {
   return LANGS.flatMap((lang) => getEntries(lang).map((e) => ({ lang, slug: e.slug })));
@@ -25,6 +25,7 @@ export async function generateMetadata({
     title: `${entry.title} — promptgarten 🌱`,
     description: entry.teaser,
     openGraph: { title: entry.title, description: entry.teaser, type: 'article' },
+    alternates: langAlternates(lang, `lexikon/${slug}/`),
   };
 }
 

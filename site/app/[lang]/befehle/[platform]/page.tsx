@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCommands, getPlatform, getPlatforms } from '@/lib/commands';
-import { LANGS, isLang, ui } from '@/lib/i18n';
+import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 
 export function generateStaticParams() {
   return LANGS.flatMap((lang) => getPlatforms(lang).map((p) => ({ lang, platform: p.id })));
@@ -16,7 +16,11 @@ export async function generateMetadata({
   if (!isLang(lang)) return {};
   const p = getPlatform(lang, platform);
   if (!p) return {};
-  return { title: `${p.name} — ${ui[lang].cmdTitle} — promptgarten 🌱`, description: p.tagline };
+  return {
+    title: `${p.name} — ${ui[lang].cmdTitle} — promptgarten 🌱`,
+    description: p.tagline,
+    alternates: langAlternates(lang, `befehle/${platform}/`),
+  };
 }
 
 export default async function PlatformPage({

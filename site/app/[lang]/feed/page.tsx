@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getFeed } from '@/lib/content';
-import { isLang, ui } from '@/lib/i18n';
+import { isLang, langAlternates, ui } from '@/lib/i18n';
 
 const TAG_COLORS: Record<string, string> = {
   modelle: 'var(--lime)',
@@ -9,6 +9,12 @@ const TAG_COLORS: Record<string, string> = {
   security: 'var(--pink)',
   papers: '#e0d4f7',
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return { alternates: langAlternates(lang, 'feed/') };
+}
 
 export default async function FeedPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
