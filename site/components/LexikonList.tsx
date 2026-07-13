@@ -67,10 +67,8 @@ export default function LexikonList({ lang, entries }: { lang: Lang; entries: En
 
       <div className="card" style={{ overflow: 'hidden' }}>
         <div
-          className="mono"
+          className="mono lex-row"
           style={{
-            display: 'grid',
-            gridTemplateColumns: '56px 1fr 150px 90px',
             padding: '12px 22px',
             fontSize: 11,
             color: 'var(--muted)',
@@ -78,7 +76,7 @@ export default function LexikonList({ lang, entries }: { lang: Lang; entries: En
             borderBottom: '2px solid var(--ink)',
           }}
         >
-          <span>{t.colNr}</span>
+          <span className="lex-nr">{t.colNr}</span>
           <span>{t.colEntry}</span>
           <span className="hide-mobile">{t.colCategory}</span>
           <span>{t.colLevel}</span>
@@ -87,19 +85,18 @@ export default function LexikonList({ lang, entries }: { lang: Lang; entries: En
           <Link
             key={e.slug}
             href={`/${lang}/lexikon/${e.slug}/`}
+            className="lex-row"
             style={{
-              display: 'grid',
-              gridTemplateColumns: '56px 1fr 150px 90px',
               alignItems: 'baseline',
               padding: '16px 22px',
               borderBottom: i === filtered.length - 1 ? 'none' : '1px solid rgba(43,33,24,.18)',
               background: completed.includes(e.slug) ? 'rgba(201,226,101,.35)' : undefined,
             }}
           >
-            <span className="mono" style={{ fontSize: 12 }}>
+            <span className="mono lex-nr" style={{ fontSize: 12 }}>
               {String(i + 1).padStart(3, '0')}
             </span>
-            <span style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-.02em' }}>
+            <span className="lex-title" style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-.02em' }}>
               {completed.includes(e.slug) && '✓ '}
               {e.title}
             </span>

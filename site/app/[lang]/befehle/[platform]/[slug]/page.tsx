@@ -49,7 +49,12 @@ export default async function CommandPage({
       </h1>
       <p style={{ margin: '0 0 22px', fontSize: 17, color: 'var(--muted)', lineHeight: 1.5 }}>{c.summary}</p>
 
-      <p style={{ margin: '0 0 24px', fontSize: 15.5, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{c.what}</p>
+      {(() => {
+        const rest = c.what.startsWith(c.summary) ? c.what.slice(c.summary.length).trim() : c.what;
+        return rest ? (
+          <p style={{ margin: '0 0 24px', fontSize: 15.5, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{rest}</p>
+        ) : null;
+      })()}
 
       {c.whenGood.length > 0 && (
         <div className="card" style={{ padding: '18px 22px', marginBottom: 18, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
