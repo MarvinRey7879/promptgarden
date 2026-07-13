@@ -317,6 +317,10 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Themen wie Loops (mit Beispielen), Graphify, Obsidian etc. sollen **verständliche, aber hochwertige Visualisierungen** bekommen — Diagramme/Grafiken direkt auf den Seiten, nicht nur Text.
 - Umsetzungsplan: eigene SVG-Diagramm-Komponenten im 1d-Design (dicke Border, harte Schatten, Farben aus der Palette), KEINE Fremd-Bilder (Quellen-/Lizenzfrage). Startpunkte: ① Loop-Galerie (Denken→Handeln→Prüfen-Zyklus, gute vs. kaputte Loop als Diagramm) ② Agent-Loop-/Subagent-Lexikoneinträge ③ Addons: Graphify-Funktionsprinzip (Code→AST→Graph→Agent), Obsidian↔Claude-Verbindungsdiagramm ④ Context-Window-Visualisierung. Batch-weise in Rotation einbauen, inline-SVG in Seiten (kein Client-JS nötig).
 
+### It. 66 (13.07) — 🎨 Visualisierung Batch 2: Addons-Diagramme LIVE ✅ (Commit d8c172e)
+- components/AddonDiagrams.tsx: GraphifyDiagram (📁 Code → 🌳 Tree-sitter → 🕸️ Graph ⇄ 🤖 Agent, „ohne LLM-Calls") + ObsidianClaudeDiagram (Vault ⇄ Local REST API /mcp/ ⇄ Claude) — auf /addons über dem Karten-Grid, Labels addons.<lang>.json.diagrams ×5, live verifiziert DE+ZH
+- Batch 3 offen: Context-Window-Visual (Lexikon token/context-window) · dann Cursor-CLI-Research · Feed 14.07 morgen früh
+
 ### It. 65 (13.07) — 🎨 Visualisierung Batch 1: Loop-Diagramme LIVE ✅ (Commit 99e5bcb)
 - components/LoopDiagram.tsx: LoopCycleDiagram (Denken→Handeln→Prüfen→Fertig?-Zyklus mit Rückschleife) + GoodBadLoopDiagram (✅ vs ⛔ Vergleich) — Inline-SVG, 1d-Stil, kein Client-JS, Labels aus loops.<lang>.json.diagram (5 Sprachen), role=img+aria-label
 - Live verifiziert auf promptgarten.com/de/loops (+zh). Muster für weitere Diagramme etabliert (Box-Helper, viewBox 640, overflowX-Container)
