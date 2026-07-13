@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
+import { GraphifyDiagram, ObsidianClaudeDiagram, type AddonDiagramLabels } from '@/components/AddonDiagrams';
 import de from '@/content/addons.de.json';
 import en from '@/content/addons.en.json';
 import es from '@/content/addons.es.json';
@@ -54,6 +55,13 @@ export default async function AddonsPage({ params }: { params: Promise<{ lang: s
         {t.addonsTitle}
       </h1>
       <p style={{ margin: '0 0 28px', color: 'var(--muted)', fontSize: 15.5 }}>{t.addonsSub}</p>
+
+      {'diagrams' in byLang[lang] && (
+        <>
+          <GraphifyDiagram t={(byLang[lang] as unknown as { diagrams: AddonDiagramLabels }).diagrams} />
+          <ObsidianClaudeDiagram t={(byLang[lang] as unknown as { diagrams: AddonDiagramLabels }).diagrams} />
+        </>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 18 }}>
         {items.map((a, i) => (
