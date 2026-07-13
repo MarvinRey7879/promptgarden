@@ -5,6 +5,7 @@ import loopsEs from '@/content/loops.es.json';
 import loopsFr from '@/content/loops.fr.json';
 import loopsZh from '@/content/loops.zh.json';
 import { isLang, langAlternates, type Lang } from '@/lib/i18n';
+import { GoodBadLoopDiagram, LoopCycleDiagram, type LoopDiagramLabels } from '@/components/LoopDiagram';
 
 type LoopsData = typeof loopsDe;
 
@@ -49,6 +50,13 @@ export default async function LoopsPage({ params }: { params: Promise<{ lang: st
       >
         🤖 {data.metaNote}
       </p>
+
+      {'diagram' in data && (
+        <>
+          <LoopCycleDiagram t={(data as { diagram: LoopDiagramLabels }).diagram} />
+          <GoodBadLoopDiagram t={(data as { diagram: LoopDiagramLabels }).diagram} />
+        </>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 30, paddingBottom: 40 }}>
         {data.examples.map((ex, i) => {
