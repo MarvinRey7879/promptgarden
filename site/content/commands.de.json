@@ -80,8 +80,28 @@
       "name": "/background",
       "summary": "Löst die aktuelle Session vom Terminal und lässt sie als Hintergrund-Agent weiterlaufen, wodurch das Terminal frei wird.",
       "what": "Löst die aktuelle Session vom Terminal und lässt sie als Hintergrund-Agent weiterlaufen, wodurch das Terminal frei wird.\n\nMit Prompt-Argument wird vor dem Ablösen noch eine letzte Anweisung gesendet. Überwachung über 'claude agents'. Alias: /bg.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Terminal freigeben, während die Session im Hintergrund weiterläuft",
+          "example": "/background"
+        },
+        {
+          "title": "Letzte Anweisung mitgeben, bevor man sich ablöst",
+          "example": "/background lass zum Schluss noch die Tests laufen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ergebnis soll synchron mitverfolgt werden",
+          "why": "/background löst die Session gerade vom Terminal - wenn man die Antwort direkt sehen will, bringt das Ablösen keinen Vorteil.",
+          "alternative": "einfach in der laufenden Session warten"
+        },
+        {
+          "title": "Teilaufgabe mit Kontext-Vererbung parallel zur Hauptsession",
+          "why": "/background löst die gesamte Session ab, nicht nur eine Teilaufgabe.",
+          "alternative": "/fork"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -110,8 +130,23 @@
       "name": "/branch",
       "summary": "Erstellt einen Zweig der aktuellen Konversation ab diesem Punkt, um eine andere Richtung auszuprobieren, ohne den bisherigen Verlauf zu verlieren.",
       "what": "Erstellt einen Zweig der aktuellen Konversation ab diesem Punkt, um eine andere Richtung auszuprobieren, ohne den bisherigen Verlauf zu verlieren.\n\nWechselt automatisch in den neuen Zweig; das Original bleibt erhalten und ist über /resume erreichbar. Für eine Nebenaufgabe an einen Hintergrund-Subagenten statt Selbstwechsel: /fork.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Ab dem aktuellen Punkt einen alternativen Lösungsweg ausprobieren",
+          "example": "/branch"
+        },
+        {
+          "title": "Grundsätzlich andere Richtung erkunden und selbst dort weiterarbeiten",
+          "example": "/branch teste stattdessen Server-Side statt Client-Side Rendering"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nebenaufgabe soll im Hintergrund parallel laufen",
+          "why": "branch vs fork: branch wechselt einen selbst in den neuen Zweig, für eine Nebenaufgabe mit Kontext-Vererbung im Hintergrund ist /fork vorgesehen.",
+          "alternative": "/fork"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -185,8 +220,23 @@
       "name": "/clear",
       "summary": "Startet eine neue Konversation mit leerem Kontext; die vorherige bleibt über /resume verfügbar.",
       "what": "Startet eine neue Konversation mit leerem Kontext; die vorherige bleibt über /resume verfügbar.\n\nMit Namen wird die vorherige Konversation in der /resume-Auswahl entsprechend beschriftet. Zum reinen Kontext-Freigeben bei fortlaufender Konversation stattdessen /compact nutzen. Aliase: /reset, /new.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Neue Konversation zu einem komplett anderen Thema starten",
+          "example": "/clear"
+        },
+        {
+          "title": "Alte Konversation benannt beiseitelegen",
+          "example": "/clear Bugfix-Session"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur Kontext freigeben bei fortlaufender Arbeit",
+          "why": "/clear startet eine komplett neue Konversation mit leerem Kontext - laut Doku ist zum reinen Kontext-Freigeben bei fortlaufender Arbeit stattdessen /compact vorgesehen.",
+          "alternative": "/compact"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -200,8 +250,28 @@
       "name": "/code-review",
       "summary": "Überprüft den aktuellen Diff auf Korrektheits-Bugs sowie Wiederverwendungs-, Vereinfachungs- und Effizienz-Verbesserungen.",
       "what": "Überprüft den aktuellen Diff auf Korrektheits-Bugs sowie Wiederverwendungs-, Vereinfachungs- und Effizienz-Verbesserungen.\n\n[Skill] Effort-Level: low, medium, high, xhigh, max, ultra. --fix wendet Befunde auf den Arbeitsbaum an, --comment postet sie als Inline-Kommentare auf einem GitHub-PR, 'ultra' startet eine tiefe Cloud-Review. Ab v2.1.154 übernimmt /simplify die reine Aufräum-Review ohne Bug-Suche. Details: code.claude.com/docs/en/code-review.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Diff auf Bugs plus Wiederverwendungs-/Effizienz-Verbesserungen prüfen",
+          "example": "/code-review high"
+        },
+        {
+          "title": "Tiefe Cloud-Review für einen kritischen Diff",
+          "example": "/code-review ultra"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Reine Aufräum-Review ohne Bug-Suche",
+          "why": "Laut Doku übernimmt das seit v2.1.154 /simplify, das direkt aufräumt, ohne nach Korrektheits-Bugs zu suchen.",
+          "alternative": "/simplify"
+        },
+        {
+          "title": "Schneller Einmal-Durchlauf über einen GitHub-PR",
+          "why": "Für einen schnellen, read-only Einzeldurchlauf per PR-Nummer ist die schlankere Variante vorgesehen.",
+          "alternative": "/review <PR-Nummer>"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -230,8 +300,23 @@
       "name": "/compact",
       "summary": "Fasst die bisherige Konversation zusammen, um Kontext freizugeben.",
       "what": "Fasst die bisherige Konversation zusammen, um Kontext freizugeben.\n\nOptional lässt sich eine Fokus-Anweisung für die Zusammenfassung mitgeben.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Kontext bei fortlaufender Arbeit am selben Thema freigeben",
+          "example": "/compact"
+        },
+        {
+          "title": "Zusammenfassung mit Fokus-Anweisung",
+          "example": "/compact Fokus: offene TODOs und nächste Schritte"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kompletter Themenwechsel",
+          "why": "/compact fasst die bisherige Konversation zusammen und behält den Faden - bei einem kompletten Themenwechsel schleppt das unnötige Altlasten mit.",
+          "alternative": "/clear"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -410,8 +495,28 @@
       "name": "/doctor",
       "summary": "Führt einen Setup-Check durch, der Probleme diagnostiziert und beheben kann.",
       "what": "Führt einen Setup-Check durch, der Probleme diagnostiziert und beheben kann.\n\n[Skill] Prüft Installation (Duplikate, PATH, kaputte Settings), findet ungenutzte Skills/MCP-Server/Plugins vs. Kontextkosten, dedupliziert CLAUDE.md, markiert langsame Hooks, prüft Versionen. Meldet Befunde zuerst, fragt vor Änderungen. 'claude doctor' im Terminal = read-only. Alias: /checkup. Vor v2.1.205 reiner Lese-Bildschirm.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Setup-Check nach einem Update oder bei kaputter Konfiguration",
+          "example": "/doctor"
+        },
+        {
+          "title": "Ungenutzte Skills/MCP-Server vs. Kontextkosten aufspüren und CLAUDE.md deduplizieren",
+          "example": "/doctor"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kein Setup-Problem, nur Speicherdiagnose bei hohem Speicherverbrauch",
+          "why": "/doctor prüft die Installation und das Setup, nicht den JavaScript-Heap.",
+          "alternative": "/heapdump"
+        },
+        {
+          "title": "Nur Kontextnutzung der aktuellen Session einsehen",
+          "why": "/doctor prüft das Setup, nicht wie viel vom aktuellen Kontextfenster belegt ist.",
+          "alternative": "/context"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -425,8 +530,23 @@
       "name": "/effort",
       "summary": "Setzt das Effort-Level (Denkaufwand) des Modells.",
       "what": "Setzt das Effort-Level (Denkaufwand) des Modells.\n\nWerte: low, medium, high, xhigh, max, ultracode — je nach Modell; max/ultracode nur für aktuelle Session. ultracode = xhigh-Reasoning + automatische Workflow-Orchestrierung. 'auto' = Modell-Standard. Ohne Argument interaktiver Schieberegler. Wirkt sofort. Ab v2.1.205 auch non-interactive (-p).",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Denkaufwand vor einer kniffligen Aufgabe hochsetzen",
+          "example": "/effort high"
+        },
+        {
+          "title": "Level interaktiv per Schieberegler wählen",
+          "example": "/effort"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Grundsätzlich anderes Modell nötig",
+          "why": "/effort ändert nur das Denkaufwand-Level des aktuellen Modells, nicht die Modell-Fähigkeiten.",
+          "alternative": "/model"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -530,8 +650,23 @@
       "name": "/fork",
       "summary": "Startet einen Hintergrund-Subagenten, der die volle Konversation erbt und an der übergebenen Direktive weiterarbeitet, während die Hauptsession weiterläuft.",
       "what": "Startet einen Hintergrund-Subagenten, der die volle Konversation erbt und an der übergebenen Direktive weiterarbeitet, während die Hauptsession weiterläuft.\n\nErgebnis kehrt bei Fertigstellung in die Konversation zurück. Für selbst genutzten Kopie-Wechsel: /branch. Vor v2.1.161 war /fork Alias für /branch.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Nebenaufgabe im Hintergrund erledigen, während die Hauptsession weiterläuft",
+          "example": "/fork recherchiere alle offenen TODOs im Repo"
+        },
+        {
+          "title": "Unsichere Änderung mit vollem Kontext parallel ausprobieren lassen",
+          "example": "/fork probiere Ansatz mit Redis-Cache aus"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will selbst in eine andere Richtung wechseln",
+          "why": "branch vs fork: fork startet einen Hintergrund-Subagenten, während man selbst in der Hauptsession bleibt - für den Selbstwechsel in einen neuen Zweig ist /branch vorgesehen.",
+          "alternative": "/branch"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -545,8 +680,28 @@
       "name": "/goal",
       "summary": "Setzt ein Ziel: Claude arbeitet über mehrere Turns hinweg weiter, bis die Bedingung erfüllt ist.",
       "what": "Setzt ein Ziel: Claude arbeitet über mehrere Turns hinweg weiter, bis die Bedingung erfüllt ist.\n\nOhne Argument zeigt der Befehl das aktuelle oder zuletzt erreichte Ziel. clear/stop/off/reset/none/cancel entfernen ein aktives Ziel vorzeitig.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Mehrstufige Aufgabe mit klarer Fertig-Bedingung",
+          "example": "/goal alle Tests grün bekommen"
+        },
+        {
+          "title": "Laufendes Ziel vorzeitig stoppen",
+          "example": "/goal stop"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wiederkehrende Daueraufgabe",
+          "why": "/goal ist für ein Ziel mit Erfüllungs-Bedingung gedacht, nicht für dauerhaft wiederkehrende Prüfungen über Sessions hinweg.",
+          "alternative": "/loop (z.B. /loop 30m check for new support tickets)"
+        },
+        {
+          "title": "Grundsätzlich andere Richtung erkunden",
+          "why": "Ein neues Ziel setzen ändert nur die Fertig-Bedingung, nicht den bisherigen Lösungsweg.",
+          "alternative": "/branch, um ab diesem Punkt einen anderen Ansatz zu verzweigen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -725,8 +880,28 @@
       "name": "/loop",
       "summary": "Führt einen Prompt wiederholt aus, solange die Session offen bleibt.",
       "what": "Führt einen Prompt wiederholt aus, solange die Session offen bleibt.\n\n[Skill] Ohne Intervall bestimmt Claude das Tempo selbst. Ohne Prompt autonome Wartungsprüfung oder Prompt aus .claude/loop.md. Beispiel: '/loop 5m check if the deploy finished'. Doku: code.claude.com/docs/en/scheduled-tasks. Alias: /proactive.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Wiederkehrende Prüfung in fester Taktung",
+          "example": "/loop 5m check if the deploy finished"
+        },
+        {
+          "title": "Autonome Wartungsprüfung ohne festen Prompt",
+          "example": "/loop"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einmaliges Ziel mit Endbedingung",
+          "why": "/loop wiederholt einen Prompt, solange die Session offen bleibt - für eine Aufgabe, die einmal fertig ist und dann stoppen soll, ist das der falsche Mechanismus.",
+          "alternative": "/goal"
+        },
+        {
+          "title": "Zeitplan-basiert über Sessions hinaus",
+          "why": "/loop läuft nur, solange die aktuelle Session offen ist, nicht auf verwalteter Cloud-Infrastruktur über Sessions/Tage hinweg.",
+          "alternative": "/schedule"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -785,8 +960,23 @@
       "name": "/model",
       "summary": "Wechselt das KI-Modell und speichert es als Standard für neue Sessions.",
       "what": "Wechselt das KI-Modell und speichert es als Standard für neue Sessions.\n\nPfeiltasten links/rechts passen bei unterstützten Modellen auch Effort an. Taste 's' wechselt nur für aktuelle Session. Bei bestehendem Verlauf Bestätigungsfrage (voller Verlauf ohne Cache). Ab v2.1.205 auch non-interactive (-p) mit Modell-Argument.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Standard-Modell für neue Sessions interaktiv wechseln",
+          "example": "/model"
+        },
+        {
+          "title": "Nur für die aktuelle Session ein anderes Modell setzen",
+          "example": "/model (dann Taste 's')"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur mehr Denkaufwand nötig, kein anderes Modell",
+          "why": "effort vs model: ein Modellwechsel bei bestehendem Verlauf löst zudem eine Bestätigungsfrage aus, weil der volle Verlauf ohne Cache neu verarbeitet wird - für reinen Denkaufwand unnötig.",
+          "alternative": "/effort"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -830,8 +1020,28 @@
       "name": "/plan",
       "summary": "Wechselt direkt aus dem Prompt in den Plan-Modus.",
       "what": "Wechselt direkt aus dem Prompt in den Plan-Modus.\n\nMit optionaler Beschreibung startet der Plan-Modus sofort mit dieser Aufgabe, z.B. '/plan fix the auth bug'.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Aufgabe direkt mit Beschreibung im Plan-Modus starten",
+          "example": "/plan fix the auth bug"
+        },
+        {
+          "title": "Aus laufendem Prompt heraus in den Plan-Modus wechseln",
+          "example": "/plan"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Triviale Ein-Schritt-Änderung",
+          "why": "/plan wechselt extra den Modus für eine Planungsphase - bei einer eindeutigen, kleinen Änderung ist das ein unnötiger Zwischenschritt.",
+          "alternative": "Anfrage normal ohne /plan stellen"
+        },
+        {
+          "title": "Mitten in der Umsetzung, Plan liegt schon vor",
+          "why": "/plan wechselt erneut in den Plan-Modus statt weiter umzusetzen.",
+          "alternative": "einfach normal weiterarbeiten, ohne den Modus zu wechseln"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1010,8 +1220,28 @@
       "name": "/resume",
       "summary": "Nimmt eine Konversation per ID oder Name wieder auf, oder öffnet die Session-Auswahl.",
       "what": "Nimmt eine Konversation per ID oder Name wieder auf, oder öffnet die Session-Auswahl.\n\nAb v2.1.144 erscheinen Hintergrund-Sessions mit Markierung 'bg'. Alias: /continue.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Zwischen mehreren offenen Konversationen wählen",
+          "example": "/resume"
+        },
+        {
+          "title": "Eine Hintergrund-Session gezielt per Name wieder anhängen",
+          "example": "/resume mein-hintergrund-agent"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Zurück zu einem früheren Punkt innerhalb der laufenden Konversation",
+          "why": "/resume nimmt eine andere, eigenständige Konversation per ID oder Name wieder auf - es springt nicht auf einen früheren Punkt der aktuellen Session.",
+          "alternative": "/rewind"
+        },
+        {
+          "title": "Man ist bereits in der passenden offenen Session",
+          "why": "/resume dient dem Wechsel zu einer anderen Konversation - ohne Session-Wechsel bringt der Befehl nichts.",
+          "alternative": "einfach normal weiterschreiben, ohne Befehl"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1040,8 +1270,23 @@
       "name": "/rewind",
       "summary": "Setzt die Konversation und/oder den Code auf einen früheren Punkt zurück, oder fasst ab einer ausgewählten Nachricht zusammen.",
       "what": "Setzt die Konversation und/oder den Code auf einen früheren Punkt zurück, oder fasst ab einer ausgewählten Nachricht zusammen.\n\nDetails: code.claude.com/docs/en/checkpointing. Aliase: /checkpoint, /undo.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Konversation und Code-Stand nach misslungenem Fix zurücksetzen",
+          "example": "/rewind"
+        },
+        {
+          "title": "Ab einer ausgewählten Nachricht zusammenfassen statt komplett zurücksetzen",
+          "example": "/rewind"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur einen früheren Text nochmal nachlesen",
+          "why": "/rewind setzt die Konversation und ggf. den Code-Stand zurück - für reines Nachlesen ist das unnötig riskant für den aktuellen Code-Stand.",
+          "alternative": "im Transkript hochscrollen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
