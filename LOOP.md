@@ -306,6 +306,12 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Batches 2-4 (78 Befehle) gemerged, live verifiziert (Edge brauchte ~1 Min Content-Propagation — Status-200-Poll reicht NICHT, auf INHALT pollen!)
 - ⚠️ ES/FR/ZH-Übersetzungs-Agents basieren auf commands.de.json VOR Batch-2-4-Merge → deren Validierung kann jetzt scheitern + Blöcke der 78 fehlen dort → nach Merge separaten Usage-Übersetzungs-Nachzug (batch2-4 × 3 Sprachen) fahren
 
+### It. 60 (13.07 nachmittags) — 🏁 MEILENSTEIN: Befehls-Referenz KOMPLETT ✅ (Commit 5bf99d7)
+- **108 Befehle (92 Claude Code + 16 Codex CLI) × 5 Sprachen × wann/wann-nicht-Blöcke** — alles live + verifiziert (DE/EN/ZH/FR/ES Stichproben), auch in der freien JSON-API (/api/commands.<lang>.json, im Index dokumentiert)
+- ES/FR/ZH-Agents hatten die Live-Erweiterung der Quelldatei selbst erkannt und re-synct (Drift-Check im Agent-Workflow hat funktioniert — Muster beibehalten: Übersetzungs-Agents sollen Quelle vor finalem Write re-validieren)
+- Marvins „ALLE Befehle"-Wunsch damit für beide Start-Plattformen erfüllt; weitere Plattformen (Cursor CLI, Aider, …) als nächste Ausbaustufe
+- NÄCHSTE ARBEIT: ① Addons-Sektion (research/befehle/addons-2026-07-12.md → eigene Seite/Sektion + Graphify/Obsidian-Lexikon) ② /admin abhakbare Marvin-Todo-Liste ③ Sitemap um /befehle-Routen erweitern ④ Statusboard ⑤ Feed-Refresh täglich weiter ⑥ Zone-Poll
+
 ### It. 58 (13.07 vormittags) — Befehls-Referenz DE+EN komplett ✅
 - Codex 16 Einträge DE+EN live · Batch 1 whenGood/whenBad (14 Kern-Befehle) DE+EN live · EN-Basis aller 92 Claude-Code-Befehle live → 108 Befehle × DE+EN
 - 3 Übersetzungs-Agents ES/FR/ZH (je 108 Einträge → research/befehle/commands-{es,fr,zh}.json) GESTARTET
