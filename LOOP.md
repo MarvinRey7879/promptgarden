@@ -334,6 +334,13 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ### 🔴 MARVIN 13.07 (Direktive 5): ADDON-DETAILSEITEN
 - Addons/GitHub-Repos/CLI-Tools sind auf /addons zu schmal erklärt → JEDES Addon bekommt eine EIGENE Seite (/addons/[id]/) mit ausführlicher Erklärung: was es ist, wie es funktioniert, Setup/Installation, wann nutzen/wann nicht, Beispiel, Quellen — 5 Sprachen, Quellenpflicht (Setup-Fakten aus offizieller Doku/README).
 
+### 🔴 MARVIN 13.07 (Direktive 8): LANDING PAGE AUSBAUEN
+- Startseite muss erklären: was ist das, wie funktioniert es, Best Practices — MIT Tiefenrecherche zu Conversion-Rate + SEO vorab (Research-Agent → research/landing-cro-seo-2026-07.md), dann Umbau der Landing auf Basis der Top-Empfehlungen (How-it-works-Sektion, Value Prop, CTA-Strategie, schema.org WebSite/FAQ, 5 Sprachen, Wow+responsive).
+
+### It. 72 (13.07 abends) — bodyDetail-Batch 2 KOMPLETT ✅ (Commit 85938f4)
+- 20/41 Kapitel mit 🔬-Version in ALLEN 5 Sprachen · ⚠️ cwd-Falle erneut (Merge aus Root → ENOENT + False-Positive-Verify durch RSC-Payload-Grep) — Regel verschärft: JEDES node/npm IMMER mit explizitem cd /c/Users/marvi/promptgarden/site && …; Verify-Greps auf INHALTS-Strings, nie auf UI-Labels
+- Landing-CRO/SEO-Research-Agent läuft
+
 ### It. 71 (13.07 abends) — 📱 Mobile-Polish-Pass 1 ✅ (Commit 99fc6ae)
 - 375px-Audit per Playwright-Screenshots (Home/Eintrag/Lexikon/Befehl): Home+Eintrag+Befehl sauber; **Lexikon-Tabelle war kaputt** (Titel auf ~80px gequetscht, inline gridTemplateColumns reservierte 150px für versteckte Spalte) → Fix: .lex-row-Klasse mit Media Query (mobil nur Titel+Level), live verifiziert per Nach-Screenshot
 - Befehlsseiten: doppelter Summary-Satz entfernt (what beginnt oft mit summary → Rest-Slice)
