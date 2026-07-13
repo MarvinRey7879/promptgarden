@@ -12,6 +12,48 @@
       "source": {
         "title": "GitHub: safishamsi/graphify",
         "url": "https://github.com/safishamsi/graphify"
+      },
+      "detail": {
+        "how": "Graphify parst deinen Code-Ordner lokal mit Tree-sitter (36 Grammatiken: Python, TypeScript, Go, Rust, Java, C++ u.v.m.) — komplett ohne LLM-Aufrufe. Aus AST-Beziehungen wie `calls`, `imports`, `inherits` und `mixes_in` entsteht ein Wissens-Graph, den du als interaktives `graph.html`, als `GRAPH_REPORT.md` oder als `graph.json` bekommst. Jede Kante ist mit `EXTRACTED` (explizit im Code gefunden) oder `INFERRED` (abgeleitet) markiert, sogenannte „God Nodes\" markieren die am stärksten vernetzten Konzepte, eine Leiden-Clustering-Analyse gruppiert zusammengehörige Subsysteme.\n\nFür Claude Code registriert `graphify claude install` eine `CLAUDE.md`-Direktive plus einen PreToolUse-Hook, der automatisch vor jeder Datei-Suche den Graphen konsultiert — der Agent muss also nicht mehr blind durch den Code grepen. Ein eigener MCP-Server (`python -m graphify.serve`) stellt Tools wie `query_graph`, `get_neighbors` und `shortest_path` bereit, auch als HTTP-Server für Team-Nutzung. Neben Claude Code werden auch Cursor, Codex, Gemini CLI, GitHub Copilot und über 15 weitere Tools unterstützt. Optional lässt sich der Graph per `--obsidian`-Flag direkt als Obsidian-Vault exportieren (eine Notiz pro Knoten, inklusive Backlinks). Für PDF-, Office-, Video- oder Google-Workspace-Dateien kann optional ein LLM-Backend (Claude, OpenAI, Gemini, Ollama lokal) hinzugeschaltet werden — das Code-Parsing selbst bleibt aber immer lokal.",
+        "setup": [
+          "Installieren: `uv tool install graphifyy` (empfohlen) — alternativ `pipx install graphifyy` oder `pip install graphifyy`",
+          "Skill für Claude Code registrieren: `graphify install` (für andere Editoren z.B. `graphify cursor install`, `graphify codex install --platform codex`)",
+          "Graph erzeugen: im Projektordner `/graphify .` ausführen — erstellt `graph.html`, `GRAPH_REPORT.md` und `graph.json` in `graphify-out/`",
+          "Always-On-Integration: `graphify claude install` schreibt eine `CLAUDE.md`-Direktive plus PreToolUse-Hook, der den Graphen automatisch vor Datei-Suchen konsultiert",
+          "Optional eigenen MCP-Server starten: `python -m graphify.serve graphify-out/graph.json` (mit `--transport http --host 0.0.0.0 --api-key ...` auch fürs Team)"
+        ],
+        "whenGood": [
+          {
+            "title": "Große, gewachsene Codebasen",
+            "example": "Bei einem Monorepo mit hunderten Dateien ersetzt eine Graph-Abfrage teure Grep/Glob-Serien — Community-Berichte sprechen von bis zu 70× weniger Tokens."
+          },
+          {
+            "title": "Cross-File-Zusammenhänge verstehen",
+            "example": "\"Was ruft X auf, was erbt von Y?\" per `graphify query \"...\"` oder `graphify path \"ServiceA\" \"ServiceB\"` statt manuell durch den Code zu klicken."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Kleine oder neue Projekte",
+            "why": "Bei wenigen Dateien lohnt sich der Setup- und Parsing-Overhead kaum, normale Grep/Glob-Suche ist schneller eingerichtet.",
+            "alternative": "Direkt mit Claude Codes eingebauter Grep/Glob-Suche arbeiten."
+          },
+          {
+            "title": "Docs-/Medien-Extraktion ohne API-Key",
+            "why": "Für PDF-, Office- oder Video-Extraktion braucht Graphify optional ein LLM-Backend (z.B. ANTHROPIC_API_KEY) — reines Code-Parsing bleibt zwar lokal, die Extras kosten aber API-Calls.",
+            "alternative": "Nur Standard-Code-Parsing nutzen oder `OLLAMA_BASE_URL` für ein lokales Modell setzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "PyPI: graphifyy",
+            "url": "https://pypi.org/project/graphifyy/"
+          },
+          {
+            "title": "Doku: How it works (Extraction-Pipeline)",
+            "url": "https://github.com/safishamsi/graphify/blob/v8/docs/how-it-works.md"
+          }
+        ]
       }
     },
     {
@@ -25,6 +67,47 @@
       "source": {
         "title": "GitHub: modelcontextprotocol/servers",
         "url": "https://github.com/modelcontextprotocol/servers"
+      },
+      "detail": {
+        "how": "Das Model Context Protocol (MCP) ist ein offener Standard, der LLMs sicheren, kontrollierten Zugriff auf externe Tools und Datenquellen gibt — ohne dass jeder Anbieter sein eigenes proprietäres Plugin-Format erfindet. Dieses Repository ist die offizielle Sammlung an Referenz-Implementierungen, gepflegt von Anthropic zusammen mit der Community.\n\nAktuell enthält es sieben Referenz-Server: Everything (Testserver mit allen MCP-Features), Fetch (Web-Inhalte abrufen), Filesystem, Git, Memory (persistenter Kontext), Sequential Thinking und Time. Ältere, einst im Haupt-Repo enthaltene Server — etwa für GitHub, Postgres oder Brave Search — sind ins separate Repository `servers-archived` umgezogen oder werden inzwischen direkt vom jeweiligen Anbieter gepflegt.\n\nTypeScript-Server lassen sich ohne Installation direkt per `npx` starten, Python-Server per `uvx` oder klassisch per `pip install`. Jeder Server wird anschließend in der `mcpServers`-Konfiguration von Claude Desktop oder Claude Code eingetragen (Befehl + Argumente), danach stehen seine Tools dem Agenten zur Verfügung. Darüber hinaus verweist das Repo auf die MCP Registry (registry.modelcontextprotocol.io), in der sich Community-Server durchsuchen lassen — das Protokoll selbst wird mittlerweile in einer breiteren Governance-Struktur mit mehreren großen Anbietern weiterentwickelt, nicht mehr nur von Anthropic allein.",
+        "setup": [
+          "Passenden Server im Repo auswählen (z.B. `server-memory`, `server-filesystem`, `server-git`)",
+          "TypeScript-Server ohne Installation starten: `npx -y @modelcontextprotocol/server-memory`",
+          "Python-Server per `uvx mcp-server-git` starten (alternativ `pip install mcp-server-git && python -m mcp_server_git`)",
+          "In Claude Desktop/Code die Konfiguration ergänzen, z.B. `{\"mcpServers\": {\"memory\": {\"command\": \"npx\", \"args\": [\"-y\", \"@modelcontextprotocol/server-memory\"]}}}`",
+          "Weitere Community-Server über die MCP Registry (registry.modelcontextprotocol.io) suchen"
+        ],
+        "whenGood": [
+          {
+            "title": "Einstieg in MCP",
+            "example": "Wer zum ersten Mal einen MCP-Server einrichten will, findet hier die offiziellen, getesteten Referenz-Implementierungen als Vorlage."
+          },
+          {
+            "title": "Eigenen Server bauen",
+            "example": "Die Referenz-Server (z.B. Filesystem, Git) dienen als Code-Vorlage, um einen eigenen MCP-Server für eine eigene Datenquelle zu schreiben."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Bestimmte populäre Server gesucht (GitHub, Postgres, Brave Search)",
+            "why": "Diese wurden aus dem Haupt-Repo ins Archiv (servers-archived) verschoben bzw. werden jetzt vom jeweiligen Anbieter direkt gepflegt.",
+            "alternative": "Direkt beim Anbieter-Repo suchen (z.B. github/github-mcp-server) oder in der MCP Registry."
+          }
+        ],
+        "links": [
+          {
+            "title": "MCP Docs — Einführung",
+            "url": "https://modelcontextprotocol.io/introduction"
+          },
+          {
+            "title": "MCP Registry",
+            "url": "https://registry.modelcontextprotocol.io"
+          },
+          {
+            "title": "servers-archived (ältere Referenz-Server)",
+            "url": "https://github.com/modelcontextprotocol/servers-archived"
+          }
+        ]
       }
     },
     {
@@ -38,6 +121,48 @@
       "source": {
         "title": "GitHub: ruvnet/ruflo",
         "url": "https://github.com/ruvnet/ruflo"
+      },
+      "detail": {
+        "how": "claude-flow (Repo umbenannt in ruflo; die npm-Pakete `claude-flow` und `ruflo` existieren parallel, aktuell beide bei Version 3.25.6) ist ein Multi-Agent-Orchestrierungs-Framework für Claude Code, Codex und weitere Coding-Agenten. Kernstück ist eine „Queen-led\"-Schwarm-Koordination: Mehrere Agenten arbeiten an Teilaufgaben, synchronisieren sich über Konsens-Mechanismen (Raft, Byzantine, Gossip) und teilen sich einen gemeinsamen Speicher.\n\nDieser Speicher (AgentDB) ist HNSW-indiziert für Vektor-Suche und laut Projekt-Doku bei kleineren Datenmengen mehrfach schneller als eine naive Brute-Force-Suche; dazu kommen Hybrid-Suche und Graph-Traversal. Über SONA-Neural-Patterns und ein „ReasoningBank\" sollen Agenten aus vergangenen Task-Verläufen lernen und erfolgreiche Strategien bei ähnlichen künftigen Aufgaben wiederverwenden.\n\nDas Framework ist modell-agnostisch (Claude, GPT, Gemini, Cohere, lokal über Ollama) mit automatischem Routing, bringt rund 210 MCP-Tools über fünf Server-Gruppen (Core, Intelligence, Agents, Memory, DevTools) mit und lässt sich auch als Satz von Claude-Code-Plugins installieren (u.a. `ruflo-core`, `ruflo-swarm`, `ruflo-rag-memory`). Eine Federation-Funktion erlaubt es, mehrere claude-flow-Instanzen über Team- oder Organisationsgrenzen hinweg per WebSocket zu vernetzen und Aufgaben zwischen ihnen weiterzureichen.",
+        "setup": [
+          "Interaktiver Setup: `npx ruflo@latest init wizard` (ohne Wizard: `npx ruflo@latest init`)",
+          "Alternativ global installieren: `npm install -g ruflo@latest`",
+          "Als MCP-Server bei Claude Code registrieren: `claude mcp add ruflo -- npx ruflo@latest mcp start`",
+          "Optional als Claude-Code-Plugins: `/plugin install ruflo-core@ruflo`, `/plugin install ruflo-swarm@ruflo`, `/plugin install ruflo-rag-memory@ruflo`",
+          "Für teamübergreifende Vernetzung: `npx claude-flow@latest federation init` bzw. `federation join wss://...`"
+        ],
+        "whenGood": [
+          {
+            "title": "Mehrere Agenten parallel koordinieren",
+            "example": "Ein komplexes Feature wird in Teilaufgaben zerlegt, mehrere Agenten arbeiten per Swarm-Topologie gleichzeitig daran, mit gemeinsamem Memory."
+          },
+          {
+            "title": "Agenten sollen aus Erfahrung lernen",
+            "example": "SONA/ReasoningBank merkt sich erfolgreiche Task-Trajektorien und wendet sie bei ähnlichen künftigen Aufgaben wieder an."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Einzelne, einfache Aufgabe",
+            "why": "Der Overhead von Swarm, Memory und Konsens-Mechanismen lohnt sich nicht für eine einzelne, klar umrissene Aufgabe, die ein Agent alleine löst.",
+            "alternative": "Claude Code direkt ohne Orchestrierungs-Layer nutzen."
+          },
+          {
+            "title": "Team-übergreifende Föderation ohne Infrastruktur",
+            "why": "Federation braucht einen erreichbaren WebSocket-Endpunkt (wss://) — ohne eigene Server-Infrastruktur nicht sinnvoll nutzbar.",
+            "alternative": "Lokales Setup ohne federation-Befehle, nur eine Instanz."
+          }
+        ],
+        "links": [
+          {
+            "title": "User Guide",
+            "url": "https://github.com/ruvnet/ruflo/blob/main/docs/USERGUIDE.md"
+          },
+          {
+            "title": "Status & Capabilities",
+            "url": "https://github.com/ruvnet/ruflo/blob/main/docs/STATUS.md"
+          }
+        ]
       }
     },
     {
@@ -51,6 +176,48 @@
       "source": {
         "title": "GitHub: upstash/context7",
         "url": "https://github.com/upstash/context7"
+      },
+      "detail": {
+        "how": "Context7 löst ein Kernproblem von Coding-Assistenten: Das Modell kennt Bibliotheks-APIs nur bis zu seinem Trainingsstand und schlägt deshalb gern veraltete oder gar nicht existierende Funktionen vor. Der MCP-Server holt laut README aktuelle, versionsspezifische Dokumentation und Code-Beispiele „straight from the source\" und legt sie direkt in den Prompt des Agenten.\n\nTechnisch stellt Context7 zwei MCP-Tools bereit: `resolve-library-id` übersetzt einen Bibliotheksnamen (z. B. „Next.js\") in eine eindeutige Context7-ID, `query-docs` ruft anschließend die passende Doku zu dieser ID und der konkreten Frage ab. Ausgelöst wird das entweder automatisch durch den Agenten — oder ganz einfach, indem man „use context7\" an seine Anfrage anhängt, etwa: „How do I set up Next.js 14 middleware? use context7\".\n\nBetrieben wird der Dienst als gehosteter Endpunkt unter `https://mcp.context7.com/mcp`; ein kostenloser API-Key (per OAuth über das Dashboard) wird für höhere Rate Limits empfohlen und als `CONTEXT7_API_KEY`-Header mitgeschickt. Die Einrichtung übernimmt das CLI-Tool `ctx7`, das den Key generiert und die Integration für Clients wie Claude Code, Cursor oder OpenCode automatisch installiert. Einzige Voraussetzung: Node.js 18 oder neuer. Damit liest der Agent die echte Doku der tatsächlich eingesetzten Library-Version, statt API-Aufrufe aus dem Gedächtnis zu raten.",
+        "setup": [
+          "Voraussetzung prüfen: Node.js 18 oder neuer muss installiert sein",
+          "Setup-Assistent ausführen: `npx ctx7 setup` — generiert per OAuth einen API-Key und installiert die Integration; gezielt für einen Client z. B. `npx ctx7 setup --claude` (auch `--cursor` oder `--opencode` möglich)",
+          "Alternativ manuell: den MCP-Server `https://mcp.context7.com/mcp` im Client eintragen und den API-Key als `CONTEXT7_API_KEY`-Header mitgeben (kostenloser Key über context7.com/dashboard)",
+          "Testen: eine Coding-Frage stellen und „use context7\" anhängen, z. B. „How do I set up Next.js 14 middleware? use context7\"",
+          "Bei Bedarf wieder entfernen: `npx ctx7 remove`"
+        ],
+        "whenGood": [
+          {
+            "title": "Arbeit mit schnelllebigen Frameworks",
+            "example": "Beim Bauen mit Next.js, React oder einer frisch aktualisierten Library „use context7\" anhängen — der Agent liest die Doku der echten Version statt veraltete APIs aus dem Trainingswissen vorzuschlagen."
+          },
+          {
+            "title": "Halluzinierte API-Aufrufe abstellen",
+            "example": "Wenn der Assistent wiederholt Funktionen vorschlägt, die es in der eingesetzten Library-Version nicht (mehr) gibt, liefert `query-docs` die tatsächlich gültigen Signaturen und Code-Beispiele in den Kontext."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Fragen zum eigenen, privaten Code",
+            "why": "Context7 liefert Dokumentation öffentlicher Bibliotheken — über die interne Struktur des eigenen Projekts weiß es nichts.",
+            "alternative": "Für Codebasis-Verständnis ein Code-Graph-Tool wie Graphify oder die normalen Datei-Tools des Agenten nutzen."
+          },
+          {
+            "title": "Komplett offline arbeiten",
+            "why": "Der empfohlene Weg ist ein gehosteter Endpunkt (mcp.context7.com) — ohne Internetverbindung kommt keine Doku an.",
+            "alternative": "Benötigte Doku-Seiten vorab lokal ablegen und dem Agenten als Dateien mitgeben."
+          }
+        ],
+        "links": [
+          {
+            "title": "Context7-Dokumentation",
+            "url": "https://context7.com/docs"
+          },
+          {
+            "title": "Context7-Dashboard (kostenloser API-Key)",
+            "url": "https://context7.com/dashboard"
+          }
+        ]
       }
     },
     {
@@ -64,6 +231,48 @@
       "source": {
         "title": "GitHub: microsoft/playwright-mcp",
         "url": "https://github.com/microsoft/playwright-mcp"
+      },
+      "detail": {
+        "how": "Playwright MCP steuert einen echten Browser — aber anders als Screenshot-basierte Ansätze: Der Server arbeitet auf Playwrights Accessibility-Tree, also der strukturierten Beschreibung einer Seite (welche Buttons, Links, Formularfelder es gibt, mit Namen und Zustand). Die README fasst die Vorteile so zusammen: „Fast and lightweight\", „LLM-friendly — no vision models needed, operates purely on structured data\" und „deterministic tool application\" — es gibt keine Mehrdeutigkeit, welches Pixel gemeint war, weil der Agent Elemente direkt anspricht statt auf Koordinaten zu klicken.\n\nDer Agent bekommt dafür einen Satz Browser-Tools: `browser_navigate` öffnet Seiten, `browser_snapshot` liefert den aktuellen Accessibility-Snapshot als Text, `browser_click` und verwandte Tools interagieren mit Elementen, `browser_tabs` verwaltet mehrere Tabs. Zusatzfähigkeiten sind opt-in: PDF-Export (`browser_pdf_save` via `--caps=pdf`) und koordinatenbasierte Maus-Aktionen für Sonderfälle (`--caps=vision`). Auch Netzwerk-Routing sowie Cookies/LocalStorage lassen sich steuern.\n\nUnterstützt werden Chrome, Firefox, WebKit und Microsoft Edge; standardmäßig läuft der Browser sichtbar (headed), mit `--headless` auch unsichtbar. Voraussetzung ist nur Node.js 18 oder neuer — der Server startet direkt per `npx @playwright/mcp@latest`, ohne dauerhafte Installation. Damit kann ein Agent wie Claude Code Webseiten bedienen, Formulare ausfüllen und das eigene Frontend Ende-zu-Ende durchklicken, während jeder Schritt als nachvollziehbare Tool-Aktion protokolliert wird.",
+        "setup": [
+          "Voraussetzung prüfen: Node.js 18 oder neuer",
+          "In Claude Code registrieren: `claude mcp add playwright npx @playwright/mcp@latest`",
+          "Für andere MCP-Clients die Standard-Config eintragen: `{\"mcpServers\": {\"playwright\": {\"command\": \"npx\", \"args\": [\"@playwright/mcp@latest\"]}}}`",
+          "Optional Fähigkeiten freischalten: `--caps=pdf` (PDF-Export) oder `--caps=vision` (Koordinaten-Klicks), Browser unsichtbar mit `--headless`",
+          "Testen: den Agenten bitten, eine Seite zu öffnen und zu beschreiben — er nutzt dann browser_navigate und browser_snapshot"
+        ],
+        "whenGood": [
+          {
+            "title": "Das eigene Frontend Ende-zu-Ende testen",
+            "example": "Nach einer Änderung am Login-Formular: „Öffne localhost:3000, melde dich mit den Testdaten an und prüfe, ob die Fehlermeldung bei falschem Passwort erscheint\" — der Agent klickt sich per Accessibility-Tree durch."
+          },
+          {
+            "title": "Strukturierte Web-Interaktion ohne Vision-Modell",
+            "example": "Ein mehrstufiges Formular automatisiert ausfüllen: Der Agent sieht Felder mit Namen und Rollen als Text-Snapshot und füllt sie deterministisch aus — schneller und günstiger als Screenshot-Analyse."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Pixelgenaue visuelle Prüfungen",
+            "why": "Der Accessibility-Tree beschreibt Struktur und Zustand, aber nicht das Aussehen — ob ein Layout verrutscht ist oder Farben stimmen, sieht der Standard-Modus nicht.",
+            "alternative": "Für visuelle Checks den opt-in Vision-Modus (`--caps=vision`) zuschalten oder klassische Screenshot-basierte Tests nutzen."
+          },
+          {
+            "title": "Interaktion mit dem eigenen, bereits eingeloggten Browser",
+            "why": "Playwright MCP startet eigene Browser-Instanzen — bestehende Logins und Sessions des Alltags-Browsers stehen dort nicht automatisch zur Verfügung.",
+            "alternative": "Für Aufgaben im eigenen eingeloggten Browser eher Claude in Chrome verwenden."
+          }
+        ],
+        "links": [
+          {
+            "title": "Playwright — offizielle Projektseite",
+            "url": "https://playwright.dev/"
+          },
+          {
+            "title": "MCP Security Best Practices",
+            "url": "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices"
+          }
+        ]
       }
     },
     {
@@ -77,6 +286,52 @@
       "source": {
         "title": "GitHub: github/github-mcp-server",
         "url": "https://github.com/github/github-mcp-server"
+      },
+      "detail": {
+        "how": "Der GitHub MCP Server verbindet Agenten direkt mit der GitHub-Plattform — in zwei Betriebsarten. Der Remote-Server wird von GitHub selbst unter `https://api.githubcopilot.com/mcp/` gehostet und ist laut README der einfachste Einstieg: Anmeldung per OAuth im Browser (das Token bleibt dabei nur im Speicher) oder alternativ per Personal Access Token (PAT) im `Authorization: Bearer`-Header. Wer alles lokal halten will, startet den Server als Docker-Container (`ghcr.io/github/github-mcp-server`) mit PAT oder OAuth-Callback — oder baut ihn per `go build` selbst aus dem Quellcode.\n\nDie Fähigkeiten sind in Toolsets gegliedert, die sich gezielt an- und abschalten lassen: `repos` (Repository-Operationen), `issues`, `pull_requests`, `actions` (CI/CD), `code_security` (Code- und Secret-Scanning), dazu `dependabot`, `discussions`, `gists`, `projects`, `orgs`, `users`, `notifications` und `labels`. Ohne eigene Angabe sind standardmäßig `context`, `repos`, `issues`, `pull_requests` und `users` aktiv. Die Auswahl steuert man per `--toolsets`-Flag oder der Umgebungsvariable `GITHUB_TOOLSETS`; einzelne Tools lassen sich über `GITHUB_TOOLS` freischalten. Ein `--read-only`-Flag deaktiviert sämtliche schreibenden Tools — nützlich, wenn der Agent nur analysieren, aber nichts verändern soll.\n\nDamit kann ein Agent Issues triagieren, Pull Requests anlegen und reviewen, CI-Läufe inspizieren und Code über Repos hinweg durchsuchen — mit offiziellem Vendor-Support von GitHub statt einer Community-Bastellösung.",
+        "setup": [
+          "Einfachster Weg (Remote): den gehosteten Server im MCP-Client als HTTP-Server eintragen: `{\"servers\": {\"github\": {\"type\": \"http\", \"url\": \"https://api.githubcopilot.com/mcp/\"}}}` — Anmeldung dann per OAuth im Browser",
+          "Alternativ mit Personal Access Token statt OAuth: zusätzlich den Header `\"Authorization\": \"Bearer <PAT>\"` konfigurieren",
+          "Lokal statt remote: `docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> ghcr.io/github/github-mcp-server`",
+          "Toolsets nach Bedarf einschränken, z. B. `--toolsets repos,issues,pull_requests,actions` oder per Umgebungsvariable `GITHUB_TOOLSETS=\"repos,issues,pull_requests\"`",
+          "Für reine Analyse-Aufgaben das Flag `--read-only` setzen — schreibende Tools werden dann übersprungen"
+        ],
+        "whenGood": [
+          {
+            "title": "PR- und Issue-Arbeit direkt aus dem Agenten",
+            "example": "„Fasse die offenen Issues mit Label ‚bug' zusammen, priorisiere sie und lege für das kritischste einen Branch samt Draft-PR an\" — alles über die offiziellen GitHub-Tools, ohne Browser-Wechsel."
+          },
+          {
+            "title": "CI/CD-Fehler diagnostizieren",
+            "example": "Mit dem `actions`-Toolset den fehlgeschlagenen Workflow-Lauf des letzten Pushes abrufen, die Logs analysieren und direkt einen Fix vorschlagen lassen."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Lokale Git-Operationen im Arbeitsverzeichnis",
+            "why": "Der Server spricht die GitHub-API — Commits, Branches und Diffs im lokalen, noch nicht gepushten Arbeitsstand sieht er nicht.",
+            "alternative": "Lokale Git-Arbeit über die normale Git-CLI des Agenten erledigen; den GitHub MCP Server erst für die Plattform-Seite (PRs, Issues, Actions) einsetzen."
+          },
+          {
+            "title": "Agent soll nur lesen, bekommt aber vollen Schreibzugriff",
+            "why": "Mit Standard-Toolsets und einem breit berechtigten PAT kann der Agent Issues, PRs und mehr verändern — mehr Rechte als nötig sind ein unnötiges Risiko.",
+            "alternative": "`--read-only` setzen, Toolsets minimal wählen und ein fein-granulares PAT mit möglichst wenigen Scopes verwenden."
+          }
+        ],
+        "links": [
+          {
+            "title": "Remote-Server-Doku (GitHub MCP)",
+            "url": "https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md"
+          },
+          {
+            "title": "Installations-Guides für alle MCP-Clients",
+            "url": "https://github.com/github/github-mcp-server/tree/main/docs/installation-guides"
+          },
+          {
+            "title": "GitHub Docs: Using the GitHub MCP Server",
+            "url": "https://docs.github.com/en/copilot/customizing-copilot/using-model-context-protocol/using-the-github-mcp-server"
+          }
+        ]
       }
     },
     {
@@ -86,10 +341,52 @@
       "official": true,
       "stars": null,
       "what": "Anthropics offizielle IDE-Extension: Sidebar-Panel mit Inline-Diffs — Claude Code grafisch direkt in VS Code statt nur im Terminal.",
-      "why": "Der offizielle Weg für alle, die lieber in der IDE als im Terminal arbeiten; laut Anbieter über 2 Millionen Installationen.",
+      "why": "Der offizielle Weg für alle, die lieber in der IDE als im Terminal arbeiten; laut Anbieter über 20 Millionen Installationen (Stand 13.07.2026, Marketplace).",
       "source": {
         "title": "VS Code Marketplace: Claude Code",
         "url": "https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code"
+      },
+      "detail": {
+        "how": "Claude Code für VS Code ist Anthropics offizielle Erweiterung, die die Claude-Code-CLI als grafisches Panel direkt in den Editor bringt. Nach der Anmeldung (Pro-, Max-, Team- oder Enterprise-Account, kein API-Key nötig) läuft im Hintergrund ein lokaler MCP-Server namens „ide\": Er bindet sich an 127.0.0.1 auf einem zufälligen Port, sichert jede Verbindung mit einem frisch generierten Auth-Token ab und stellt der CLI zwei Tools bereit — eines liest Diagnostics aus VS Codes Problems-Panel, eines führt Code in einem aktiven Jupyter-Kernel aus (immer mit Bestätigungsdialog). Darüber sieht Claude automatisch deine Textauswahl und den Pfad der offenen Datei als Kontext.\n\nSchlägt Claude eine Änderung vor, öffnet sich eine Side-by-Side-Diff-Ansicht, die du annehmen, ablehnen oder direkt weiterbearbeiten kannst. Drei Permission-Modi steuern, wie viel Freiheit Claude bekommt: Manual (fragt vor jeder Änderung), Plan (zeigt erst den Plan als Markdown-Dokument zur Kommentierung) und Edit automatically. Das Panel lässt sich frei in Sidebar, Editor-Tab oder eigenes Fenster ziehen, mehrere parallele Konversationen sind möglich, und per `/mcp` verwaltest du externe MCP-Server, die du zuvor über die CLI mit `claude mcp add` hinzugefügt hast. Mit installierter Claude-in-Chrome-Extension kann das Panel zusätzlich den Browser steuern (`@browser ...`). Laut VS-Code-Marketplace inzwischen über 20 Millionen Installationen.",
+        "setup": [
+          "VS Code Version prüfen (mindestens 1.98.0 nötig)",
+          "Extension installieren: Ctrl+Shift+X (Cmd+Shift+X auf Mac) öffnet die Extensions-Ansicht, \"Claude Code\" suchen und Install klicken — oder direkt über den Link vscode:extension/anthropic.claude-code",
+          "Beim ersten Öffnen des Panels auf \"Sign in\" klicken und die Autorisierung im Browser abschließen (Pro/Max/Team/Enterprise-Account genügt, kein API-Key nötig)",
+          "Panel öffnen über das Spark-Icon in der Editor-Toolbar (erscheint bei geöffneter Datei) und einen Prompt senden",
+          "Optional: MCP-Server hinzufügen im integrierten Terminal mit `claude mcp add`, danach mit `/mcp` im Panel verwalten"
+        ],
+        "whenGood": [
+          {
+            "title": "Schnelle Bugfixes im gewohnten Editor",
+            "example": "Du markierst eine fehlerhafte Funktion, drückst Alt+K, beschreibst den Bug — Claude sieht automatisch deine Auswahl und schlägt eine Inline-Diff-Änderung vor, die du direkt annimmst oder ablehnst."
+          },
+          {
+            "title": "Frontend bauen und im Browser gegenprüfen",
+            "example": "Mit installierter Claude-in-Chrome-Extension tippst du im Panel `@browser go to localhost:3000 and check the console for errors` — Claude testet die eigene Änderung sofort live, ohne dass du den Editor verlässt."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "CLI-only Features fehlen",
+            "why": "Der `!`-Bash-Shortcut, Tab-Completion und nicht alle Slash-Commands sind laut Doku nur im Terminal-CLI verfügbar, nicht vollständig im VS-Code-Panel.",
+            "alternative": "Für den vollen Funktionsumfang zusätzlich die Claude Code CLI separat installieren und im integrierten Terminal mit `claude` starten."
+          },
+          {
+            "title": "Kein automatischer PATH-Eintrag",
+            "why": "Die Extension bringt eine eigene gebündelte CLI-Kopie fürs Panel mit, setzt `claude` aber nicht auf den Terminal-PATH.",
+            "alternative": "Die Standalone-CLI-Installation separat durchführen, wenn `claude` direkt im Terminal aufrufbar sein soll."
+          }
+        ],
+        "links": [
+          {
+            "title": "Offizielle Doku: Claude Code in VS Code",
+            "url": "https://code.claude.com/docs/en/ide-integrations"
+          },
+          {
+            "title": "Doku: Claude Code mit Chrome verbinden",
+            "url": "https://code.claude.com/docs/en/chrome"
+          }
+        ]
       }
     },
     {
@@ -103,6 +400,52 @@
       "source": {
         "title": "Anthropic: Claude for Chrome",
         "url": "https://claude.com/claude-for-chrome"
+      },
+      "detail": {
+        "how": "Claude in Chrome ist Anthropics offizielle Browser-Extension (Chrome Web Store, läuft auch in Microsoft Edge, nicht in Brave, Arc oder unter WSL). Sie lässt Claude echte Browser-Aktionen ausführen: navigieren, klicken, Formulare ausfüllen, Konsolen- und Netzwerk-Logs lesen, Screenshots machen und Interaktionen als GIF aufzeichnen. Weil die Extension den Anmeldestatus deines Browsers teilt, kommt Claude auch an Seiten, in die du bereits eingeloggt bist — Gmail, Notion, Google Docs — ganz ohne eigene API-Anbindung. Aktionen laufen sichtbar in Echtzeit in einem echten Chrome-Fenster ab; bei Login-Masken oder Captchas pausiert Claude und übergibt dir die Kontrolle.\n\nGenutzt werden kann sie eigenständig über claude.ai oder eingebunden in Claude Code: Dort startest du sie mit dem Flag `--chrome` oder dem Befehl `/chrome` in einer laufenden Session; im Hintergrund richtet Claude Code dafür eine native Messaging-Host-Konfiguration ein, über die Chrome und die CLI lokal kommunizieren. Im Plan-Modus laufen rein lesende Aufrufe (Seite lesen, Konsole prüfen, Screenshot) ohne Rückfrage, während zustandsändernde Aktionen wie Klicks, Eingaben oder Navigation erst bestätigt werden müssen. Verfügbar in der Beta für alle Bezahl-Pläne seit Dezember 2025. Weil manipulierte Webseiten versuchen können, Claude per Prompt Injection zu täuschen, sollten Website-Berechtigungen bewusst vergeben und sensible Aktionen wie Zahlungen vermieden werden.",
+        "setup": [
+          "Chrome oder Microsoft Edge installieren (andere Chromium-Browser wie Brave oder Arc werden nicht unterstützt, ebenso wenig WSL)",
+          "Extension \"Claude\" aus dem Chrome Web Store installieren (chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn), Version 1.0.36 oder höher",
+          "Mit dem Claude-Account anmelden und Website-Berechtigungen in den Extension-Einstellungen festlegen, welche Seiten Claude besuchen/klicken/tippen darf",
+          "Für die Nutzung mit Claude Code (Version 2.0.73+): `claude --chrome` starten, oder in einer laufenden Session `/chrome` ausführen und die Verbindung bestätigen",
+          "Optional: mit `/chrome` → \"Enabled by default\" wählen, damit Chrome nicht jede Session neu per Flag aktiviert werden muss"
+        ],
+        "whenGood": [
+          {
+            "title": "Live-Debugging ohne Kontextwechsel",
+            "example": "\"Öffne localhost:3000, versuche das Formular mit ungültigen Daten abzuschicken und prüfe, ob die Fehlermeldungen korrekt erscheinen\" — Claude testet direkt im echten Browser und meldet, was es sieht."
+          },
+          {
+            "title": "Datenextraktion aus eingeloggten Seiten",
+            "example": "\"Geh zur Produktliste und extrahiere Name, Preis und Verfügbarkeit jedes Artikels als CSV\" — funktioniert auch auf Seiten, für die du bereits eingeloggt bist, ganz ohne eigene API-Anbindung."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Beta mit Prompt-Injection-Risiko",
+            "why": "Manipulierte Webseiten können versuchen, Claude durch versteckte Anweisungen zu täuschen; die Extension ist offiziell noch als Beta gekennzeichnet.",
+            "alternative": "Nur vertrauenswürdigen Domains Zugriff geben, sensible Aktionen wie Zahlungen oder Passwort-Änderungen vermeiden und vorgeschlagene Aktionen vor Genehmigung prüfen."
+          },
+          {
+            "title": "Nicht überall verfügbar",
+            "why": "Funktioniert laut Doku nur mit Chrome und Edge, nicht mit Brave, Arc oder anderen Chromium-Browsern, und nicht unter WSL.",
+            "alternative": "Auf einem unterstützten Browser arbeiten oder für native Desktop-Apps stattdessen Computer Use nutzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "Doku: Claude Code mit Chrome",
+            "url": "https://code.claude.com/docs/en/chrome"
+          },
+          {
+            "title": "Erste Schritte mit Claude in Chrome (Support)",
+            "url": "https://support.claude.com/en/articles/12012173-getting-started-with-claude-in-chrome"
+          },
+          {
+            "title": "Extension im Chrome Web Store",
+            "url": "https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn"
+          }
+        ]
       }
     },
     {
@@ -116,6 +459,44 @@
       "source": {
         "title": "GitHub: coddingtonbear/obsidian-local-rest-api",
         "url": "https://github.com/coddingtonbear/obsidian-local-rest-api"
+      },
+      "detail": {
+        "how": "Obsidian Local REST API ist ein Community-Plugin, das beim Start einen lokalen HTTPS-Server auf `127.0.0.1:27124` hochfährt (selbstsigniertes Zertifikat; optional zusätzlich HTTP auf Port 27123, muss extra aktiviert werden). Jede Anfrage wird per API-Key abgesichert, den du in den Plugin-Einstellungen findest und als Bearer-Token mitschickst. Über REST-Endpunkte lassen sich Notizen lesen, schreiben, patchen und löschen (`/vault/{path}`), die gerade offene Datei bearbeiten (`/active/`), Volltext durchsuchen (`/search/simple/`), komplexere Metadatensuchen per JsonLogic fahren (`/search/`), Tags auflisten oder Obsidian-Befehle auslösen (`/commands/`).\n\nSeit 2026 bringt das Plugin zusätzlich einen eingebauten MCP-Endpunkt unter `/mcp/` mit (Streamable-HTTP-Transport, gleiche Authentifizierung wie die REST-API), der über 15 Tools wie `vault_read`, `vault_write` oder `search_query` bereitstellt. Claude Code unterstützt HTTP-MCP nativ und lässt sich per CLI-Befehl direkt mit diesem Endpunkt verbinden — ein separater MCP-Server-Prozess ist damit nicht mehr nötig. Claude Desktop spricht kein natives HTTP-MCP und braucht dafür laut Doku eine Brücke wie `mcp-remote`. Damit wird der eigene Obsidian-Vault zu einer durchsuchbaren, beschreibbaren Wissensquelle für den Agenten — alles lokal auf dem eigenen Rechner, ohne dass Daten ihn verlassen müssen.",
+        "setup": [
+          "Plugin \"Local REST API\" über Obsidian Community Plugins installieren und aktivieren",
+          "In Obsidian: Settings → Local REST API öffnen, API-Key kopieren, ggf. das selbstsignierte Zertifikat vertrauen",
+          "Erreichbarkeit testen: GET https://127.0.0.1:27124/ liefert ohne Authentifizierung einen Status-Check zurück",
+          "Claude Code verbinden: `claude mcp add --transport http obsidian https://127.0.0.1:27124/mcp/ --header \"Authorization: Bearer <your-api-key>\"`",
+          "Alternativ manuell in `.mcp.json` eintragen: `{\"mcpServers\":{\"obsidian\":{\"type\":\"http\",\"url\":\"https://127.0.0.1:27124/mcp/\",\"headers\":{\"Authorization\":\"Bearer <your-api-key>\"}}}}`"
+        ],
+        "whenGood": [
+          {
+            "title": "Notizen während des Codens durchsuchen",
+            "example": "Claude Code durchsucht dein Obsidian-Vault per Volltextsuche nach einer alten Architekturentscheidung, während du genau an diesem Modul arbeitest."
+          },
+          {
+            "title": "Erkenntnisse direkt zurückschreiben",
+            "example": "Du lässt Claude nach einer Debugging-Session eine neue Notiz mit Zusammenfassung direkt ins Vault schreiben (vault_write), ohne Obsidian selbst zu öffnen."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Kein Zugriff aus der Ferne",
+            "why": "Der Server läuft nur lokal auf 127.0.0.1 — Obsidian muss mit geöffnetem Vault auf demselben Rechner laufen, sonst ist der Endpunkt nicht erreichbar.",
+            "alternative": "Für Zugriff von einem anderen Gerät einen eigenen Tunnel/Reverse-Proxy aufsetzen (nicht Teil des Plugins) oder direkt auf dem Rechner mit dem Vault arbeiten."
+          },
+          {
+            "title": "Claude Desktop braucht Zusatzschritt",
+            "why": "Claude Desktop spricht kein natives HTTP-MCP, laut Doku ist dafür ein Proxy wie mcp-remote nötig.",
+            "alternative": "Claude Code nutzen (natives HTTP-MCP) oder mcp-remote als Brücke konfigurieren."
+          }
+        ],
+        "links": [
+          {
+            "title": "Plugin-Eintrag im offiziellen Obsidian-Verzeichnis",
+            "url": "https://obsidian.md/plugins?id=obsidian-local-rest-api"
+          }
+        ]
       }
     },
     {
@@ -129,6 +510,48 @@
       "source": {
         "title": "GitHub: logancyang/obsidian-copilot",
         "url": "https://github.com/logancyang/obsidian-copilot"
+      },
+      "detail": {
+        "how": "Copilot for Obsidian ist ein Chat-Assistent, der direkt im Vault lebt: Man markiert Notizen mit `@`, um sie als Kontext in den Chat zu ziehen, und diskutiert oder überarbeitet sie im Dialog. Die kostenlose Version ist Bring-your-own-Key: Man hinterlegt einen API-Key eines beliebigen Anbieters (OpenRouter, Gemini, OpenAI, Anthropic, Cohere — OpenRouter wird empfohlen) unter Settings → Copilot → Basic, danach läuft alles direkt gegen den gewählten Anbieter, ohne dass Daten über Brevilabs-Server laufen. Enthalten sind ein Chat-Modus mit Notiz-Referenzen, ein Vault-QA-Modus, der die gesamte Notizsammlung durchsucht (Embeddings sind optional, Copilot liefert auch ohne sie sofortige Ergebnisse), sowie „Relevant Notes\" — Vorschläge basierend auf semantischer Ähnlichkeit und Verlinkung. Die kostenpflichtige Plus/Believer-Stufe (Lizenz von Brevilabs LLC, nicht mit Obsidian oder Anthropic verbunden) ergänzt einen autonomen „Agent Mode\" mit eigenständigem Tool-Calling, Verständnis von Bildern/PDFs/EPUBs/YouTube-Videos/Webseiten sowie einen „Project Mode\" für ordner-/tag-basierten AI-Kontext (ähnlich NotebookLM, aber im eigenen Vault). Ganz neu ist Copilot v4: Damit lässt sich ein vollwertiger Coding-Agent — opencode, Claude Code oder Codex — nativ im Vault ausführen, der planen, im Vault suchen und handeln kann, ohne die Notizen zu verlassen. Der Frontend-Code ist vollständig Open Source, das Backend hinter den Plus-Agentenfunktionen ist proprietär.",
+        "setup": [
+          "In Obsidian: Settings → Community plugins → Safe mode ausschalten (falls aktiv).",
+          "Auf „Browse\" klicken, nach „Copilot for Obsidian\" suchen, „Install\" und dann „Enable\" klicken.",
+          "Für die kostenlose Version: Settings → Copilot → Basic → „Set Keys\", gewünschten Anbieter (z.B. Anthropic oder OpenRouter) wählen und API-Key einfügen.",
+          "Für Plus/Believer: Lizenzschlüssel im Dashboard (obsidiancopilot.com/en/dashboard) kopieren und unter Settings → Copilot → Basic in die „Copilot Plus\"-Karte einfügen.",
+          "Mit `@` in der Chat-Eingabe gezielt einzelne Notizen als Kontext hinzufügen, oder den Vault-QA-Modus für Fragen über den gesamten Vault nutzen."
+        ],
+        "whenGood": [
+          {
+            "title": "Schnelle Fragen an die eigenen Notizen, ohne Setup",
+            "example": "Im Vault-QA-Modus lässt sich sofort fragen „Was habe ich letztes Jahr zu Thema X notiert?\", ohne vorher Embeddings aufbauen zu müssen."
+          },
+          {
+            "title": "Coding-Agent direkt im Second Brain nutzen",
+            "example": "Mit Copilot v4 lässt sich Claude Code nativ im Vault starten, um z.B. aus verstreuten Notizen automatisch eine strukturierte Zusammenfassung zu bauen, ohne die Notizen erst in ein separates Projekt zu kopieren."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Volle Datenkontrolle ohne jeglichen Cloud-Anbieter",
+            "why": "Auch im Free-Tier läuft der Chat gegen einen externen LLM-Anbieter (OpenAI, Anthropic, Google …) — komplett lokale Inferenz ohne jede Cloud-Anfrage ist im Standard-Setup nicht vorgesehen.",
+            "alternative": "Für rein lokale, offline-fähige semantische Suche ohne jeden API-Call auf Smart Connections ausweichen (lokales Embedding-Modell)."
+          },
+          {
+            "title": "Agentenfunktionen mit vollem Nachvollziehen des Backends",
+            "why": "Der Agent Mode und die Datei-Konvertierung der Plus-Stufe laufen über proprietäre, closed-source Brevilabs-Server — nur das Frontend ist Open Source.",
+            "alternative": "Für vollständig quelloffene Vault-Automatisierung Local REST API mit einem eigenen MCP-Client/Skript nutzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "Offizielle Dokumentation",
+            "url": "https://www.obsidiancopilot.com/en/docs"
+          },
+          {
+            "title": "Copilot v4 (Coding-Agenten im Vault)",
+            "url": "https://www.obsidiancopilot.com/v4"
+          }
+        ]
       }
     },
     {
@@ -142,6 +565,48 @@
       "source": {
         "title": "GitHub: brianpetro/obsidian-smart-connections",
         "url": "https://github.com/brianpetro/obsidian-smart-connections"
+      },
+      "detail": {
+        "how": "Smart Connections zeigt beim Schreiben automatisch Notizen an, die inhaltlich zur aktuell geöffneten Notiz passen — dafür indexiert ein lokales Embedding-Modell den gesamten Vault direkt nach der Installation, ganz ohne API-Key, ohne Zusatz-Apps oder CLI-Tools („Zero-Setup\"). Die Suche ist rein semantisch: Eine Notiz, die die exakte Suchphrase enthält, aber inhaltlich nicht verwandt ist, taucht in den Ergebnissen nicht zwingend auf — umgekehrt tauchen thematisch passende Notizen ohne gemeinsame Wörter durchaus auf. Zwei Kern-Ansichten: Die Connections-View (über das linke Ribbon-Icon oder den Befehl „Open: Connection view\") zeigt fortlaufend zur aktuellen Notiz passende Treffer, die sich per Drag&Drop direkt als Link einfügen lassen; die Lookup-View erlaubt gezielte semantische Suchanfragen über den ganzen Vault auf Abruf. Läuft standardmäßig offline und privat, funktioniert laut Eigenangabe auch auf Mobilgeräten und ist als schlanker, quelloffener Kern mit minimalen Abhängigkeiten gebaut, was Audits erleichtern soll. Wichtig für aktuelle Setups: Der Chat-Teil, den ältere Beschreibungen oft mitnennen, ist inzwischen in ein eigenes Plugin namens „Smart Chat\" ausgelagert — die kostenlose Version davon deckt einfache Anbindungen an Drittanbieter-Interfaces ab, während Multi-Provider-Modell-Routing (Cloud- und lokale APIs) in „Smart Chat Pro\" gebündelt wurde. Beide Plugins teilen sich dieselbe lokale Indexierungs-Infrastruktur namens „Smart Environment\". Erweiterte Funktionen wie Inline-Vorschläge beim Tippen oder die Anbindung an Obsidian Bases sind Teil kostenpflichtiger Pro-Plugins.",
+        "setup": [
+          "In Obsidian: Settings → Community plugins → Browse → nach „Smart Connections\" suchen.",
+          "„Install\" und „Enable\" klicken — mehr ist laut README nicht nötig, kein API-Key, keine CLI, keine Zusatz-App.",
+          "Das lokale Embedding-Modell beginnt sofort automatisch, den Vault zu indexieren (Meldung bei Fertigstellung).",
+          "Über das Connections-Icon im linken Ribbon (oder Befehl „Open: Connection view\") die zur aktuellen Notiz passenden Treffer ansehen.",
+          "Für gezielte Suchanfragen die Lookup-View öffnen; für Chat-Funktionen zusätzlich das separate „Smart Chat\"-Plugin installieren."
+        ],
+        "whenGood": [
+          {
+            "title": "Vergessene, aber thematisch passende Notizen wiederfinden",
+            "example": "Beim Schreiben eines neuen Recherche-Eintrags zeigt die Connections-View automatisch einen Monate alten, inhaltlich verwandten Eintrag an, den eine reine Stichwortsuche wegen anderer Formulierung übersehen hätte."
+          },
+          {
+            "title": "Semantische Suche ganz ohne Cloud-Anbindung",
+            "example": "In einem Vault mit sensiblen persönlichen Notizen lässt sich mit der Lookup-View gezielt „was habe ich zu Thema X geschrieben\" fragen, ohne dass irgendein Inhalt das eigene Gerät verlässt."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Chat-Dialog mit dem eigenen Vault führen",
+            "why": "Der Chat-Teil ist seit der v4-Aufteilung nicht mehr in Smart Connections enthalten, sondern ein eigenes Plugin (Smart Chat), dessen Multi-Provider-Modellanbindung zudem in der kostenpflichtigen Pro-Version liegt.",
+            "alternative": "Zusätzlich das Smart-Chat-Plugin installieren, oder für integrierten Chat inkl. wählbarer Cloud-Modelle direkt zu Copilot for Obsidian wechseln."
+          },
+          {
+            "title": "Sehr große Vaults mit spezialisiertem Vokabular ohne Tuning",
+            "why": "Das mitgelieferte lokale Embedding-Modell ist ein Allzweckmodell; bei sehr fachspezifischem oder mehrsprachigem Vokabular kann die Trefferqualität ohne Anpassung der Einstellungen (Filter, Ranking) nachlassen.",
+            "alternative": "Die Empfehlungen aus dem Settings-Guide zu Indexierung/Filterung nutzen oder für große, spezialisierte Wissensbasen zusätzlich einen strukturierten Ansatz wie Graphify einsetzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "Getting-Started-Guide",
+            "url": "https://smartconnections.app/smart-connections/getting-started/?utm_source=connections-readme"
+          },
+          {
+            "title": "Obsidian-Plugin-Verzeichnis: Smart Connections",
+            "url": "https://obsidian.md/plugins?id=smart-connections"
+          }
+        ]
       }
     },
     {
@@ -155,6 +620,48 @@
       "source": {
         "title": "GitHub: senna-lang/graph-context-for-claude-code",
         "url": "https://github.com/senna-lang/graph-context-for-claude-code"
+      },
+      "detail": {
+        "how": "Dieses sehr junge Plugin (Juni 2026) macht Obsidian in Claude Codes eingebautem IDE-Mechanismus sichtbar — demselben Lock-File-plus-lokalem-WebSocket-Verfahren, das auch die offiziellen VS-Code- und JetBrains-Extensions nutzen. Beim Laden startet das Plugin einen WebSocket-Server auf 127.0.0.1 und schreibt eine Lock-Datei mit Port, Vault-Pfad und einem Session-Auth-Token nach `~/.config/claude/ide/<port>.lock` bzw. `~/.claude/ide/<port>.lock`. Claude Code findet diese Datei automatisch, verbindet sich, authentifiziert sich mit dem Token und spricht anschließend MCP über JSON-RPC. Der eigentliche Mehrwert liegt in der „Graph Context\"-Schicht: Wählt man Text in einer Notiz aus, sendet das Plugin nicht nur den rohen Markdown mit undurchsichtigen `[[Links]]`, sondern löst diese serverseitig mit Obsidians eigenem `metadataCache`-Resolver auf und schickt alles in einem Payload mit — eingebettete `![[Embeds]]` komplett, `[[Wikilinks]]` als Kurzfassung (Frontmatter + erster Absatz), den Überschriften-Pfad des Cursors, Frontmatter und Backlinks. Der Unterschied zu klassischen Obsidian-MCP-Servern: Dort muss Claude jeden Link einzeln per Tool-Call auflösen (N Links = N×2 Roundtrips); hier kommt der aufgelöste Kontext automatisch mit der Selektion mit, ohne Zusatz-Tool-Calls. Die Auflösung ist bewusst nur eine Ebene tief (Links eines bereits verlinkten Links werden nicht weiter expandiert) und größenbegrenzt (Embeds 2000 Zeichen, Wikilink-Zusammenfassungen 200, insgesamt 8000, Backlinks 20), mit expliziten Truncated-Flags statt stillem Abschneiden. Läuft nur auf Desktop-Obsidian, da ein Node-WebSocket-Server nötig ist.",
+        "setup": [
+          "Desktop-Obsidian voraussetzen (Plugin ist isDesktopOnly) sowie eine funktionierende Claude-Code-Installation im Terminal.",
+          "Manuell bauen, da es noch kein Community-Plugin-Listing gibt: Repo klonen, dann `npm install && npm run build`.",
+          "`main.js` und `manifest.json` in den eigenen Vault kopieren: `<vault>/.obsidian/plugins/graph-context-for-claude-code/`.",
+          "In Obsidian unter Settings → Community plugins den Restricted Mode deaktivieren (falls nötig) und „Graph Context for Claude Code\" aktivieren — es erscheint eine Meldung „ready on port <PORT>\".",
+          "In einem separaten Terminal `claude` starten, `/ide` eingeben und „Obsidian\" auswählen; danach Text in einer Notiz markieren und Claude direkt danach fragen."
+        ],
+        "whenGood": [
+          {
+            "title": "Notizen mit vielen Verlinkungen als Kontext für eine Frage",
+            "example": "Markiert man einen Absatz, der auf mehrere andere Notizen verlinkt, und fragt „Fasse zusammen, was ich markiert habe und wie es mit den verlinkten Notizen zusammenhängt\", hat Claude die verlinkten Inhalte schon im ersten Payload, ohne jeden Link einzeln nachzuladen."
+          },
+          {
+            "title": "Schnelle Rückfragen zu einer einzelnen Notiz ohne API-Key-Setup",
+            "example": "Wer nur gelegentlich während einer Coding-Session in Claude Code auf eine einzelne Obsidian-Notiz zugreifen will, kommt ohne den separaten HTTPS-Server samt API-Key der Local-REST-API-Lösung aus — hier reicht `/ide` und die Auswahl von Obsidian."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Mobile Nutzung oder Automatisierung ohne offene Obsidian-App",
+            "why": "Das Plugin ist explizit isDesktopOnly und braucht eine laufende Desktop-Obsidian-Instanz mit aktivem WebSocket-Server — es gibt keinen headless-Modus.",
+            "alternative": "Für Automatisierung ohne offene Obsidian-App die Obsidian Local REST API mit ihrem eigenständigen HTTPS-Server nutzen."
+          },
+          {
+            "title": "Tiefe Mehrfach-Hop-Verlinkungen sollen automatisch mitkommen",
+            "why": "Die Graph-Expansion ist bewusst auf Tiefe 1 begrenzt — Links innerhalb einer bereits expandierten verlinkten Notiz werden nicht weiter aufgelöst.",
+            "alternative": "Für tiefere Graph-Traversierung gezielt die MCP-Tools der Local REST API oder ein dediziertes Graph-Tool wie Graphify mit Obsidian-Export einsetzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "Releases",
+            "url": "https://github.com/senna-lang/graph-context-for-claude-code/releases"
+          },
+          {
+            "title": "Claude Code Doku (IDE-Integration)",
+            "url": "https://docs.claude.com/en/docs/claude-code"
+          }
+        ]
       }
     }
   ],

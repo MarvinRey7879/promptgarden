@@ -12,6 +12,48 @@
       "source": {
         "title": "GitHub: safishamsi/graphify",
         "url": "https://github.com/safishamsi/graphify"
+      },
+      "detail": {
+        "how": "Graphify 使用 Tree-sitter（36 种语法：Python、TypeScript、Go、Rust、Java、C++ 等）在本地解析你的代码目录——完全不调用 LLM。基于 `calls`、`imports`、`inherits` 和 `mixes_in` 等 AST 关系构建出知识图谱，可导出为交互式 `graph.html`、`GRAPH_REPORT.md` 或 `graph.json`。每条边都标记为 `EXTRACTED`（代码中显式发现）或 `INFERRED`（推断得出），所谓的「God Nodes」标出连接最密集的核心概念，Leiden 聚类分析则将相关子系统归组。\n\n对于 Claude Code，`graphify claude install` 会注册一条 `CLAUDE.md` 指令，外加一个 PreToolUse hook，在每次文件搜索前自动查询图谱——这样智能体就不必再盲目地在代码中 grep。自带的 MCP 服务器（`python -m graphify.serve`）提供 `query_graph`、`get_neighbors`、`shortest_path` 等工具，也可作为 HTTP 服务器供团队使用。除 Claude Code 外，还支持 Cursor、Codex、Gemini CLI、GitHub Copilot 等 15 种以上工具。可选地，通过 `--obsidian` 标志将图谱直接导出为 Obsidian 仓库（每个节点一条笔记，含反向链接）。对于 PDF、Office、视频或 Google Workspace 文件，可选择接入 LLM 后端（Claude、OpenAI、Gemini，或本地 Ollama）——但代码解析本身始终在本地完成。",
+        "setup": [
+          "安装：`uv tool install graphifyy`（推荐）——也可用 `pipx install graphifyy` 或 `pip install graphifyy`",
+          "为 Claude Code 注册技能：`graphify install`（其他编辑器例如 `graphify cursor install`、`graphify codex install --platform codex`）",
+          "生成图谱：在项目目录中执行 `/graphify .`——会在 `graphify-out/` 中生成 `graph.html`、`GRAPH_REPORT.md` 和 `graph.json`",
+          "常驻集成：`graphify claude install` 会写入一条 `CLAUDE.md` 指令和一个 PreToolUse hook，在文件搜索前自动查询图谱",
+          "可选启动自己的 MCP 服务器：`python -m graphify.serve graphify-out/graph.json`（加上 `--transport http --host 0.0.0.0 --api-key ...` 也可供团队使用）"
+        ],
+        "whenGood": [
+          {
+            "title": "庞大且历史悠久的代码库",
+            "example": "在包含数百个文件的 monorepo 中，一次图谱查询可以替代昂贵的 Grep/Glob 连环搜索——社区反馈最多可减少 70 倍的 token 消耗。"
+          },
+          {
+            "title": "理解跨文件关联",
+            "example": "通过 `graphify query \"...\"` 或 `graphify path \"ServiceA\" \"ServiceB\"` 直接问「谁调用了 X」「谁继承自 Y」，而不必手动在代码中点来点去。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "小型或新建项目",
+            "why": "文件较少时，搭建和解析的开销并不划算，普通的 Grep/Glob 搜索反而更快上手。",
+            "alternative": "直接使用 Claude Code 内置的 Grep/Glob 搜索即可。"
+          },
+          {
+            "title": "无 API 密钥时的文档/媒体提取",
+            "why": "对 PDF、Office 或视频进行提取时，Graphify 需要接入一个 LLM 后端（例如 ANTHROPIC_API_KEY）——纯代码解析仍是本地进行，但这些额外功能会产生 API 调用费用。",
+            "alternative": "只使用标准代码解析，或设置 `OLLAMA_BASE_URL` 接入本地模型。"
+          }
+        ],
+        "links": [
+          {
+            "title": "PyPI: graphifyy",
+            "url": "https://pypi.org/project/graphifyy/"
+          },
+          {
+            "title": "Doku: How it works (Extraction-Pipeline)",
+            "url": "https://github.com/safishamsi/graphify/blob/v8/docs/how-it-works.md"
+          }
+        ]
       }
     },
     {
@@ -25,6 +67,47 @@
       "source": {
         "title": "GitHub: modelcontextprotocol/servers",
         "url": "https://github.com/modelcontextprotocol/servers"
+      },
+      "detail": {
+        "how": "Model Context Protocol（MCP）是一个开放标准，让 LLM 能够安全、受控地访问外部工具和数据源——无需每个厂商各自发明一套私有插件格式。这个仓库是官方的参考实现集合，由 Anthropic 与社区共同维护。\n\n目前包含七个参考服务器：Everything（包含全部 MCP 特性的测试服务器）、Fetch（抓取网页内容）、Filesystem、Git、Memory（持久化上下文）、Sequential Thinking 和 Time。此前曾在主仓库中的一些老服务器——例如 GitHub、Postgres 或 Brave Search——已迁移到独立仓库 `servers-archived`，或者现在由相应厂商直接维护。\n\nTypeScript 服务器可直接通过 `npx` 启动，无需安装；Python 服务器可用 `uvx`，或用传统的 `pip install`。之后将每个服务器写入 Claude Desktop 或 Claude Code 的 `mcpServers` 配置（命令 + 参数），其工具便可供智能体使用。此外仓库还指向 MCP Registry（registry.modelcontextprotocol.io），可在其中搜索社区服务器——该协议本身如今在一个由多家大厂商参与的更广泛治理结构下继续发展，不再仅由 Anthropic 一家推动。",
+        "setup": [
+          "在仓库中选择合适的服务器（例如 `server-memory`、`server-filesystem`、`server-git`）",
+          "无需安装即可启动 TypeScript 服务器：`npx -y @modelcontextprotocol/server-memory`",
+          "通过 `uvx mcp-server-git` 启动 Python 服务器（或者 `pip install mcp-server-git && python -m mcp_server_git`）",
+          "在 Claude Desktop/Code 中补充配置，例如 `{\"mcpServers\": {\"memory\": {\"command\": \"npx\", \"args\": [\"-y\", \"@modelcontextprotocol/server-memory\"]}}}`",
+          "通过 MCP Registry（registry.modelcontextprotocol.io）搜索更多社区服务器"
+        ],
+        "whenGood": [
+          {
+            "title": "初次接触 MCP",
+            "example": "第一次搭建 MCP 服务器时，可以在这里找到经过测试的官方参考实现作为模板。"
+          },
+          {
+            "title": "构建自己的服务器",
+            "example": "参考服务器（如 Filesystem、Git）可作为代码模板，用于为自己的数据源编写专属 MCP 服务器。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "寻找某些热门服务器（GitHub、Postgres、Brave Search）",
+            "why": "这些服务器已从主仓库移至归档仓库（servers-archived），或者现在由相应厂商直接维护。",
+            "alternative": "直接在对应厂商的仓库中查找（例如 github/github-mcp-server），或在 MCP Registry 中搜索。"
+          }
+        ],
+        "links": [
+          {
+            "title": "MCP Docs — Einführung",
+            "url": "https://modelcontextprotocol.io/introduction"
+          },
+          {
+            "title": "MCP Registry",
+            "url": "https://registry.modelcontextprotocol.io"
+          },
+          {
+            "title": "servers-archived (ältere Referenz-Server)",
+            "url": "https://github.com/modelcontextprotocol/servers-archived"
+          }
+        ]
       }
     },
     {
@@ -38,6 +121,48 @@
       "source": {
         "title": "GitHub: ruvnet/ruflo",
         "url": "https://github.com/ruvnet/ruflo"
+      },
+      "detail": {
+        "how": "claude-flow（仓库已改名为 ruflo；npm 包 `claude-flow` 与 `ruflo` 并行存在，目前两者都是 3.25.6 版本）是一个面向 Claude Code、Codex 及其他编程智能体的多智能体编排框架。核心是「Queen-led」蜂群协调机制：多个智能体分工处理子任务，通过共识机制（Raft、Byzantine、Gossip）同步，并共享同一个内存。\n\n这个共享内存（AgentDB）采用 HNSW 索引进行向量搜索，根据项目文档，在较小数据量下比朴素暴力搜索快数倍；此外还支持混合搜索和图遍历。通过 SONA 神经模式和「ReasoningBank」，智能体可以从过去的任务轨迹中学习，并在未来类似任务中复用成功的策略。\n\n该框架与模型无关（支持 Claude、GPT、Gemini、Cohere，以及通过 Ollama 本地运行），带有自动路由功能，通过五组服务器（Core、Intelligence、Agents、Memory、DevTools）提供约 210 个 MCP 工具，也可作为一组 Claude Code 插件安装（如 `ruflo-core`、`ruflo-swarm`、`ruflo-rag-memory`）。其联邦（Federation）功能允许跨团队或组织边界通过 WebSocket 连接多个 claude-flow 实例，并在它们之间传递任务。",
+        "setup": [
+          "交互式设置：`npx ruflo@latest init wizard`（不使用向导：`npx ruflo@latest init`）",
+          "也可全局安装：`npm install -g ruflo@latest`",
+          "在 Claude Code 中注册为 MCP 服务器：`claude mcp add ruflo -- npx ruflo@latest mcp start`",
+          "可选作为 Claude Code 插件安装：`/plugin install ruflo-core@ruflo`、`/plugin install ruflo-swarm@ruflo`、`/plugin install ruflo-rag-memory@ruflo`",
+          "如需跨团队联网：`npx claude-flow@latest federation init`，或加入：`federation join wss://...`"
+        ],
+        "whenGood": [
+          {
+            "title": "并行协调多个智能体",
+            "example": "将一个复杂功能拆分为多个子任务，多个智能体以蜂群拓扑同时协作，共享同一个内存。"
+          },
+          {
+            "title": "希望智能体从经验中学习",
+            "example": "SONA/ReasoningBank 会记住成功的任务轨迹，并在未来类似任务中重新应用。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "单个简单任务",
+            "why": "对于一个单个智能体就能独立完成的、边界清晰的简单任务来说，蜂群、内存和共识机制带来的开销并不划算。",
+            "alternative": "直接使用 Claude Code，无需编排层。"
+          },
+          {
+            "title": "没有基础设施时的跨团队联邦",
+            "why": "Federation 需要一个可访问的 WebSocket 端点（wss://）——没有自建服务器基础设施就无法真正发挥作用。",
+            "alternative": "只用本地单实例部署，不使用 federation 相关命令。"
+          }
+        ],
+        "links": [
+          {
+            "title": "User Guide",
+            "url": "https://github.com/ruvnet/ruflo/blob/main/docs/USERGUIDE.md"
+          },
+          {
+            "title": "Status & Capabilities",
+            "url": "https://github.com/ruvnet/ruflo/blob/main/docs/STATUS.md"
+          }
+        ]
       }
     },
     {
@@ -51,6 +176,48 @@
       "source": {
         "title": "GitHub: upstash/context7",
         "url": "https://github.com/upstash/context7"
+      },
+      "detail": {
+        "how": "Context7 解决了编程助手的一个核心问题：模型对库 API 的了解只停留在训练数据的截止时间，因此经常会建议已过时甚至根本不存在的函数。据 README 介绍，该 MCP 服务器会「直接从源头」获取当前、针对具体版本的文档和代码示例，并直接注入到智能体的 prompt 中。\n\n技术上，Context7 提供两个 MCP 工具：`resolve-library-id` 将库名（例如「Next.js」）解析为唯一的 Context7 ID，`query-docs` 则根据该 ID 和具体问题获取对应文档。触发方式既可以由智能体自动完成，也可以简单地在提问后加上「use context7」，例如：「How do I set up Next.js 14 middleware? use context7」。\n\n该服务以托管端点 `https://mcp.context7.com/mcp` 的形式运行；建议通过控制台以 OAuth 方式获取免费 API 密钥以提升速率限制，并作为 `CONTEXT7_API_KEY` 请求头发送。CLI 工具 `ctx7` 负责整个配置过程，可生成密钥并自动为 Claude Code、Cursor、OpenCode 等客户端安装集成。唯一前提：Node.js 18 或更高版本。这样一来，智能体读取的是实际所用库版本的真实文档，而不是凭记忆猜测 API 调用。",
+        "setup": [
+          "检查前提条件：需安装 Node.js 18 或更高版本",
+          "运行安装向导：`npx ctx7 setup`——通过 OAuth 生成 API 密钥并安装集成；也可针对特定客户端，例如 `npx ctx7 setup --claude`（也支持 `--cursor` 或 `--opencode`）",
+          "或手动配置：在客户端中添加 MCP 服务器 `https://mcp.context7.com/mcp`，并将 API 密钥作为 `CONTEXT7_API_KEY` 请求头传入（可通过 context7.com/dashboard 获取免费密钥）",
+          "测试：提出一个编程问题并附加「use context7」，例如「How do I set up Next.js 14 middleware? use context7」",
+          "如需移除：`npx ctx7 remove`"
+        ],
+        "whenGood": [
+          {
+            "title": "使用更新频繁的框架时",
+            "example": "在使用 Next.js、React 或刚更新的库进行开发时，加上「use context7」——智能体会读取真实版本的文档，而不是从训练知识中建议过时的 API。"
+          },
+          {
+            "title": "消除臆造的 API 调用",
+            "example": "如果助手反复建议当前库版本中已不存在（或从未存在）的函数，`query-docs` 会将真正有效的函数签名和代码示例带入上下文。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "关于自己私有代码的问题",
+            "why": "Context7 提供的是公开库的文档——对自己项目的内部结构一无所知。",
+            "alternative": "要理解代码库本身，应使用像 Graphify 这样的代码图谱工具，或智能体的常规文件工具。"
+          },
+          {
+            "title": "完全离线工作",
+            "why": "推荐的方式是使用托管端点（mcp.context7.com）——没有网络连接就无法获取任何文档。",
+            "alternative": "提前将所需的文档页面保存到本地，并作为文件提供给智能体。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Context7-Dokumentation",
+            "url": "https://context7.com/docs"
+          },
+          {
+            "title": "Context7-Dashboard (kostenloser API-Key)",
+            "url": "https://context7.com/dashboard"
+          }
+        ]
       }
     },
     {
@@ -64,6 +231,48 @@
       "source": {
         "title": "GitHub: microsoft/playwright-mcp",
         "url": "https://github.com/microsoft/playwright-mcp"
+      },
+      "detail": {
+        "how": "Playwright MCP 操控一个真实浏览器——但与基于截图的方案不同：该服务器基于 Playwright 的无障碍树（accessibility tree）工作，也就是一个页面的结构化描述（有哪些按钮、链接、表单字段，及其名称和状态）。README 将其优势总结为「Fast and lightweight」「LLM-friendly — no vision models needed, operates purely on structured data」以及「deterministic tool application」——因为智能体是直接定位元素而不是点击坐标，所以不存在「指的是哪个像素」这种歧义。\n\n为此，智能体获得一组浏览器工具：`browser_navigate` 打开页面，`browser_snapshot` 以文本形式返回当前的无障碍快照，`browser_click` 及相关工具与元素交互，`browser_tabs` 管理多个标签页。额外能力是可选启用的：PDF 导出（`browser_pdf_save`，通过 `--caps=pdf`）以及用于特殊场景的基于坐标的鼠标操作（`--caps=vision`）。网络路由以及 Cookie/LocalStorage 同样可以控制。\n\n支持 Chrome、Firefox、WebKit 和 Microsoft Edge；默认浏览器可见运行（headed），加上 `--headless` 则不可见运行。唯一前提是 Node.js 18 或更高版本——服务器可直接通过 `npx @playwright/mcp@latest` 启动，无需长期安装。这样一来，像 Claude Code 这样的智能体就能操作网页、填写表单，并对自己的前端进行端到端点击测试，每一步都会作为可追溯的工具操作被记录下来。",
+        "setup": [
+          "检查前提条件：Node.js 18 或更高版本",
+          "在 Claude Code 中注册：`claude mcp add playwright npx @playwright/mcp@latest`",
+          "其他 MCP 客户端填入标准配置：`{\"mcpServers\": {\"playwright\": {\"command\": \"npx\", \"args\": [\"@playwright/mcp@latest\"]}}}`",
+          "可选启用额外能力：`--caps=pdf`（PDF 导出）或 `--caps=vision`（坐标点击），用 `--headless` 让浏览器不可见运行",
+          "测试：让智能体打开一个页面并描述它——它会使用 browser_navigate 和 browser_snapshot"
+        ],
+        "whenGood": [
+          {
+            "title": "对自己的前端进行端到端测试",
+            "example": "修改登录表单后：「打开 localhost:3000，用测试数据登录，检查密码错误时是否出现相应错误提示」——智能体会通过无障碍树逐步点击完成测试。"
+          },
+          {
+            "title": "无需视觉模型的结构化网页交互",
+            "example": "自动填写一个多步骤表单：智能体以文本快照的形式看到带有名称和角色的字段，并确定性地填写——比截图分析更快、更省成本。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "像素级视觉检查",
+            "why": "无障碍树描述的是结构和状态，而不是外观——布局是否错位、颜色是否正确，标准模式无法察觉。",
+            "alternative": "如需视觉检查，可启用可选的视觉模式（`--caps=vision`），或使用传统的基于截图的测试。"
+          },
+          {
+            "title": "与自己已登录的浏览器交互",
+            "why": "Playwright MCP 会启动自己独立的浏览器实例——日常浏览器中已有的登录状态和会话不会自动出现在其中。",
+            "alternative": "如果需要在自己已登录的浏览器中操作，更适合使用 Claude in Chrome。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Playwright — offizielle Projektseite",
+            "url": "https://playwright.dev/"
+          },
+          {
+            "title": "MCP Security Best Practices",
+            "url": "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices"
+          }
+        ]
       }
     },
     {
@@ -77,6 +286,52 @@
       "source": {
         "title": "GitHub: github/github-mcp-server",
         "url": "https://github.com/github/github-mcp-server"
+      },
+      "detail": {
+        "how": "GitHub MCP Server 让智能体直接连接 GitHub 平台——有两种运行方式。远程服务器由 GitHub 官方托管在 `https://api.githubcopilot.com/mcp/`，据 README 介绍是最简单的接入方式：可在浏览器中通过 OAuth 登录（令牌只保存在内存中），或者使用个人访问令牌（PAT），放入 `Authorization: Bearer` 请求头。如果想把一切保留在本地，可以用 PAT 或 OAuth 回调将服务器以 Docker 容器形式启动（`ghcr.io/github/github-mcp-server`），也可以通过 `go build` 自行从源码构建。\n\n功能被划分为可单独启用/禁用的工具集：`repos`（仓库操作）、`issues`、`pull_requests`、`actions`（CI/CD）、`code_security`（代码及密钥扫描），此外还有 `dependabot`、`discussions`、`gists`、`projects`、`orgs`、`users`、`notifications` 和 `labels`。未特别指定时默认启用 `context`、`repos`、`issues`、`pull_requests` 和 `users`。可通过 `--toolsets` 标志或环境变量 `GITHUB_TOOLSETS` 控制启用范围；单个工具可通过 `GITHUB_TOOLS` 开启。`--read-only` 标志会禁用所有写操作工具——适合只需分析、不应做任何修改的场景。\n\n这样一来，智能体就能分流处理 issue、创建和审查 pull request、检查 CI 运行结果，并跨仓库搜索代码——由 GitHub 官方提供厂商支持，而非社区自行拼凑的方案。",
+        "setup": [
+          "最简单的方式（远程）：在 MCP 客户端中将托管服务器配置为 HTTP 服务器：`{\"servers\": {\"github\": {\"type\": \"http\", \"url\": \"https://api.githubcopilot.com/mcp/\"}}}`——随后在浏览器中通过 OAuth 登录",
+          "也可用个人访问令牌代替 OAuth：额外配置请求头 `\"Authorization\": \"Bearer <PAT>\"`",
+          "本地运行而非远程：`docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> ghcr.io/github/github-mcp-server`",
+          "按需限制工具集，例如 `--toolsets repos,issues,pull_requests,actions`，或通过环境变量 `GITHUB_TOOLSETS=\"repos,issues,pull_requests\"`",
+          "对于纯分析任务，设置 `--read-only` 标志——写操作工具将被跳过"
+        ],
+        "whenGood": [
+          {
+            "title": "直接在智能体中处理 PR 和 issue",
+            "example": "「总结所有带 'bug' 标签的未关闭 issue，按优先级排序，并为最紧急的那个创建分支和草稿 PR」——全部通过官方 GitHub 工具完成，无需切换浏览器。"
+          },
+          {
+            "title": "诊断 CI/CD 错误",
+            "example": "通过 `actions` 工具集获取最近一次推送失败的工作流运行记录，分析日志，并直接让智能体提出修复方案。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "工作目录中的本地 Git 操作",
+            "why": "该服务器调用的是 GitHub API——本地尚未推送的提交、分支和差异对它是不可见的。",
+            "alternative": "本地 Git 操作应通过智能体的常规 Git CLI 完成；GitHub MCP Server 只用于平台侧操作（PR、issue、Actions）。"
+          },
+          {
+            "title": "智能体本应只读，却获得了完整写权限",
+            "why": "使用默认工具集和权限过宽的 PAT 时，智能体可以修改 issue、PR 等内容——超出所需的权限是不必要的风险。",
+            "alternative": "设置 `--read-only`，尽量精简工具集，并使用权限范围尽可能小的细粒度 PAT。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Remote-Server-Doku (GitHub MCP)",
+            "url": "https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md"
+          },
+          {
+            "title": "Installations-Guides für alle MCP-Clients",
+            "url": "https://github.com/github/github-mcp-server/tree/main/docs/installation-guides"
+          },
+          {
+            "title": "GitHub Docs: Using the GitHub MCP Server",
+            "url": "https://docs.github.com/en/copilot/customizing-copilot/using-model-context-protocol/using-the-github-mcp-server"
+          }
+        ]
       }
     },
     {
@@ -86,10 +341,52 @@
       "official": true,
       "stars": null,
       "what": "Anthropic 官方 IDE 扩展：带内联 diff 的侧边栏面板——让 Claude Code 以可视化方式直接运行在 VS Code 中，而不仅限于终端。",
-      "why": "为那些更愿意在 IDE 而非终端中工作的人提供的官方方案；据官方数据，安装量已超过 200 万。",
+      "why": "为那些更愿意在 IDE 而非终端中工作的人提供的官方方案；据官方数据，安装量已超过 2000 万（截至 2026.07.13，Marketplace 数据）。",
       "source": {
         "title": "VS Code Marketplace: Claude Code",
         "url": "https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code"
+      },
+      "detail": {
+        "how": "Claude Code for VS Code 是 Anthropic 官方扩展，它把 Claude Code CLI 以图形化面板的形式直接带入编辑器。登录后（Pro、Max、Team 或 Enterprise 账号即可，无需 API 密钥），后台会运行一个名为「ide」的本地 MCP 服务器：它绑定在 127.0.0.1 的一个随机端口上，每次连接都用新生成的认证令牌加以保护，并为 CLI 提供两个工具——一个读取 VS Code 问题面板中的诊断信息，另一个在活跃的 Jupyter 内核中执行代码（始终需要确认对话框）。此外，Claude 会自动将你选中的文本和当前打开文件的路径作为上下文。\n\n当 Claude 提出修改建议时，会打开一个并排的 diff 视图，你可以接受、拒绝，或直接继续编辑。三种权限模式控制 Claude 拥有多大自由度：Manual（每次修改前都询问）、Plan（先以 Markdown 文档形式展示计划供你评论）以及 Edit automatically。面板可以自由拖放到侧边栏、编辑器标签页或独立窗口中，支持多个并行对话，并可通过 `/mcp` 管理你此前用 CLI 命令 `claude mcp add` 添加的外部 MCP 服务器。安装了 Claude in Chrome 扩展后，面板还能进一步控制浏览器（`@browser ...`）。据 VS Code Marketplace 数据，安装量已超过 2000 万。",
+        "setup": [
+          "检查 VS Code 版本（至少需要 1.98.0）",
+          "安装扩展：按 Ctrl+Shift+X（Mac 上为 Cmd+Shift+X）打开扩展视图，搜索 \"Claude Code\" 并点击 Install——也可直接通过链接 vscode:extension/anthropic.claude-code",
+          "首次打开面板时点击 \"Sign in\"，在浏览器中完成授权（Pro/Max/Team/Enterprise 账号即可，无需 API 密钥）",
+          "通过编辑器工具栏中的 Spark 图标打开面板（打开文件时会出现），发送一个 prompt",
+          "可选：在集成终端中用 `claude mcp add` 添加 MCP 服务器，之后在面板中用 `/mcp` 管理"
+        ],
+        "whenGood": [
+          {
+            "title": "在熟悉的编辑器中快速修复 bug",
+            "example": "选中一个有问题的函数，按 Alt+K，描述这个 bug——Claude 会自动看到你的选区，并提出内联 diff 修改建议，你可以直接接受或拒绝。"
+          },
+          {
+            "title": "构建前端并在浏览器中核对",
+            "example": "安装了 Claude in Chrome 扩展后，在面板中输入 `@browser go to localhost:3000 and check the console for errors`——Claude 会立即实时测试自己的修改，你无需离开编辑器。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "缺少仅限 CLI 的功能",
+            "why": "根据文档，`!` bash 快捷方式、Tab 补全，以及并非所有斜杠命令，都只在终端 CLI 中可用，VS Code 面板中并未完全覆盖。",
+            "alternative": "如需完整功能，可额外单独安装 Claude Code CLI，并在集成终端中用 `claude` 启动。"
+          },
+          {
+            "title": "不会自动加入 PATH",
+            "why": "该扩展自带一份用于面板的 CLI 副本，但不会把 `claude` 加入终端的 PATH。",
+            "alternative": "如果需要在终端中直接调用 `claude`，请单独完成独立 CLI 的安装。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Offizielle Doku: Claude Code in VS Code",
+            "url": "https://code.claude.com/docs/en/ide-integrations"
+          },
+          {
+            "title": "Doku: Claude Code mit Chrome verbinden",
+            "url": "https://code.claude.com/docs/en/chrome"
+          }
+        ]
       }
     },
     {
@@ -103,6 +400,52 @@
       "source": {
         "title": "Anthropic: Claude for Chrome",
         "url": "https://claude.com/claude-for-chrome"
+      },
+      "detail": {
+        "how": "Claude in Chrome 是 Anthropic 官方浏览器扩展（Chrome 网上应用店提供，也可在 Microsoft Edge 中运行，但不支持 Brave、Arc 或 WSL）。它让 Claude 执行真实的浏览器操作：导航、点击、填写表单、读取控制台和网络日志、截图，以及将交互过程录制为 GIF。由于该扩展共享你浏览器的登录状态，Claude 也能访问你已登录的页面——Gmail、Notion、Google Docs——完全无需单独的 API 接入。所有操作都在一个真实的 Chrome 窗口中实时可见地执行；遇到登录界面或验证码时，Claude 会暂停并将控制权交还给你。\n\n它既可以通过 claude.ai 独立使用，也可以集成进 Claude Code：在正在运行的会话中，用 `--chrome` 标志启动，或执行 `/chrome` 命令；后台 Claude Code 会为此配置一个 native messaging host，让 Chrome 与 CLI 在本地通信。在 Plan 模式下，纯只读调用（读取页面、检查控制台、截图）无需确认即可执行，而点击、输入、导航等会改变状态的操作则需要先确认。自 2025 年 12 月起，该功能以 Beta 形式向所有付费方案开放。由于被篡改的网页可能试图通过提示注入（prompt injection）欺骗 Claude，应谨慎授予网站权限，并避免让其执行支付等敏感操作。",
+        "setup": [
+          "安装 Chrome 或 Microsoft Edge（其他基于 Chromium 的浏览器如 Brave、Arc 不受支持，WSL 同样不支持）",
+          "从 Chrome 网上应用店安装扩展 \"Claude\"（chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn），版本需 1.0.36 或更高",
+          "使用 Claude 账号登录，并在扩展设置中配置网站权限，决定 Claude 可以访问/点击/输入哪些页面",
+          "在 Claude Code（2.0.73 及以上版本）中使用：运行 `claude --chrome`，或在正在运行的会话中执行 `/chrome` 并确认连接",
+          "可选：通过 `/chrome` → \"Enabled by default\" 设置，使 Chrome 无需每次会话都用标志重新启用"
+        ],
+        "whenGood": [
+          {
+            "title": "无需切换上下文的实时调试",
+            "example": "「打开 localhost:3000，尝试用无效数据提交表单，检查错误提示是否正确显示」——Claude 会直接在真实浏览器中测试，并汇报它看到的内容。"
+          },
+          {
+            "title": "从已登录页面提取数据",
+            "example": "「打开产品列表，把每个商品的名称、价格和库存状态提取为 CSV」——即使是你已登录的页面也能正常工作，完全无需单独的 API 接入。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "存在提示注入风险的 Beta 功能",
+            "why": "被篡改的网页可能试图通过隐藏指令欺骗 Claude；该扩展目前仍被官方标记为 Beta 版本。",
+            "alternative": "只给可信域名授权，避免支付或修改密码等敏感操作，并在批准前检查建议的操作。"
+          },
+          {
+            "title": "并非所有环境都可用",
+            "why": "根据文档，只支持 Chrome 和 Edge，不支持 Brave、Arc 等其他 Chromium 浏览器，也不支持 WSL。",
+            "alternative": "改用受支持的浏览器，或对原生桌面应用改用 Computer Use。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Doku: Claude Code mit Chrome",
+            "url": "https://code.claude.com/docs/en/chrome"
+          },
+          {
+            "title": "Erste Schritte mit Claude in Chrome (Support)",
+            "url": "https://support.claude.com/en/articles/12012173-getting-started-with-claude-in-chrome"
+          },
+          {
+            "title": "Extension im Chrome Web Store",
+            "url": "https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn"
+          }
+        ]
       }
     },
     {
@@ -116,6 +459,44 @@
       "source": {
         "title": "GitHub: coddingtonbear/obsidian-local-rest-api",
         "url": "https://github.com/coddingtonbear/obsidian-local-rest-api"
+      },
+      "detail": {
+        "how": "Obsidian Local REST API 是一款社区插件，启动时会在 `127.0.0.1:27124` 上开启一个本地 HTTPS 服务器（自签名证书；也可额外在 27123 端口启用 HTTP，但需要单独开启）。每个请求都通过 API 密钥进行保护，该密钥可在插件设置中找到，需作为 Bearer token 一并发送。通过 REST 端点可以读取、写入、修补和删除笔记（`/vault/{path}`）、编辑当前打开的文件（`/active/`）、进行全文搜索（`/search/simple/`）、通过 JsonLogic 进行更复杂的元数据搜索（`/search/`）、列出标签，或触发 Obsidian 命令（`/commands/`）。\n\n自 2026 年起，该插件额外内置了一个 MCP 端点，位于 `/mcp/`（采用 Streamable HTTP 传输，认证方式与 REST API 相同），提供 `vault_read`、`vault_write`、`search_query` 等 15 个以上工具。Claude Code 原生支持 HTTP MCP，可通过 CLI 命令直接连接该端点——因此不再需要单独的 MCP 服务器进程。Claude Desktop 不支持原生 HTTP MCP，根据文档需要借助 `mcp-remote` 之类的桥接工具。这样一来，你自己的 Obsidian 仓库（vault）就变成了一个可供智能体搜索和写入的知识源——一切都在本地机器上完成，数据无需离开本机。",
+        "setup": [
+          "通过 Obsidian 社区插件安装并启用 \"Local REST API\" 插件",
+          "在 Obsidian 中：打开 Settings → Local REST API，复制 API 密钥，必要时信任自签名证书",
+          "测试连通性：GET https://127.0.0.1:27124/ 无需认证即可返回状态检查结果",
+          "连接 Claude Code：`claude mcp add --transport http obsidian https://127.0.0.1:27124/mcp/ --header \"Authorization: Bearer <your-api-key>\"`",
+          "或手动写入 `.mcp.json`：`{\"mcpServers\":{\"obsidian\":{\"type\":\"http\",\"url\":\"https://127.0.0.1:27124/mcp/\",\"headers\":{\"Authorization\":\"Bearer <your-api-key>\"}}}}`"
+        ],
+        "whenGood": [
+          {
+            "title": "编程时搜索笔记",
+            "example": "当你正在处理某个模块时，Claude Code 可以在你的 Obsidian 仓库中全文搜索一条旧的架构决策记录。"
+          },
+          {
+            "title": "把结论直接写回",
+            "example": "一次调试会话结束后，让 Claude 直接通过 vault_write 把总结写成一条新笔记存入仓库，而无需自己打开 Obsidian。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "无法远程访问",
+            "why": "服务器只在本地 127.0.0.1 上运行——Obsidian 必须在同一台机器上打开对应仓库运行，否则该端点无法访问。",
+            "alternative": "如需从其他设备访问，可自行搭建隧道/反向代理（不属于插件本身），或直接在存放仓库的那台机器上操作。"
+          },
+          {
+            "title": "Claude Desktop 需要额外步骤",
+            "why": "Claude Desktop 不支持原生 HTTP MCP，根据文档需要像 mcp-remote 这样的代理。",
+            "alternative": "改用 Claude Code（原生支持 HTTP MCP），或配置 mcp-remote 作为桥接。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Plugin-Eintrag im offiziellen Obsidian-Verzeichnis",
+            "url": "https://obsidian.md/plugins?id=obsidian-local-rest-api"
+          }
+        ]
       }
     },
     {
@@ -129,6 +510,48 @@
       "source": {
         "title": "GitHub: logancyang/obsidian-copilot",
         "url": "https://github.com/logancyang/obsidian-copilot"
+      },
+      "detail": {
+        "how": "Copilot for Obsidian 是一款直接生活在仓库（vault）中的聊天助手：用 `@` 标记笔记，将其拉入聊天作为上下文，并在对话中讨论或修改它们。免费版本采用自带密钥（bring-your-own-key）模式：在 Settings → Copilot → Basic 中填入任意厂商（OpenRouter、Gemini、OpenAI、Anthropic、Cohere——推荐使用 OpenRouter）的 API 密钥后，一切请求都直接发往所选厂商，不会经过 Brevilabs 的服务器。免费版包含带笔记引用的聊天模式、可搜索整个笔记集合的 Vault-QA 模式（嵌入是可选的，即使不建立嵌入，Copilot 也能立即返回结果），以及基于语义相似度和链接关系的「Relevant Notes」推荐。付费的 Plus/Believer 档位（由 Brevilabs LLC 授权，与 Obsidian 或 Anthropic 均无关联）增加了具备自主工具调用能力的「Agent Mode」，支持理解图片/PDF/EPUB/YouTube 视频/网页，以及基于文件夹/标签的「Project Mode」AI 上下文（类似 NotebookLM，但运行在自己的仓库内）。全新的 Copilot v4 则可以让完整的编程智能体——opencode、Claude Code 或 Codex——原生运行在仓库中，进行规划、在仓库内搜索并执行操作，完全无需离开笔记。前端代码完全开源，Plus 智能体功能背后的后端则是闭源的。",
+        "setup": [
+          "在 Obsidian 中：Settings → Community plugins → 关闭 Safe mode（若已开启）。",
+          "点击「Browse」，搜索「Copilot for Obsidian」，点击「Install」，再点击「Enable」。",
+          "使用免费版：进入 Settings → Copilot → Basic → 「Set Keys」，选择所需厂商（例如 Anthropic 或 OpenRouter）并填入 API 密钥。",
+          "使用 Plus/Believer：在控制台（obsidiancopilot.com/en/dashboard）复制许可证密钥，粘贴到 Settings → Copilot → Basic 中的「Copilot Plus」卡片内。",
+          "在聊天输入框中使用 `@` 精确添加单条笔记作为上下文，或使用 Vault-QA 模式对整个仓库提问。"
+        ],
+        "whenGood": [
+          {
+            "title": "无需配置即可快速查询自己的笔记",
+            "example": "在 Vault-QA 模式下，可以立即提问「我去年关于主题 X 记录了什么？」，无需事先建立嵌入。"
+          },
+          {
+            "title": "在「第二大脑」中直接使用编程智能体",
+            "example": "借助 Copilot v4，可以在仓库中原生启动 Claude Code，例如自动从散落的笔记中构建结构化摘要，而不必先把笔记复制到单独的项目中。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "完全掌控数据、不接入任何云端厂商",
+            "why": "即使在免费档位，聊天也是发往外部 LLM 厂商（OpenAI、Anthropic、Google 等）——标准配置下不支持完全本地、无需任何云端请求的推理。",
+            "alternative": "如需完全本地、可离线运行、无任何 API 调用的语义搜索，可改用 Smart Connections（本地嵌入模型）。"
+          },
+          {
+            "title": "希望完全掌握智能体功能的后端实现",
+            "why": "Plus 档位的 Agent Mode 和文件转换功能运行在 Brevilabs 的私有闭源服务器上——只有前端是开源的。",
+            "alternative": "如需完全开源的仓库自动化方案，可使用 Local REST API 搭配自己的 MCP 客户端/脚本。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Offizielle Dokumentation",
+            "url": "https://www.obsidiancopilot.com/en/docs"
+          },
+          {
+            "title": "Copilot v4 (Coding-Agenten im Vault)",
+            "url": "https://www.obsidiancopilot.com/v4"
+          }
+        ]
       }
     },
     {
@@ -142,6 +565,48 @@
       "source": {
         "title": "GitHub: brianpetro/obsidian-smart-connections",
         "url": "https://github.com/brianpetro/obsidian-smart-connections"
+      },
+      "detail": {
+        "how": "Smart Connections 会在写作时自动展示与当前打开笔记内容相关的其他笔记——为此，一个本地嵌入模型会在安装后立即对整个仓库建立索引，完全不需要 API 密钥、额外应用或 CLI 工具（「零配置」）。搜索是纯语义式的：一条包含精确搜索短语但内容并不相关的笔记，不一定会出现在结果中；反过来，主题相关但没有共同词汇的笔记则会出现。有两个核心视图：Connections 视图（通过左侧 Ribbon 图标或命令「Open: Connection view」打开）会持续显示与当前笔记相关的匹配结果，可通过拖放直接插入为链接；Lookup 视图则允许按需在整个仓库中进行有针对性的语义搜索。默认离线且私密运行，据介绍在移动设备上也可使用，并被打造为依赖极少的精简开源核心，以便于审计。对于当前配置需要注意的是：早期介绍中常提及的聊天功能，如今已拆分到一个独立插件「Smart Chat」中——其免费版覆盖对第三方接口的简单接入，而多厂商模型路由（云端及本地 API）则被打包进付费的「Smart Chat Pro」。两个插件共享同一套本地索引基础设施，名为「Smart Environment」。诸如打字时的内联建议或与 Obsidian Bases 的对接等进阶功能，属于付费 Pro 插件的范畴。",
+        "setup": [
+          "在 Obsidian 中：Settings → Community plugins → Browse → 搜索「Smart Connections」。",
+          "点击「Install」和「Enable」——根据 README，不需要更多步骤，无需 API 密钥、CLI 或额外应用。",
+          "本地嵌入模型会立即自动开始为仓库建立索引（完成后会有提示）。",
+          "通过左侧 Ribbon 中的 Connections 图标（或命令「Open: Connection view」）查看与当前笔记相关的匹配结果。",
+          "如需进行有针对性的搜索，打开 Lookup 视图；如需聊天功能，需额外安装独立的「Smart Chat」插件。"
+        ],
+        "whenGood": [
+          {
+            "title": "找回被遗忘但主题相关的笔记",
+            "example": "撰写一条新的调研笔记时，Connections 视图会自动展示几个月前一条内容相关的笔记，而由于措辞不同，单纯的关键词搜索本会漏掉它。"
+          },
+          {
+            "title": "完全不接入云端的语义搜索",
+            "example": "在包含敏感个人笔记的仓库中，可以用 Lookup 视图有针对性地询问「我关于主题 X 写了什么」，而不会有任何内容离开本机设备。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "想与自己的仓库进行聊天对话",
+            "why": "自 v4 拆分以来，聊天功能已不再包含在 Smart Connections 中，而是成为一个独立插件（Smart Chat），其多厂商模型接入功能还位于付费 Pro 版本中。",
+            "alternative": "额外安装 Smart Chat 插件，或者如果需要内置聊天并可选择云端模型，直接改用 Copilot for Obsidian。"
+          },
+          {
+            "title": "词汇高度专业化的超大仓库且未做调优",
+            "why": "内置的本地嵌入模型是一个通用模型；面对高度专业化或多语言的词汇，如果不调整设置（过滤、排序），匹配质量可能会下降。",
+            "alternative": "参考设置指南中关于索引/过滤的建议，或对于大型专业知识库额外采用像 Graphify 这样的结构化方案。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Getting-Started-Guide",
+            "url": "https://smartconnections.app/smart-connections/getting-started/?utm_source=connections-readme"
+          },
+          {
+            "title": "Obsidian-Plugin-Verzeichnis: Smart Connections",
+            "url": "https://obsidian.md/plugins?id=smart-connections"
+          }
+        ]
       }
     },
     {
@@ -155,6 +620,48 @@
       "source": {
         "title": "GitHub: senna-lang/graph-context-for-claude-code",
         "url": "https://github.com/senna-lang/graph-context-for-claude-code"
+      },
+      "detail": {
+        "how": "这是一款非常新的插件（2026 年 6 月），它让 Obsidian 出现在 Claude Code 内置的 IDE 识别机制中——采用与官方 VS Code、JetBrains 扩展相同的「锁文件 + 本地 WebSocket」方式。加载时，插件会在 127.0.0.1 上启动一个 WebSocket 服务器，并把包含端口、仓库路径和会话认证令牌的锁文件写入 `~/.config/claude/ide/<port>.lock` 或 `~/.claude/ide/<port>.lock`。Claude Code 会自动找到这个文件，建立连接，用令牌完成认证，随后通过 JSON-RPC 进行 MCP 通信。真正的价值在于「Graph Context」这一层：当你在笔记中选中一段文本时，插件不只是发送带有晦涩 `[[链接]]` 的原始 Markdown，而是在服务端用 Obsidian 自身的 `metadataCache` 解析器把这些链接解析出来，并把所有内容打包进同一个 payload——完整的嵌入内容 `![[Embeds]]`、以摘要形式呈现的 `[[Wikilinks]]`（frontmatter + 首段）、光标所在的标题路径、frontmatter 以及反向链接。这与传统 Obsidian MCP 服务器的区别在于：后者需要 Claude 逐个通过工具调用解析每条链接（N 条链接 = N×2 次往返），而这里已解析好的上下文会随选区一起自动送达，无需额外的工具调用。这种解析有意只展开一层（已链接笔记内部的链接不会进一步展开），并有大小限制（嵌入内容 2000 字符、wikilink 摘要 200 字符、总计 8000 字符、反向链接 20 条），并会明确标注截断标记，而非静默截断。由于需要一个 Node WebSocket 服务器，该插件仅支持桌面版 Obsidian。",
+        "setup": [
+          "前提是桌面版 Obsidian（插件为 isDesktopOnly），以及终端中一个可正常工作的 Claude Code 安装。",
+          "由于尚未出现在社区插件列表中，需要手动构建：克隆仓库，然后执行 `npm install && npm run build`。",
+          "把 `main.js` 和 `manifest.json` 复制到自己的仓库：`<vault>/.obsidian/plugins/graph-context-for-claude-code/`。",
+          "在 Obsidian 的 Settings → Community plugins 中关闭 Restricted Mode（如需要），并启用「Graph Context for Claude Code」——会出现提示「ready on port <PORT>」。",
+          "在另一个终端中启动 `claude`，输入 `/ide` 并选择「Obsidian」；然后在笔记中选中文本，直接向 Claude 提问。"
+        ],
+        "whenGood": [
+          {
+            "title": "把带有大量链接的笔记作为提问上下文",
+            "example": "选中一段链接到多篇其他笔记的段落，并提问「总结我选中的内容，以及它与所链接笔记的关系」时，Claude 在第一个 payload 中就已经拿到了链接内容，无需逐个加载。"
+          },
+          {
+            "title": "无需 API 密钥配置即可快速查询单条笔记",
+            "example": "如果只是在 Claude Code 编程会话中偶尔需要访问某条 Obsidian 笔记，就不必用到 Local REST API 方案那套独立的 HTTPS 服务器和 API 密钥——这里只需 `/ide` 并选择 Obsidian 即可。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "移动端使用或未打开 Obsidian 应用时的自动化",
+            "why": "该插件明确标记为 isDesktopOnly，需要一个正在运行、WebSocket 服务器处于活跃状态的桌面版 Obsidian 实例——不存在无头（headless）模式。",
+            "alternative": "如需在未打开 Obsidian 应用的情况下实现自动化，应使用带有独立 HTTPS 服务器的 Obsidian Local REST API。"
+          },
+          {
+            "title": "需要自动携带多跳深层链接",
+            "why": "图谱展开有意限制在一层深度——已展开的关联笔记内部的链接不会被进一步解析。",
+            "alternative": "如需更深层的图谱遍历，应有针对性地使用 Local REST API 的 MCP 工具，或采用像 Graphify 这样支持 Obsidian 导出的专用图谱工具。"
+          }
+        ],
+        "links": [
+          {
+            "title": "Releases",
+            "url": "https://github.com/senna-lang/graph-context-for-claude-code/releases"
+          },
+          {
+            "title": "Claude Code Doku (IDE-Integration)",
+            "url": "https://docs.claude.com/en/docs/claude-code"
+          }
+        ]
       }
     }
   ],
