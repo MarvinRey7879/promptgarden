@@ -324,8 +324,11 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Danach offen: ES/FR/ZH mergen+deploy · whenGood/whenBad Batch 2 (nächste ~16: resume? nein fertig — Kandidaten: batch, review, simplify, security-review, mcp, plugin, skills, memory, context, init, add-dir, cd, agents, thinking, usage, permissions) · Addons-Sektion · /admin-Todo-Liste · Sitemap /befehle · Statusboard/API-Doku (build-api index um commands erweitern)
 
 ### Standard-Iteration (aktualisiert 12.07 — Warte-auf-Marvin gilt NUR noch für Domain-Automatik)
-1. Admin-Summary (Notes = sofort umsetzen) — KORREKTER Aufruf:
-   `curl -s .../v1/admin/summary -H "X-Admin-Key: $PG_ADMIN_KEY"` + im Parser `if(j.error) throw` (NIE Bearer, nie stumm defaulten)
+1. Admin-Summary (Notes = sofort umsetzen) — KORREKTER Aufruf (Fix 2, It. 62 — Poll las seit It. 44 FALSCHE Keys!):
+   `curl -s .../v1/admin/summary -H "X-Admin-Key: $PG_ADMIN_KEY"`
+   Echte Keys: `open_admin_notes` / `open_bugs` / `new_feedback` / `marvin_todos` / `views_7d` / `top_paths_7d` / `forum_recent`
+   Parser MUSS werfen wenn `j.open_admin_notes === undefined` (Schema-Drift-Guard) UND wenn `j.error`. NIE stumm defaulten.
+   Marvin-Todos pflegen: POST /v1/admin/todo {action:add|toggle|delete, ...} — Loop schreibt neue Aufgaben rein, prüft done-Status (done=1 ⇒ z.B. „sponsors aktiv" ⇒ Footer-Link einbauen)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz
 3. Artifact nur bei Substanz aktualisieren (nicht jede Iteration neu publishen ohne Änderung)
 4. Wakeup 3600s
