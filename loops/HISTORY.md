@@ -485,3 +485,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - bodyDetail-Batch 3: restliche 21 Kapitel ×5 Sprachen → **ALLE 51 Kapitel haben jetzt 🌱/🔬** (Marvin-Direktive 8 komplett). Adversarial-Review PASS (11/21 tiefgeprüft, alle Zahlen exakt quellengedeckt; 1 FIX hooks-Formulierung vor Übersetzung angewandt). NEU scripts/patch-bodydetail.mjs (patcht nur bodyDetail, wirft bei Drift).
 - Live verifiziert: /de/lexikon/rag/ (»Zwei Suchverfahren kombiniert«) + /zh/lexikon/hooks/ (»三种触发时机«).
 - Known-good Deploy: 1fce91e5.promptgarden.pages.dev
+
+### It. 79 (14.07.26 früh) — 🎬 Terminal-Demo-Videos auf Befehlsseiten + Forum-Cleanup ✅
+- Remotion-Ausbau (Direktive 12, Runde 2): wiederverwendbare TerminalDemo-Composition (getippter Befehl + gestreamte Ausgabe, 1d-Terminal-Karte) — 2 Demos ×5 Sprachen (goal-demo: /goal-Session bis »alle Tests grün«; sandbox-demo: agent sandbox run mit Sandbox-Defaults-Hinweis), Fakten aus commands.de.json. 10 neue mp4 (je ~0,65MB) → 20 Remotion-Clips total.
+- Einbettung: COMMAND_VIDEOS-Mapping in Befehls-Detailseite (claude-code/goal, cursor-cli/sandbox-run) — Muster für weitere Befehls-Demos etabliert.
+- Forum-Cleanup (Marvin-Wunsch): Test-Post »Loop-Test« gelöscht, öffentliche Liste leer verifiziert; geblockte Spam-Testposts 2+3 bleiben unsichtbar als Filter-Beleg.
+- Live verifiziert: goal-demo.de.mp4 200+video/mp4, Embeds auf /de/…/goal/ + /zh/…/sandbox-run/.
+- Known-good Deploy: d59ad5e2.promptgarden.pages.dev

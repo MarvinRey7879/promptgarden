@@ -2,6 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCommand, getCommands, getPlatform } from '@/lib/commands';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
+import ExampleVideo from '@/components/ExampleVideo';
+
+// Remotion-Terminal-Demos (Direktive 12) für ausgewählte Befehle: platform/slug → Video-Basename
+const COMMAND_VIDEOS: Record<string, string> = {
+  'claude-code/goal': 'goal-demo',
+  'cursor-cli/sandbox-run': 'sandbox-demo',
+};
 
 export function generateStaticParams() {
   return LANGS.flatMap((lang) =>
@@ -55,6 +62,12 @@ export default async function CommandPage({
           <p style={{ margin: '0 0 24px', fontSize: 15.5, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{rest}</p>
         ) : null;
       })()}
+
+      {COMMAND_VIDEOS[`${platform}/${slug}`] && (
+        <div style={{ marginBottom: 24 }}>
+          <ExampleVideo lang={lang} name={COMMAND_VIDEOS[`${platform}/${slug}`]} label={c.summary} />
+        </div>
+      )}
 
       {c.whenGood.length > 0 && (
         <div className="card" style={{ padding: '18px 22px', marginBottom: 18, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
