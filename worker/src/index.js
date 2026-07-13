@@ -98,7 +98,7 @@ export default {
 
       if (request.method === 'GET' && path === '/v1/admin/summary') {
         if (!isAdmin) return json({ error: 'unauthorized' }, 401, cors);
-        const [bugs, feedback, notes, signups, views, topPaths, forumRecent, forumBlocked] = await Promise.all([
+        const [bugs, feedback, notes, signups, views, topPaths, forumRecent, forumBlocked, todos] = await Promise.all([
           env.DB.prepare("SELECT * FROM bug_reports WHERE status='open' ORDER BY id DESC LIMIT 50").all(),
           env.DB.prepare("SELECT * FROM feedback WHERE status='new' ORDER BY id DESC LIMIT 50").all(),
           env.DB.prepare("SELECT * FROM admin_notes WHERE status='open' ORDER BY prio, id DESC LIMIT 50").all(),
@@ -109,6 +109,7 @@ export default {
           ).all(),
           env.DB.prepare('SELECT id, created_at, name, message, lang, status FROM forum_posts ORDER BY id DESC LIMIT 20').all(),
           env.DB.prepare("SELECT COUNT(*) AS n FROM forum_posts WHERE status='blocked'").first(),
+          env.DB.prepare('SELECT * FROM marvin_todos ORDER BY done, id DESC LIMIT 50').all(),
         ]);
         return json(
           {
@@ -120,6 +121,7 @@ export default {
             top_paths_7d: topPaths.results,
             forum_recent: forumRecent.results,
             forum_blocked_count: forumBlocked?.n ?? 0,
+            marvin_todos: todos.results,
           },
           200,
           cors,
@@ -231,6 +233,34 @@ export default {
             .run();
         }
         return json({ ok: true }, 200, cors);
+      }
+
+      if (path === '/v1/admin/todo') {
+        if (!isAdmin) return json({ error: 'unauthorized' }, 401, cors);
+        const action = body.action;
+        if (action === 'add') {
+          const title = clip(body.title, 300);
+          if (!title || !title.trim()) return json({ error: 'title required' }, 400, cors);
+          await env.DB.prepare('INSERT INTO marvin_todos (title, detail) VALUES (?, ?)')
+            .bind(title.trim(), clip(body.detail || '', 2000))
+            .run();
+          return json({ ok: true }, 200, cors);
+        }
+        const id = Number(body.id);
+        if (!id) return json({ error: 'id required' }, 400, cors);
+        if (action === 'toggle') {
+          await env.DB.prepare(
+            "UPDATE marvin_todos SET done = ?, done_at = CASE WHEN ? = 1 THEN datetime('now') ELSE NULL END WHERE id = ?",
+          )
+            .bind(body.done ? 1 : 0, body.done ? 1 : 0, id)
+            .run();
+          return json({ ok: true }, 200, cors);
+        }
+        if (action === 'delete') {
+          await env.DB.prepare('DELETE FROM marvin_todos WHERE id = ?').bind(id).run();
+          return json({ ok: true }, 200, cors);
+        }
+        return json({ error: 'unknown action' }, 400, cors);
       }
 
       if (path === '/v1/admin/note') {

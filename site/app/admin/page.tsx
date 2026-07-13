@@ -16,6 +16,7 @@ type Summary = {
   newsletter_count: number;
   views_7d: number;
   top_paths_7d: { path: string; n: number }[];
+  marvin_todos?: { id: number; created_at: string; title: string; detail: string; done: number }[];
 };
 
 export default function AdminPage() {
@@ -97,6 +98,42 @@ export default function AdminPage() {
             <span className="chip">📬 {summary.newsletter_count} Newsletter</span>
             <span className="chip">🐛 {summary.open_bugs.length} offene Bugs</span>
             <span className="chip">💬 {summary.new_feedback.length} neues Feedback</span>
+          </div>
+
+          <div className="card" style={{ padding: '18px 22px', marginBottom: 18, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
+            <p className="kicker" style={{ color: 'var(--ink)' }}>✅ DEINE TO-DOS (Loop pflegt sie, du hakst ab)</p>
+            {(summary.marvin_todos ?? []).length === 0 && (
+              <p style={{ margin: 0, fontSize: 13.5 }}>Gerade nichts offen 🎉</p>
+            )}
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 14 }}>
+              {(summary.marvin_todos ?? []).map((t) => (
+                <li key={t.id} style={{ padding: '8px 0', borderBottom: '1px dashed var(--ink)' }}>
+                  <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={t.done === 1}
+                      style={{ marginTop: 3, width: 18, height: 18, accentColor: 'var(--ink)' }}
+                      onChange={async (e) => {
+                        await fetch(`${API_URL}/v1/admin/todo`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', 'X-Admin-Key': key },
+                          body: JSON.stringify({ action: 'toggle', id: t.id, done: e.target.checked }),
+                        });
+                        load(key);
+                      }}
+                    />
+                    <span>
+                      <b style={{ textDecoration: t.done === 1 ? 'line-through' : 'none' }}>{t.title}</b>
+                      {t.detail && (
+                        <span style={{ display: 'block', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5 }}>
+                          {t.detail}
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="card" style={{ padding: '18px 22px', marginBottom: 18, background: 'var(--yellow)', boxShadow: '4px 4px 0 var(--ink)' }}>
