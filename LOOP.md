@@ -298,6 +298,7 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Lektion: static export verträgt KEINE leere generateStaticParams-Route → Routen erst mit Daten shippen
 - OFFEN (Reihenfolge): ① whenGood/whenBad-Batches für Top-Claude-Code-Befehle (DE+EN) ② Codex-Einträge (16, Agent-Retry) ③ Übersetzungen EN/ES/FR/ZH der 92 Summaries/Whats ④ Addons-Sektion ⑤ /admin abhakbare Marvin-Todo-Liste (Marvin-Wunsch 13.07) ⑥ Sitemap um /befehle/ erweitern
 - MARVIN-KANAL-Regel (13.07): Artifact kann nichts senden (CSP) → /admin-Prio-Feld ist der Schreibkanal; regelmäßig neue Marvin-Todos (GSC nach Domain, Reddit etc.) ins Statusboard posten
+- 🔴 STATUSBOARD-Regel (Marvin 13.07): ERLEDIGTE Punkte fliegen aus der „Deine To-dos"-Sektion RAUS — dort stehen nur offene Aufgaben (Erledigtes gehört in die „Neu in Iteration"-Karten)
 
 ### 🔴 MARVIN 13.07 (mittags): ALLE Befehle (nicht nur Kern) bekommen wann/wann-nicht-Blöcke, jeweils doc-basiert
 - Batches 2-4 (je ~26, restliche 78 Claude-Code-Befehle) DE+EN via Agents; Aliase/Trivial-Toggles dürfen 1+1 statt 2+2 haben
@@ -311,6 +312,13 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - ES/FR/ZH-Agents hatten die Live-Erweiterung der Quelldatei selbst erkannt und re-synct (Drift-Check im Agent-Workflow hat funktioniert — Muster beibehalten: Übersetzungs-Agents sollen Quelle vor finalem Write re-validieren)
 - Marvins „ALLE Befehle"-Wunsch damit für beide Start-Plattformen erfüllt; weitere Plattformen (Cursor CLI, Aider, …) als nächste Ausbaustufe
 - NÄCHSTE ARBEIT: ① Addons-Sektion (research/befehle/addons-2026-07-12.md → eigene Seite/Sektion + Graphify/Obsidian-Lexikon) ② /admin abhakbare Marvin-Todo-Liste ③ Sitemap um /befehle-Routen erweitern ④ Statusboard ⑤ Feed-Refresh täglich weiter ⑥ Zone-Poll
+
+### It. 63 (13.07) — 🌍 DOMAIN-AUTOMATIK GEZÜNDET: promptgarten.com LIVE ✅
+- Zone active (Marvin stellte NS um) → Loop automatisch: Pages-Custom-Domains apex+www (beide active+SSL), Parking-DNS (A+www-CNAME) ersetzt durch CNAME→promptgarden.pages.dev proxied, MX/TXT-Mail-Forwarding UNANGETASTET gelassen
+- Site: noindex→index,follow · metadataBase=https://promptgarten.com · sitemap/robots/llms.txt/README auf neue Domain · Worker-CORS +promptgarten.com+www (deployed) — alles live verifiziert (apex 200, www 200, robots-Meta, sitemap, CORS 200)
+- DNS-Schreibrechte: NUR CF_PG_ZONE_TOKEN kann DNS (Master+Pages-Token: auth error); Ruleset-API (www→apex-Redirect) kann KEIN vorhandenes Token → Redirect offen (unkritisch, beide Hosts serven; Lösung: canonical-Tags in hreflang-Runde ODER Token-Recht „Dynamic Redirect" von Marvin)
+- Todos: #1 done markiert, #3 Platzhalter ersetzt durch konkretes GSC-Todo #4 (Marvin soll TXT-Verifizierungswert schicken → Loop trägt DNS ein)
+- OFFEN als Nächstes: hreflang+canonical pro Seite (Phase 2), GSC-TXT sobald Marvin liefert, Sitemap bei Google einreichen (nach GSC), OG-Image-URL prüfen, Cursor-CLI/Aider-Research, Statusboard ✅ aktualisiert
 
 ### It. 61 (13.07 nachmittags) — Addons-Sektion LIVE + 🎉 Zone angelegt ✅ (Commit 2594208)
 - /[lang]/addons/ live: 12 Tools (Graphify, MCP-Katalog, claude-flow, Context7, Playwright-MCP, GitHub-MCP, VS-Code-Ext, Claude-in-Chrome, 4× Obsidian) × 5 Sprachen, Kategorien-Chips, Stars, Quellen; Nav-Punkt „Addons"; Sitemap um befehle+addons-Routen erweitert

@@ -15,10 +15,11 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://promptgarten.com'),
   title: 'promptgarten 🌱 — Pflanze dein KI-Wissen an',
   description:
     'Kostenlose Lern-Plattform für Coden mit KI: Begriffe, Prompts, Agenten, Loops. Simpel erklärt, immer aktuell.',
-  robots: { index: false, follow: false }, // noindex bis Domain-Entscheidung
+  robots: { index: true, follow: true }, // Domain aktiv seit 13.07.2026 — indexierbar
   openGraph: {
     siteName: 'promptgarten',
     images: [{ url: '/og.png', width: 1200, height: 630 }],

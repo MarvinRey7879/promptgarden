@@ -5,8 +5,8 @@ import { getCommands, getPlatforms } from '@/lib/commands';
 
 export const dynamic = 'force-static';
 
-// TODO: auf https://promptgarten.com umstellen, sobald Zone aktiv (dann auch noindex raus + hreflang)
-const BASE = 'https://promptgarden.pages.dev';
+// Kanonische Domain seit 13.07.2026
+const BASE = 'https://promptgarten.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

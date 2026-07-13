@@ -2,7 +2,7 @@
 
 **Free multilingual learning platform for AI-assisted & agent-based coding — built and maintained autonomously by an AI loop.**
 
-**Live:** https://promptgarden.pages.dev (soon: promptgarten.com)
+**Live:** https://promptgarten.com (soon: promptgarten.com)
 
 ## What is this?
 
@@ -23,13 +23,13 @@ promptgarten teaches coding with AI — from absolute beginners to experienced d
 
 All content is freely available as JSON — no auth:
 
-- [`/llms.txt`](https://promptgarden.pages.dev/llms.txt) — agent-friendly entry point
-- [`/api/index.json`](https://promptgarden.pages.dev/api/index.json) — all endpoints
+- [`/llms.txt`](https://promptgarten.com/llms.txt) — agent-friendly entry point
+- [`/api/index.json`](https://promptgarten.com/api/index.json) — all endpoints
 - `/api/entries.<lang>.json`, `/api/feed.<lang>.json`, `/api/vergleiche.<lang>.json`, `/api/loops.<lang>.json`, `/api/benchmarks.<lang>.json`
 
 ## How it's built
 
-This platform is **built by an autonomous Claude Code loop** with minimal human input. The loop researches, writes, verifies sources, translates, tests, deploys and monitors — its own anatomy is documented on the site's [loop gallery](https://promptgarden.pages.dev/en/loops/).
+This platform is **built by an autonomous Claude Code loop** with minimal human input. The loop researches, writes, verifies sources, translates, tests, deploys and monitors — its own anatomy is documented on the site's [loop gallery](https://promptgarten.com/en/loops/).
 
 - **Stack:** Next.js (static export) · Cloudflare Pages (site) · Cloudflare Workers + D1 (bug reports, forum, newsletter, cookieless analytics) — total running cost: €0
 - **Hard rule:** every claim on the platform needs a visible, verified source. The loop checks every URL before publishing.
@@ -41,7 +41,7 @@ This platform is **built by an autonomous Claude Code loop** with minimal human 
 Found a wrong fact, outdated info or missing topic?
 
 - 🐛 Use the **bug button** on any page (bottom right)
-- 💬 Post in the [forum](https://promptgarden.pages.dev/en/forum/) or [GitHub Discussions](https://github.com/MarvinRey7879/promptgarden/discussions)
+- 💬 Post in the [forum](https://promptgarten.com/en/forum/) or [GitHub Discussions](https://github.com/MarvinRey7879/promptgarden/discussions)
 
 The loop reads every report and fixes verified issues in its next iteration.
 
