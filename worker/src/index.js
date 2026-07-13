@@ -98,7 +98,7 @@ export default {
 
       if (request.method === 'GET' && path === '/v1/admin/summary') {
         if (!isAdmin) return json({ error: 'unauthorized' }, 401, cors);
-        const [bugs, feedback, notes, signups, views, topPaths, forumRecent, forumBlocked, todos] = await Promise.all([
+        const [bugs, feedback, notes, signups, views, topPaths, forumRecent, forumBlocked, todos, viewsByDay, viewsByLang, viewsByCountry, topRefs, viewsTotal, signupsRecent, donations, revenue] = await Promise.all([
           env.DB.prepare("SELECT * FROM bug_reports WHERE status='open' ORDER BY id DESC LIMIT 50").all(),
           env.DB.prepare("SELECT * FROM feedback WHERE status='new' ORDER BY id DESC LIMIT 50").all(),
           env.DB.prepare("SELECT * FROM admin_notes WHERE status='open' ORDER BY prio, id DESC LIMIT 50").all(),
@@ -110,6 +110,22 @@ export default {
           env.DB.prepare('SELECT id, created_at, name, message, lang, status FROM forum_posts ORDER BY id DESC LIMIT 20').all(),
           env.DB.prepare("SELECT COUNT(*) AS n FROM forum_posts WHERE status='blocked'").first(),
           env.DB.prepare('SELECT * FROM marvin_todos ORDER BY done, id DESC LIMIT 50').all(),
+          env.DB.prepare(
+            "SELECT day, COUNT(*) AS n FROM page_views WHERE day >= date('now','-30 day') GROUP BY day ORDER BY day",
+          ).all(),
+          env.DB.prepare(
+            "SELECT COALESCE(lang,'?') AS lang, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') GROUP BY lang ORDER BY n DESC",
+          ).all(),
+          env.DB.prepare(
+            "SELECT COALESCE(country,'?') AS country, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') GROUP BY country ORDER BY n DESC LIMIT 12",
+          ).all(),
+          env.DB.prepare(
+            "SELECT ref_host, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') AND ref_host IS NOT NULL AND ref_host NOT LIKE '%promptgart%' GROUP BY ref_host ORDER BY n DESC LIMIT 10",
+          ).all(),
+          env.DB.prepare('SELECT COUNT(*) AS n FROM page_views').first(),
+          env.DB.prepare('SELECT id, created_at, email FROM newsletter_signups ORDER BY id DESC LIMIT 20').all(),
+          env.DB.prepare('SELECT * FROM donations ORDER BY id DESC LIMIT 20').all(),
+          env.DB.prepare('SELECT COALESCE(SUM(amount_cents),0) AS cents, COUNT(*) AS n FROM donations').first(),
         ]);
         return json(
           {
@@ -122,6 +138,15 @@ export default {
             forum_recent: forumRecent.results,
             forum_blocked_count: forumBlocked?.n ?? 0,
             marvin_todos: todos.results,
+            views_by_day: viewsByDay.results,
+            views_by_lang: viewsByLang.results,
+            views_by_country: viewsByCountry.results,
+            top_refs: topRefs.results,
+            views_total: viewsTotal?.n ?? 0,
+            newsletter_recent: signupsRecent.results,
+            donations: donations.results,
+            revenue_total_cents: revenue?.cents ?? 0,
+            revenue_count: revenue?.n ?? 0,
           },
           200,
           cors,
@@ -232,6 +257,39 @@ export default {
             .bind(action === 'hide' ? 'hidden' : 'visible', id)
             .run();
         }
+        return json({ ok: true }, 200, cors);
+      }
+
+      // Ko-fi-Webhook (Revenue-Tracking): Ko-fi POSTet form-encoded {data: JSON}.
+      // Aktiv erst wenn KOFI_TOKEN-Secret gesetzt ist (Marvin: Ko-fi → Settings → API → Verification Token).
+      if (path === '/v1/kofi-webhook') {
+        if (!env.KOFI_TOKEN) return json({ error: 'not configured' }, 503, cors);
+        let payload;
+        try {
+          const form = await request.formData();
+          payload = JSON.parse(form.get('data'));
+        } catch {
+          return json({ error: 'bad payload' }, 400, cors);
+        }
+        if (payload.verification_token !== env.KOFI_TOKEN) return json({ error: 'unauthorized' }, 401, cors);
+        const cents = Math.round(parseFloat(payload.amount || '0') * 100);
+        await env.DB.prepare(
+          'INSERT INTO donations (source, amount_cents, currency, supporter, message, external_id) VALUES (?, ?, ?, ?, ?, ?)',
+        )
+          .bind('ko-fi', cents, clip(payload.currency || 'EUR', 8), clip(payload.from_name || '', 100), clip(payload.message || '', 500), clip(payload.kofi_transaction_id || '', 80))
+          .run();
+        return json({ ok: true }, 200, cors);
+      }
+
+      if (path === '/v1/admin/donation') {
+        if (!isAdmin) return json({ error: 'unauthorized' }, 401, cors);
+        const cents = Math.round(Number(body.amount_cents));
+        if (!Number.isFinite(cents) || cents <= 0) return json({ error: 'amount_cents required' }, 400, cors);
+        await env.DB.prepare(
+          'INSERT INTO donations (source, amount_cents, currency, supporter, message) VALUES (?, ?, ?, ?, ?)',
+        )
+          .bind(clip(body.source || 'manual', 40), cents, clip(body.currency || 'EUR', 8), clip(body.supporter || '', 100), clip(body.message || '', 500))
+          .run();
         return json({ ok: true }, 200, cors);
       }
 

@@ -17,7 +17,86 @@ type Summary = {
   views_7d: number;
   top_paths_7d: { path: string; n: number }[];
   marvin_todos?: { id: number; created_at: string; title: string; detail: string; done: number }[];
+  views_by_day?: { day: string; n: number }[];
+  views_by_lang?: { lang: string; n: number }[];
+  views_by_country?: { country: string; n: number }[];
+  top_refs?: { ref_host: string; n: number }[];
+  views_total?: number;
+  newsletter_recent?: { id: number; created_at: string; email: string }[];
+  donations?: { id: number; created_at: string; source: string; amount_cents: number; currency: string; supporter: string }[];
+  revenue_total_cents?: number;
+  revenue_count?: number;
 };
+
+function BarChart({ data }: { data: { day: string; n: number }[] }) {
+  if (!data.length) return <p style={{ fontSize: 13 }}>Noch keine Daten.</p>;
+  const max = Math.max(...data.map((d) => d.n), 1);
+  const w = Math.max(data.length * 22, 200);
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${w} 120`} style={{ display: 'block', width: '100%', minWidth: 260, height: 'auto' }}>
+        {data.map((d, i) => {
+          const h = Math.max((d.n / max) * 90, 2);
+          return (
+            <g key={d.day}>
+              <rect x={i * 22 + 3} y={104 - h} width={16} height={h} rx={3} fill="var(--lime)" stroke="var(--ink)" strokeWidth={1.5} />
+              <title>{`${d.day}: ${d.n}`}</title>
+              {i % 5 === 0 && (
+                <text x={i * 22 + 11} y={116} textAnchor="middle" fontSize={8} fill="var(--muted)">
+                  {d.day.slice(5)}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function Dist({ rows, labelKey }: { rows: Array<{ n: number } & Record<string, string | number>>; labelKey: string }) {
+  const total = rows.reduce((s, r) => s + r.n, 0) || 1;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {rows.map((r) => (
+        <div key={String(r[labelKey])} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5 }}>
+          <span className="mono" style={{ width: 34, fontWeight: 700 }}>{String(r[labelKey])}</span>
+          <div style={{ flex: 1, background: '#00000012', borderRadius: 6, height: 14, border: '1.5px solid var(--ink)' }}>
+            <div style={{ width: `${Math.max((r.n / total) * 100, 2)}%`, background: 'var(--blue)', height: '100%', borderRadius: 4 }} />
+          </div>
+          <span className="mono" style={{ width: 56, textAlign: 'right' }}>{r.n} · {Math.round((r.n / total) * 100)}%</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ManualDonation({ apiKey, onSaved }: { apiKey: string; onSaved: () => void }) {
+  const [amount, setAmount] = useState('');
+  const [source, setSource] = useState('paypal');
+  const save = async () => {
+    const cents = Math.round(parseFloat(amount.replace(',', '.')) * 100);
+    if (!Number.isFinite(cents) || cents <= 0) return;
+    await fetch(`${API_URL}/v1/admin/donation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': apiKey },
+      body: JSON.stringify({ amount_cents: cents, source }),
+    });
+    setAmount('');
+    onSaved();
+  };
+  return (
+    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+      <input className="field" style={{ maxWidth: 90 }} placeholder="€ 5,00" value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <select className="field" style={{ maxWidth: 110 }} value={source} onChange={(e) => setSource(e.target.value)}>
+        <option value="paypal">PayPal</option>
+        <option value="ko-fi">Ko-fi</option>
+        <option value="sonstiges">Sonstiges</option>
+      </select>
+      <button className="btn" onClick={save} disabled={!amount.trim()}>+ Spende</button>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const [key, setKey] = useState('');
@@ -95,9 +174,55 @@ export default function AdminPage() {
         <>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '18px 0' }}>
             <span className="chip">👀 {summary.views_7d} Views (7d)</span>
+            <span className="chip">Σ {summary.views_total ?? '–'} Views gesamt</span>
+            <span className="chip">💶 {((summary.revenue_total_cents ?? 0) / 100).toFixed(2)} € Spenden ({summary.revenue_count ?? 0})</span>
             <span className="chip">📬 {summary.newsletter_count} Newsletter</span>
             <span className="chip">🐛 {summary.open_bugs.length} offene Bugs</span>
             <span className="chip">💬 {summary.new_feedback.length} neues Feedback</span>
+          </div>
+
+          <div style={{ display: 'grid', gap: 18, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginBottom: 18 }}>
+            <div className="card" style={{ padding: '16px 20px', boxShadow: 'none' }}>
+              <p className="kicker">📈 VIEWS PRO TAG (30 TAGE)</p>
+              <BarChart data={summary.views_by_day ?? []} />
+            </div>
+            <div className="card" style={{ padding: '16px 20px', boxShadow: 'none' }}>
+              <p className="kicker">🌍 SPRACHEN (7 TAGE)</p>
+              <Dist rows={(summary.views_by_lang ?? []) as never} labelKey="lang" />
+              <p className="kicker" style={{ marginTop: 14 }}>🗺️ LÄNDER (7 TAGE)</p>
+              <Dist rows={(summary.views_by_country ?? []).slice(0, 6) as never} labelKey="country" />
+            </div>
+            <div className="card" style={{ padding: '16px 20px', boxShadow: 'none' }}>
+              <p className="kicker">💶 SPENDEN</p>
+              {(summary.donations ?? []).length === 0 ? (
+                <p style={{ fontSize: 13, margin: '0 0 10px' }}>
+                  Noch keine erfasst. Ko-fi-Webhook ist vorbereitet — schick mir deinen Ko-fi „Verification Token"
+                  (ko-fi.com → Settings → API), dann buche ich Ko-fi-Spenden automatisch. PayPal-Spenden kannst du
+                  unten manuell erfassen.
+                </p>
+              ) : (
+                <ul style={{ margin: '0 0 10px', paddingLeft: 18, fontSize: 13 }}>
+                  {(summary.donations ?? []).map((dn) => (
+                    <li key={dn.id}>
+                      {(dn.amount_cents / 100).toFixed(2)} {dn.currency} · {dn.source}
+                      {dn.supporter ? ` · ${dn.supporter}` : ''}{' '}
+                      <span className="mono" style={{ fontSize: 10.5, color: 'var(--muted)' }}>{dn.created_at}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <ManualDonation apiKey={key} onSaved={() => load(key)} />
+              <p className="kicker" style={{ marginTop: 14 }}>🔗 EXTERNE REFERRER (7 TAGE)</p>
+              {(summary.top_refs ?? []).length === 0 ? (
+                <p style={{ fontSize: 13, margin: 0 }}>Noch keine.</p>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
+                  {(summary.top_refs ?? []).map((r) => (
+                    <li key={r.ref_host}><span className="mono">{r.ref_host}</span> — {r.n}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <div className="card" style={{ padding: '18px 22px', marginBottom: 18, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
