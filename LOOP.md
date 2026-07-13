@@ -312,6 +312,12 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Marvins „ALLE Befehle"-Wunsch damit für beide Start-Plattformen erfüllt; weitere Plattformen (Cursor CLI, Aider, …) als nächste Ausbaustufe
 - NÄCHSTE ARBEIT: ① Addons-Sektion (research/befehle/addons-2026-07-12.md → eigene Seite/Sektion + Graphify/Obsidian-Lexikon) ② /admin abhakbare Marvin-Todo-Liste ③ Sitemap um /befehle-Routen erweitern ④ Statusboard ⑤ Feed-Refresh täglich weiter ⑥ Zone-Poll
 
+### It. 61 (13.07 nachmittags) — Addons-Sektion LIVE + 🎉 Zone angelegt ✅ (Commit 2594208)
+- /[lang]/addons/ live: 12 Tools (Graphify, MCP-Katalog, claude-flow, Context7, Playwright-MCP, GitHub-MCP, VS-Code-Ext, Claude-in-Chrome, 4× Obsidian) × 5 Sprachen, Kategorien-Chips, Stars, Quellen; Nav-Punkt „Addons"; Sitemap um befehle+addons-Routen erweitert
+- Übersetzungs-Agent fixte JSON-Fehler in addons.de.json (falsches Anführungszeichen) — Lektion: JSON nach Hand-Autoring IMMER mit node parsen
+- **ZONE promptgarten.com existiert (pending)**: Marvin hat CF-Teil erledigt! NS: eve+mike.ns.cloudflare.com. Namecheap zeigt noch registrar-servers → Teil B fehlt, Push mit exakten NS geschickt. Bei status=active → Domain-Automatik SOFORT fahren
+- OFFEN: /admin abhakbare Todo-Liste, Statusboard-Update (Zone-Fortschritt + Addons + Befehle-Meilenstein), Feed-Refresh (heute noch keiner!), weitere Plattformen
+
 ### It. 58 (13.07 vormittags) — Befehls-Referenz DE+EN komplett ✅
 - Codex 16 Einträge DE+EN live · Batch 1 whenGood/whenBad (14 Kern-Befehle) DE+EN live · EN-Basis aller 92 Claude-Code-Befehle live → 108 Befehle × DE+EN
 - 3 Übersetzungs-Agents ES/FR/ZH (je 108 Einträge → research/befehle/commands-{es,fr,zh}.json) GESTARTET
