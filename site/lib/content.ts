@@ -96,6 +96,8 @@ export const WORLD_2: string[] = [
   'subagents',
   'guardrails-fuer-agenten',
   'loops-fuer-agenten',
+  'multi-agent-patterns',
+  'kontext-strategien',
 ];
 
 /** Welt 3 — Werkzeugkasten: Praxis-Guides als Pfad */
@@ -103,7 +105,10 @@ export const WORLD_3: string[] = [
   'claude-code-befehle',
   'claude-skills',
   'mcp',
+  'hooks',
+  'git-worktrees',
   'kosten-kontrolle-agenten',
+  'evals',
   'projekt-deployen',
   'benchmarks-lesen',
 ];
