@@ -317,6 +317,12 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - Themen wie Loops (mit Beispielen), Graphify, Obsidian etc. sollen **verständliche, aber hochwertige Visualisierungen** bekommen — Diagramme/Grafiken direkt auf den Seiten, nicht nur Text.
 - Umsetzungsplan: eigene SVG-Diagramm-Komponenten im 1d-Design (dicke Border, harte Schatten, Farben aus der Palette), KEINE Fremd-Bilder (Quellen-/Lizenzfrage). Startpunkte: ① Loop-Galerie (Denken→Handeln→Prüfen-Zyklus, gute vs. kaputte Loop als Diagramm) ② Agent-Loop-/Subagent-Lexikoneinträge ③ Addons: Graphify-Funktionsprinzip (Code→AST→Graph→Agent), Obsidian↔Claude-Verbindungsdiagramm ④ Context-Window-Visualisierung. Batch-weise in Rotation einbauen, inline-SVG in Seiten (kein Client-JS nötig).
 
+### It. 65 (13.07) — 🎨 Visualisierung Batch 1: Loop-Diagramme LIVE ✅ (Commit 99e5bcb)
+- components/LoopDiagram.tsx: LoopCycleDiagram (Denken→Handeln→Prüfen→Fertig?-Zyklus mit Rückschleife) + GoodBadLoopDiagram (✅ vs ⛔ Vergleich) — Inline-SVG, 1d-Stil, kein Client-JS, Labels aus loops.<lang>.json.diagram (5 Sprachen), role=img+aria-label
+- Live verifiziert auf promptgarten.com/de/loops (+zh). Muster für weitere Diagramme etabliert (Box-Helper, viewBox 640, overflowX-Container)
+- Traffic: views_7d 43→96 (Domain-Effekt)
+- Visualisierung Batch 2 offen: Graphify-Prinzip (Code→AST→Graph→Agent) + Obsidian↔Claude auf /addons · Batch 3: Context-Window-Visual im Lexikon · danach Cursor-CLI-Research (3. Plattform)
+
 ### It. 64 (13.07) — SEO-Phase 2: canonical + hreflang ÜBERALL ✅ (Commit cc7a961)
 - langAlternates()-Helper (lib/i18n.ts) + Agent-Edit aller 14 [lang]-Routen: canonical absolut + 5×hreflang + x-default(en), via metadataBase
 - Verifiziert im Build-Output UND live auf promptgarten.com (Achtung: SSR rendert hrefLang camelCase — HTML-case-insensitiv, grep entsprechend)
