@@ -37,6 +37,7 @@ const index = {
     'entries.<lang>.json': 'All glossary/learning entries (title, teaser, body markdown, difficulty 1-3, quiz, sources).',
     'feed.<lang>.json': 'Curated AI news feed items with verified sources.',
     'vergleiche.<lang>.json': 'Tool comparison (Claude Code, Cursor, Codex CLI, Aider).',
+    'commands.<lang>.json': 'Command reference: every CLI/slash command per platform with when-to-use and when-not examples and sources.',
     'loops.<lang>.json': 'Loop gallery: annotated examples of good and bad agent loops.',
   },
   files,
