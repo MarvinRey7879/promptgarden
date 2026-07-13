@@ -1,0 +1,472 @@
+{
+  "de": [
+    {
+      "slug": "caching-strategien",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Caching-Strategien: Prompt Caching & Kontext-Caching",
+      "teaser": "Wiederholte Prompt-Anfänge kosten bei jedem Aufruf erneut Geld und Zeit. Prompt Caching speichert sie zwischen und spart beides.",
+      "body": "## Das Problem: gleicher Text, wieder und wieder\nEin Agent schickt bei jeder Anfrage oft denselben langen Anfang mit: System-Prompt, Werkzeug-Definitionen, große Dokumente. Ohne Caching berechnet das Modell diesen Teil bei jedem einzelnen Aufruf komplett neu – das kostet Zeit (Latenz) und Geld (Token-Preis), obwohl sich der Text nicht geändert hat.\n\n## Wie Prompt Caching funktioniert\nAnthropic und OpenAI bieten dafür Prompt Caching an. Der Anbieter merkt sich den Anfang (Präfix) eines Prompts, den du schon einmal geschickt hast. Schickst du kurz danach denselben Anfang erneut – z. B. denselben System-Prompt plus einen neuen User-Turn –, muss das Modell nur den neuen Teil verarbeiten. Der Rest kommt aus dem Cache.\n\n## Was es spart\nBei Claude kostet ein Cache-Treffer nur einen Bruchteil des normalen Preises für Input-Tokens, ein Cache-Schreiben ist etwas teurer als normal. Bei OpenAI ist Prompt Caching automatisch aktiv, sobald ein Prompt lang genug ist, und senkt Kosten und Wartezeit spürbar, ganz ohne Codeänderung.\n\n## TTL: Der Cache läuft ab\nEin Cache lebt nicht ewig. Bei Claude ist der Standard 5 Minuten; danach ist der Eintrag weg, und der nächste Aufruf schreibt neu in den Cache. Es gibt auch eine längere, teurere Option. Wer viele Anfragen kurz hintereinander schickt, profitiert am meisten von Caching.",
+      "bodyDetail": "## Wie ein Präfix erkannt wird\nEin Cache-Treffer setzt voraus, dass der Anfang eines Prompts exakt gleich ist wie zuvor. Bei Claude legst du dafür einen `cache_control`-Breakpoint auf einen bestimmten Block (z. B. das Ende des System-Prompts). Alles bis zu diesem Breakpoint wird gehasht und mit früheren Einträgen verglichen. Ändert sich davor auch nur ein Zeichen, greift der Cache für diesen Teil nicht mehr.\n\n## Kosten konkret\nBei Claude kostet ein Cache-Schreiben (5-Minuten-Cache) das 1,25-fache des normalen Input-Preises, ein Cache-Treffer dagegen nur das 0,1-fache. Es gibt zusätzlich einen optionalen 1-Stunden-Cache, der beim Schreiben das Doppelte kostet, aber länger hält. Bei OpenAI ist Caching automatisch ab 1.024 Tokens Promptlänge aktiv – bei älteren Modellen gibt es keine zusätzliche Gebühr fürs Schreiben, und Treffer sind vergünstigt.\n\n## Grenzen\nEin Cache ist kein Dauerspeicher. Läuft die TTL ab, ohne dass in der Zwischenzeit eine Anfrage kam, ist der Eintrag weg – der nächste Aufruf zahlt wieder den vollen Preis fürs Schreiben. Deshalb hilft Caching vor allem bei Mustern mit dichten, wiederholten Aufrufen (ein Agent-Loop, viele Anfragen in kurzer Zeit), nicht bei einem einzelnen, seltenen Request. Bei Claude gibt es außerdem ein Limit von 4 Cache-Breakpoints pro Anfrage, und manche Änderungen am Prompt (z. B. neue Tool-Definitionen) machen den Cache an dieser Stelle ungültig.\n\n## Kontext-Caching vs. klassisches Caching\n\"Kontext-Caching\" wird oft synonym zu Prompt Caching verwendet: Es geht um denselben Mechanismus, angewendet auf den ganzen Kontext eines Agenten – System-Prompt, geladene Dateien, Tool-Definitionen. Je größer und stabiler dieser Kontext ist, desto mehr lohnt sich Caching, weil ein größerer Anteil jedes Aufrufs aus dem Cache kommt statt neu berechnet zu werden.",
+      "example": "Ein Agent mit 6.000 Token System-Prompt + Tool-Definitionen macht 10 Anfragen in 3 Minuten. Ohne Caching zahlst du für alle 10 Aufrufe den vollen Preis für diese 6.000 Token. Mit Caching zahlst du das einmal (Schreiben, 1,25x) und die restlichen 9 Mal nur 0,1x – eine deutliche Ersparnis, solange die Anfragen innerhalb der 5-Minuten-TTL bleiben.",
+      "related": [
+        "kosten-kontrolle-agenten",
+        "context-window",
+        "token",
+        "kontext-strategien"
+      ],
+      "quiz": {
+        "question": "Warum verfällt ein Prompt-Cache-Eintrag von selbst?",
+        "options": [
+          "Weil er eine TTL (Time to Live) hat, z. B. 5 Minuten bei Claude",
+          "Weil jeder Cache nach genau einer Nutzung gelöscht wird",
+          "Weil Caching nur für Bilder funktioniert",
+          "Weil der Anbieter Caches nach jedem Modell-Update komplett zurücksetzt"
+        ],
+        "correct": 0,
+        "explain": "Prompt-Caches haben eine begrenzte Lebensdauer (TTL). Bei Claude sind das standardmäßig 5 Minuten, optional auch länger gegen Aufpreis. Nach Ablauf muss der Cache neu geschrieben werden."
+      },
+      "sources": [
+        {
+          "title": "Claude-Doku: Prompt Caching",
+          "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-caching"
+        },
+        {
+          "title": "OpenAI-Doku: Prompt Caching",
+          "url": "https://platform.openai.com/docs/guides/prompt-caching"
+        }
+      ],
+      "exercise": {
+        "task": "Finde in einem deiner Agenten-Skripte (oder in der API-Doku deines Modell-Anbieters) heraus, ob und wie Prompt Caching genutzt wird.",
+        "steps": [
+          "Schau dir den System-Prompt / die Tool-Definitionen deines Agenten an: wie viele Tokens hat dieser feste Teil ungefähr?",
+          "Prüfe in der API-Antwort (falls du Claude nutzt) die Felder cache_read_input_tokens und cache_creation_input_tokens – wird der Cache getroffen?",
+          "Überlege: Bei welchem Nutzungsmuster (viele Anfragen kurz hintereinander vs. einzelne seltene Anfragen) lohnt sich Caching bei dir am meisten?"
+        ],
+        "selfCheck": [
+          "Kannst du erklären, warum ein Cache-Treffer günstiger ist als ein Cache-Schreiben?",
+          "Weißt du, wie lange ein Standard-Cache bei Claude lebt, bevor er verfällt?",
+          "Hast du einen konkreten Teil deines eigenen Prompts identifiziert, der sich für einen Cache-Breakpoint eignen würde?"
+        ]
+      }
+    },
+    {
+      "slug": "plugins",
+      "category": "begriff",
+      "difficulty": 1,
+      "minutes": 3,
+      "xp": 20,
+      "title": "Plugins: Erweiterungen für KI-Coding-Tools",
+      "teaser": "Ein Plugin bündelt Skills, Agents, Hooks oder MCP-Server in einem teilbaren Paket – wie eine App aus einem App-Store für deinen Agenten.",
+      "body": "## Was ein Plugin ist\nEin Plugin ist ein Ordner mit Zusatz-Funktionen für ein KI-Coding-Tool. Bei Claude Code kann ein Plugin mehrere Dinge mitbringen: Skills (Anleitungen, siehe eigener Eintrag), eigene Agents, Hooks (automatische Regeln) und MCP-Server (Anbindung an externe Werkzeuge). Ein Plugin ist damit größer als ein einzelner Skill – es ist ein ganzes Paket.\n\n## Plugin vs. Skill vs. Editor-Extension\nEin Skill ist eine einzelne Anleitung in einer SKILL.md-Datei. Ein Plugin kann einen oder mehrere Skills enthalten, plus weitere Bausteine wie Hooks oder MCP-Server. Eine Editor-Extension (z. B. für VS Code) ist etwas anderes: Sie erweitert den Editor selbst, nicht zwingend einen KI-Agenten, und wird meist über den Marktplatz des Editors installiert, nicht über Claude Code.\n\n## Wie man Plugins findet und installiert\nClaude Code hat einen eingebauten Befehl `/plugin`, der einen Plugin-Manager öffnet: Dort kannst du verfügbare Plugins durchsuchen (Discover), installieren, verwalten (Installed) und Marktplätze hinzufügen. Anthropic pflegt eine offizielle Sammlung, die automatisch verfügbar ist. Man installiert ein Plugin mit einem Befehl wie `/plugin install name@marktplatz-name`.\n\n## Ein Warnhinweis\nPlugins können beliebigen Code mit deinen Benutzerrechten ausführen. Installiere nur Plugins aus Quellen, denen du vertraust.",
+      "bodyDetail": "## Aufbau eines Plugins\nTechnisch ist ein Plugin ein Ordner mit einer Manifest-Datei `.claude-plugin/plugin.json` (Name, Beschreibung, Version) und optional weiteren Unterordnern: `skills/` für Skills, `agents/` für eigene Subagents, `hooks/` für Hook-Konfiguration, `.mcp.json` für MCP-Server-Anbindungen. Skills aus einem Plugin werden automatisch mit dem Plugin-Namen versehen, z. B. `/mein-plugin:hello` statt nur `/hello`. Das verhindert Namenskonflikte, wenn zwei Plugins einen Skill mit demselben Namen mitbringen.\n\n## Marktplätze als Vertriebsweg\nEin einzelnes Plugin verteilt man über einen \"Marktplatz\" – einen Katalog, der in einer `marketplace.json`-Datei beschrieben ist und z. B. in einem Git-Repository liegt. Nutzer fügen zuerst den Marktplatz hinzu (`/plugin marketplace add owner/repo`), dann installieren sie einzelne Plugins daraus. Anthropic betreibt eine offizielle, kuratierte Sammlung (automatisch verfügbar) und eine Community-Sammlung für Beiträge Dritter, die vor Aufnahme automatisch geprüft werden.\n\n## Installations-Scopes\nEin Plugin kann in drei Bereichen installiert werden: nur für dich persönlich (User-Scope, über alle Projekte hinweg), für ein bestimmtes Projekt inklusive aller Mitarbeiter (Project-Scope) oder nur lokal für dich in einem Repository (Local-Scope). Das entspricht in etwa dem Unterschied zwischen persönlichen und projekt-lokalen Skills.\n\n## Abgrenzung zu Editor-Extensions\nEine klassische Editor-Extension (z. B. eine VS-Code-Extension) erweitert die Entwicklungsumgebung selbst – Syntax-Highlighting, ein neues Panel, eine Debug-Funktion. Sie muss nichts mit einem KI-Agenten zu tun haben. Ein Claude-Code-Plugin dagegen erweitert konkret, was der Agent kann und weiß: welche Skills er automatisch lädt, welche externen Dienste er über MCP ansprechen kann, welche Regeln (Hooks) bei bestimmten Aktionen greifen. Beide Konzepte können nebeneinander existieren – ein Entwickler nutzt oft sowohl Editor-Extensions als auch Agenten-Plugins.\n\n## Sicherheitshinweis aus der Doku\nDie offizielle Doku warnt ausdrücklich: Plugins und Marktplätze sind hochgradig vertrauenswürdige Komponenten, die beliebigen Code mit den Rechten des Nutzers ausführen können. Anthropic prüft nicht automatisch, was in jedem einzelnen Plugin steckt – Vorsicht bei der Auswahl der Quelle ist Pflicht.",
+      "example": "Ein Team baut sich ein internes Plugin \"deploy-tools\" mit einem Skill /deploy-tools:release und einem MCP-Server für ihr internes Deployment-System. Sie hosten es als Git-Repo. Ein neues Teammitglied fügt den Marktplatz hinzu (\"/plugin marketplace add firma/deploy-tools\") und installiert das Plugin mit \"/plugin install deploy-tools@firma\" – ab da hat es denselben Zugriff wie alle anderen im Team.",
+      "related": [
+        "claude-skills",
+        "claude-code-befehle",
+        "mcp",
+        "claude-code"
+      ],
+      "quiz": {
+        "question": "Was unterscheidet ein Plugin von einem einzelnen Skill in Claude Code?",
+        "options": [
+          "Ein Plugin kann mehrere Bausteine bündeln – Skills, Agents, Hooks, MCP-Server – und wird über Marktplätze verteilt",
+          "Ein Plugin ist nur eine andere Bezeichnung für dasselbe wie ein Skill",
+          "Ein Plugin läuft ausschließlich im Browser, ein Skill nur im Terminal",
+          "Ein Plugin kann keinen Skill enthalten"
+        ],
+        "correct": 0,
+        "explain": "Laut Claude-Code-Doku ist ein Plugin ein Paket, das Skills, Agents, Hooks oder MCP-Server bündeln kann. Es wird über Marktplätze installiert und verteilt, ein einzelner Skill ist dagegen nur eine SKILL.md-Datei."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Plugins erstellen",
+          "url": "https://code.claude.com/docs/en/plugins"
+        },
+        {
+          "title": "Claude Code Doku: Plugins entdecken und installieren",
+          "url": "https://code.claude.com/docs/en/discover-plugins"
+        }
+      ]
+    },
+    {
+      "slug": "headless-non-interactive",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Headless-Modus: Agenten ohne Interaktion betreiben",
+      "teaser": "Im Headless- oder Non-interactive-Modus läuft ein KI-Agent ohne Chat-Fenster – ideal für Skripte und CI, aber ohne Rückfragen an dich.",
+      "body": "## Was Headless bedeutet\nNormalerweise chattest du live mit einem Agenten: Er fragt nach, du antwortest, er macht weiter. Im Headless- oder Non-interactive-Modus fällt dieser Dialog weg. Du gibst einen Prompt als Argument oder über eine Pipe mit, der Agent arbeitet ihn ab und gibt am Ende eine Antwort zurück – ohne Zwischenfragen, ohne Chat-Fenster.\n\n## Wie das bei Claude Code aussieht\nDer Befehl `claude -p \"Finde den Bug in auth.py\"` startet Claude Code non-interaktiv. Du kannst auch Daten hineinpipen: `cat fehler.log | claude -p \"Erkläre die Ursache\"`. Die Ausgabe lässt sich als reiner Text oder als strukturiertes JSON abrufen (`--output-format json`), was sich gut in Skripte einbauen lässt.\n\n## Wofür man das nutzt\n- Batch-Verarbeitung: viele Dateien oder Tickets automatisch durchgehen\n- CI/CD: z. B. jeden Pull Request automatisch auf Tippfehler oder Sicherheitsprobleme prüfen\n- Cron-Jobs und geplante Automationen ohne menschliches Zutun\n\n## Das Risiko: keine Rückfragen\nDer größte Unterschied zum interaktiven Modus: Der Agent kann dich nicht um Erlaubnis oder Klärung bitten. Läuft er auf ein Problem, für das er normalerweise nachfragen würde, muss er selbst entscheiden oder abbrechen. Deshalb ist die Wahl des Berechtigungs-Modus (siehe eigener Eintrag) im Headless-Betrieb besonders wichtig: Ohne klare Regeln kann ein Agent entweder zu wenig tun (bricht ständig ab) oder zu viel (führt riskante Aktionen ohne Nachfrage aus).",
+      "bodyDetail": "## Kontext lädt normalerweise mit\nAuch im Headless-Modus lädt Claude Code standardmäßig denselben Kontext wie eine interaktive Session: Hooks, Skills, Plugins, MCP-Server, CLAUDE.md. Das ist praktisch, wenn du dieselbe Konfiguration wie lokal willst, aber ein Problem für reproduzierbare Skripte – ein Hook aus dem Home-Verzeichnis eines Kollegen läuft plötzlich mit. Ein `--bare`-Flag schaltet diese Auto-Erkennung ab und lädt nur, was du explizit über Flags mitgibst (z. B. `--mcp-config`, `--append-system-prompt`). Das macht Läufe auf jeder Maschine identisch – wichtig für CI.\n\n## Strukturierte Ausgabe\nFür Skripte ist Fließtext unpraktisch. Mit `--output-format json` bekommst du eine strukturierte Antwort inklusive Session-ID, Kosten und Metadaten; mit zusätzlichem `--json-schema` lässt sich sogar ein eigenes Ausgabeschema erzwingen (siehe auch Structured Outputs). `--output-format stream-json` liefert Ereignisse zeilenweise, nützlich für Live-Anzeigen.\n\n## Was passiert, wenn etwas blockiert wird\nWird im Headless-Modus eine Aktion durch Sicherheitsregeln blockiert – etwa weil eine Berechtigung fehlt –, gibt es niemanden, der die Nachfrage beantworten kann. Die Doku beschreibt das ausdrücklich: Wiederholte Blockaden brechen die Session dann ab, statt zu warten. Das ist der zentrale Unterschied zum interaktiven Betrieb und der Hauptgrund, warum man Berechtigungen für Headless-Läufe vorher genau plant, statt sich auf Rückfragen zu verlassen.\n\n## Automatisierung mit Vorsicht\nWeil niemand live zusieht, sollte ein Headless-Lauf mit möglichst wenig, aber ausreichend Rechten starten (`--allowedTools` mit konkreter Werkzeugliste statt Alles-erlauben) und Ergebnisse dort landen, wo sie ein Mensch später noch prüfen kann (z. B. als Pull Request statt direktem Push in den Hauptbranch).",
+      "example": "# CI-Skript: Tippfehler-Check für jeden PR-Diff\ngit diff main | claude -p \"Finde Tippfehler in diesem Diff. Gib für jeden Fund 'datei:zeile' und den Fehler aus, sonst nichts.\" --output-format json",
+      "related": [
+        "claude-code-befehle",
+        "kosten-kontrolle-agenten",
+        "guardrails-fuer-agenten",
+        "vibe-coding-sicherheit"
+      ],
+      "quiz": {
+        "question": "Was ist das größte Risiko beim Betrieb eines Agenten im Headless-/Non-interactive-Modus?",
+        "options": [
+          "Der Agent kann keine Dateien mehr lesen",
+          "Der Agent kann dich nicht um Rückfragen oder Erlaubnis bitten, wenn eine Situation unklar ist",
+          "Der Agent wird automatisch langsamer",
+          "Headless-Modus funktioniert nur mit einem einzigen Werkzeug"
+        ],
+        "correct": 1,
+        "explain": "Im interaktiven Modus kann ein Agent nachfragen, wenn er unsicher ist. Im Headless-Modus fehlt dieser Mensch – er muss selbst entscheiden oder die Aktion bzw. Session abbrechen. Deshalb ist eine klare Vorab-Konfiguration der Rechte besonders wichtig."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Claude Code programmatisch ausführen (Headless)",
+          "url": "https://code.claude.com/docs/en/headless"
+        },
+        {
+          "title": "Claude Code Doku: Berechtigungs-Modi",
+          "url": "https://code.claude.com/docs/en/permission-modes"
+        }
+      ],
+      "exercise": {
+        "task": "Baue einen einfachen Headless-Aufruf, der eine Datei zusammenfasst, und beobachte, wie er sich ohne Rückfragen verhält.",
+        "steps": [
+          "Führe in einem Terminal aus: claude -p \"Fasse diese Datei in 3 Sätzen zusammen\" --allowedTools \"Read\" mit einer echten Datei aus deinem Projekt.",
+          "Wiederhole den Aufruf, aber gib eine Datei an, die nicht existiert – beobachte, wie der Agent ohne Rückfrage reagiert (Fehler statt Nachfrage).",
+          "Probiere --output-format json aus und schau dir das Ergebnis-JSON an: Welche Felder außer dem eigentlichen Text enthält es?"
+        ],
+        "selfCheck": [
+          "Konntest du erklären, warum der Agent bei der fehlenden Datei nicht einfach nachgefragt hat?",
+          "Hast du verstanden, wofür --allowedTools in diesem Kontext gut ist?",
+          "Weißt du, in welchen zwei Szenarien (Batch, CI) Headless-Betrieb aus dem Eintrag am meisten Sinn ergibt?"
+        ]
+      }
+    },
+    {
+      "slug": "permissions-modes",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Berechtigungs-Modi für Agenten",
+      "teaser": "Von 'jede Aktion bestätigen' bis Auto-Modus: Berechtigungs-Modi legen fest, wie oft ein Agent dich vor einer Aktion um Erlaubnis fragt.",
+      "body": "## Das Grundproblem\nEin Agent, der Dateien ändern, Befehle ausführen oder Netzwerk-Anfragen stellen kann, braucht Regeln: Was darf er ohne Nachfrage tun, wofür braucht er deine Zustimmung? Diese Regeln heißen Berechtigungs-Modi (Permission Modes).\n\n## Die wichtigsten Modi bei Claude Code\n- **Manuell (Standard)**: Nur Lesen ist erlaubt, jede Datei-Änderung und jeder Befehl wird vorher bestätigt.\n- **Accept Edits**: Datei-Änderungen und einfache Dateisystem-Befehle (z. B. Ordner anlegen) laufen ohne Nachfrage, alles andere wird weiter bestätigt.\n- **Plan-Modus**: Der Agent darf nur recherchieren und einen Plan schreiben, keine Änderungen vornehmen – gut zum Erkunden vor dem eigentlichen Bauen.\n- **Auto-Modus**: Fast alles läuft ohne Nachfrage, ein zusätzliches Prüfmodell im Hintergrund blockt riskante Aktionen (z. B. Produktions-Deploys, Force-Push).\n- **Bypass Permissions**: Alle Prüfungen sind aus – nur für isolierte Umgebungen wie Container ohne Internet gedacht.\n\n## Wie man wechselt\nIn der Kommandozeile wechselt man mit Shift+Tab zwischen den Modi, oder startet direkt mit einem Flag wie `--permission-mode plan`.\n\n## Die Faustregel\nSo wenig Rechte wie möglich, so viele wie nötig (Prinzip der geringsten Rechte). Für sensible Arbeit oder unbekannten Code: manueller Modus. Für Routine-Änderungen, die du danach ohnehin per Diff prüfst: Accept Edits. Bypass Permissions nur in einer echten Sandbox, nie auf deinem eigentlichen Rechner.",
+      "bodyDetail": "## Geschützte Pfade als Sicherheitsnetz\nSelbst im automatisierten Modus schützt Claude Code bestimmte Pfade besonders: Git-interne Dateien (`.git`), Shell-Konfigurationen (`.bashrc`, `.zshrc`), die eigene Konfiguration (`.claude`) und ähnliche. Schreibzugriffe darauf werden in jedem Modus außer Bypass Permissions immer nachgefragt – selbst wenn eine Allow-Regel eigentlich zustimmen würde. Das verhindert, dass ein Agent versehentlich seine eigene Konfiguration oder die Versionskontrolle beschädigt.\n\n## Auto-Modus im Detail\nDer Auto-Modus ist kein \"alles erlaubt\", sondern lässt ein separates Klassifikations-Modell jede Aktion vorab prüfen. Das Modell blockt standardmäßig zum Beispiel: Herunterladen und Ausführen von Code aus dem Netz, Produktions-Deploys und -Migrationen, Force-Push, Massen-Löschungen in Cloud-Speichern, das Vergeben von IAM-Rechten. Wird eine Aktion mehrfach hintereinander blockiert, pausiert der Auto-Modus automatisch und fragt wieder nach – im interaktiven Betrieb. Im Headless-Betrieb (siehe eigener Eintrag) bricht die Session dagegen ab, weil niemand da ist, der eine Nachfrage beantworten könnte.\n\n## Regeln über den Modus hinaus\nZusätzlich zum Modus gibt es feingranulare Allow-/Ask-/Deny-Regeln, z. B. \"erlaube Bash(npm test), aber frag bei jedem anderen Bash-Befehl nach\". Deny-Regeln gelten in jedem Modus, auch in Bypass Permissions – sie sind die letzte Verteidigungslinie, die kein Modus überschreiben kann.\n\n## Warum Plan-Modus oft der beste Start ist\nPlan-Modus trennt Erkunden von Verändern: Der Agent liest, sucht, schreibt einen Plan, aber ändert nichts. Erst wenn du den Plan akzeptierst, wechselt die Session in einen Modus, der tatsächlich schreiben darf. Das kombiniert die Sicherheit des manuellen Modus mit dem Komfort, nicht jeden einzelnen Lese-Schritt bestätigen zu müssen.",
+      "example": "Start mit \"claude --permission-mode plan\" für eine neue, unbekannte Codebasis. Der Agent erkundet und schlägt einen Plan vor. Erst nach deiner Bestätigung wechselst du (z. B.) in den Accept-Edits-Modus, damit er die Änderungen tatsächlich schreibt – ohne dass du jede einzelne Datei-Änderung einzeln bestätigen musst.",
+      "related": [
+        "guardrails-fuer-agenten",
+        "vibe-coding-sicherheit",
+        "claude-code",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "Was ist die Faustregel bei der Wahl eines Berechtigungs-Modus?",
+        "options": [
+          "Immer Bypass Permissions nutzen, das ist am schnellsten",
+          "So wenig Rechte wie nötig – sensible Arbeit manuell bestätigen, riskante Modi nur in isolierten Umgebungen",
+          "Der Modus ist egal, solange der Agent am Ende ein Ergebnis liefert",
+          "Berechtigungs-Modi gibt es nur bei Cloud-Agenten, nicht lokal"
+        ],
+        "correct": 1,
+        "explain": "Die Faustregel ist das Prinzip der geringsten Rechte: so viel Automatisierung wie nötig, so viel Kontrolle wie möglich. Bypass Permissions ist laut Doku nur für isolierte Container/VMs gedacht, nicht für den normalen Rechner."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Berechtigungs-Modus wählen",
+          "url": "https://code.claude.com/docs/en/permission-modes"
+        },
+        {
+          "title": "Claude-Doku: Permissions im Agent SDK",
+          "url": "https://platform.claude.com/docs/en/agent-sdk/permissions"
+        }
+      ],
+      "exercise": {
+        "task": "Wechsle in einer laufenden Claude-Code-Session bewusst zwischen zwei Berechtigungs-Modi und beobachte den Unterschied.",
+        "steps": [
+          "Starte Claude Code in einem Test-Projekt im Standard-Modus (manuell) und bitte um eine kleine Code-Änderung – beobachte die Bestätigungs-Nachfrage.",
+          "Wechsle mit Shift+Tab in den Accept-Edits-Modus und bitte um dieselbe Art Änderung – vergleiche, was jetzt ohne Nachfrage läuft und was weiterhin bestätigt wird.",
+          "Wechsle in den Plan-Modus und bitte um eine größere Änderung – prüfe, dass wirklich keine Datei geändert wird, bis du den Plan akzeptierst."
+        ],
+        "selfCheck": [
+          "Konntest du benennen, welche Aktionen im Accept-Edits-Modus automatisch liefen und welche trotzdem nachgefragt haben?",
+          "Hast du verstanden, warum Plan-Modus nichts verändert, obwohl der Agent Dateien liest und Befehle ausführt?",
+          "Weißt du, warum Bypass Permissions nur in einer isolierten Umgebung sinnvoll ist?"
+        ]
+      }
+    },
+    {
+      "slug": "artifacts",
+      "category": "begriff",
+      "difficulty": 1,
+      "minutes": 3,
+      "xp": 20,
+      "title": "Artifacts: generierte Deliverables",
+      "teaser": "Ein Artifact ist ein eigenständiges Ergebnis – Code, Dokument oder App –, das Claude in einem separaten Fenster neben dem Chat zeigt, statt es im Gesprächstext zu verstecken.",
+      "body": "## Was ein Artifact ist\nWenn du Claude bittest, etwas Größeres zu bauen – einen Report, ein kleines Web-Tool, eine Grafik –, öffnet sich oft ein eigenes Fenster neben dem Chat: das Artifact. Claude erstellt eines automatisch, wenn ein Inhalt umfangreich (etwa über 15 Zeilen), eigenständig und wahrscheinlich zum Weiterbearbeiten gedacht ist.\n\n## Wofür man Artifacts nutzt\n- Reports und Dokumente, die man lesen, weitergeben oder bearbeiten will\n- Prototypen: kleine interaktive Web-Apps, HTML-Seiten, React-Komponenten\n- Visualisierungen: Diagramme, SVGs, Charts\n- Code-Dateien, die als eigenständiges Stück Sinn ergeben\n\n## Abgrenzung zu Code im Repo\nEin Artifact ist kein Ersatz für Code in einem echten Projekt-Repository. Es lebt zunächst nur in der Konversation bzw. im Claude-Konto, hat keine Versionskontrolle wie Git und ist nicht automatisch Teil einer Build-Pipeline. Ein Artifact eignet sich, um schnell etwas Eigenständiges zu erzeugen oder zu zeigen – für produktiven, dauerhaft gepflegten Code gehört der Inhalt danach in ein richtiges Repository.\n\n## Teilen\nEin Artifact lässt sich veröffentlichen: Andere können es über einen Link ansehen und benutzen, ganz ohne eigenen Account oder API-Key.",
+      "bodyDetail": "## Wann Claude ein Artifact erstellt\nDie Entscheidung ist nicht zufällig: Laut Anthropic-Doku entsteht ein Artifact, wenn der Inhalt umfangreich genug ist (Richtwert: mehr als etwa 15 Zeilen), wahrscheinlich editiert oder wiederverwendet wird, und als eigenständiges Stück ohne viel zusätzlichen Gesprächskontext funktioniert. Eine kurze Code-Antwort auf \"wie schreibe ich eine for-Schleife in Python\" bleibt dagegen normaler Chat-Text.\n\n## Unterstützte Typen\nArtifacts unterstützen verschiedene Formate: Dokumente (Markdown oder Klartext), Code-Snippets, einseitige HTML-Webseiten, SVG-Grafiken, Diagramme und Flussdiagramme sowie interaktive React-Komponenten. Artifacts können außerdem über das Model Context Protocol (MCP) mit externen Diensten verbunden werden – etwa einem Kalender oder einem Projekt-Tool –, wodurch aus einer reinen Anzeige eine kleine funktionierende App werden kann.\n\n## Veröffentlichen vs. Teilen\nEs gibt zwei verschiedene Mechanismen: \"Veröffentlichen\" (Publish) macht ein Artifact über einen öffentlichen Link für jeden zugänglich, ganz ohne Account oder API-Key beim Betrachter. \"Teilen\" (Share) ist auf Team-/Enterprise-Konten beschränkt und begrenzt den Zugriff auf Mitglieder der eigenen Organisation. In beiden Fällen sehen Betrachter auch angehängte Dateien aus der Konversation, die das Artifact erzeugt hat, und können eigene Kopien zum Weiterbearbeiten erstellen.\n\n## Warum die Abgrenzung zu Repo-Code wichtig ist\nEin Artifact ist praktisch, weil es sofort sichtbar und teilbar ist – aber es ersetzt keine Software-Entwicklungs-Infrastruktur. Es gibt keine Commit-Historie im Sinne von Git, keine Code-Review-Pipeline, keine automatisierten Tests. Für einen Prototyp, eine einmalige Visualisierung oder einen Bericht ist das kein Problem. Sobald ein Ergebnis produktiv laufen, im Team versioniert oder regelmäßig gepflegt werden soll, gehört der Code stattdessen in ein Repository mit normalem Git-Workflow.",
+      "example": "Du bittest Claude: \"Erstelle eine kleine interaktive Tabelle, die meine CSV-Verkaufsdaten nach Monat gruppiert.\" Claude öffnet dafür ein Artifact mit einer React-Komponente, die du direkt im Browser siehst und ausprobieren kannst – statt eines Code-Blocks mitten im Chat-Text.",
+      "related": [
+        "vibe-coding",
+        "claude-code",
+        "projekt-deployen"
+      ],
+      "quiz": {
+        "question": "Wodurch unterscheidet sich ein veröffentlichtes (published) Artifact von einem geteilten (shared) Artifact?",
+        "options": [
+          "Es gibt keinen Unterschied, beide Begriffe meinen dasselbe",
+          "Veröffentlichte Artifacts sind für jeden über einen Link zugänglich, geteilte Artifacts sind auf Mitglieder der eigenen Organisation beschränkt",
+          "Geteilte Artifacts brauchen zwingend einen API-Key, veröffentlichte nicht",
+          "Nur veröffentlichte Artifacts können React-Komponenten enthalten"
+        ],
+        "correct": 1,
+        "explain": "Laut Claude Help Center macht Publish ein Artifact öffentlich per Link zugänglich, während Share (auf Team-/Enterprise-Plänen) den Zugriff auf die eigene Organisation begrenzt. In beiden Fällen braucht ein Betrachter keinen API-Key."
+      },
+      "sources": [
+        {
+          "title": "Claude Help Center: Was sind Artifacts und wie nutzt man sie?",
+          "url": "https://support.claude.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them"
+        },
+        {
+          "title": "Claude Help Center: Artifacts veröffentlichen und teilen",
+          "url": "https://support.claude.com/en/articles/9547008-publish-and-share-artifacts"
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "slug": "caching-strategien",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Caching Strategies: Prompt Caching & Context Caching",
+      "teaser": "Repeated prompt prefixes cost money and time on every single call. Prompt caching stores them between calls and saves both.",
+      "body": "## The problem: the same text, over and over\nAn agent often sends the same long opening with every request: system prompt, tool definitions, large documents. Without caching, the model recomputes this part completely on every single call — that costs time (latency) and money (token price), even though the text didn't change.\n\n## How prompt caching works\nAnthropic and OpenAI both offer prompt caching for this. The provider remembers the beginning (prefix) of a prompt you already sent once. If you send that same beginning again shortly after — e.g. the same system prompt plus a new user turn — the model only has to process the new part. The rest comes from the cache.\n\n## What it saves\nWith Claude, a cache hit costs only a fraction of the normal price for input tokens, while a cache write is somewhat more expensive than normal. With OpenAI, prompt caching is automatically active once a prompt is long enough, and it noticeably lowers cost and latency, with no code changes required.\n\n## TTL: the cache expires\nA cache doesn't live forever. With Claude, the default is 5 minutes; after that the entry is gone, and the next call writes a fresh cache entry. There's also a longer, more expensive option. Whoever sends many requests in quick succession benefits the most from caching.",
+      "bodyDetail": "## How a prefix is recognized\nA cache hit requires that the beginning of a prompt is exactly identical to before. With Claude, you set this with a `cache_control` breakpoint on a specific block (e.g. the end of the system prompt). Everything up to that breakpoint is hashed and compared against earlier entries. If even a single character before it changes, the cache no longer applies to that part.\n\n## Costs in concrete numbers\nWith Claude, a cache write (5-minute cache) costs 1.25x the normal input price, while a cache hit costs only 0.1x. There's also an optional 1-hour cache that costs double on write but lasts longer. With OpenAI, caching is automatically active from 1,024 tokens of prompt length — for older models there's no extra fee for writing, and hits are discounted.\n\n## Limitations\nA cache is not permanent storage. If the TTL expires without a request coming in during that window, the entry is gone — the next call pays the full write price again. That's why caching helps most with patterns of dense, repeated calls (an agent loop, many requests in a short time), not with a single, rare request. With Claude there's also a limit of 4 cache breakpoints per request, and some changes to the prompt (e.g. new tool definitions) invalidate the cache at that point.\n\n## Context caching vs. classic caching\n\"Context caching\" is often used synonymously with prompt caching: it's the same mechanism, applied to an agent's whole context — system prompt, loaded files, tool definitions. The larger and more stable that context is, the more caching pays off, because a bigger share of every call comes from the cache instead of being recomputed.",
+      "example": "An agent with a 6,000-token system prompt plus tool definitions makes 10 requests in 3 minutes. Without caching, you pay the full price for those 6,000 tokens on all 10 calls. With caching, you pay it once (write, 1.25x) and only 0.1x for the remaining 9 — a clear saving, as long as the requests stay within the 5-minute TTL.",
+      "related": [
+        "kosten-kontrolle-agenten",
+        "context-window",
+        "token",
+        "kontext-strategien"
+      ],
+      "quiz": {
+        "question": "Why does a prompt cache entry expire on its own?",
+        "options": [
+          "Because it has a TTL (time to live), e.g. 5 minutes with Claude",
+          "Because every cache is deleted after exactly one use",
+          "Because caching only works for images",
+          "Because the provider fully resets caches after every model update"
+        ],
+        "correct": 0,
+        "explain": "Prompt caches have a limited lifetime (TTL). With Claude that's 5 minutes by default, optionally longer for an extra cost. Once it expires, the cache has to be written again."
+      },
+      "sources": [
+        {
+          "title": "Claude docs: Prompt caching",
+          "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-caching"
+        },
+        {
+          "title": "OpenAI docs: Prompt caching",
+          "url": "https://platform.openai.com/docs/guides/prompt-caching"
+        }
+      ],
+      "exercise": {
+        "task": "Find out whether and how one of your agent scripts (or your model provider's API docs) uses prompt caching.",
+        "steps": [
+          "Look at your agent's system prompt / tool definitions: roughly how many tokens does this fixed part have?",
+          "Check the API response (if you use Claude) for the fields cache_read_input_tokens and cache_creation_input_tokens — is the cache being hit?",
+          "Think about it: with which usage pattern (many requests in quick succession vs. single rare requests) does caching pay off most for you?"
+        ],
+        "selfCheck": [
+          "Can you explain why a cache hit is cheaper than a cache write?",
+          "Do you know how long a default Claude cache lives before it expires?",
+          "Have you identified a concrete part of your own prompt that would be a good fit for a cache breakpoint?"
+        ]
+      }
+    },
+    {
+      "slug": "plugins",
+      "category": "begriff",
+      "difficulty": 1,
+      "minutes": 3,
+      "xp": 20,
+      "title": "Plugins: Extensions for AI Coding Tools",
+      "teaser": "A plugin bundles skills, agents, hooks, or MCP servers into one shareable package — like an app from an app store for your agent.",
+      "body": "## What a plugin is\nA plugin is a folder with add-on functionality for an AI coding tool. In Claude Code, a plugin can bring several things at once: skills (instructions, see its own entry), custom agents, hooks (automatic rules), and MCP servers (connections to external tools). A plugin is therefore bigger than a single skill — it's a whole package.\n\n## Plugin vs. skill vs. editor extension\nA skill is a single instruction in a SKILL.md file. A plugin can contain one or more skills, plus other building blocks like hooks or MCP servers. An editor extension (e.g. for VS Code) is something different: it extends the editor itself, not necessarily an AI agent, and is usually installed through the editor's own marketplace, not through Claude Code.\n\n## How to find and install plugins\nClaude Code has a built-in `/plugin` command that opens a plugin manager: there you can browse available plugins (Discover), install them, manage installed ones (Installed), and add marketplaces. Anthropic maintains an official collection that's automatically available. You install a plugin with a command like `/plugin install name@marketplace-name`.\n\n## A word of caution\nPlugins can run arbitrary code with your user permissions. Only install plugins from sources you trust.",
+      "bodyDetail": "## The structure of a plugin\nTechnically, a plugin is a folder with a manifest file `.claude-plugin/plugin.json` (name, description, version) and optionally further subfolders: `skills/` for skills, `agents/` for custom subagents, `hooks/` for hook configuration, `.mcp.json` for MCP server connections. Skills from a plugin are automatically namespaced with the plugin's name, e.g. `/my-plugin:hello` instead of just `/hello`. This prevents name conflicts when two plugins each ship a skill with the same name.\n\n## Marketplaces as the distribution path\nA single plugin gets distributed through a \"marketplace\" — a catalog described in a `marketplace.json` file that lives, for example, in a Git repository. Users first add the marketplace (`/plugin marketplace add owner/repo`), then install individual plugins from it. Anthropic runs an official, curated collection (automatically available) and a community collection for third-party contributions, which are automatically screened before being added.\n\n## Installation scopes\nA plugin can be installed in three scopes: only for you personally (user scope, across all projects), for a specific project including all collaborators (project scope), or only locally for you in one repository (local scope). This roughly mirrors the difference between personal and project-local skills.\n\n## Distinction from editor extensions\nA classic editor extension (e.g. a VS Code extension) extends the development environment itself — syntax highlighting, a new panel, a debug feature. It doesn't need to have anything to do with an AI agent. A Claude Code plugin, by contrast, specifically extends what the agent can do and know: which skills it loads automatically, which external services it can reach via MCP, which rules (hooks) trigger on specific actions. Both concepts can coexist — a developer often uses both editor extensions and agent plugins.\n\n## A security warning from the docs\nThe official docs explicitly warn: plugins and marketplaces are highly trusted components that can execute arbitrary code with the user's permissions. Anthropic does not automatically verify what's inside every individual plugin — being careful about your source is mandatory.",
+      "example": "A team builds an internal plugin \"deploy-tools\" with a skill /deploy-tools:release and an MCP server for their internal deployment system. They host it as a Git repo. A new team member adds the marketplace (\"/plugin marketplace add company/deploy-tools\") and installs the plugin with \"/plugin install deploy-tools@company\" — from then on they have the same access as everyone else on the team.",
+      "related": [
+        "claude-skills",
+        "claude-code-befehle",
+        "mcp",
+        "claude-code"
+      ],
+      "quiz": {
+        "question": "What distinguishes a plugin from a single skill in Claude Code?",
+        "options": [
+          "A plugin can bundle several building blocks — skills, agents, hooks, MCP servers — and is distributed via marketplaces",
+          "A plugin is just another name for the same thing as a skill",
+          "A plugin only runs in the browser, a skill only in the terminal",
+          "A plugin cannot contain a skill"
+        ],
+        "correct": 0,
+        "explain": "According to the Claude Code docs, a plugin is a package that can bundle skills, agents, hooks, or MCP servers. It's installed and distributed via marketplaces, whereas a single skill is just a SKILL.md file."
+      },
+      "sources": [
+        {
+          "title": "Claude Code docs: Create plugins",
+          "url": "https://code.claude.com/docs/en/plugins"
+        },
+        {
+          "title": "Claude Code docs: Discover and install plugins",
+          "url": "https://code.claude.com/docs/en/discover-plugins"
+        }
+      ]
+    },
+    {
+      "slug": "headless-non-interactive",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Headless Mode: Running Agents Without Interaction",
+      "teaser": "In headless or non-interactive mode, an AI agent runs without a chat window — great for scripts and CI, but it can't ask you anything.",
+      "body": "## What headless means\nNormally you chat live with an agent: it asks a question, you answer, it continues. In headless or non-interactive mode, that dialogue disappears. You provide a prompt as an argument or via a pipe, the agent works through it, and returns a single answer at the end — no follow-up questions, no chat window.\n\n## What this looks like in Claude Code\nThe command `claude -p \"Find and fix the bug in auth.py\"` starts Claude Code non-interactively. You can also pipe data in: `cat error.log | claude -p \"Explain the root cause\"`. The output can be retrieved as plain text or as structured JSON (`--output-format json`), which fits nicely into scripts.\n\n## What it's used for\n- Batch processing: automatically working through many files or tickets\n- CI/CD: e.g. automatically checking every pull request for typos or security issues\n- Cron jobs and scheduled automation without human involvement\n\n## The risk: no follow-up questions\nThe biggest difference from interactive mode: the agent cannot ask you for permission or clarification. If it runs into a situation where it would normally ask, it has to decide on its own or abort. That's why choosing the right permission mode (see its own entry) matters so much in headless operation: without clear rules, an agent can either do too little (constantly aborting) or too much (taking risky actions without asking).",
+      "bodyDetail": "## Context still loads by default\nEven in headless mode, Claude Code by default loads the same context as an interactive session: hooks, skills, plugins, MCP servers, CLAUDE.md. That's convenient when you want the same configuration as locally, but it's a problem for reproducible scripts — a hook from a colleague's home directory suddenly runs along with it. A `--bare` flag turns off this auto-discovery and loads only what you explicitly pass via flags (e.g. `--mcp-config`, `--append-system-prompt`). That makes runs identical on every machine — important for CI.\n\n## Structured output\nPlain text is impractical for scripts. With `--output-format json` you get a structured response including session ID, cost, and metadata; adding `--json-schema` even lets you enforce a custom output schema (see also structured outputs). `--output-format stream-json` delivers events line by line, useful for live displays.\n\n## What happens when something is blocked\nIf an action gets blocked by safety rules in headless mode — for instance because a permission is missing — there's no one around to answer a follow-up question. The docs describe this explicitly: repeated blocks then abort the session instead of waiting. That's the central difference from interactive operation, and the main reason permissions for headless runs should be planned carefully in advance instead of relying on the agent being able to ask.\n\n## Automation with caution\nBecause no one is watching live, a headless run should start with as few permissions as possible, but enough to work (`--allowedTools` with a concrete tool list instead of allow-everything), and results should land somewhere a human can still review them later (e.g. as a pull request instead of a direct push to the main branch).",
+      "example": "# CI script: typo check for every PR diff\ngit diff main | claude -p \"Find typos in this diff. For each one, output 'file:line' and the issue, nothing else.\" --output-format json",
+      "related": [
+        "claude-code-befehle",
+        "kosten-kontrolle-agenten",
+        "guardrails-fuer-agenten",
+        "vibe-coding-sicherheit"
+      ],
+      "quiz": {
+        "question": "What is the biggest risk when running an agent in headless / non-interactive mode?",
+        "options": [
+          "The agent can no longer read files",
+          "The agent cannot ask you follow-up questions or for permission when a situation is unclear",
+          "The agent automatically becomes slower",
+          "Headless mode only works with a single tool"
+        ],
+        "correct": 1,
+        "explain": "In interactive mode, an agent can ask when it's unsure. In headless mode, there's no human to ask — it has to decide on its own or abort the action or session. That's why configuring permissions carefully in advance matters so much."
+      },
+      "sources": [
+        {
+          "title": "Claude Code docs: Run Claude Code programmatically (headless)",
+          "url": "https://code.claude.com/docs/en/headless"
+        },
+        {
+          "title": "Claude Code docs: Permission modes",
+          "url": "https://code.claude.com/docs/en/permission-modes"
+        }
+      ],
+      "exercise": {
+        "task": "Build a simple headless call that summarizes a file, and observe how it behaves without being able to ask questions.",
+        "steps": [
+          "Run in a terminal: claude -p \"Summarize this file in 3 sentences\" --allowedTools \"Read\" with a real file from your project.",
+          "Repeat the call, but point it at a file that doesn't exist — observe how the agent reacts without asking (an error instead of a question).",
+          "Try --output-format json and look at the resulting JSON: which fields besides the actual text does it contain?"
+        ],
+        "selfCheck": [
+          "Could you explain why the agent didn't simply ask when the file was missing?",
+          "Did you understand what --allowedTools is good for in this context?",
+          "Do you know the two scenarios (batch, CI) from the entry where headless operation makes the most sense?"
+        ]
+      }
+    },
+    {
+      "slug": "permissions-modes",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Permission Modes for Agents",
+      "teaser": "From 'confirm every action' to auto mode: permission modes determine how often an agent asks you for approval before doing something.",
+      "body": "## The core problem\nAn agent that can change files, run commands, or make network requests needs rules: what can it do without asking, and what needs your approval first? These rules are called permission modes.\n\n## The main modes in Claude Code\n- **Manual (default)**: Only reading is allowed; every file change and every command is confirmed beforehand.\n- **Accept Edits**: File edits and simple filesystem commands (e.g. creating a folder) run without asking, everything else still gets confirmed.\n- **Plan mode**: The agent may only research and write a plan, no changes — good for exploring before actually building.\n- **Auto mode**: Almost everything runs without asking; a separate check model in the background blocks risky actions (e.g. production deploys, force pushes).\n- **Bypass Permissions**: All checks are off — meant only for isolated environments like containers without internet access.\n\n## How to switch\nOn the command line you cycle between modes with Shift+Tab, or start directly with a flag like `--permission-mode plan`.\n\n## The rule of thumb\nAs few permissions as possible, as many as necessary (principle of least privilege). For sensitive work or unfamiliar code: manual mode. For routine changes you'll review via diff afterward anyway: Accept Edits. Bypass Permissions only in a real sandbox, never on your actual machine.",
+      "bodyDetail": "## Protected paths as a safety net\nEven in automated mode, Claude Code specifically protects certain paths: Git-internal files (`.git`), shell configs (`.bashrc`, `.zshrc`), its own configuration (`.claude`), and similar. Writes to these are always confirmed in every mode except Bypass Permissions — even if an allow rule would otherwise approve them. This prevents an agent from accidentally damaging its own configuration or version control.\n\n## Auto mode in detail\nAuto mode isn't \"everything allowed\" — instead, a separate classifier model checks every action beforehand. By default, that model blocks things like: downloading and executing code from the internet, production deploys and migrations, force pushes, mass deletions in cloud storage, and granting IAM permissions. If an action gets blocked repeatedly in a row, auto mode automatically pauses and starts asking again — in interactive operation. In headless operation (see its own entry), the session aborts instead, because there's no one around to answer a question.\n\n## Rules beyond the mode\nOn top of the mode, there are fine-grained allow/ask/deny rules, e.g. \"allow Bash(npm test), but ask for every other Bash command.\" Deny rules apply in every mode, even in Bypass Permissions — they're the last line of defense that no mode can override.\n\n## Why plan mode is often the best starting point\nPlan mode separates exploring from changing: the agent reads, searches, writes a plan, but changes nothing. Only once you approve the plan does the session switch to a mode that can actually write. That combines the safety of manual mode with the convenience of not having to confirm every single read step.",
+      "example": "Start with \"claude --permission-mode plan\" for a new, unfamiliar codebase. The agent explores and proposes a plan. Only after you approve it do you switch (for example) into Accept Edits mode so it can actually write the changes — without you having to confirm every single file edit individually.",
+      "related": [
+        "guardrails-fuer-agenten",
+        "vibe-coding-sicherheit",
+        "claude-code",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "What is the rule of thumb when choosing a permission mode?",
+        "options": [
+          "Always use Bypass Permissions, it's the fastest",
+          "As few permissions as necessary — confirm sensitive work manually, use risky modes only in isolated environments",
+          "The mode doesn't matter as long as the agent delivers a result in the end",
+          "Permission modes only exist for cloud agents, not local ones"
+        ],
+        "correct": 1,
+        "explain": "The rule of thumb is the principle of least privilege: as much automation as needed, as much control as possible. According to the docs, Bypass Permissions is meant only for isolated containers/VMs, not for a regular machine."
+      },
+      "sources": [
+        {
+          "title": "Claude Code docs: Choose a permission mode",
+          "url": "https://code.claude.com/docs/en/permission-modes"
+        },
+        {
+          "title": "Claude docs: Permissions in the Agent SDK",
+          "url": "https://platform.claude.com/docs/en/agent-sdk/permissions"
+        }
+      ],
+      "exercise": {
+        "task": "Deliberately switch between two permission modes in a running Claude Code session and observe the difference.",
+        "steps": [
+          "Start Claude Code in a test project in the default mode (manual) and ask for a small code change — observe the confirmation prompt.",
+          "Switch with Shift+Tab into Accept Edits mode and ask for the same kind of change — compare what now runs without asking and what still gets confirmed.",
+          "Switch into plan mode and ask for a bigger change — verify that no file actually changes until you approve the plan."
+        ],
+        "selfCheck": [
+          "Could you name which actions ran automatically in Accept Edits mode and which still needed confirmation?",
+          "Did you understand why plan mode changes nothing even though the agent reads files and runs commands?",
+          "Do you know why Bypass Permissions only makes sense in an isolated environment?"
+        ]
+      }
+    },
+    {
+      "slug": "artifacts",
+      "category": "begriff",
+      "difficulty": 1,
+      "minutes": 3,
+      "xp": 20,
+      "title": "Artifacts: Generated Deliverables",
+      "teaser": "An artifact is a self-contained result — code, a document, or an app — that Claude shows in a separate window next to the chat instead of burying it in the conversation text.",
+      "body": "## What an artifact is\nWhen you ask Claude to build something larger — a report, a small web tool, a graphic — a separate window often opens next to the chat: the artifact. Claude creates one automatically when content is substantial (roughly more than 15 lines), self-contained, and likely something you'll want to keep working on.\n\n## What artifacts are used for\n- Reports and documents you want to read, share, or edit\n- Prototypes: small interactive web apps, HTML pages, React components\n- Visualizations: diagrams, SVGs, charts\n- Code files that make sense as a standalone piece\n\n## Distinction from code in a repo\nAn artifact is not a replacement for code in an actual project repository. It initially lives only in the conversation or your Claude account, has no version control like Git, and isn't automatically part of a build pipeline. An artifact is well suited for quickly producing or showing something self-contained — for production code that's maintained long-term, the content belongs in a real repository afterward.\n\n## Sharing\nAn artifact can be published: others can view and use it via a link, with no account or API key of their own required.",
+      "bodyDetail": "## When Claude creates an artifact\nThe decision isn't arbitrary: according to Anthropic's docs, an artifact is created when the content is substantial enough (rule of thumb: more than about 15 lines), likely to be edited or reused, and works as a self-contained piece without needing a lot of extra conversation context. A short code answer to \"how do I write a for loop in Python\" stays as normal chat text instead.\n\n## Supported types\nArtifacts support several formats: documents (Markdown or plain text), code snippets, single-page HTML websites, SVG graphics, diagrams and flowcharts, and interactive React components. Artifacts can also connect to external services through the Model Context Protocol (MCP) — such as a calendar or a project tool — turning a pure display into a small working app.\n\n## Publishing vs. sharing\nThere are two different mechanisms: \"Publishing\" makes an artifact accessible to anyone via a public link, with no account or API key needed on the viewer's side. \"Sharing\" is limited to Team/Enterprise accounts and restricts access to members of your own organization. In both cases, viewers also get access to any files attached in the conversation that created the artifact, and can make their own copies to keep editing.\n\n## Why the distinction from repo code matters\nAn artifact is useful because it's immediately visible and shareable — but it doesn't replace software development infrastructure. There's no commit history in the Git sense, no code review pipeline, no automated tests. For a prototype, a one-off visualization, or a report, that's not a problem. Once a result needs to run in production, be versioned across a team, or be maintained regularly, the code belongs in a repository with a normal Git workflow instead.",
+      "example": "You ask Claude: \"Create a small interactive table that groups my CSV sales data by month.\" Claude opens an artifact with a React component for this, which you see and try directly in the browser — instead of a code block buried in the middle of the chat text.",
+      "related": [
+        "vibe-coding",
+        "claude-code",
+        "projekt-deployen"
+      ],
+      "quiz": {
+        "question": "How does a published artifact differ from a shared artifact?",
+        "options": [
+          "There's no difference, both terms mean the same thing",
+          "Published artifacts are accessible to anyone via a link, shared artifacts are restricted to members of your own organization",
+          "Shared artifacts always require an API key, published ones don't",
+          "Only published artifacts can contain React components"
+        ],
+        "correct": 1,
+        "explain": "According to the Claude Help Center, Publish makes an artifact publicly accessible via a link, while Share (on Team/Enterprise plans) limits access to your own organization. In both cases, a viewer doesn't need an API key."
+      },
+      "sources": [
+        {
+          "title": "Claude Help Center: What are artifacts and how do I use them?",
+          "url": "https://support.claude.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them"
+        },
+        {
+          "title": "Claude Help Center: Publish and share artifacts",
+          "url": "https://support.claude.com/en/articles/9547008-publish-and-share-artifacts"
+        }
+      ]
+    }
+  ]
+}

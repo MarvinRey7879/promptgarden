@@ -449,3 +449,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
   3. Verify-Gate formalisiert (Lint→BUILD_EXIT→Content-String-Verify→Screenshot bei UI→known-good-Commit für Rollback).
   4. Adversarial-Review-Pflicht für Content-Batches + Publikationsrate≤Review-Kapazität (Google scaled-content-abuse) + Autonomie-Grenzen als Kategorie-Liste + Compaction-Preserve-Block.
 - Lektion aus Lint-Bau: entries/feed-JSONs sind top-level Arrays (nicht {entries}/{items}) — Schema vor Tooling prüfen; lokalisierte Wikipedia-Quellen sind GEWOLLT sprachverschieden.
+
+### It. 74 (13.07.26 abends) — 📚 KAPITEL-BATCH 2 LIVE: 51 Kapitel ×5, NEUE Pipeline mit Adversarial-Review ✅
+- 10 neue Kapitel ×5 Sprachen (tool-use, computer-use, sandboxing, agent-sicherheit, model-routing, caching-strategien, plugins, headless-non-interactive, permissions-modes, artifacts), ALLE mit bodyDetail (🌱+🔬 ab Tag 1) + Quellen (22 URLs verifiziert) + Quiz; 6 mit Übung. 927 Seiten (+50).
+- 🛡️ ERSTE ADVERSARIAL-REVIEW-PIPELINE (DR-Umsetzung) hat sich SOFORT bezahlt gemacht — Review-Agent (frischer Kontext) fand 3 BLOCK-Findings, die beide Autoren-Agents übersehen hatten: (1) Amazon-Q-„Syntaxfehler verhinderte Schaden"-Claim nicht quellengedeckt → ersetzt durch belegte Version, (2) Artifacts-Formatliste (Mermaid/docx/pptx) über Quelle hinaus → auf Help-Center-Stand reduziert, (3) „Opus 4.8 = leistungsstärkstes Modell" von eigener Preisquelle widerlegt (2 neuere Modelle drüber) → „eines der leistungsstärksten". + FIX: Preiszahlen-Label „(Stand: Juli 2026)". Alle Fixes vor Übersetzung angewandt (kein Drift; Übersetzer bekamen MD5-Summen und prüften selbst).
+- WORLD_2 → 11 Kapitel (+tool-use/sandboxing/agent-sicherheit), WORLD_3 → 14 (+permissions-modes/plugins/headless/model-routing/caching); computer-use+artifacts bewusst Lexikon-only.
+- NEU site/scripts/merge-entries.mjs (validierendes Merge-Tool, ersetzt ad-hoc-Merges = Quelle der früheren cwd-Vorfälle); Merge 5 Sprachen in einem Zug, lint-content-Gate grün, BUILD_EXIT=0, Live-Verify auf Titel-Strings (Lektion erneut: leere grep-Pattern = false positive — Variablen im Verify IMMER erst echoen).
+- Poll: 0 Notes/Feedback, views_7d 127, Todo-Felder heißen title/detail.
+- Known-good Deploy: 2484ef6f.promptgarden.pages.dev
