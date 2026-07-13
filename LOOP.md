@@ -13,9 +13,9 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 ## Marvin-Direktiven (alle aktiv, bindend)
 1. **KEIN Nachtmodus** — 24/7 voller Takt, immer Substanz bauen.
 2. **Quellenpflicht** — jede Behauptung sichtbar belegt auf der Seite; URLs selbst verifizieren (curl -L -A Browser-UA → 200); nie Quellen erfinden.
-3. **Befehls-Referenz** — JEDER CLI-Befehl pro Plattform mit wann/wann-nicht (✅ 108: Claude Code 92 + Codex 16; next: Cursor CLI, Aider).
+3. **Befehls-Referenz** — JEDER CLI-Befehl pro Plattform mit wann/wann-nicht (✅ 188: Claude Code 92 + Codex 16 + Cursor CLI 80; next: Aider).
 4. **Addons mit eigenen Detailseiten** (✅ 12×5) — Setup aus offiziellen READMEs.
-5. **Visualisierungen** — verständlich aber hochwertig, Inline-SVG im 1d-Stil (✅ Loops+Addons; next: Context-Window).
+5. **Visualisierungen** — verständlich aber hochwertig, Inline-SVG im 1d-Stil (✅ Loops+Addons+Context-Window) + Remotion-Videos (Direktive 12).
 6. **KEINE KI-Autorschaft** — Marvin ist der Macher; Seite kommuniziert „KI- & Scrape-freundlich, jeder soll lernen".
 7. **MEHR KAPITEL** — hohes Content-Tempo, ABER siehe Publikationsraten-Regel unten.
 8. **ZWEI Detail-Level** — 🌱/🔬-Toggle ✅ KOMPLETT (alle 51 Kapitel ×5, It. 78).
@@ -58,8 +58,8 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 73, 13.07.26, Commit-Stand siehe HISTORY)
-~880 Seiten live auf promptgarten.com: 41 Kapitel ×5 (+Quiz/Übungen/Toggle), 108 Befehle ×5, 12 Addons ×5 mit Detailseiten, 4 Welten, Benchmarks, Vergleiche, Loop-Galerie, Feed (17 News), Forum, freie API, Admin V2 (Revenue/Länder/Zeitreihe), Landing NEU (CTA/How-it-works/Trust/Course-Schema). Traffic: views_7d ~109, DE/US/FR/PL.
+## Aktueller Stand (It. 78, 14.07.26, Commit-Stand siehe HISTORY)
+1332+ Seiten live auf promptgarten.com: 51 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 188 Befehle ×5 auf 3 Plattformen (Claude Code/Codex/Cursor CLI), 12 Addons ×5 mit Detailseiten, 4 Welten (W2=11, W3=14), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 10 Remotion-Clips, Forum, freie API, Admin V2, Landing mit CTA/How-it-works/Trust/Course-Schema. Traffic: views_7d ~136, DE/US/FR/PL/IE.
 
 ## Rotation (nächste Arbeit)
 ① Remotion-Review (wiederkehrend: Terminal-Demo-Clips für Top-Befehle) ② Kapitel-Batch 3 (Ideen aus top_paths: Lernpfad-/Addons-Vertiefung) ③ Feed täglich ④ Link-Audit ~19.07 (188 Befehle!) ⑤ LOOP.md-Pruning wöchentlich ⑥ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (74), Context-Window-SVG (75), Cursor CLI (76), Remotion-Pilot (77), Feed 14.07 + bodyDetail KOMPLETT (78).
