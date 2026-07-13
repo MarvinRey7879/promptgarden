@@ -20,8 +20,23 @@
       "name": "/add-dir",
       "summary": "Fügt ein zusätzliches Arbeitsverzeichnis für Dateizugriff in der aktuellen Session hinzu.",
       "what": "Fügt ein zusätzliches Arbeitsverzeichnis für Dateizugriff in der aktuellen Session hinzu. Die meisten .claude/-Konfigurationen werden aus dem hinzugefügten Verzeichnis nicht automatisch mitgeladen.\n\nMan kann die Session später mit --continue oder --resume aus dem hinzugefügten Verzeichnis fortsetzen.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Kurz auf eine zweite Codebase zugreifen, ohne die Session zu wechseln",
+          "example": "/add-dir ../shared-lib — kurz eine Utility-Funktion aus der Shared-Lib nachschlagen, während man im Hauptprojekt weiterarbeitet"
+        },
+        {
+          "title": "Referenzdateien aus einem Nachbarordner einbeziehen, Prompt-Cache bleibt erhalten",
+          "example": "/add-dir ../design-tokens — Design-Tokens als Referenz für eine Styling-Aufgabe verfügbar machen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Dauerhaft in ein anderes Projekt mit eigener CLAUDE.md wechseln wollen",
+          "why": "/add-dir lädt die .claude/-Konfiguration des hinzugefügten Verzeichnisses nicht automatisch mit",
+          "alternative": "/cd nutzen — übernimmt CLAUDE.md des Zielordners und verschiebt die Session in dessen Projekt-Speicher"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -35,8 +50,23 @@
       "name": "/advisor",
       "summary": "Aktiviert oder deaktiviert das Advisor-Tool, das bei wichtigen Momenten einer Aufgabe ein zweites Modell zur Beratung hinzuzieht.",
       "what": "Aktiviert oder deaktiviert das Advisor-Tool, das bei wichtigen Momenten einer Aufgabe ein zweites Modell zur Beratung hinzuzieht.\n\nAkzeptiert opus, sonnet, fable (ab v2.1.170) oder eine volle Modell-ID. Ohne Argument öffnet sich eine Auswahl. Benötigt Claude Code v2.1.98 oder neuer.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Vor einer riskanten Architekturentscheidung ein stärkeres Modell zur Beratung hinzuziehen",
+          "example": "/advisor opus — Zweitmeinung einholen, bevor eine Datenbank-Migration umgesetzt wird"
+        },
+        {
+          "title": "Kosten in einem langen Loop senken, indem ein günstiger Executor + Advisor nur bei Bedarf kombiniert wird",
+          "example": "/advisor sonnet — als Berater für einen sonst mit haiku laufenden Automatisierungs-Loop"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Für jede triviale Kleinaufgabe aktiviert lassen",
+          "why": "jede Beratungs-Runde kostet zusätzliche Tokens/Zeit, bei Routinearbeit ohne Mehrwert",
+          "alternative": "/advisor ohne Argument öffnen und ausschalten, nur an echten Entscheidungspunkten wieder aktivieren"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -50,8 +80,23 @@
       "name": "/agents",
       "summary": "Verwaltet Subagent-Konfigurationen.",
       "what": "Verwaltet Subagent-Konfigurationen.\n\nAb v2.1.198 zeigt /agents nur noch einen Hinweis, Claude direkt um Erstellung/Verwaltung von Subagenten zu bitten oder .claude/agents/ bzw. ~/.claude/agents/ selbst zu editieren. Bis v2.1.197 öffnete der Befehl eine interaktive Verwaltungsoberfläche.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Claude bitten, eine neue Subagent-Konfiguration anzulegen",
+          "example": "/agents, dann: „leg mir einen Subagenten für Datenbank-Migrationen an\""
+        },
+        {
+          "title": "Bestehende Subagent-Definitionen sichten, bevor man sie im laufenden Projekt anpasst",
+          "example": "/agents, um sich an .claude/agents/ verweisen zu lassen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine interaktive Verwaltungsoberfläche erwarten",
+          "why": "ab v2.1.198 zeigt /agents nur noch einen Hinweis statt einer interaktiven UI",
+          "alternative": ".claude/agents/ bzw. ~/.claude/agents/ direkt im Editor bearbeiten"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -65,8 +110,23 @@
       "name": "/autofix-pr",
       "summary": "Startet eine Claude-Code-Web-Session, die den Pull-Request des aktuellen Branches beobachtet und bei CI-Fehlern oder Reviewer-Kommentaren automatisch Fixes pusht.",
       "what": "Startet eine Claude-Code-Web-Session, die den Pull-Request des aktuellen Branches beobachtet und bei CI-Fehlern oder Reviewer-Kommentaren automatisch Fixes pusht.\n\nErkennt den offenen PR über 'gh pr view'; per Prompt lassen sich abweichende Anweisungen geben (z.B. nur Lint/Type-Fehler). Benötigt die gh-CLI und Zugriff auf Claude Code on the web.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Offenen PR unbeaufsichtigt gegen CI-Fehler laufen lassen",
+          "example": "/autofix-pr only fix lint and type errors — nach dem Push eines PRs, während man an etwas anderem arbeitet"
+        },
+        {
+          "title": "Reviewer-Kommentare automatisch in Fixes umsetzen lassen",
+          "example": "/autofix-pr address all review comments from the last review round"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Änderungen sind noch nicht als PR gepusht",
+          "why": "der Befehl erkennt den PR über 'gh pr view' und braucht Claude Code on the web-Zugriff — ohne offenen PR findet er nichts",
+          "alternative": "erst normal committen/pushen und mit gh pr create einen PR eröffnen, dann /autofix-pr"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -115,8 +175,28 @@
       "name": "/batch",
       "summary": "Orchestriert große Änderungen parallel über die gesamte Codebasis: recherchiert, teilt die Arbeit in Einheiten auf und lässt sie von Subagenten umsetzen.",
       "what": "Orchestriert große Änderungen parallel über die gesamte Codebasis: recherchiert, teilt die Arbeit in Einheiten auf und lässt sie von Subagenten umsetzen.\n\n[Skill] Zerlegt die Arbeit in 5-30 unabhängige Einheiten und präsentiert einen Plan; nach Freigabe startet pro Einheit ein Hintergrund-Subagent in einem isolierten Git-Worktree, der implementiert, testet und einen Pull-Request öffnet. Benötigt ein Git-Repository.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Große Änderung, die sich in viele unabhängige Einheiten über die ganze Codebase zerlegen lässt",
+          "example": "/batch rename the legacy HTTP client to the new SDK across all 15 services"
+        },
+        {
+          "title": "Migration, bei der jede Einheit einen eigenen PR bekommen und parallel getestet werden soll",
+          "example": "/batch migrate every module from CommonJS to ESM"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kleine Einzelaufgabe in ein bis zwei Dateien",
+          "why": "Planungsphase + isolierte Worktrees + eigene PRs pro Einheit sind für eine kleine Aufgabe reiner Overhead",
+          "alternative": "normaler Prompt oder ein einzelner Subagent statt /batch"
+        },
+        {
+          "title": "Kein Git-Repository vorhanden",
+          "why": "/batch benötigt ein Git-Repository für die isolierten Worktrees pro Einheit",
+          "alternative": "erst 'git init', oder Änderung ohne /batch manuell durchführen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -160,8 +240,23 @@
       "name": "/btw",
       "summary": "Stellt eine schnelle Nebenfrage, ohne sie der Hauptkonversation hinzuzufügen.",
       "what": "Stellt eine schnelle Nebenfrage, ohne sie der Hauptkonversation hinzuzufügen.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Kurze Zusatzfrage stellen, ohne den Hauptkontext zu belasten",
+          "example": "/btw what does the --frozen-lockfile flag do? — während man mitten in einer Feature-Session ist"
+        },
+        {
+          "title": "Themenfremde Rückfrage klären, ohne die laufende Konversation zu verzweigen",
+          "example": "/btw is there a Windows equivalent for this bash command?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Antwort wird später im Hauptkontext gebraucht",
+          "why": "/btw fügt Frage und Antwort nicht der Hauptkonversation hinzu",
+          "alternative": "normale Nachricht im Hauptchat stellen; bei komplett neuem Thema stattdessen /clear für einen frischen Start"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -175,8 +270,23 @@
       "name": "/cd",
       "summary": "Verschiebt die Session in ein neues Arbeitsverzeichnis.",
       "what": "Verschiebt die Session in ein neues Arbeitsverzeichnis.\n\nDer Prompt-Cache der Konversation bleibt erhalten: Die CLAUDE.md des neuen Verzeichnisses wird als Nachricht angehängt, statt den System-Prompt neu aufzubauen. Die Session wird in den Projekt-Speicher des neuen Verzeichnisses verschoben, sodass --resume/--continue sie dort finden. Fragt nach Vertrauen bei erstmalig genutztem Verzeichnis. Über 'Cd'-Permission-Regeln einschränkbar/deaktivierbar. Für Zugriff auf ein zusätzliches Verzeichnis ohne Umzug: /add-dir. Benötigt Claude Code v2.1.169+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Dauerhaft ins nächste Projekt wechseln, dessen CLAUDE.md ab jetzt gelten soll",
+          "example": "/cd ../other-project — Session komplett im neuen Projekt weiterführen"
+        },
+        {
+          "title": "Session im Projekt-Speicher des Zielordners ablegen, damit --resume sie dort wiederfindet",
+          "example": "/cd ~/work/client-b vor Beginn der nächsten Aufgabe"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur kurz eine Datei aus einem Nachbarordner brauchen, Hauptprojekt bleibt aktiv",
+          "why": "/cd wechselt die Session komplett um, statt nur Zugriff hinzuzufügen",
+          "alternative": "/add-dir nutzen für Zugriff auf das zusätzliche Verzeichnis ohne Umzug"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -190,8 +300,23 @@
       "name": "/chrome",
       "summary": "Öffnet die Einstellungen für 'Claude in Chrome'.",
       "what": "Öffnet die Einstellungen für 'Claude in Chrome'.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Claude-in-Chrome-Erweiterung einrichten, bevor Claude im Browser Aktionen ausführen soll",
+          "example": "/chrome — Erweiterung aktivieren/Berechtigungen prüfen vor einer Browser-Automatisierungsaufgabe"
+        },
+        {
+          "title": "Bestehende Chrome-Integrations-Einstellungen kontrollieren",
+          "example": "/chrome, um zu prüfen, welche Seiten/Rechte die Erweiterung aktuell hat"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur eine Webseite lesen oder durchsuchen wollen, keine Browser-Steuerung nötig",
+          "why": "/chrome öffnet nur die Einstellungen der Chrome-Erweiterung, keine Suchfunktion",
+          "alternative": "/web bzw. /web-search für reines Lesen/Suchen im Web"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -205,8 +330,23 @@
       "name": "/claude-api",
       "summary": "Lädt Claude-API-Referenzmaterial für die Projektsprache (Python, TypeScript, Java, Go, Ruby, C#, PHP, cURL) sowie Managed-Agents-Referenz.",
       "what": "Lädt Claude-API-Referenzmaterial für die Projektsprache (Python, TypeScript, Java, Go, Ruby, C#, PHP, cURL) sowie Managed-Agents-Referenz.\n\n[Skill] Deckt Tool-Nutzung, Streaming, Batches, strukturierte Outputs und typische Stolperfallen ab. Aktiviert sich auch automatisch bei Imports von 'anthropic'/'@anthropic-ai/sdk'. Subcommand 'migrate' aktualisiert bestehenden API-Code auf ein neueres Modell (Modell-IDs, Thinking-Konfiguration etc.). Subcommand 'managed-agents-onboard' führt interaktiv durch die Erstellung eines neuen Managed Agent.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Referenzwissen laden, bevor man selbst Code gegen die Claude-API schreibt",
+          "example": "/claude-api — vor dem Bau eines eigenen Streaming-Handlers für die Messages-API"
+        },
+        {
+          "title": "Bestehenden API-Code auf ein neueres Modell migrieren",
+          "example": "/claude-api migrate — Modell-IDs und Thinking-Konfiguration in vorhandenem Code aktualisieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Es geht nur um die Bedienung der Claude-Code-CLI selbst, nicht um eigenen API-Code",
+          "why": "/claude-api lädt API-Referenzmaterial (Python/TS/Java/...), keine CLI-Doku",
+          "alternative": "claude-code-guide-Agent bzw. offizielle Claude-Code-Doku für Fragen zur CLI selbst nutzen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -285,8 +425,23 @@
       "name": "/color",
       "summary": "Setzt die Farbe der Prompt-Leiste für die aktuelle Session.",
       "what": "Setzt die Farbe der Prompt-Leiste für die aktuelle Session.\n\nFarben: red, blue, green, yellow, purple, orange, pink, cyan. 'default' setzt zurück, ohne Argument zufällige Farbe. Bei Remote Control synchronisiert zur claude.ai/code. Auch non-interactive (-p) nutzbar, benötigt v2.1.205+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Mehrere parallele Sessions optisch unterscheidbar machen",
+          "example": "/color blue in Session A, /color green in Session B"
+        },
+        {
+          "title": "Schnell eine zufällige Farbe für die aktuelle Session setzen",
+          "example": "/color ohne Argument"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Erwartung, dass die Farbe dauerhaft für alle künftigen Sessions gilt",
+          "why": "/color setzt die Farbe nur für die aktuelle Session",
+          "alternative": "bei jedem Sessionstart erneut setzen, oder /statusline für dauerhaft sichtbare Unterscheidungsmerkmale konfigurieren"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -330,8 +485,23 @@
       "name": "/config",
       "summary": "Öffnet die Einstellungsoberfläche für Theme, Modell, Output-Style und weitere Präferenzen.",
       "what": "Öffnet die Einstellungsoberfläche für Theme, Modell, Output-Style und weitere Präferenzen.\n\nAb v2.1.181 mit key=value direkt setzbar (z.B. /config thinking=false), ab v2.1.182 benannte Kurzformen (/config theme=dark, /config model=sonnet). key=value funktioniert auch non-interactive (-p) und via Remote Control. '/config --help' listet alle Keys. Alias: /settings.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Einzelnen bekannten Wert direkt per Befehl setzen",
+          "example": "/config theme=dark oder /config model=sonnet"
+        },
+        {
+          "title": "Interaktiv durch alle Einstellungen browsen, wenn unklar ist, was geändert werden soll",
+          "example": "/config ohne Argument öffnet die Einstellungsoberfläche"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "In einem non-interactive Skript den interaktiven Dialog erwarten",
+          "why": "die interaktive Oberfläche ist für automatisierte/non-interactive (-p) Läufe nicht geeignet",
+          "alternative": "/config key=value direkt verwenden — funktioniert auch non-interactive und per Remote Control"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -345,8 +515,23 @@
       "name": "/context",
       "summary": "Visualisiert die aktuelle Kontextnutzung als farbiges Raster mit Optimierungsvorschlägen.",
       "what": "Visualisiert die aktuelle Kontextnutzung als farbiges Raster mit Optimierungsvorschlägen.\n\nZeigt Hinweise zu kontext-intensiven Tools, Memory-Aufblähung und Kapazitätswarnungen. Argument 'all' klappt die Detailaufschlüsselung aus.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Vor einer langen Session-Fortsetzung prüfen, wie viel Kontext noch frei ist",
+          "example": "/context all für die detaillierte Aufschlüsselung"
+        },
+        {
+          "title": "Ursache für ungewöhnlich hohen Kontextverbrauch finden",
+          "example": "/context, um kontext-intensive Tools oder aufgeblähtes Memory zu identifizieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kontext tatsächlich freigeben wollen",
+          "why": "/context zeigt die Nutzung nur an, ändert aber nichts am Kontext selbst",
+          "alternative": "/compact nutzen, um die Konversation zusammenzufassen und Kontext freizugeben"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -360,8 +545,23 @@
       "name": "/copy",
       "summary": "Kopiert die letzte Antwort von Claude in die Zwischenablage.",
       "what": "Kopiert die letzte Antwort von Claude in die Zwischenablage.\n\nMit Zahl N wird die N-letzte Antwort kopiert. Bei Code-Blöcken interaktive Auswahl; Taste 'w' schreibt in Datei (nützlich über SSH).",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Letzte Antwort direkt in die Zwischenablage übernehmen",
+          "example": "/copy nach einer Antwort mit fertigem Code-Snippet"
+        },
+        {
+          "title": "Über SSH ohne funktionierende Zwischenablage die Antwort stattdessen in eine Datei schreiben",
+          "example": "/copy, dann Taste 'w' für den Datei-Export"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine ältere, nicht die letzte Antwort kopieren wollen",
+          "why": "ohne Zahlenargument kopiert /copy immer nur die letzte Antwort",
+          "alternative": "/copy 3 für die drittletzte Antwort, oder /export für die komplette Konversation"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -375,8 +575,19 @@
       "name": "/cost",
       "summary": "Alias für /usage.",
       "what": "Alias für /usage.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Schnell API-Kosten/Token-Verbrauch checken, ohne sich den Namen /usage zu merken",
+          "example": "/cost"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eigenständige Zusatzfunktion gegenüber /usage erwarten",
+          "why": "/cost ist nur ein Alias, kein eigener Befehl mit anderem Verhalten",
+          "alternative": "direkt /usage nutzen, oder /stats für den Stats-Tab"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -390,8 +601,23 @@
       "name": "/dataviz",
       "summary": "Gibt Design-Hilfe für Diagramme, Graphen und Dashboards.",
       "what": "Gibt Design-Hilfe für Diagramme, Graphen und Dashboards.\n\n[Skill] Wählt passende Diagrammform, weist Farbe nach Rolle zu, validiert Palette auf Farbenblind-Sicherheit/Kontrast per Skript. Benötigt v2.1.198+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Vor dem Bau eines Dashboards passende Diagrammform und farbenblind-sichere Palette wählen lassen",
+          "example": "/dataviz vor dem Aufbau eines KPI-Dashboards mit mehreren Chart-Typen"
+        },
+        {
+          "title": "Bestehende Farbwahl einer Visualisierung auf Kontrast/Farbenblind-Sicherheit prüfen lassen",
+          "example": "/dataviz, um die Farbzuordnung eines bestehenden Charts zu validieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Reine Datenanalyse ohne anschließende Visualisierung",
+          "why": "/dataviz hilft beim Diagramm-Design, nicht bei der Datenauswertung selbst",
+          "alternative": "normalen Analyse-Prompt nutzen, /dataviz erst hinzuziehen, wenn Ergebnisse als Chart dargestellt werden"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -405,8 +631,23 @@
       "name": "/debug",
       "summary": "Aktiviert Debug-Logging für die aktuelle Session und hilft bei der Fehlersuche über das Session-Debug-Log.",
       "what": "Aktiviert Debug-Logging für die aktuelle Session und hilft bei der Fehlersuche über das Session-Debug-Log.\n\n[Skill] Debug-Logging standardmäßig aus (außer Start mit 'claude --debug'); /debug mid-session erfasst Logs erst ab diesem Zeitpunkt. Optional Problembeschreibung zur Fokussierung.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Bei einem reproduzierbaren Problem ab sofort Debug-Logs mitschreiben lassen",
+          "example": "/debug MCP server keeps disconnecting — direkt bevor man das Problem erneut auslöst"
+        },
+        {
+          "title": "Vor einer schwer nachvollziehbaren Fehlersuche systematisch Logging aktivieren",
+          "example": "/debug, um Tool-Aufrufe und Fehler im Session-Debug-Log zu erfassen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Fehler ist bereits vorher aufgetreten",
+          "why": "/debug erfasst Logs erst ab dem Aktivierungszeitpunkt, frühere Ereignisse fehlen",
+          "alternative": "Session neu mit 'claude --debug' starten, um von Anfang an zu loggen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -420,8 +661,23 @@
       "name": "/deep-research",
       "summary": "Fächert Websuchen zu einer Frage auf, holt und prüft Quellen gegeneinander und erstellt einen zitierten Bericht.",
       "what": "Fächert Websuchen zu einer Frage auf, holt und prüft Quellen gegeneinander und erstellt einen zitierten Bericht.\n\n[Workflow] Läuft als gebündelter dynamischer Workflow, verteilt Arbeit auf viele Subagenten, läuft im Hintergrund.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Umfassende, mehrquellige Recherche mit Belegen zu einer offenen Frage",
+          "example": "/deep-research what are current best practices for LLM prompt caching in production?"
+        },
+        {
+          "title": "Recherche im Hintergrund laufen lassen, während man an etwas anderem weiterarbeitet",
+          "example": "/deep-research compare pricing models of major vector database providers"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Schnelle Einzelsuche nach einem konkreten Fakt",
+          "why": "die Multi-Agent-Fächerung über viele Subagenten ist für eine einzelne schnelle Suche unnötiger Overhead",
+          "alternative": "/web-search für die schnelle Einzelsuche nutzen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -435,8 +691,19 @@
       "name": "/design-login",
       "summary": "Autorisiert den Zugriff auf das Design-System für /design-sync über das claude.ai-Konto.",
       "what": "Autorisiert den Zugriff auf das Design-System für /design-sync über das claude.ai-Konto.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Einmalige Autorisierung vor der ersten Nutzung von /design-sync",
+          "example": "/design-login vor dem ersten Sync des eigenen React-Design-Systems"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Erwartung, dass der Befehl bereits Designs synchronisiert",
+          "why": "/design-login autorisiert nur den Zugriff über das claude.ai-Konto, synchronisiert selbst nichts",
+          "alternative": "danach /design-sync ausführen für den eigentlichen Sync"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -450,8 +717,28 @@
       "name": "/design-sync",
       "summary": "Konvertiert das React-Design-System des eigenen Repos und lädt es zu Claude Design hoch, damit erstellte Designs echte Komponenten nutzen.",
       "what": "Konvertiert das React-Design-System des eigenen Repos und lädt es zu Claude Design hoch, damit erstellte Designs echte Komponenten nutzen.\n\n[Skill] Erst-Sync verifiziert jede Komponente, kann bei großen Repos Stunden dauern. Nicht auf Bedrock/Vertex/Foundry verfügbar.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Eigenes React-Komponenten-System hochladen, damit erzeugte Designs echte Projekt-Komponenten nutzen",
+          "example": "/design-sync einmalig nach /design-login einrichten"
+        },
+        {
+          "title": "Nach größeren Komponenten-Änderungen erneut synchronisieren",
+          "example": "/design-sync erneut ausführen, nachdem das Button- und Card-Component-Set überarbeitet wurde"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nutzung auf Bedrock/Vertex/Foundry",
+          "why": "/design-sync ist auf diesen Plattformen nicht verfügbar",
+          "alternative": "Standard-Anthropic-Konto/Claude-Code-Zugang nutzen, oder ohne Design-Sync mit generischen Komponenten arbeiten"
+        },
+        {
+          "title": "Kurz vor einer Deadline zum ersten Mal starten",
+          "why": "der Erst-Sync verifiziert jede Komponente und kann bei großen Repos Stunden dauern",
+          "alternative": "rechtzeitig vorher einplanen statt kurzfristig vor einem Termin"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -465,8 +752,23 @@
       "name": "/desktop",
       "summary": "Setzt die aktuelle Session in der Claude-Code-Desktop-App fort.",
       "what": "Setzt die aktuelle Session in der Claude-Code-Desktop-App fort.\n\nBenötigt macOS oder Windows sowie ein Claude-Abo. Alias: /app.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Laufende Terminal-Session nahtlos in die Desktop-App übernehmen",
+          "example": "/desktop mitten in einer Session, um auf größerem Bildschirm weiterzuarbeiten"
+        },
+        {
+          "title": "Von CLI zu GUI-zentrierter Arbeitsweise wechseln, ohne Kontext zu verlieren",
+          "example": "/desktop, wenn man von unterwegs am Laptop auf den Desktop-Rechner wechselt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Linux ohne Claude-Abo",
+          "why": "/desktop benötigt macOS oder Windows sowie ein Claude-Abo",
+          "alternative": "in der Terminal-Session bleiben, oder /remote-control für Fernsteuerung von claude.ai aus nutzen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -480,8 +782,23 @@
       "name": "/diff",
       "summary": "Öffnet einen interaktiven Diff-Viewer für nicht committete Änderungen und Turn-für-Turn-Diffs.",
       "what": "Öffnet einen interaktiven Diff-Viewer für nicht committete Änderungen und Turn-für-Turn-Diffs.\n\nLinks/Rechts wechselt zwischen Git-Diff und Claude-Turns, Hoch/Runter blättert durch Dateien. Ab v2.1.198 aktualisiert sich der Viewer automatisch bei externen Git-Änderungen.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Nicht committete Änderungen Datei für Datei durchgehen, bevor man committet",
+          "example": "/diff nach mehreren Edits, um jede geänderte Datei zu prüfen"
+        },
+        {
+          "title": "Nachvollziehen, welche Änderung in welchem Konversations-Turn entstanden ist",
+          "example": "/diff, dann mit links/rechts zwischen Git-Diff und Claude-Turns wechseln"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Änderungen über mehrere Commits/Branches hinweg vergleichen wollen",
+          "why": "/diff zeigt nur unkommittete Änderungen und Turn-für-Turn-Diffs, keine Commit-Historie",
+          "alternative": "normales 'git diff <ref1> <ref2>' im Terminal für Commit-übergreifende Vergleiche"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -560,8 +877,19 @@
       "name": "/exit",
       "summary": "Beendet die CLI.",
       "what": "Beendet die CLI.\n\nIn einer angehängten Hintergrund-Session wird nur die Verbindung getrennt, die Session läuft weiter. Alias: /quit.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Session sauber beenden, wenn die Aufgabe fertig ist",
+          "example": "/exit nach Abschluss der Arbeit"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine angehängte Hintergrund-Session eigentlich stoppen wollen",
+          "why": "/exit trennt in einer angehängten Hintergrund-Session nur die Verbindung, die Session läuft weiter",
+          "alternative": "Hintergrund-Session über 'claude agents' verwalten/beenden statt nur /exit"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -575,8 +903,23 @@
       "name": "/export",
       "summary": "Exportiert die aktuelle Konversation als reinen Text.",
       "what": "Exportiert die aktuelle Konversation als reinen Text.\n\nMit Dateiname direkt in Datei; ohne Dialog für Zwischenablage/Datei.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Ganze Konversation als Text sichern oder weitergeben",
+          "example": "/export session-notes.txt"
+        },
+        {
+          "title": "Zwischen Zwischenablage und Datei über den Dialog entscheiden",
+          "example": "/export ohne Argument öffnet die Auswahl"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur die letzte Antwort kopieren wollen",
+          "why": "/export exportiert die komplette Konversation, nicht nur eine Antwort",
+          "alternative": "/copy für nur die letzte (oder mit Zahl die N-letzte) Antwort nutzen"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -590,8 +933,23 @@
       "name": "/fast",
       "summary": "Schaltet den Fast-Modus ein oder aus.",
       "what": "Schaltet den Fast-Modus ein oder aus.\n\nNon-interactive (-p) nur in Sessions, die mit fastMode in --settings gestartet wurden; Toggle gilt nur für die Session. Benötigt v2.1.205+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Für eine Serie einfacher, repetitiver Edits Tempo vor Tiefe priorisieren",
+          "example": "/fast bei einer Reihe gleichartiger, simpler Änderungen"
+        },
+        {
+          "title": "Fast-Modus wieder ausschalten, sobald komplexere Aufgaben anstehen",
+          "example": "/fast erneut aufrufen, um zurückzuschalten"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Non-interactive-Nutzung ohne fastMode in den Start-Settings",
+          "why": "/fast lässt sich non-interactive (-p) nur in Sessions umschalten, die mit fastMode in --settings gestartet wurden",
+          "alternative": "fastMode direkt in --settings beim Sessionstart mitgeben"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -605,8 +963,23 @@
       "name": "/feedback",
       "summary": "Sendet Feedback, meldet einen Bug oder teilt die Konversation.",
       "what": "Sendet Feedback, meldet einen Bug oder teilt die Konversation.\n\nAliase: /bug, /share.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Einen Bug in Claude Code selbst melden",
+          "example": "/feedback bzw. /bug nach einem reproduzierbaren Fehler im Tool"
+        },
+        {
+          "title": "Eine Konversation mit jemandem teilen",
+          "example": "/share, um eine hilfreiche Konversation weiterzugeben"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einen Bug im eigenen Projekt-Code melden wollen",
+          "why": "/feedback adressiert Probleme mit Claude Code selbst, nicht mit der eigenen Anwendung",
+          "alternative": "normalen Bug-Fix-Prompt bzw. Issue im eigenen Repo verwenden"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -620,8 +993,23 @@
       "name": "/fewer-permission-prompts",
       "summary": "Durchsucht die eigenen Transkripte nach häufigen Read-only-Bash- und MCP-Tool-Aufrufen und fügt eine priorisierte Allowlist zur projektweiten .claude/settings.json hinzu, um Permission-Prompts zu reduzieren.",
       "what": "Durchsucht die eigenen Transkripte nach häufigen Read-only-Bash- und MCP-Tool-Aufrufen und fügt eine priorisierte Allowlist zur projektweiten .claude/settings.json hinzu, um Permission-Prompts zu reduzieren.\n\n[Skill]",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Wiederkehrende, ungefährliche Read-only-Befehle nach einigen Sessions automatisch freischalten lassen",
+          "example": "/fewer-permission-prompts nach mehreren Sessions voller wiederholter Erlaubnis-Nachfragen für git status, ls & Co."
+        },
+        {
+          "title": "Eine sinnvolle Allowlist-Basis für Team-Onboarding erzeugen",
+          "example": "/fewer-permission-prompts, um .claude/settings.json mit üblichen Read-only-Aufrufen vorzubefüllen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Pauschal auch schreibende/riskante Befehle ohne Nachfrage erlauben wollen",
+          "why": "der Skill scannt gezielt nur häufige Read-only-Bash-/MCP-Aufrufe, keine schreibenden Befehle",
+          "alternative": "schreibende/riskante Befehle weiterhin bewusst manuell in .claude/settings.json freigeben (z.B. über den update-config-Skill)"
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -635,8 +1023,23 @@
       "name": "/focus",
       "summary": "Schaltet die Fokus-Ansicht um: nur letzter Prompt, Einzeiler-Tool-Zusammenfassung mit Edit-Diffstats und finale Antwort.",
       "what": "Schaltet die Fokus-Ansicht um: nur letzter Prompt, Einzeiler-Tool-Zusammenfassung mit Edit-Diffstats und finale Antwort.\n\nAb v2.1.198 zählt die Zusammenfassung auch gestartete Subagenten. Auswahl bleibt sessionübergreifend ('viewMode'-Setting). Nur im Vollbild-Rendering.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Lange Multi-Tool-Turns überblicken",
+          "example": "Vor einem Task mit vielen Datei-Edits /focus aktivieren, um nur letzten Prompt, Einzeiler-Tool-Zusammenfassung mit Diffstats und finale Antwort zu sehen statt jeder Zwischenmeldung."
+        },
+        {
+          "title": "Screen-Sharing oder Demo ohne Tool-Rauschen",
+          "example": "Vor einer Präsentation /focus einschalten, damit Zuschauer nur die Kernschritte statt jedes einzelnen Tool-Aufrufs sehen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einen fehlgeschlagenen Tool-Call debuggen",
+          "why": "Focus fasst Tool-Aufrufe zu Einzeilern zusammen — Details wie Stacktrace oder vollständiger Diff-Inhalt sind ausgeblendet.",
+          "alternative": "/focus erneut aufrufen, um es abzuschalten, und die volle Turn-Ausgabe ansehen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -715,8 +1118,28 @@
       "name": "/heapdump",
       "summary": "Schreibt einen JavaScript-Heap-Snapshot und eine Speicher-Aufschlüsselung zur Diagnose von hohem Speicherverbrauch.",
       "what": "Schreibt einen JavaScript-Heap-Snapshot und eine Speicher-Aufschlüsselung zur Diagnose von hohem Speicherverbrauch.\n\nZiel ~/Desktop, unter Linux ohne Desktop-Ordner das Home-Verzeichnis.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Claude Code verbraucht ungewöhnlich viel Speicher",
+          "example": "Das Terminal wird spürbar langsam und der Task-Manager zeigt hohen RAM-Verbrauch → /heapdump ausführen; der Snapshot landet auf ~/Desktop (bzw. Home-Verzeichnis unter Linux ohne Desktop-Ordner) zur Analyse."
+        },
+        {
+          "title": "Speicherverbrauch für einen Bug-Report dokumentieren",
+          "example": "Vor dem Melden eines vermuteten Memory-Leaks /heapdump ausführen und die erzeugte Snapshot-Datei dem Bug-Report anhängen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Kontextfenster der Konversation ist voll",
+          "why": "heapdump misst den JavaScript-Speicherverbrauch des Prozesses, nicht die Token-Auslastung der Konversation.",
+          "alternative": "/context nutzen, um die Kontextnutzung als Raster zu visualisieren."
+        },
+        {
+          "title": "Allgemeine Installations- oder Setup-Probleme",
+          "why": "heapdump liefert nur einen Speicher-Snapshot, keine Diagnose von Installations- oder Konfigurationsproblemen.",
+          "alternative": "/doctor für einen Setup-Check nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -730,8 +1153,23 @@
       "name": "/help",
       "summary": "Zeigt Hilfe und verfügbare Befehle.",
       "what": "Zeigt Hilfe und verfügbare Befehle.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Erste Orientierung in Claude Code",
+          "example": "Direkt nach der Installation /help eingeben, um die Liste verfügbarer Befehle zu sehen."
+        },
+        {
+          "title": "Einen vergessenen Befehlsnamen nachschlagen",
+          "example": "Man erinnert sich nur vage an einen Befehlsnamen → /help zeigt die vollständige Übersicht zum Nachschlagen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Detailfragen zu einem einzelnen Feature klären",
+          "why": "/help liefert nur eine Kurzübersicht der Befehle, keine ausführliche Erklärung einzelner Funktionen.",
+          "alternative": "Die offizielle Doku (code.claude.com/docs) konsultieren oder gezielt nachfragen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -745,8 +1183,23 @@
       "name": "/hooks",
       "summary": "Zeigt Hook-Konfigurationen für Tool-Events.",
       "what": "Zeigt Hook-Konfigurationen für Tool-Events.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Prüfen, welche Hooks aktuell für Tool-Events greifen",
+          "example": "Vor dem Hinzufügen eines neuen Pre-Tool-Hooks erst /hooks aufrufen, um Konflikte mit bestehenden Hook-Konfigurationen zu vermeiden."
+        },
+        {
+          "title": "Nachvollziehen, warum ein Tool-Aufruf verändert oder blockiert wurde",
+          "example": "Nach einem unerwartet abgelehnten Bash-Aufruf /hooks öffnen, um zu sehen, ob eine bestehende Hook-Konfiguration dafür verantwortlich ist."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Hook-Regeln bearbeiten oder neu konfigurieren",
+          "why": "/hooks zeigt die Konfigurationen nur an, es ist keine Bearbeitungsoberfläche.",
+          "alternative": "Die Hook-Konfiguration direkt in settings.json anpassen (lassen) oder den update-config-Skill nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -760,8 +1213,23 @@
       "name": "/ide",
       "summary": "Verwaltet IDE-Integrationen und zeigt deren Status.",
       "what": "Verwaltet IDE-Integrationen und zeigt deren Status.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "IDE-Verbindung überprüfen",
+          "example": "Nach dem Öffnen von VS Code neben dem Terminal /ide aufrufen, um zu bestätigen, dass Claude Code verbunden ist."
+        },
+        {
+          "title": "Status mehrerer offener IDE-Integrationen einsehen",
+          "example": "Bei mehreren offenen Editor-Fenstern /ide nutzen, um zu sehen, welche Integration aktuell aktiv ist."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Die IDE-Extension erstmalig installieren",
+          "why": "/ide verwaltet nur bereits bestehende Integrationen und zeigt deren Status — es installiert keine neue Editor-Extension.",
+          "alternative": "Die passende Claude-Code-Extension direkt im Marktplatz des Editors (z.B. VS-Code-Marketplace) installieren."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -775,8 +1243,23 @@
       "name": "/init",
       "summary": "Initialisiert das Projekt mit einer CLAUDE.md-Anleitung.",
       "what": "Initialisiert das Projekt mit einer CLAUDE.md-Anleitung.\n\nMit CLAUDE_CODE_NEW_INIT=1 läuft ein interaktiver Ablauf inkl. Skills, Hooks und persönlichen Memory-Dateien.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Neues Repository für Claude Code vorbereiten",
+          "example": "In einem frisch geklonten Projekt /init ausführen, damit Claude eine erste CLAUDE.md mit Projektkontext erstellt."
+        },
+        {
+          "title": "Vollständiges Setup inklusive Skills, Hooks und Memory",
+          "example": "Mit gesetzter Umgebungsvariable CLAUDE_CODE_NEW_INIT=1 /init starten, um interaktiv auch Skills, Hooks und persönliche Memory-Dateien einzurichten."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine bereits gepflegte, projektspezifische CLAUDE.md existiert schon",
+          "why": "Ein erneutes /init kann bestehende, sorgfältig kuratierte Projekt-Doku überschreiben oder unnötig verändern.",
+          "alternative": "CLAUDE.md gezielt manuell editieren statt das Projekt neu zu initialisieren."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -790,8 +1273,23 @@
       "name": "/insights",
       "summary": "Erstellt einen Bericht, der eigene Claude-Code-Sessions analysiert, u.a.",
       "what": "Erstellt einen Bericht, der eigene Claude-Code-Sessions analysiert, u.a. Projektbereiche, Interaktionsmuster und Reibungspunkte.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Eigene Nutzung von Claude Code reflektieren",
+          "example": "Nach einer intensiven Projektwoche /insights ausführen, um zu sehen, in welchen Projektbereichen am meisten gearbeitet wurde."
+        },
+        {
+          "title": "Wiederkehrende Reibungspunkte im eigenen Workflow erkennen",
+          "example": "/insights nutzen, um Muster wie häufige Nachfragen oder Interaktionsprobleme über mehrere Sessions hinweg sichtbar zu machen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Sofortige Kurzzusammenfassung der aktuellen Session",
+          "why": "/insights analysiert Sessions im Nachhinein auf Muster und Reibungspunkte, liefert aber keine schnelle Ein-Satz-Zusammenfassung des laufenden Gesprächs.",
+          "alternative": "/recap für eine Einzeiler-Zusammenfassung der aktuellen Session nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -805,8 +1303,23 @@
       "name": "/install-github-app",
       "summary": "Installiert die Claude-GitHub-App für ein Repository, optional inklusive GitHub-Actions-Workflows und Secrets.",
       "what": "Installiert die Claude-GitHub-App für ein Repository, optional inklusive GitHub-Actions-Workflows und Secrets.\n\nFührt durch Repo-Auswahl und Konfiguration.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Automatisierte PR-Checks oder CI-Integration einrichten",
+          "example": "/install-github-app in einem Team-Repository ausführen, um Claude für automatische PR-Workflows per GitHub Actions freizuschalten."
+        },
+        {
+          "title": "Repo-Zugriff für spätere Claude-Automationen vorbereiten",
+          "example": "Für ein neues Projekt /install-github-app durchlaufen, inklusive Repo-Auswahl und Secrets, damit Workflows wie /autofix-pr funktionieren können."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ausschließlich lokal arbeiten, ohne GitHub-Integration",
+          "why": "/install-github-app richtet eine Verbindung zu GitHub samt optionalen Actions und Secrets ein — unnötiger Aufwand, wenn nie PRs oder CI über GitHub laufen sollen.",
+          "alternative": "Lokal mit Git weiterarbeiten und auf die GitHub-App verzichten."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -820,8 +1333,23 @@
       "name": "/install-slack-app",
       "summary": "Installiert die Claude-Slack-App.",
       "what": "Installiert die Claude-Slack-App.\n\nÖffnet den Browser zum Abschluss des OAuth-Flows.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Claude im Team-Slack nutzbar machen",
+          "example": "/install-slack-app ausführen, um Claude Tag im Firmen-Workspace für Kollegen freizuschalten."
+        },
+        {
+          "title": "Anfragen direkt aus einem Slack-Kanal heraus stellen",
+          "example": "Nach der Installation Claude in einem Slack-Kanal erwähnen, um eine Anfrage direkt aus dem Chat zu starten."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kein Slack im Einsatz oder keine Admin-Rechte im Workspace",
+          "why": "Die Installation erfordert einen OAuth-Flow im Browser und entsprechende Workspace-Berechtigungen — ohne Slack-Nutzung bringt sie keinen Nutzen.",
+          "alternative": "Claude Code direkt im Terminal oder in der IDE nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -835,8 +1363,19 @@
       "name": "/keybindings",
       "summary": "Öffnet die Datei mit den Tastaturkürzeln.",
       "what": "Öffnet die Datei mit den Tastaturkürzeln.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Tastaturkürzel anpassen",
+          "example": "/keybindings öffnen, um ein Kürzel zu ändern, das mit einer anderen Anwendung kollidiert."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur schnell nachsehen, welche Kürzel es gibt, ohne etwas zu ändern",
+          "why": "/keybindings öffnet direkt die editierbare Datei statt einer reinen Übersicht.",
+          "alternative": "Die Doku zu den Tastaturkürzeln konsultieren, statt die Datei zu öffnen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -850,8 +1389,19 @@
       "name": "/login",
       "summary": "Meldet sich beim Anthropic-Konto an.",
       "what": "Meldet sich beim Anthropic-Konto an.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Erstmalige Anmeldung oder Konto wechseln",
+          "example": "Auf einem neuen Rechner /login ausführen, um sich mit dem Anthropic-Konto zu verbinden."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur prüfen, ob man bereits angemeldet ist",
+          "why": "/login startet direkt den Anmeldevorgang, es zeigt keine reine Statusanzeige.",
+          "alternative": "/status nutzen, um Konto- und Verbindungsinfos einzusehen, ohne einen neuen Login-Flow zu starten."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -865,8 +1415,19 @@
       "name": "/logout",
       "summary": "Meldet sich vom Anthropic-Konto ab.",
       "what": "Meldet sich vom Anthropic-Konto ab.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Konto von einem Gerät sauber trennen",
+          "example": "Auf einem gemeinsam genutzten Rechner nach der Arbeit /logout ausführen, um das eigene Anthropic-Konto abzumelden."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur kurz prüfen, ob und mit welchem Konto man angemeldet ist",
+          "why": "/logout beendet die Anmeldung sofort, statt nur Informationen anzuzeigen.",
+          "alternative": "/status nutzen, um Konto-Infos einzusehen, ohne sich abzumelden."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -915,8 +1476,23 @@
       "name": "/mcp",
       "summary": "Verwaltet MCP-Server-Verbindungen und OAuth-Authentifizierung.",
       "what": "Verwaltet MCP-Server-Verbindungen und OAuth-Authentifizierung.\n\nOhne Argument interaktive Serverliste. 'reconnect <server>', 'enable'/'disable' mit Name oder 'all'. Ab v2.1.205 auch non-interactive (-p) mit Text-Zusammenfassung.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Verbindungsstatus eines MCP-Servers reparieren",
+          "example": "Ein MCP-Server antwortet nicht mehr → /mcp reconnect <server> ausführen, um die Verbindung neu aufzubauen."
+        },
+        {
+          "title": "Einzelne MCP-Server gezielt deaktivieren",
+          "example": "/mcp disable <server> nutzen, um einen selten gebrauchten Server temporär abzuschalten und Kontext/Tools zu reduzieren."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einen neuen MCP-Server erstmalig einrichten",
+          "why": "/mcp verwaltet nur bestehende Verbindungen (reconnect, enable, disable) und OAuth-Authentifizierung, es legt keine neue Server-Konfiguration an.",
+          "alternative": "Den Server zunächst in der MCP-Konfiguration (Projekt- oder User-Ebene) hinzufügen, bevor /mcp zur Verwaltung genutzt wird."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -930,8 +1506,23 @@
       "name": "/memory",
       "summary": "Editiert CLAUDE.md-Memory-Dateien, schaltet Auto-Memory ein/aus und zeigt Auto-Memory-Einträge.",
       "what": "Editiert CLAUDE.md-Memory-Dateien, schaltet Auto-Memory ein/aus und zeigt Auto-Memory-Einträge.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Dauerhafte Regel für alle künftigen Sessions festhalten",
+          "example": "/memory nutzen, um eine feste Vorgabe wie 'immer TypeScript strict mode verwenden' in CLAUDE.md einzutragen, statt sie jedes Mal neu zu wiederholen."
+        },
+        {
+          "title": "Auto-Memory-Einträge überprüfen",
+          "example": "/memory aufrufen, um zu sehen, welche Regeln Claude automatisch aus früheren Sessions als Auto-Memory gespeichert hat."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine Anweisung gilt nur für die aktuelle Aufgabe",
+          "why": "/memory schreibt in CLAUDE.md und wirkt damit dauerhaft über die Session hinaus — für eine einmalige Anweisung unnötig und bläht die Datei auf.",
+          "alternative": "Die Anweisung direkt im Prompt der aktuellen Session geben, ohne sie in CLAUDE.md zu speichern."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -945,8 +1536,19 @@
       "name": "/mobile",
       "summary": "Zeigt einen QR-Code zum Download der Claude-Mobile-App.",
       "what": "Zeigt einen QR-Code zum Download der Claude-Mobile-App.\n\nAliase: /ios, /android.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Claude-Mobile-App installieren",
+          "example": "/mobile ausführen, um den QR-Code zu scannen und die App aufs Handy zu laden."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Unterwegs die laufende Terminal-Session weitersteuern, ohne die App neu zu installieren",
+          "why": "/mobile zeigt nur einen Installations-QR-Code für die App, keine Übergabe einer laufenden Session.",
+          "alternative": "/remote-control aktivieren, um die Session von claude.ai bzw. der App aus fernzusteuern."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -990,8 +1592,19 @@
       "name": "/passes",
       "summary": "Teilt eine kostenlose Woche Claude Code mit Freunden.",
       "what": "Teilt eine kostenlose Woche Claude Code mit Freunden.\n\nNur sichtbar, wenn das Konto berechtigt ist.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Kostenlose Woche Claude Code mit Freunden teilen",
+          "example": "/passes ausführen (sofern das Konto berechtigt ist), um eine Gratis-Woche weiterzugeben."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das eigene Abo verwalten oder den Kontostatus prüfen",
+          "why": "/passes dient nur dem Teilen von Gratis-Wochen und ist nur sichtbar, wenn das Konto dafür berechtigt ist — es betrifft nicht die eigene Plan-Verwaltung.",
+          "alternative": "/upgrade oder /status nutzen, um das eigene Abo bzw. den Kontostatus einzusehen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1005,8 +1618,23 @@
       "name": "/permissions",
       "summary": "Verwaltet Allow-, Ask- und Deny-Regeln für Tool-Berechtigungen.",
       "what": "Verwaltet Allow-, Ask- und Deny-Regeln für Tool-Berechtigungen.\n\nInteraktiver Dialog: Regeln nach Scope, Hinzufügen/Entfernen, Arbeitsverzeichnisse, kürzliche Auto-Mode-Ablehnungen. Alias: /allowed-tools.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Gezielt eine Allow- oder Deny-Regel für ein Tool setzen",
+          "example": "/permissions öffnen, um im interaktiven Dialog eine Deny-Regel für einen bestimmten Bash-Befehl hinzuzufügen."
+        },
+        {
+          "title": "Kürzlich abgelehnte Auto-Mode-Aktionen überprüfen",
+          "example": "/permissions aufrufen, um zu sehen, welche Tool-Aufrufe zuletzt im Auto-Modus verweigert wurden, und darauf gezielt eine Regel anzupassen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Viele wiederkehrende Read-only-Prompts automatisch bündeln",
+          "why": "/permissions bearbeitet Regeln einzeln über einen interaktiven Dialog — für eine automatisch aus dem Transkript generierte Allowlist ist das umständlich.",
+          "alternative": "/fewer-permission-prompts nutzen, das aus den eigenen Transkripten eine priorisierte Allowlist erstellt."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1055,8 +1683,23 @@
       "name": "/plugin",
       "summary": "Verwaltet Claude-Code-Plugins.",
       "what": "Verwaltet Claude-Code-Plugins.\n\nOhne Argument Plugin-Menü. Subcommands list/install/enable/disable wirken direkt.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Neues Plugin direkt installieren",
+          "example": "/plugin install <name> ausführen, um ein Plugin ohne Umweg über das Menü hinzuzufügen."
+        },
+        {
+          "title": "Übersicht aller installierten Plugins einsehen",
+          "example": "/plugin ohne Argument aufrufen, um im Plugin-Menü zu sehen, welche Plugins aktiv oder inaktiv sind."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur bereits aktive Plugins nach einer Dateiänderung neu laden",
+          "why": "/plugin dient der Verwaltung (Liste, Installation, Aktivierung), nicht dem erneuten Laden bereits aktiver Plugins nach Änderungen.",
+          "alternative": "/reload-plugins nutzen, um Änderungen ohne Neustart zu übernehmen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1070,8 +1713,23 @@
       "name": "/powerup",
       "summary": "Zeigt Claude-Code-Funktionen über kurze interaktive Lektionen mit animierten Demos.",
       "what": "Zeigt Claude-Code-Funktionen über kurze interaktive Lektionen mit animierten Demos.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Neue Claude-Code-Funktionen spielerisch kennenlernen",
+          "example": "Nach einem Update /powerup starten, um in kurzen interaktiven Lektionen mit Demos neue Funktionen zu entdecken."
+        },
+        {
+          "title": "Einsteiger mit Claude-Code-Funktionen vertraut machen",
+          "example": "Ein neues Teammitglied /powerup durchlaufen lassen, statt die komplette Doku lesen zu lassen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Gezielt nach einer bereits bekannten Funktion suchen",
+          "why": "/powerup zeigt kuratierte Lektionen, keine durchsuchbare Referenz einzelner Befehle.",
+          "alternative": "/help für die Befehlsübersicht oder direkt die Doku nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1085,8 +1743,23 @@
       "name": "/privacy-settings",
       "summary": "Zeigt und ändert die eigenen Datenschutzeinstellungen.",
       "what": "Zeigt und ändert die eigenen Datenschutzeinstellungen.\n\nNur für Pro- und Max-Plan-Abonnenten.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Eigene Datenschutzeinstellungen prüfen",
+          "example": "/privacy-settings öffnen, um zu kontrollieren, welche Datenschutzoptionen aktuell gesetzt sind."
+        },
+        {
+          "title": "Datenschutzeinstellungen an interne Vorgaben anpassen",
+          "example": "Als Pro- oder Max-Nutzer /privacy-settings durchgehen, um die Einstellungen gezielt zu ändern."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Free-Plan-Konto ohne Pro- oder Max-Abo",
+          "why": "/privacy-settings ist laut Doku nur für Pro- und Max-Plan-Abonnenten sichtbar.",
+          "alternative": "Erst auf Pro/Max upgraden (/upgrade) oder die allgemeinen Kontoeinstellungen über /status prüfen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1100,8 +1773,19 @@
       "name": "/radio",
       "summary": "Öffnet 'Claude FM' Lo-Fi-Radio im Browser.",
       "what": "Öffnet 'Claude FM' Lo-Fi-Radio im Browser.\n\nGibt Stream-URL aus, falls kein Browser. Nicht auf Bedrock/Vertex/Foundry.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Nebenbei Lo-Fi-Musik beim Coden hören",
+          "example": "/radio ausführen, um 'Claude FM' im Browser zu öffnen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Auf Bedrock, Vertex oder Foundry unterwegs",
+          "why": "/radio ist auf diesen Plattformen laut Doku nicht verfügbar.",
+          "alternative": "Eine eigene Musik-App oder einen eigenen Player parallel nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1115,8 +1799,23 @@
       "name": "/recap",
       "summary": "Erstellt auf Abruf eine Einzeiler-Zusammenfassung der aktuellen Session.",
       "what": "Erstellt auf Abruf eine Einzeiler-Zusammenfassung der aktuellen Session.\n\nAutomatische Recap nach Abwesenheit: siehe Doku 'Session recap'.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Schneller Wiedereinstieg nach einer Unterbrechung",
+          "example": "Nach einer Pause /recap aufrufen, um in einem Satz zu sehen, wo die Session gerade steht."
+        },
+        {
+          "title": "Kurzstatus für ein schnelles Update weitergeben",
+          "example": "/recap nutzen, um eine Ein-Satz-Zusammenfassung des aktuellen Sessionstands zu bekommen und an Kollegen weiterzugeben."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Den vollständigen Gesprächsverlauf sichern oder weitergeben",
+          "why": "/recap liefert nur eine Einzeiler-Zusammenfassung, keinen vollständigen Text der Konversation.",
+          "alternative": "/export nutzen, um die komplette Konversation als reinen Text zu exportieren."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1130,8 +1829,23 @@
       "name": "/release-notes",
       "summary": "Zeigt den Changelog in einer interaktiven Versionsauswahl.",
       "what": "Zeigt den Changelog in einer interaktiven Versionsauswahl.\n\nBestimmte Version wählbar oder alle anzeigen.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Nach einem Update herausfinden, was sich geändert hat",
+          "example": "/release-notes ausführen, um die Neuerungen der zuletzt installierten Version nachzulesen."
+        },
+        {
+          "title": "Verhalten einer bestimmten Version nachschlagen",
+          "example": "/release-notes mit einer bestimmten Versionsnummer aufrufen, um zu prüfen, ob ein Fix in genau dieser Version enthalten ist."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Tatsächlich auf die neueste Version aktualisieren",
+          "why": "/release-notes zeigt nur den Changelog an, führt aber selbst kein Update durch.",
+          "alternative": "/upgrade nutzen, um wirklich zu aktualisieren."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1145,8 +1859,28 @@
       "name": "/reload-plugins",
       "summary": "Lädt alle aktiven Plugins neu, um anstehende Änderungen ohne Neustart anzuwenden.",
       "what": "Lädt alle aktiven Plugins neu, um anstehende Änderungen ohne Neustart anzuwenden.\n\nMeldet Zähler pro Komponente, markiert Ladefehler. Warnt und überspringt bei Prompt-Cache-Invalidierung, außer --force.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Änderung an einem eigenen Plugin sofort testen",
+          "example": "Nach dem Editieren einer Plugin-Datei /reload-plugins ausführen, um die Änderung ohne Neustart der Session zu übernehmen."
+        },
+        {
+          "title": "Ladefehler nach einer Plugin-Änderung erkennen",
+          "example": "/reload-plugins nutzen, um direkt eine Meldung zu bekommen, ob ein neu editiertes Plugin fehlerfrei lädt."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Reload soll trotz drohender Prompt-Cache-Invalidierung sofort erzwungen werden",
+          "why": "/reload-plugins überspringt den Reload standardmäßig, wenn er den Prompt-Cache invalidieren würde.",
+          "alternative": "/reload-plugins --force nutzen, um den Reload trotzdem zu erzwingen."
+        },
+        {
+          "title": "Nur ein einzelner geänderter Skill soll aktualisiert werden, kein Plugin",
+          "why": "/reload-plugins lädt Plugins neu, nicht projektlokale Skills oder Commands.",
+          "alternative": "/reload-skills nutzen, um Skill- und Command-Verzeichnisse neu einzulesen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1160,8 +1894,23 @@
       "name": "/reload-skills",
       "summary": "Scannt Skill- und Command-Verzeichnisse neu, damit während der Session geänderte Skills ohne Neustart verfügbar werden.",
       "what": "Scannt Skill- und Command-Verzeichnisse neu, damit während der Session geänderte Skills ohne Neustart verfügbar werden.\n\nMeldet verfügbare/hinzugefügte/entfernte Skills. Eingeführt in v2.1.152.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Neuen eigenen Skill während der laufenden Session verfügbar machen",
+          "example": "Einen Skill in .claude/skills/ hinzufügen und danach /reload-skills ausführen, statt die Session neu zu starten."
+        },
+        {
+          "title": "Prüfen, ob eine Skill-Änderung korrekt erkannt wurde",
+          "example": "Nach dem Bearbeiten einer SKILL.md /reload-skills aufrufen und die Meldung zu hinzugefügten oder entfernten Skills kontrollieren."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein ganzes Plugin (nicht nur lose Skills/Commands) wurde geändert",
+          "why": "/reload-skills scannt Skill- und Command-Verzeichnisse, nicht die Plugin-Struktur samt geladener MCP-Tools.",
+          "alternative": "/reload-plugins nutzen, um das gesamte Plugin neu zu laden."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1175,8 +1924,28 @@
       "name": "/remote-control",
       "summary": "Macht die Session für Fernsteuerung von claude.ai aus verfügbar.",
       "what": "Macht die Session für Fernsteuerung von claude.ai aus verfügbar.\n\nAlias: /rc.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Lokale Terminal-Session vom Handy oder Web aus weitersteuern",
+          "example": "/remote-control aktivieren und dann von claude.ai aus die laufende Terminal-Session fernsteuern, etwa unterwegs."
+        },
+        {
+          "title": "Laufenden Task von einem anderen Gerät aus im Blick behalten",
+          "example": "/remote-control einschalten, bevor man einen längeren Task startet, um den Fortschritt später von einem anderen Gerät aus zu prüfen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine Web-Session ins lokale Terminal holen, nicht umgekehrt",
+          "why": "/remote-control macht die lokale Session von claude.ai aus fernsteuerbar — für die umgekehrte Richtung ist es das falsche Kommando.",
+          "alternative": "/teleport nutzen, um eine Web-Session ins Terminal zu holen."
+        },
+        {
+          "title": "Auf einem anderen Gerät einfach in der Desktop-App weiterarbeiten",
+          "why": "/remote-control macht die Session fernsteuerbar, verschiebt sie aber nicht in eine Desktop-App.",
+          "alternative": "/desktop nutzen, um die Session in der Claude-Code-Desktop-App fortzusetzen (benötigt macOS oder Windows sowie ein Claude-Abo)."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1190,8 +1959,23 @@
       "name": "/remote-env",
       "summary": "Wählt die Standardumgebung für Cloud-Agenten.",
       "what": "Wählt die Standardumgebung für Cloud-Agenten.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Standardumgebung einmal festlegen",
+          "example": "Bevor du öfter Cloud-Agenten über claude.ai/code startest, mit /remote-env die Standardumgebung wählen, damit sie nicht jedes Mal neu ausgewählt werden muss."
+        },
+        {
+          "title": "Wechsel zwischen mehreren Cloud-Umgebungen",
+          "example": "Beim Wechsel zwischen zwei Repos mit unterschiedlichen Cloud-Umgebungen die neue per /remote-env als Standard setzen, bevor der nächste Cloud-Agent startet."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Rein lokale Terminal-Session",
+          "why": "/remote-env wirkt nur auf die Standardumgebung von Cloud-Agenten, nicht auf lokale Sessions.",
+          "alternative": "Keine Aktion nötig — lokal einfach normal weiterarbeiten."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1205,8 +1989,23 @@
       "name": "/rename",
       "summary": "Benennt die aktuelle Session um und zeigt den Namen in der Prompt-Leiste an.",
       "what": "Benennt die aktuelle Session um und zeigt den Namen in der Prompt-Leiste an.\n\nOhne Namen automatisch aus dem Verlauf generiert. Auch non-interactive (-p), benötigt v2.1.205+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Lange Session wiederfindbar machen",
+          "example": "Eine mehrstündige Debugging-Session mit /rename Login-Bug-Session benennen, damit sie später über /resume leicht auffindbar ist."
+        },
+        {
+          "title": "Automatisiert per Skript benennen",
+          "example": "In einem non-interactive (-p) Setup ab v2.1.205 Sessions direkt beim Start konsistent benennen, statt den Auto-Namen zu übernehmen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kurze Wegwerf-Frage",
+          "why": "Für eine Session, die gleich danach mit /clear beendet wird, lohnt sich ein eigener Name nicht.",
+          "alternative": "Ohne Namen lassen — der Auto-generierte Name reicht für die kurze Nutzung."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1255,8 +2054,28 @@
       "name": "/review",
       "summary": "Führt eine schnelle, read-only Einzeldurchlauf-Review eines GitHub-Pull-Requests per Nummer durch.",
       "what": "Führt eine schnelle, read-only Einzeldurchlauf-Review eines GitHub-Pull-Requests per Nummer durch.\n\nOhne Argument Auswahl offener PRs; Text nach der Nummer = zusätzliche Anweisung. v2.1.186–v2.1.201 lief /review mit der Multi-Agent-Engine von '/code-review medium'. Multi-Agent mit Effort: '/code-review <level> <pr#>'; Cloud: '/code-review ultra'.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Schneller erster Blick auf einen PR",
+          "example": "/review 482 nutzen, um vor dem Merge kurz zu sehen, ob der Pull Request offensichtliche Probleme hat, ohne ein Effort-Level wählen zu müssen."
+        },
+        {
+          "title": "PR aus der Auswahl heraus prüfen",
+          "example": "/review ohne Nummer aufrufen, um aus der Liste offener PRs einen für eine schnelle Durchsicht auszuwählen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Gründliche Prüfung eines kritischen PRs",
+          "why": "/review ist laut Doku ein schneller, read-only Einzeldurchlauf — kein Multi-Agent-Review mit wählbarem Effort.",
+          "alternative": "/code-review <level> <pr#> für Multi-Agent-Review mit Effort-Stufe, oder /code-review ultra für eine tiefe Cloud-Review."
+        },
+        {
+          "title": "Reines Aufräumen ohne Bug-Suche",
+          "why": "/review sucht nach Problemen im PR, ist aber nicht auf reine Vereinfachung ausgelegt.",
+          "alternative": "/simplify für Wiederverwendung/Vereinfachung/Effizienz ohne Bug-Suche."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1300,8 +2119,23 @@
       "name": "/run",
       "summary": "Startet und steuert die Projekt-App, um eine Änderung tatsächlich wirken zu sehen (nicht nur Tests).",
       "what": "Startet und steuert die Projekt-App, um eine Änderung tatsächlich wirken zu sehen (nicht nur Tests).\n\n[Skill] Siehe 'Run and verify your app' in der Skills-Doku. Benötigt v2.1.145+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Änderung im echten Flow sehen",
+          "example": "Nach einer UI-Änderung /run nutzen, um die App tatsächlich zu starten und die Änderung im Browser zu sehen, statt nur auf grüne Tests zu vertrauen."
+        },
+        {
+          "title": "Frisches Projekt-Setup prüfen",
+          "example": "Bei einem neu geklonten Projekt /run nutzen, um zu sehen, ob die App aus sauberer Umgebung überhaupt hochkommt."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur Unit-Tests interessieren",
+          "why": "/run startet und steuert die App aktiv — für reine Testläufe ohne laufende App ist das unnötiger Aufwand.",
+          "alternative": "Die Test-Suite direkt ausführen (z.B. npm test), ohne die App zu starten."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1315,8 +2149,23 @@
       "name": "/run-skill-generator",
       "summary": "Bringt /run und /verify bei, wie die Projekt-App aus sauberer Umgebung gebaut, gestartet und gesteuert wird, indem ein projektspezifischer Skill geschrieben wird.",
       "what": "Bringt /run und /verify bei, wie die Projekt-App aus sauberer Umgebung gebaut, gestartet und gesteuert wird, indem ein projektspezifischer Skill geschrieben wird.\n\n[Skill] Benötigt v2.1.145+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Projekt-Skill für Start/Verify einmalig einrichten",
+          "example": "In einem neuen Projekt /run-skill-generator laufen lassen, damit Claude lernt, wie die App aus sauberer Umgebung gebaut, gestartet und gesteuert wird."
+        },
+        {
+          "title": "Nach Wechsel des Build-Prozesses neu einrichten",
+          "example": "Wenn sich der Build-/Start-Prozess grundlegend geändert hat (z.B. neues Build-Tool), /run-skill-generator erneut laufen lassen, damit /run und /verify wieder zum aktuellen Setup passen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Funktionierender Skill existiert bereits",
+          "why": "Wenn /run und /verify im Projekt schon zuverlässig funktionieren, ist ein weiterer Generator-Durchlauf überflüssig.",
+          "alternative": "Bestehenden Projekt-Skill weiterverwenden bzw. bei Bedarf manuell anpassen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1330,8 +2179,23 @@
       "name": "/sandbox",
       "summary": "Schaltet den Sandbox-Modus um.",
       "what": "Schaltet den Sandbox-Modus um.\n\nNur auf unterstützten Plattformen verfügbar.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Risikobehaftete Kommandos isoliert testen",
+          "example": "Vor dem Ausführen von unbekanntem, generiertem Code /sandbox aktivieren, um ihn isoliert laufen zu lassen (auf unterstützten Plattformen)."
+        },
+        {
+          "title": "Sandbox nach dem Task wieder deaktivieren",
+          "example": "Nach Abschluss des riskanten Schritts /sandbox erneut aufrufen, um zurück in den normalen Modus zu wechseln."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nicht unterstützte Plattform",
+          "why": "Sandbox-Modus ist laut Doku nur auf unterstützten Plattformen verfügbar.",
+          "alternative": "In der Sandboxing-Doku prüfen, ob die eigene Plattform unterstützt wird, bevor man den Befehl erwartet."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1345,8 +2209,28 @@
       "name": "/schedule",
       "summary": "Erstellt, aktualisiert, listet oder führt Routinen aus, die auf Anthropic-verwalteter Cloud-Infrastruktur nach Zeitplan laufen.",
       "what": "Erstellt, aktualisiert, listet oder führt Routinen aus, die auf Anthropic-verwalteter Cloud-Infrastruktur nach Zeitplan laufen.\n\nClaude führt konversationell durch die Einrichtung. Alias: /routines.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Wiederkehrender Check, der Session-Ende überlebt",
+          "example": "Mit /schedule eine tägliche Routine einrichten, die auf Anthropic-verwalteter Cloud-Infrastruktur läuft — sie bleibt aktiv, auch wenn Rechner oder Session längst zu sind."
+        },
+        {
+          "title": "Einmaliger Termin unabhängig von der aktuellen Session",
+          "example": "Über /schedule eine einmalige Zukunfts-Aufgabe einrichten, die nicht daran hängt, dass die jetzige Session offen bleibt."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kurzes Polling innerhalb der laufenden Session",
+          "why": "Laut Doku ist /loop für schnelles Polling während einer offenen Session gedacht (session-scoped, endet mit der Session); /schedule ist für Routinen auf Cloud-Infrastruktur mit Mindestintervall von 1 Stunde.",
+          "alternative": "/loop 5m ... nutzen, solange die Session sowieso offen bleibt und das Intervall unter einer Stunde liegt."
+        },
+        {
+          "title": "Task braucht Zugriff auf lokale Dateien",
+          "why": "Cloud-Routinen laufen laut Doku auf einem frischen Klon ohne Zugriff auf lokale Dateien.",
+          "alternative": "Desktop Scheduled Task oder /loop nutzen, die lokalen Dateizugriff haben."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1360,8 +2244,19 @@
       "name": "/scroll-speed",
       "summary": "Passt die Mausrad-Scrollgeschwindigkeit interaktiv an.",
       "what": "Passt die Mausrad-Scrollgeschwindigkeit interaktiv an.\n\nNur im Vollbild-Rendering, nicht im JetBrains-IDE-Terminal.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Scrollgeschwindigkeit fühlt sich falsch an",
+          "example": "Im Vollbild-Terminal /scroll-speed aufrufen und die Mausrad-Geschwindigkeit live an der Ruler-Vorschau anpassen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "JetBrains-IDE-Terminal oder Nicht-Vollbild",
+          "why": "Laut Doku nur im Vollbild-Rendering verfügbar, nicht im JetBrains-IDE-Terminal.",
+          "alternative": "Terminal-eigene Scroll-Einstellungen der IDE nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1375,8 +2270,23 @@
       "name": "/security-review",
       "summary": "Analysiert ausstehende Änderungen im aktuellen Branch auf Sicherheitslücken.",
       "what": "Analysiert ausstehende Änderungen im aktuellen Branch auf Sicherheitslücken.\n\nPrüft den Git-Diff auf Risiken wie Injection, Auth-Probleme und Datenlecks.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Vor Merge eines Auth-/Secrets-Features",
+          "example": "Vor dem Mergen eines Branches, der einen neuen API-Endpoint mit User-Input verarbeitet, /security-review laufen lassen, um den Diff auf Injection- und Auth-Probleme zu prüfen."
+        },
+        {
+          "title": "Nach Hinzufügen von Payment-/Sensitive-Feature-Code",
+          "example": "Nachdem Zahlungslogik oder Secret-Handling in den aktuellen Branch eingebaut wurde, gezielt /security-review vor dem PR nutzen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Allgemeine Code-Qualität ohne Security-Fokus",
+          "why": "/security-review prüft laut Doku speziell auf Sicherheitsrisiken wie Injection, Auth-Probleme, Datenlecks — nicht auf generelle Vereinfachung.",
+          "alternative": "/simplify oder /code-review für allgemeine Qualität/Bugs."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1390,8 +2300,23 @@
       "name": "/setup-bedrock",
       "summary": "Konfiguriert Amazon-Bedrock-Authentifizierung, Region und Modell-Pins über einen interaktiven Assistenten.",
       "what": "Konfiguriert Amazon-Bedrock-Authentifizierung, Region und Modell-Pins über einen interaktiven Assistenten.\n\nNur sichtbar mit CLAUDE_CODE_USE_BEDROCK=1.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Team steigt auf Amazon Bedrock um",
+          "example": "Mit gesetztem CLAUDE_CODE_USE_BEDROCK=1 /setup-bedrock ausführen, um Authentifizierung, Region und Modell-Pins interaktiv einzurichten."
+        },
+        {
+          "title": "Modell-Pins nach Bedrock-Änderung aktualisieren",
+          "example": "Nach einer Änderung an den verfügbaren Bedrock-Modellen /setup-bedrock erneut durchlaufen, um die Pins neu zu setzen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ohne gesetzte Env-Var",
+          "why": "/setup-bedrock ist laut Doku nur sichtbar, wenn CLAUDE_CODE_USE_BEDROCK=1 gesetzt ist.",
+          "alternative": "Erst die Env-Var setzen, oder bei normaler Anthropic-Kontonutzung einfach /login verwenden."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1405,8 +2330,23 @@
       "name": "/setup-vertex",
       "summary": "Konfiguriert Authentifizierung, Projekt, Region und Modell-Pins für Google Cloud's Agent Platform.",
       "what": "Konfiguriert Authentifizierung, Projekt, Region und Modell-Pins für Google Cloud's Agent Platform.\n\nNur sichtbar mit CLAUDE_CODE_USE_VERTEX=1.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Team nutzt Google Cloud's Agent Platform",
+          "example": "Mit gesetztem CLAUDE_CODE_USE_VERTEX=1 /setup-vertex ausführen, um Authentifizierung, Projekt, Region und Modell-Pins einzurichten."
+        },
+        {
+          "title": "Projekt- oder Region-Wechsel bei Vertex",
+          "example": "Nach einem Wechsel des Google-Cloud-Projekts /setup-vertex erneut durchlaufen, um die Konfiguration anzupassen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ohne gesetzte Env-Var",
+          "why": "/setup-vertex ist laut Doku nur sichtbar, wenn CLAUDE_CODE_USE_VERTEX=1 gesetzt ist.",
+          "alternative": "Erst die Env-Var setzen, oder bei normaler Anthropic-Kontonutzung /login verwenden."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1420,8 +2360,23 @@
       "name": "/simplify",
       "summary": "Überprüft den geänderten Code auf Aufräum-Möglichkeiten (Wiederverwendung, Vereinfachung, Effizienz) und wendet die Fixes direkt an, ohne nach Korrektheits-Bugs zu suchen.",
       "what": "Überprüft den geänderten Code auf Aufräum-Möglichkeiten (Wiederverwendung, Vereinfachung, Effizienz) und wendet die Fixes direkt an, ohne nach Korrektheits-Bugs zu suchen.\n\n[Skill] Vier Review-Agenten parallel: Wiederverwendung, Vereinfachung, Effizienz, Abstraktionsebene. Ab v2.1.154 ohne Bug-Suche (dafür /code-review). Pfad oder PR-Referenz als Ziel möglich.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Aufräumen nach fertigem Feature",
+          "example": "Wenn ein Feature schon funktioniert und getestet ist, /simplify auf den geänderten Code laufen lassen, um Wiederverwendung, Vereinfachung und Effizienz zu verbessern."
+        },
+        {
+          "title": "Gezielt einen Pfad ohne Bug-Suche aufräumen",
+          "example": "/simplify src/utils/parser.ts aufrufen, um nur diese Datei aufzuräumen, ohne gleichzeitig nach Korrektheits-Bugs zu suchen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Auch Bugs sollen gefunden werden",
+          "why": "/simplify sucht laut Doku seit v2.1.154 explizit nicht mehr nach Korrektheits-Bugs, nur nach Aufräum-Potenzial.",
+          "alternative": "/code-review nutzen, das auch Korrektheits-Bugs abdeckt."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1435,8 +2390,23 @@
       "name": "/skills",
       "summary": "Listet verfügbare Skills auf.",
       "what": "Listet verfügbare Skills auf.\n\nAb v2.1.121 filterbar durch Tippen. 't' sortiert nach Token-Anzahl. Leertaste schaltet Sichtbarkeit, Enter speichert.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Überblick über geladene Skills",
+          "example": "/skills aufrufen und mit 't' nach Token-Anzahl sortieren, um zu sehen, welche Skills am meisten Kontext kosten."
+        },
+        {
+          "title": "Ungenutzte Skills ausblenden",
+          "example": "In der /skills-Liste mit Leertaste einzelne Skills unsichtbar schalten, um Kontext zu sparen, und mit Enter speichern."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Diagnose kaputter Skill-Installationen",
+          "why": "/skills listet laut Doku nur die verfügbaren Skills auf, ohne Installationsprobleme zu diagnostizieren.",
+          "alternative": "/doctor nutzen, das Installation, doppelte/kaputte Skills und Kontextkosten prüft."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1450,8 +2420,19 @@
       "name": "/stats",
       "summary": "Alias für /usage, öffnet direkt den Stats-Tab.",
       "what": "Alias für /usage, öffnet direkt den Stats-Tab.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Schneller Kosten-Check",
+          "example": "/stats aufrufen, um direkt im Stats-Tab den Token- und Kostenverbrauch zu sehen, ohne erst durch /usage zu navigieren."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Als eigener Befehl in Doku/Skripten referenzieren",
+          "why": "/stats ist laut Doku nur ein Alias für /usage, der direkt den Stats-Tab öffnet — keine eigenständige Funktion.",
+          "alternative": "/usage referenzieren, das denselben Funktionsumfang abdeckt."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1465,8 +2446,23 @@
       "name": "/status",
       "summary": "Öffnet die Einstellungsoberfläche auf dem Status-Tab mit Version, Modell, Konto und Konnektivität.",
       "what": "Öffnet die Einstellungsoberfläche auf dem Status-Tab mit Version, Modell, Konto und Konnektivität.\n\nFunktioniert auch während Claude antwortet.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Version/Modell/Konto prüfen",
+          "example": "/status aufrufen, um zu sehen, welche Claude-Code-Version, welches Modell und welches Konto gerade aktiv sind, z.B. beim Debuggen unerwarteten Verhaltens."
+        },
+        {
+          "title": "Konnektivität mitten in einer Antwort prüfen",
+          "example": "Während Claude noch antwortet, /status öffnen, um die Konnektivität zu checken, ohne die laufende Antwort zu unterbrechen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Token-/Kosten-Infos gesucht",
+          "why": "/status zeigt Version, Modell, Konto und Konnektivität, keine Nutzungs-/Kostendaten.",
+          "alternative": "/usage nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1480,8 +2476,23 @@
       "name": "/statusline",
       "summary": "Konfiguriert die Statuszeile von Claude Code.",
       "what": "Konfiguriert die Statuszeile von Claude Code.\n\nBeschreiben, was gewünscht ist, oder ohne Argument für Auto-Konfiguration aus dem Shell-Prompt.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Eigene Infos in der Statuszeile",
+          "example": "/statusline beschreiben lassen, z.B. 'zeig mir den aktuellen Git-Branch und die Token-Kosten', um die Statuszeile entsprechend zu konfigurieren."
+        },
+        {
+          "title": "Automatisch aus Shell-Prompt ableiten",
+          "example": "/statusline ohne Argument aufrufen, damit die Konfiguration automatisch aus dem bestehenden Shell-Prompt abgeleitet wird."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur die Farbe der Prompt-Leiste ändern",
+          "why": "/statusline konfiguriert Inhalt/Aufbau der Statuszeile, nicht ihre Farbe.",
+          "alternative": "/color nutzen, um nur die Farbe zu setzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1495,8 +2506,19 @@
       "name": "/stickers",
       "summary": "Bestellt Claude-Code-Sticker.",
       "what": "Bestellt Claude-Code-Sticker.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Merch für sich oder das Team bestellen",
+          "example": "/stickers aufrufen, um Claude-Code-Sticker zu bestellen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Erwartung eines Dev-Nutzens",
+          "why": "/stickers hat keinen Bezug zur eigentlichen Entwicklungsarbeit, reine Merch-Bestellung.",
+          "alternative": "Für produktive Aufgaben einen der Entwicklungsbefehle nutzen, nicht /stickers."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1510,8 +2532,23 @@
       "name": "/tasks",
       "summary": "Listet Hintergrund-Tasks der aktuellen Session und angehängter Hintergrund-Sessions auf.",
       "what": "Listet Hintergrund-Tasks der aktuellen Session und angehängter Hintergrund-Sessions auf.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Laufende Hintergrund-Subagenten checken",
+          "example": "Nach dem Start mehrerer Subagenten mit /batch /tasks aufrufen, um zu sehen, was in der aktuellen und angehängten Hintergrund-Sessions noch offen ist."
+        },
+        {
+          "title": "Vor dem Beenden der Session Überblick verschaffen",
+          "example": "Vor /exit kurz /tasks prüfen, ob noch Hintergrund-Tasks laufen, die man nicht verlieren will."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Geplante Cron-/Loop-Zeitpläne einsehen",
+          "why": "/tasks listet laut Doku Hintergrund-Tasks der Session, nicht die per /loop oder /schedule geplanten Zeitpläne.",
+          "alternative": "Claude direkt fragen ('what scheduled tasks do I have?') für /loop-Zeitpläne, bzw. /schedule für Cloud-Routinen nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1525,8 +2562,23 @@
       "name": "/teleport",
       "summary": "Holt eine Web-Session ins Terminal.",
       "what": "Holt eine Web-Session ins Terminal.\n\n/remote-control ermöglicht umgekehrt, die lokale Session von einem anderen Gerät fortzusetzen.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Web-Session lokal fortsetzen",
+          "example": "Eine auf claude.ai/code gestartete Session mit /teleport ins lokale Terminal holen, um mit lokalem Dateizugriff weiterzuarbeiten."
+        },
+        {
+          "title": "Auf leistungsfähigerem Rechner weiterarbeiten",
+          "example": "Eine unterwegs am Handy über claude.ai/code gestartete Aufgabe per /teleport auf den Arbeitsrechner ins Terminal holen, um mit vollem Tool-Zugriff weiterzumachen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Umgekehrter Fall: lokale Session von unterwegs fortsetzen",
+          "why": "/teleport holt eine Web-Session ins Terminal, nicht umgekehrt.",
+          "alternative": "/remote-control nutzen, um die lokale Session von einem anderen Gerät aus fernzusteuern."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1540,8 +2592,23 @@
       "name": "/thinking",
       "summary": "Schaltet erweitertes Denken (Extended Thinking) für die aktuelle Session ein oder aus.",
       "what": "Schaltet erweitertes Denken (Extended Thinking) für die aktuelle Session ein oder aus.\n\nOhne Argument Auswahl mit Thinking-Effort-Leveln. Wirkt sofort ab der nächsten Antwort. Ab v2.1.205 auch non-interactive (-p).",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Kniffliges Problem tiefer durchdenken lassen",
+          "example": "Vor einer komplexen Architekturentscheidung /thinking einschalten, damit Claude vor der Antwort erweitert nachdenkt."
+        },
+        {
+          "title": "Für einfache Anfragen wieder ausschalten",
+          "example": "Nach dem kniffligen Teil /thinking wieder ausschalten, um bei einfachen Folgefragen zügigere Antworten zu bekommen."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Allgemeinen Aufwand über mehrere Turns steuern",
+          "why": "/thinking schaltet laut Doku nur erweitertes Denken vor der nächsten Antwort an/aus, nicht das generelle Aufwandslevel (Tool-Nutzung, Gründlichkeit).",
+          "alternative": "/effort nutzen, um das Aufwandslevel (low bis max/ultracode) zu setzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1555,8 +2622,19 @@
       "name": "/upgrade",
       "summary": "Aktualisiert Claude Code auf die neueste Version.",
       "what": "Aktualisiert Claude Code auf die neueste Version.\n\nNur auf Pro- und Max-Plänen sichtbar.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Update auf neueste Version",
+          "example": "/upgrade aufrufen, sobald eine neue Claude-Code-Version verfügbar ist, um sie direkt zu installieren."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ohne Pro-/Max-Plan",
+          "why": "/upgrade ist laut Doku nur auf Pro- und Max-Plänen sichtbar.",
+          "alternative": "Update über den regulären Installationsweg/Paketmanager durchführen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1570,8 +2648,23 @@
       "name": "/usage",
       "summary": "Zeigt API-Nutzung, Token-Zahlen und Ausgaben.",
       "what": "Zeigt API-Nutzung, Token-Zahlen und Ausgaben.\n\nAliase: /cost, /stats.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Regelmäßiger Kosten-Überblick",
+          "example": "/usage aufrufen, um Token-Zahlen und Ausgaben im Blick zu behalten, bevor man einen größeren Task startet."
+        },
+        {
+          "title": "Kosten eines aufwändigen Tasks nachvollziehen",
+          "example": "Nach einem langen /batch-Lauf oder Agent-Loop /usage prüfen, um zu sehen, was der Task gekostet hat."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kontext-Fenster-Auslastung der Session prüfen",
+          "why": "/usage zeigt API-Nutzung/Kosten, nicht wie voll das aktuelle Kontextfenster ist.",
+          "alternative": "/context nutzen für die Kontextnutzung als farbiges Raster."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1585,8 +2678,23 @@
       "name": "/verify",
       "summary": "Startet die Projekt-App und verifiziert, dass eine Änderung Ende-zu-Ende funktioniert.",
       "what": "Startet die Projekt-App und verifiziert, dass eine Änderung Ende-zu-Ende funktioniert.\n\n[Skill] Siehe 'Run and verify your app'. Benötigt v2.1.145+.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Vor Commit nicht-trivialer Änderung",
+          "example": "Nach einem Bugfix an einem Login-Flow /verify nutzen, um den Flow tatsächlich Ende-zu-Ende durchzuspielen, statt nur Tests/Typecheck laufen zu lassen."
+        },
+        {
+          "title": "Betroffenen Flow gezielt nachvollziehen",
+          "example": "Nach einer Änderung an der Checkout-Logik /verify aufrufen, um zu beobachten, ob der Flow im echten Betrieb wirklich funktioniert."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Diff betrifft nur Tests oder Doku",
+          "why": "Dann gibt es keine Laufzeit-Oberfläche zu beobachten.",
+          "alternative": "Reguläre Test-Suite laufen lassen, kein /verify nötig."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1600,8 +2708,19 @@
       "name": "/vim",
       "summary": "Schaltet Vim-Tastenkürzel ein oder aus.",
       "what": "Schaltet Vim-Tastenkürzel ein oder aus.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Vim-gewohnte Eingabe nutzen",
+          "example": "/vim einschalten, um im Editor-Modus mit vertrauten Vim-Tastenkürzeln zu arbeiten."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ohne Vim-Erfahrung",
+          "why": "Vim-Tastenkürzel erschweren die Eingabe eher, wenn man sie nicht kennt.",
+          "alternative": "Vim-Modus aus lassen und Standard-Tastenkürzel nutzen."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1615,8 +2734,23 @@
       "name": "/web",
       "summary": "Durchsucht das Web und holt Seiteninhalte über natürliche Sprache.",
       "what": "Durchsucht das Web und holt Seiteninhalte über natürliche Sprache.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Schnell eine bekannte URL abrufen",
+          "example": "/web mit einer natürlichsprachlichen Anfrage nutzen, um kurz den Inhalt einer bekannten Doku-Seite abzurufen, ohne den Browser zu wechseln."
+        },
+        {
+          "title": "Einfache Web-Frage aus der Session heraus",
+          "example": "Direkt aus der Session heraus über /web nach einer aktuellen Info fragen, z.B. der aktuellen Versionsnummer eines Tools."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Zitierter Mehrquellen-Bericht nötig",
+          "why": "/web holt Seiteninhalte über natürliche Sprache, erstellt aber keinen gegengeprüften, zitierten Bericht.",
+          "alternative": "/deep-research nutzen, das Quellen gegeneinander prüft und einen zitierten Bericht liefert."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",
@@ -1630,8 +2764,23 @@
       "name": "/web-search",
       "summary": "Sucht im Web nach aktuellen Informationen und holt Ergebnisse.",
       "what": "Sucht im Web nach aktuellen Informationen und holt Ergebnisse.\n\n[Skill] Ohne Query wird nach Kontext aus der letzten Nachricht gesucht. Optional Trefferzahl <count>.",
-      "whenGood": [],
-      "whenBad": [],
+      "whenGood": [
+        {
+          "title": "Aktuelle Info nachschlagen",
+          "example": "/web-search neueste Version von React nutzen, um Informationen zu holen, die nicht im Trainingswissen stecken."
+        },
+        {
+          "title": "Ohne eigene Query aus dem Kontext suchen",
+          "example": "/web-search ohne Query aufrufen, damit anhand der letzten Nachricht passend gesucht wird."
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Belastbare, zitierte Entscheidungsvorlage nötig",
+          "why": "/web-search ist ein einfacher Websuche-Skill, kein Workflow mit Quellenabgleich und zitiertem Bericht.",
+          "alternative": "/deep-research nutzen für einen fächernden, gegengeprüften und zitierten Bericht."
+        }
+      ],
       "sources": [
         {
           "title": "Claude Code Doku (offiziell)",

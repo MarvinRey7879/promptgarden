@@ -299,6 +299,14 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - OFFEN (Reihenfolge): ① whenGood/whenBad-Batches für Top-Claude-Code-Befehle (DE+EN) ② Codex-Einträge (16, Agent-Retry) ③ Übersetzungen EN/ES/FR/ZH der 92 Summaries/Whats ④ Addons-Sektion ⑤ /admin abhakbare Marvin-Todo-Liste (Marvin-Wunsch 13.07) ⑥ Sitemap um /befehle/ erweitern
 - MARVIN-KANAL-Regel (13.07): Artifact kann nichts senden (CSP) → /admin-Prio-Feld ist der Schreibkanal; regelmäßig neue Marvin-Todos (GSC nach Domain, Reddit etc.) ins Statusboard posten
 
+### 🔴 MARVIN 13.07 (mittags): ALLE Befehle (nicht nur Kern) bekommen wann/wann-nicht-Blöcke, jeweils doc-basiert
+- Batches 2-4 (je ~26, restliche 78 Claude-Code-Befehle) DE+EN via Agents; Aliase/Trivial-Toggles dürfen 1+1 statt 2+2 haben
+
+### It. 58 (13.07 vormittags) — Befehls-Referenz DE+EN komplett ✅
+- Codex 16 Einträge DE+EN live · Batch 1 whenGood/whenBad (14 Kern-Befehle) DE+EN live · EN-Basis aller 92 Claude-Code-Befehle live → 108 Befehle × DE+EN
+- 3 Übersetzungs-Agents ES/FR/ZH (je 108 Einträge → research/befehle/commands-{es,fr,zh}.json) GESTARTET
+- Danach offen: ES/FR/ZH mergen+deploy · whenGood/whenBad Batch 2 (nächste ~16: resume? nein fertig — Kandidaten: batch, review, simplify, security-review, mcp, plugin, skills, memory, context, init, add-dir, cd, agents, thinking, usage, permissions) · Addons-Sektion · /admin-Todo-Liste · Sitemap /befehle · Statusboard/API-Doku (build-api index um commands erweitern)
+
 ### Standard-Iteration (aktualisiert 12.07 — Warte-auf-Marvin gilt NUR noch für Domain-Automatik)
 1. Admin-Summary (Notes = sofort umsetzen) — KORREKTER Aufruf:
    `curl -s .../v1/admin/summary -H "X-Admin-Key: $PG_ADMIN_KEY"` + im Parser `if(j.error) throw` (NIE Bearer, nie stumm defaulten)

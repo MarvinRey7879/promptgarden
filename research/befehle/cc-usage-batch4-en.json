@@ -1,0 +1,259 @@
+[
+  {
+    "slug": "remote-env",
+    "whenGood": [
+      {"title": "Set a default environment once", "example": "Before launching cloud agents from claude.ai/code repeatedly, use /remote-env to pick a default environment so you don't have to choose it every time."},
+      {"title": "Switching between multiple cloud environments", "example": "When moving between two repos with different cloud environments, set the new one as default with /remote-env before starting the next cloud agent."}
+    ],
+    "whenBad": [
+      {"title": "Purely local terminal session", "why": "/remote-env only affects the default environment for cloud agents, not local sessions.", "alternative": "No action needed — just keep working locally as normal."}
+    ]
+  },
+  {
+    "slug": "rename",
+    "whenGood": [
+      {"title": "Make a long session easy to find again", "example": "Name a multi-hour debugging session with /rename login-bug-session so it's easy to spot later via /resume."},
+      {"title": "Rename automatically via script", "example": "In a non-interactive (-p) setup on v2.1.205+, name sessions consistently at start instead of relying on the auto-generated name."}
+    ],
+    "whenBad": [
+      {"title": "A quick throwaway question", "why": "For a session that's ending with /clear right after, a custom name isn't worth the effort.", "alternative": "Leave it unnamed — the auto-generated name is fine for such brief use."}
+    ]
+  },
+  {
+    "slug": "review",
+    "whenGood": [
+      {"title": "Quick first look at a PR", "example": "Use /review 482 to quickly check before merging whether the pull request has any obvious problems, without picking an effort level."},
+      {"title": "Pick a PR from a list to check", "example": "Call /review with no number to choose one from the list of open PRs for a quick pass."}
+    ],
+    "whenBad": [
+      {"title": "Thorough review of a critical PR", "why": "Per the docs, /review is a quick, read-only single pass — not a multi-agent review with selectable effort.", "alternative": "Use /code-review <level> <pr#> for a multi-agent review with an effort level, or /code-review ultra for a deep cloud review."},
+      {"title": "Pure cleanup without bug hunting", "why": "/review looks for problems in the PR; it isn't built for cleanup-only passes.", "alternative": "Use /simplify for reuse/simplification/efficiency without bug hunting."}
+    ]
+  },
+  {
+    "slug": "run",
+    "whenGood": [
+      {"title": "See a change work in the real flow", "example": "After a UI change, use /run to actually start the app and see the change in the browser, instead of just trusting green tests."},
+      {"title": "Check a freshly set up project", "example": "On a newly cloned project, use /run to see whether the app even comes up from a clean environment."}
+    ],
+    "whenBad": [
+      {"title": "Only unit tests matter", "why": "/run actively starts and drives the app — for plain test runs with no running app needed, that's unnecessary overhead.", "alternative": "Run the test suite directly (e.g. npm test) without starting the app."}
+    ]
+  },
+  {
+    "slug": "run-skill-generator",
+    "whenGood": [
+      {"title": "Set up a project skill for run/verify once", "example": "On a new project, run /run-skill-generator so Claude learns how to build, start, and drive the app from a clean environment."},
+      {"title": "Re-run after a build process change", "example": "If the build/start process has changed fundamentally (e.g. a new build tool), run /run-skill-generator again so /run and /verify match the current setup."}
+    ],
+    "whenBad": [
+      {"title": "A working skill already exists", "why": "If /run and /verify already work reliably in the project, running the generator again is redundant.", "alternative": "Keep using the existing project skill, or adjust it manually if needed."}
+    ]
+  },
+  {
+    "slug": "sandbox",
+    "whenGood": [
+      {"title": "Test risky commands in isolation", "example": "Before running unfamiliar, generated code, enable /sandbox to run it in isolation (on supported platforms)."},
+      {"title": "Turn sandbox back off after the task", "example": "After finishing the risky step, call /sandbox again to switch back to normal mode."}
+    ],
+    "whenBad": [
+      {"title": "Unsupported platform", "why": "Per the docs, sandbox mode is only available on supported platforms.", "alternative": "Check the sandboxing docs for whether your platform is supported before expecting the command to work."}
+    ]
+  },
+  {
+    "slug": "schedule",
+    "whenGood": [
+      {"title": "A recurring check that survives ending the session", "example": "Use /schedule to set up a daily routine that runs on Anthropic-managed cloud infrastructure — it keeps running even after the machine or session is long closed."},
+      {"title": "A one-time future task independent of the current session", "example": "Use /schedule to set up a one-off future task that doesn't depend on the current session staying open."}
+    ],
+    "whenBad": [
+      {"title": "Quick polling within the current session", "why": "Per the docs, /loop is meant for quick polling during an open session (session-scoped, ends with the session); /schedule is for routines on cloud infrastructure with a minimum interval of 1 hour.", "alternative": "Use /loop 5m ... as long as the session stays open anyway and the interval is under an hour."},
+      {"title": "The task needs access to local files", "why": "Per the docs, cloud routines run on a fresh clone with no access to local files.", "alternative": "Use a Desktop scheduled task or /loop, both of which have local file access."}
+    ]
+  },
+  {
+    "slug": "scroll-speed",
+    "whenGood": [
+      {"title": "Mouse wheel scrolling feels off", "example": "In the fullscreen terminal, call /scroll-speed and adjust the mouse wheel speed live against the ruler preview."}
+    ],
+    "whenBad": [
+      {"title": "JetBrains IDE terminal or non-fullscreen", "why": "Per the docs, only available in fullscreen rendering, not in the JetBrains IDE terminal.", "alternative": "Use the IDE's own terminal scroll settings."}
+    ]
+  },
+  {
+    "slug": "security-review",
+    "whenGood": [
+      {"title": "Before merging an auth/secrets feature", "example": "Before merging a branch that adds a new API endpoint handling user input, run /security-review to check the diff for injection and auth issues."},
+      {"title": "After adding payment/sensitive feature code", "example": "After payment logic or secret handling has been added to the current branch, run /security-review specifically before opening the PR."}
+    ],
+    "whenBad": [
+      {"title": "General code quality without a security focus", "why": "Per the docs, /security-review specifically checks for security risks like injection, auth issues, and data leaks — not general cleanup.", "alternative": "Use /simplify or /code-review for general quality/bugs."}
+    ]
+  },
+  {
+    "slug": "setup-bedrock",
+    "whenGood": [
+      {"title": "Team is switching to Amazon Bedrock", "example": "With CLAUDE_CODE_USE_BEDROCK=1 set, run /setup-bedrock to interactively configure authentication, region, and model pins."},
+      {"title": "Update model pins after a Bedrock change", "example": "After a change to available Bedrock models, run /setup-bedrock again to re-pin them."}
+    ],
+    "whenBad": [
+      {"title": "Without the env var set", "why": "Per the docs, /setup-bedrock is only visible when CLAUDE_CODE_USE_BEDROCK=1 is set.", "alternative": "Set the env var first, or just use /login for normal Anthropic account usage."}
+    ]
+  },
+  {
+    "slug": "setup-vertex",
+    "whenGood": [
+      {"title": "Team uses Google Cloud's Agent Platform", "example": "With CLAUDE_CODE_USE_VERTEX=1 set, run /setup-vertex to configure authentication, project, region, and model pins."},
+      {"title": "Project or region change on Vertex", "example": "After switching Google Cloud projects, run /setup-vertex again to adjust the configuration."}
+    ],
+    "whenBad": [
+      {"title": "Without the env var set", "why": "Per the docs, /setup-vertex is only visible when CLAUDE_CODE_USE_VERTEX=1 is set.", "alternative": "Set the env var first, or use /login for normal Anthropic account usage."}
+    ]
+  },
+  {
+    "slug": "simplify",
+    "whenGood": [
+      {"title": "Clean up after a finished feature", "example": "Once a feature already works and is tested, run /simplify on the changed code to improve reuse, simplification, and efficiency."},
+      {"title": "Clean up one path without bug hunting", "example": "Call /simplify src/utils/parser.ts to clean up just that file without also hunting for correctness bugs."}
+    ],
+    "whenBad": [
+      {"title": "Bugs need to be found too", "why": "Per the docs, since v2.1.154 /simplify explicitly no longer hunts for correctness bugs, only cleanup potential.", "alternative": "Use /code-review, which also covers correctness bugs."}
+    ]
+  },
+  {
+    "slug": "skills",
+    "whenGood": [
+      {"title": "Overview of loaded skills", "example": "Call /skills and sort by token count with 't' to see which skills cost the most context."},
+      {"title": "Hide unused skills", "example": "In the /skills list, toggle individual skills invisible with spacebar to save context, then save with Enter."}
+    ],
+    "whenBad": [
+      {"title": "Diagnosing broken skill installs", "why": "Per the docs, /skills just lists available skills without diagnosing installation problems.", "alternative": "Use /doctor, which checks installation, duplicate/broken skills, and context costs."}
+    ]
+  },
+  {
+    "slug": "stats",
+    "whenGood": [
+      {"title": "Quick cost check", "example": "Call /stats to jump straight to the Stats tab and see token and cost usage without navigating through /usage first."}
+    ],
+    "whenBad": [
+      {"title": "Referencing it as a distinct command in docs/scripts", "why": "Per the docs, /stats is just an alias for /usage that opens directly on the Stats tab — no separate functionality.", "alternative": "Reference /usage instead, which covers the same functionality."}
+    ]
+  },
+  {
+    "slug": "status",
+    "whenGood": [
+      {"title": "Check version/model/account", "example": "Call /status to see which Claude Code version, model, and account are currently active, e.g. when debugging unexpected behavior."},
+      {"title": "Check connectivity mid-response", "example": "While Claude is still responding, open /status to check connectivity without interrupting the current answer."}
+    ],
+    "whenBad": [
+      {"title": "Looking for token/cost info", "why": "/status shows version, model, account, and connectivity, not usage/cost data.", "alternative": "Use /usage."}
+    ]
+  },
+  {
+    "slug": "statusline",
+    "whenGood": [
+      {"title": "Show custom info in the status line", "example": "Describe what you want to /statusline, e.g. 'show me the current git branch and token cost', to configure the status line accordingly."},
+      {"title": "Derive it automatically from the shell prompt", "example": "Call /statusline with no argument so it derives the configuration automatically from your existing shell prompt."}
+    ],
+    "whenBad": [
+      {"title": "Just changing the prompt bar's color", "why": "/statusline configures the status line's content/layout, not its color.", "alternative": "Use /color to just set the color."}
+    ]
+  },
+  {
+    "slug": "stickers",
+    "whenGood": [
+      {"title": "Order merch for yourself or the team", "example": "Call /stickers to order Claude Code stickers."}
+    ],
+    "whenBad": [
+      {"title": "Expecting a dev benefit", "why": "/stickers has no bearing on actual development work — it's purely merch ordering.", "alternative": "Use one of the development commands for productive work, not /stickers."}
+    ]
+  },
+  {
+    "slug": "tasks",
+    "whenGood": [
+      {"title": "Check running background subagents", "example": "After starting several subagents with /batch, call /tasks to see what's still open across the current session and any attached background sessions."},
+      {"title": "Get an overview before ending the session", "example": "Before /exit, quickly check /tasks to see if any background tasks are still running that you don't want to lose."}
+    ],
+    "whenBad": [
+      {"title": "Viewing scheduled cron/loop schedules", "why": "Per the docs, /tasks lists the session's background tasks, not the schedules created via /loop or /schedule.", "alternative": "Ask Claude directly ('what scheduled tasks do I have?') for /loop schedules, or use /schedule for cloud routines."}
+    ]
+  },
+  {
+    "slug": "teleport",
+    "whenGood": [
+      {"title": "Continue a web session locally", "example": "Pull a session started on claude.ai/code into the local terminal with /teleport to keep working with local file access."},
+      {"title": "Continue on a more capable local machine", "example": "Pull a task started on the phone via claude.ai/code onto your workstation terminal with /teleport to continue with full tool access."}
+    ],
+    "whenBad": [
+      {"title": "The reverse case: continue a local session on the go", "why": "/teleport pulls a web session into the terminal, not the other way around.", "alternative": "Use /remote-control to control the local session remotely from another device."}
+    ]
+  },
+  {
+    "slug": "thinking",
+    "whenGood": [
+      {"title": "Let Claude think harder on a tricky problem", "example": "Before a complex architecture decision, turn on /thinking so Claude reasons more extensively before answering."},
+      {"title": "Turn it off again for simple requests", "example": "After the tricky part is done, turn /thinking off again to get snappier answers on simple follow-up questions."}
+    ],
+    "whenBad": [
+      {"title": "Controlling overall effort across multiple turns", "why": "Per the docs, /thinking only toggles extended thinking before the next answer, not the general effort level (tool use, thoroughness).", "alternative": "Use /effort to set the effort level (low through max/ultracode)."}
+    ]
+  },
+  {
+    "slug": "upgrade",
+    "whenGood": [
+      {"title": "Update to the latest version", "example": "Call /upgrade as soon as a new Claude Code version is available to install it directly."}
+    ],
+    "whenBad": [
+      {"title": "Without a Pro/Max plan", "why": "Per the docs, /upgrade is only visible on Pro and Max plans.", "alternative": "Update via the regular install path/package manager instead."}
+    ]
+  },
+  {
+    "slug": "usage",
+    "whenGood": [
+      {"title": "Regular cost overview", "example": "Call /usage to keep an eye on token counts and spend before starting a bigger task."},
+      {"title": "Trace the cost of an expensive task", "example": "After a long /batch run or agent loop, check /usage to see what it cost."}
+    ],
+    "whenBad": [
+      {"title": "Checking the session's context window usage", "why": "/usage shows API usage/cost, not how full the current context window is.", "alternative": "Use /context for context usage as a colored grid."}
+    ]
+  },
+  {
+    "slug": "verify",
+    "whenGood": [
+      {"title": "Before committing a non-trivial change", "example": "After fixing a bug in a login flow, use /verify to actually walk the flow end-to-end instead of just running tests/typecheck."},
+      {"title": "Trace the affected flow specifically", "example": "After a change to checkout logic, call /verify to observe whether the flow really works in real operation."}
+    ],
+    "whenBad": [
+      {"title": "The diff only touches tests or docs", "why": "In that case there's no runtime surface to observe.", "alternative": "Run the regular test suite — no /verify needed."}
+    ]
+  },
+  {
+    "slug": "vim",
+    "whenGood": [
+      {"title": "Use Vim-familiar input", "example": "Turn on /vim to work in editor mode with familiar Vim keybindings."}
+    ],
+    "whenBad": [
+      {"title": "Without Vim experience", "why": "Vim keybindings tend to make input harder if you don't know them.", "alternative": "Leave Vim mode off and use the standard keybindings."}
+    ]
+  },
+  {
+    "slug": "web",
+    "whenGood": [
+      {"title": "Quickly fetch a known URL", "example": "Use /web with a natural-language request to quickly fetch the content of a known docs page without switching to a browser."},
+      {"title": "A simple web question from within the session", "example": "Ask /web directly from the session for a current piece of info, e.g. a tool's current version number."}
+    ],
+    "whenBad": [
+      {"title": "A cited, multi-source report is needed", "why": "/web fetches page content via natural language but doesn't produce a cross-checked, cited report.", "alternative": "Use /deep-research, which checks sources against each other and delivers a cited report."}
+    ]
+  },
+  {
+    "slug": "web-search",
+    "whenGood": [
+      {"title": "Look up current information", "example": "Use /web-search latest React version to fetch information that isn't in the training data."},
+      {"title": "Search from context without a query", "example": "Call /web-search with no query so it searches based on the last message's context."}
+    ],
+    "whenBad": [
+      {"title": "A solid, cited basis for a decision is needed", "why": "/web-search is a simple web-search skill, not a workflow with source cross-checking and a cited report.", "alternative": "Use /deep-research for a fanned-out, cross-checked, cited report."}
+    ]
+  }
+]
