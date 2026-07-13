@@ -18,7 +18,7 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 5. **Visualisierungen** — verständlich aber hochwertig, Inline-SVG im 1d-Stil (✅ Loops+Addons; next: Context-Window).
 6. **KEINE KI-Autorschaft** — Marvin ist der Macher; Seite kommuniziert „KI- & Scrape-freundlich, jeder soll lernen".
 7. **MEHR KAPITEL** — hohes Content-Tempo, ABER siehe Publikationsraten-Regel unten.
-8. **ZWEI Detail-Level** — 🌱/🔬-Toggle, Entry.bodyDetail (20/41 ×5 fertig).
+8. **ZWEI Detail-Level** — 🌱/🔬-Toggle ✅ KOMPLETT (alle 51 Kapitel ×5, It. 78).
 9. **Admin-Dashboard richtig stark** (✅ V2) + Monetarisierungs-Todos mit Schritt-für-Schritt in /admin.
 10. **Responsiveness + Wow** immer; erledigte Todos raus aus Statusboard-Todo-Sektion.
 11. **Landing ausbauen** (✅ It. 73 nach research/landing-cro-seo-2026-07.md).
@@ -62,7 +62,7 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 ~880 Seiten live auf promptgarten.com: 41 Kapitel ×5 (+Quiz/Übungen/Toggle), 108 Befehle ×5, 12 Addons ×5 mit Detailseiten, 4 Welten, Benchmarks, Vergleiche, Loop-Galerie, Feed (17 News), Forum, freie API, Admin V2 (Revenue/Länder/Zeitreihe), Landing NEU (CTA/How-it-works/Trust/Course-Schema). Traffic: views_7d ~109, DE/US/FR/PL.
 
 ## Rotation (nächste Arbeit)
-① Feed 14.07 (Research-Agent, 2–4 verifizierte News ×5) ② bodyDetail-Batch 3 (restliche 21 alte Kapitel) ③ Remotion-Review (wiederkehrend: Qualität prüfen, weitere Stellen — Befehls-Demos/Terminal-Clips) ④ Link-Audit ~19.07 (188 Befehle = viele neue URLs) ⑤ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (74), Context-Window-SVG (75), Cursor CLI 80 Befehle (76), Remotion-Pilot 10 Clips (77).
+① Remotion-Review (wiederkehrend: Terminal-Demo-Clips für Top-Befehle) ② Kapitel-Batch 3 (Ideen aus top_paths: Lernpfad-/Addons-Vertiefung) ③ Feed täglich ④ Link-Audit ~19.07 (188 Befehle!) ⑤ LOOP.md-Pruning wöchentlich ⑥ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (74), Context-Window-SVG (75), Cursor CLI (76), Remotion-Pilot (77), Feed 14.07 + bodyDetail KOMPLETT (78).
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - #2 GitHub Sponsors anmelden → Footer-Link

@@ -281,7 +281,8 @@
         "title": "Anthropic API 文档：总览",
         "url": "https://docs.anthropic.com/en/api/overview"
       }
-    ]
+    ],
+    "bodyDetail": "## 三种 API\n在 Web 中，大致可以分成三类：浏览器 API（Browser API）是内置在浏览器里的（比如用于音频处理的 Web Audio API），把浏览器自身的能力开放给 JavaScript 使用。Web API 或者说 HTTP API 通过互联网运行，大多遵循 REST 原则：固定的 HTTP 方法，比如 GET（读取）、POST（创建）或 DELETE（删除），再加上状态码，比如 200（成功）或 404（未找到）。第三方 API 则是你专门接入的，比如用于显示地图的 Google Maps API。\n\n## 插座的比喻\n你也可以把 API 想象成一个电源插座：把设备插上去就能用，不需要知道电是怎么发出来的、线路是怎么接的。同样地，你的代码通过 API 调用一个功能，却不需要知道背后的具体实现——复杂性都被隐藏在接口后面。\n\n## 具体到 Anthropic API\nClaude API 是一个 REST API，地址是 api.anthropic.com。核心端点之一是 POST /v1/messages，你通过它给 Claude 发一条消息，然后拿到回复。认证方式是 API key，每次请求都要在请求头里带上它。此外还有像 token 计数 API 这样的辅助端点，能帮你在真正发出较大的请求之前，提前掌握花费和速率限制（rate limit，也就是某段时间内允许发出的最大请求数）。\n\n## 为什么这对 agent 很重要\n一个需要对接外部服务的 AI agent，几乎总是要把 API 当作工具来用：天气 API、数据库 API、日历 API。每一个 API 都精确定义了可以发出哪些请求、会得到什么样的回复——这正是 tool use 和 MCP 建立的基础。"
   },
   {
     "slug": "mcp",
@@ -582,7 +583,8 @@
         "计划里是否至少有一步需要修正？（几乎总是如此——计划正是为此存在）",
         "最终结果是否比平时以更小、更可检查的块完成？"
       ]
-    }
+    },
+    "bodyDetail": "## Claude Code 里的 Plan Mode\nClaude Code 把这种模式具体做成了一个独立的“Plan Mode”（计划模式）。在 Plan Mode 下，Claude 只读取文件、回答问题，但不会做任何修改——只有在这之后，才会真正生成计划。推荐的流程分四个阶段：探索（读取文件、提问）、计划（生成详细计划）、执行（退出 Plan Mode，让 Claude 写代码，并对照计划检查）、提交（把改动连同说明一起保存）。\n\n## 直接编辑计划\n一个实用的细节：生成的计划可以在开始执行之前，通过快捷键直接在你自己的文本编辑器里打开和修改。这样你可以删掉某些步骤、改写措辞或者调整顺序，而不用重新让它生成一份全新的计划。\n\n## 什么时候不值得这么做\n计划本身不是目的，而且也要花时间。一个简单的经验法则：如果想要的改动能用一句话说清楚（一个拼写错误、一行日志、给变量改个名字），那么绕道去做一份明确的计划通常不划算。计划真正有用的场景，是做法本身还不清楚、涉及多个文件，或者你对这份代码还不够熟悉的时候。\n\n## 一个误解\n计划不代表 AI 一定能把所有事情都预判对。它的价值在于：错误的假设现在就会暴露出来，而这时候修正的成本还很低——不在于第一份计划就必须完美。一份被你修改过的计划，其实已经完成了它的使命。"
   },
   {
     "slug": "kontext-fuettern",
@@ -718,7 +720,8 @@
         "title": "Hermes 文档：安全",
         "url": "https://hermes-agent.nousresearch.com/docs/user-guide/security"
       }
-    ]
+    ],
+    "bodyDetail": "## Agent Loop 的具体细节\nHermes 的核心是 AIAgent 类，它在一个持续循环里统一协调 prompt 构建、模型选择、工具执行、错误处理和存储。围绕它的是一个工具注册表，里面有 70 多个独立工具，分成大约 28 个所谓的工具集（toolset）——涵盖终端、浏览器、文件和 MCP 工具。当一次对话的 context 快用满时，一个专门的压缩模块会启动，它会有损地总结更早的对话内容，而不是简单地把它们截断。\n\n## 七层安全机制\nHermes 有意叠加了多层防护，而不是依赖单一的屏障：用户授权、危险指令需要人工确认、容器隔离、为 MCP 进程过滤过的凭据、对 context 文件做 prompt injection 检测、会话相互隔离，以及输入清洗。特别值得一提的是：一份固定的“硬性黑名单”（hardline blocklist）专门针对灾难性指令（比如删除整个文件系统）——即使你打开了 YOLO 模式（平时会跳过所有确认提示），这条规则也始终生效。\n\n## DM 配对流程\n如果一个陌生人通过 Telegram、Discord 或其他接入的平台给你发消息，对方一开始只会拿到一个八位的配对码（pairing code）——只有当你通过 CLI 命令确认这个码之后，这个人才能真正和你的 agent 对话。配对码一小时后会自动失效，这就限制了被滥用的时间窗口。\n\n## 跨会话的持久化\n和一个简单的聊天窗口不同，Hermes 会把对话永久保存在一个可搜索的 SQLite 数据库里。定时的、重复执行的任务（cron job）也是作为完整的 agent 任务运行，拥有自己全新的 context——而不是后台运行的简单 shell 脚本。"
   },
   {
     "slug": "openclaw",
@@ -758,7 +761,8 @@
         "title": "OpenClaw 文档：安全",
         "url": "https://docs.openclaw.ai/gateway/security"
       }
-    ]
+    ],
+    "bodyDetail": "## 信任模型：每个网关一个操作者\nOpenClaw 的安全模型明确假设每个网关（gateway）只有一个受信任的操作者——它明确不是为多个互不信任的用户共用同一个 agent 而设计的防护。如果需要让多个人或多个团队使用同一个助手，官方文档建议为每一个信任边界单独运行一个隔离的网关，而不是共用一个。\n\n## 固定顺序的三个优先级\nOpenClaw 自己的安全理念遵循一个明确的顺序：先确认身份（谁有资格和 bot 对话），再限制行动范围（bot 能在哪里做事——群组、工具、sandboxing），最后才是信任模型本身。背后的基本假设是：模型是可能被操纵的，所以不管 prompt 里发生了什么，损害都必须被限制住。\n\n## 具体到私信和 sandboxing\n私信（DM）有四个可调级别：“pairing”（默认——陌生发送者会拿到一个配对码）、“allowlist”（只允许已知 ID）、“open”（公开）和“disabled”（关闭）。在工具执行方面，OpenClaw 默认使用 Docker 容器作为 sandbox，并可配置对工作区的访问权限（无访问、只读或读写）。一个内置命令（openclaw security audit）会自动检查自身配置里的风险项，比如开放的群组策略或者缺失的身份验证，并能直接修复一些简单问题。\n\n## 一个误解\n开启了 sandboxing 并不会自动防住 prompt injection 本身——它只是限制了一次被成功操纵的回复能造成多大损害。文档因此特别强调：仅靠 system prompt 里的规则并不构成硬性防护；真正起作用的是工具权限、确认步骤和 sandboxing。"
   },
   {
     "slug": "modell-lifecycle",
@@ -793,7 +797,8 @@
         "title": "Anthropic：Model Deprecations",
         "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations"
       }
-    ]
+    ],
+    "bodyDetail": "## 四个官方生命周期阶段\nAnthropic 为每个模型区分四种固定状态：Active（完全支持，推荐使用）、Legacy（不再获得更新，可能很快会被弃用）、Deprecated（仍然可用，但有明确的下线日期和推荐的替代模型），以及 Retired（请求会直接失败）。对于公开发布的模型，在真正下线之前至少会提前 60 天通知——足够用来迁移，但不是无限的缓冲期。\n\n## Fable 5 是如何被保护的\n在 Fable 5 上，Anthropic 同时叠加了多层防护机制（“深度防御”，defense in depth）：分类器（classifier）会在对话过程中识别潜在的危险请求并加以拦截。为了确保那些擦边但实际上无害的请求也能被可靠地拦住，系统特意留出了很大的“安全余量”——结果是，比平时更多本来无害的请求也被误拦了。\n\n## 一套共同的越狱评估框架\n针对这次事件，Anthropic 联合 Amazon、Microsoft 和 Google 提出了一套统一评估越狱（jailbreak，一种绕过安全机制的方法）严重程度的方案：依据攻击者获得的能力提升、可能被滥用的范围有多广、这个手法有多容易被扩展成真正的攻击，以及它本身有多容易被发现。\n\n## 实际影响\n如果你在某个特定模型上构建应用，就既不能指望它永久可用，也不能指望它的响应行为始终不变——安全分类器会持续被调整，偶尔也会波及一些之前完全没问题的请求。因此，一个集中管理、可替换的模型接入层加上 fallback（备用方案），不是应对极端情况的额外保险，而是基本要求。"
   },
   {
     "slug": "kosten-kontrolle-agenten",
@@ -861,7 +866,8 @@
         "title": "Cloud Security Alliance: Slopsquatting Research Note",
         "url": "https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/"
       }
-    ]
+    ],
+    "bodyDetail": "## 问题到底有多大\n一项在 USENIX Security Symposium 2025 上发表的研究，让 16 个常见的代码模型生成了大约 2,230,000 个 Python 和 JavaScript 代码样本。结果显示：19.7% 的样本里至少包含一个幻觉出来的、根本不存在的包名——总共超过 205,000 个不同的虚构名字。开源模型出现幻觉的比例明显更高，平均达到 21.7%，而商业模型是 5.2%——但即便是测试中表现最好的模型，也没有做到零幻觉。\n\n## 为什么这对攻击者格外有吸引力\n真正危险的地方在于这种幻觉具有可重复性：研究人员把同一个 prompt 跑了十次，发现将近一半的幻觉包名在每一次运行中都会重复出现。这意味着攻击者可以专门找出某个模型稳定会推荐的虚构包名，提前在 npm 或 PyPI 上把它注册下来，然后坐等开发者或 agent 把它安装进去。“slopsquatting”这个说法，由 Python Software Foundation 的开发者 Seth Larson 提出，借用的是经典的 typosquatting（域名仿冒）概念。\n\n## 为什么 agent 会放大这种风险\n一个复制代码的人类开发者，理论上至少还有机会注意到一个可疑的包名。而一个自己安装依赖的自主 coding agent，往往会完全跳过这道关卡——它生成代码、识别出自己需要的依赖，然后直接调用包管理器，整个过程完全没有人去看一眼这个名字。\n\n## 具体能帮上忙的做法\n除了正文提到的检查清单之外，对每一个被建议的包名，再核实一下它的注册时间也很有帮助——一个几天前才被一个陌生发布者注册的包，不管名字听起来多么可信，都是一个明确的警示信号。"
   },
   {
     "slug": "subagents",
@@ -975,7 +981,8 @@
         "title": "Node.js：官网",
         "url": "https://nodejs.org/"
       }
-    ]
+    ],
+    "bodyDetail": "## 不止一个脚本命令的安装方式\n除了原生安装器（native installer），还可以用 Homebrew（macOS）和 WinGet（Windows）这类包管理器来安装。Homebrew 甚至提供两个渠道：常规的“claude-code” cask 跟随稳定版发布，通常会晚大约一周；而“claude-code@latest”会在新版本发布后立刻更新。一个重要区别是：只有原生安装器会在后台自动更新——用 Homebrew 或 WinGet 安装的话，你得自己定期执行升级命令，否则就会一直停留在旧版本上。\n\n## 具体的系统要求\nClaude Code 支持 macOS 13 及以上、Windows 10（build 1809）或 Windows Server 2019 及以上、Ubuntu 20.04、Debian 10，以及 Alpine Linux 3.19——都要求 x64 或 ARM64 处理器至少配备 4 GB 内存。安装过程还会在运行任何东西之前，通过一个经过加密签名的校验和，验证下载的程序是否完整。\n\n## 不同的账号类型\n除了常规的 Claude 订阅，或者按用量付费（通过预付额度）的 Claude Console 账号之外，Claude Code 还可以通过 Amazon Bedrock、Google Cloud 或 Microsoft Foundry 这类企业云服务商接入。规模更大的组织还可以额外搭建一个自托管网关，配合企业单点登录（SSO）——登录命令会自动打开正确的登录界面。\n\n## 一个误解\n“Claude Code 在 Windows 上必须依赖 WSL”这个说法是错的：它在 Windows 上是原生运行的，完全不需要管理员权限。WSL 2 只在使用可选的 sandboxing 功能时才需要，正常使用完全不需要。"
   },
   {
     "slug": "modell-und-plan-wahl",
@@ -1011,7 +1018,8 @@
         "title": "OpenAI：API Pricing",
         "url": "https://openai.com/api/pricing/"
       }
-    ]
+    ],
+    "bodyDetail": "## 计费在技术上是怎么运作的\n如果你通过 Console 账号使用 API，通常是用预付额度（prepaid credits）付费，每次请求都会按消耗的 token 数量扣减。订阅的方式正好相反：固定的月费，换来的是用量上限，而不是按用量付费。这两种模式都还有速率限制（rate limit）——也就是在某个时间段内，不管你的额度还剩多少，允许发出的请求数或 token 数都有一个上限。如果你打算发很多并发请求（比如你自己搭建的、带多个 subagent 的 agent），最好提前查清楚这个限制，而不是等应用已经在跑了才发现问题。\n\n## 实际使用中的小模型与大模型\n小模型和大模型的区别不只在价格上，响应速度以及在多步骤、agentic 任务里保持可靠的程度也不一样。一个常见且实用的模式是：把简单或者非常高频的请求自动路由（routing）给一个小而快的模型，把复杂或者少见的情况交给一个大模型。总体上，这比一律只用一个模型要更省钱。\n\n## 为什么这里故意不写具体数字\n模型名称、每 token 的价格，以及免费额度，往往几个月甚至几周就会变一次——参见“模型生命周期”。今天准确的一个具体数字，半年后很可能就不对了。所以更好的做法是，在自己的笔记或代码里链接到官方定价页面，而不是硬编码一个日后没人会去更新的数字。"
   },
   {
     "slug": "git-github-basics",
@@ -1047,7 +1055,8 @@
         "title": "GitHub Docs：快速开始",
         "url": "https://docs.github.com/en/get-started"
       }
-    ]
+    ],
+    "bodyDetail": "## commit 背后的技术原理\n每一次 commit 都会得到一个唯一的校验和（哈希值，hash），这个哈希由它的内容和它的父 commit 共同决定。哪怕只改动一个字节，整个哈希都会变——这正是历史记录难以被篡改、可以被完整追溯的原因。在生成 commit 之前，改动会先进入所谓的暂存区（staging area，通过 `git add` 操作）：一个中间区域，让你可以精确挑选哪些改动要进入下一次 commit，而不是被迫一次性提交所有改动。\n\n## 分布式而非中心化\nGit 是一个分布式系统：每一个本地克隆（clone）都包含完整的历史记录，而不只是一部分。这意味着你可以完全离线地在本地提交、切换分支（branch）、搜索历史——只有 `push` 和 `pull` 才需要和 GitHub 这样的远程服务器同步。一个 branch 本身在技术上只是指向某个特定 commit 的一个轻量指针，并不是一个独立的文件夹——这也是新建 branch 几乎不花任何成本的原因。\n\n## Merge 与 Rebase\n合并两个 branch 有两种方式。merge 会创建一个新的 commit，把两条历史线连接起来，并保留每个 branch 存在过的痕迹。rebase 则是把一个 branch 上的 commit 重新放到一个新的起点上，由此产生一条线性的、但被改写过的历史。日常和 coding agent 一起工作时，普通的 merge 通常就够用了——rebase 更适合用来整理出干净、准备发布的历史记录。"
   },
   {
     "slug": "agent-festgefahren",
@@ -1083,7 +1092,8 @@
         "title": "Anthropic：Building effective agents",
         "url": "https://www.anthropic.com/research/building-effective-agents"
       }
-    ]
+    ],
+    "bodyDetail": "## 为什么“事实依据”是关键\n一个 agent 在每一步都应该从它所处的环境里得到真实的反馈——一个测试结果、一条错误信息、一个构建状态——而不是只依赖自己的判断。没有这种“事实依据”（ground truth），agent 就只能依赖自己那种往往过于乐观的自我评估（“现在应该能跑了”）。所以，给一个卡住的 agent 一个可以被验证的任务：一个能跑的测试、一次构建、一份可以对比的 diff——用真实的检查取代单纯的信任。\n\n## 设置固定的终止条件\n一个已经跑偏了却还在无限继续工作的 agent，很容易陷入不断重复同一个错误尝试的循环。一个固定的尝试次数或步骤数上限（所谓的 stopping condition）会强制在某个点上，要么让人介入，要么让 agent 明确报告自己卡住了——而不是悄悄地继续消耗时间和 token。\n\n## 为什么接口本身常常才是根本原因\n问题往往不出在模型上，而是工具本身不够清晰。一个典型的例子：一个 coding agent 只要一离开根目录，就反复在相对文件路径上出错。解决办法不是改进 prompt，而是换了一个只接受绝对路径的工具——之后同一个 agent 就再也没用错过这个工具。所以在打磨指令之前，也值得回头看看工具本身。"
   },
   {
     "slug": "projekt-deployen",
@@ -1123,7 +1133,8 @@
         "title": "GitHub Docs：GitHub Pages",
         "url": "https://docs.github.com/en/pages"
       }
-    ]
+    ],
+    "bodyDetail": "## 不只是提供 HTML\n像 Cloudflare Pages 这样的现代静态托管服务，也能覆盖动态部分，而不需要你自己维护一台一直运行的服务器：所谓的 functions（函数）只在需要的时候运行（比如提交一个表单，或者调用一个 API），之后就会自动关闭。刚开始上手时，纯静态的方案通常就已经够用——只有真正需要服务器端逻辑时（比如发送一封联系表单邮件），才需要用到 functions。\n\n## 内置的撤销按钮\n大多数这类托管服务都提供回滚（rollback）功能：一次出问题的部署，可以一键恢复到上一个正常运行的版本，不需要重新写代码或重新部署。这在一个由 agent 触发的部署意外搞坏了什么东西时特别有用——旧的、能正常工作的版本会立刻重新上线。\n\n## 三种把代码传到服务器上的方式\n除了 Git 集成（每次 push 都会触发一次部署）之外，通常还可以直接上传做好的文件，不需要 Git 仓库，另外还有一个命令行工具，可以用来自动触发部署——如果想让 coding agent 自己发起部署，又不想专门搭一个仓库，这会很有用。\n\n## 一个误解\n免费套餐不代表可以无限次部署：大多数服务商都设有每月上限（常常是三位数），超过之后每多一次部署都要收费，或者需要升级套餐。对于一个单独的小项目来说，这很少会成为问题，但如果 agent 频繁自动触发部署，这一点就可能变得重要。"
   },
   {
     "slug": "claude-code-befehle",
@@ -1304,7 +1315,8 @@
         "title": "Wikipedia: Retrieval-Augmented Generation",
         "url": "https://de.wikipedia.org/wiki/Retrieval-Augmented_Generation"
       }
-    ]
+    ],
+    "bodyDetail": "## 两种检索方式的结合\n纯粹基于 embedding 的检索（retrieval）能找到语义上相似的内容，但有时候会漏掉精确匹配——比如客服数据库里一个具体的错误代码，像“TS-999”这样的。所以好的 RAG 系统会把 embedding 和 BM25 结合起来使用，BM25 是一种更老的、基于词法的检索方法，专门用来查找精确的词或字符匹配。只有把两者结合起来，才能既找到主题相关的内容，又不漏掉精确匹配的文本片段。\n\n## 作为改进手段的 Contextual Retrieval\n把文档拆分成小的文本片段（chunk）时，常见的一个问题是：单独一个片段，比如“营收比上一季度增长了 3%”，单看这一句根本看不出说的是哪家公司、哪个时间段。Contextual Retrieval（上下文检索）的解决办法是，在做 embedding 之前，先给每个片段自动加上一段简短的说明性上下文（通常是 50-100 个 token）——这段说明由一个能看到完整原文的、便宜的小模型生成。\n\n## 有据可查的效果数据\n测试中，仅仅是加了上下文的 embedding 检索，就把找不到相关片段的失败率降低了 35%。再结合 BM25 方法，失败率降低了 49%，如果再加上一步 reranking（重排序，一个模型对已经找到的候选结果按相关性重新排序），失败率甚至能降低 67%。\n\n## 什么时候在 prompt 里塞一段长文本就够了\n不是每个知识库都需要 RAG：如果整个知识库能塞进大约 200,000 个 token 以内，完全可以配合 prompt caching（提示缓存）直接放进每一次请求里——完全不需要检索基础设施。只有当知识库长期大于 context window 的时候，RAG 才真正划算。"
   },
   {
     "slug": "embeddings",
@@ -1344,7 +1356,8 @@
         "title": "Wikipedia: Worteinbettung",
         "url": "https://de.wikipedia.org/wiki/Worteinbettung"
       }
-    ]
+    ],
+    "bodyDetail": "## 一个向量里到底有多少个数字\nembedding 向量的长度是固定的，并且取决于具体模型——目前常见的 embedding 模型，每段文本大约会生成 1536 或 3072 个数字。维度越多，通常能捕捉到越细微的语义差异，但比较和存储时也会消耗更多的空间和算力。因此很多服务商允许你主动降低维度，同时又不丢失大致的语义结构——这是精度和效率之间的一种权衡。\n\n## 六种典型用途\n除了语义搜索和 RAG 之外，embedding 还被用于异常检测（找出和其他内容都不匹配的离群点）、多样性度量（一批文本到底有多不一样）以及自动分类（把一段文本归入距离最近的预设类别）。所有这些用途都依赖同一个基础运算：计算两个向量之间的距离。\n\n## 计算过程在技术上是怎样的\n一个通常比真正的语言模型小得多的专用模型，把文本转换成数字向量；计费是按输入文本的 token 数量算的，而不是按输出向量的长度。生成出来的向量本身不再带有可读的含义——单个数字无法被解读，只有多个向量之间的距离才有意义。\n\n## 一个误解\nembedding 模型并不是在人类意义上“理解”文本，也不会核查事实——它只是反映训练过程中学到的统计上的接近程度。因此，两句意思完全相反、但用词相似的句子，距离可能出人意料地近。"
   },
   {
     "slug": "fine-tuning",
@@ -1384,7 +1397,8 @@
         "title": "Wikipedia: Fine-tuning (deep learning)",
         "url": "https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)"
       }
-    ]
+    ],
+    "bodyDetail": "## 四种不同的 fine-tuning 方法\n不是所有 fine-tuning 流程都一样。Supervised fine-tuning（监督微调）向模型展示针对 prompt 的正确示范答案。Direct Preference Optimization（直接偏好优化）则同时展示一个更好和一个更差的答案，让模型学会哪个方向更受偏好。Reinforcement fine-tuning（强化微调）更进一步：由一个评分者（grader）对生成的答案打分，这个分数会专门强化那些带来特别好结果的推理路径——过程更复杂，但适合法律、医疗判断这类复杂、专业门槛高的任务。\n\n## 技术流程\n大体上，fine-tuning 的流程都差不多：收集一批示例数据，按结构化格式上传，启动一个训练任务，然后用 evals（评测）检查结果。像 reinforcement fine-tuning 这类涉及人工或自动评分的方法，还额外需要一套评分标准（grader），用来定义什么样的答案算“好”。\n\n## 为什么 fine-tuning 是 prompting 之外有用的补充\n当需要的示例数量远远超过单个 context window 能装下的容量时，或者敏感的训练数据不适合在每次请求里都放进 prompt 时，fine-tuning 就特别值得做。还有一个好处：更短的、不带大量示例的 prompt 能长期节省 token 和响应时间，因为想要的行为已经内化到模型本身里，不用每次都重新说明一遍。\n\n## 一个在变化中的选项\n不同服务商在多大程度上积极推广 fine-tuning，情况在不断变化：有些服务商正在重新调整这块业务，或者对新客户加以限制，而已有的模型仍然可以继续使用。所以在投入自建 fine-tuning 之前，值得先查一下相关平台目前的最新状态。"
   },
   {
     "slug": "prompt-injection",
@@ -1424,7 +1438,8 @@
         "title": "Simon Willison: Prompt Injection (Artikelserie)",
         "url": "https://simonwillison.net/series/prompt-injection/"
       }
-    ]
+    ],
+    "bodyDetail": "## 为什么 RAG 和 fine-tuning 不会自动带来防护\n一个常见的误解是：RAG 或 fine-tuning 这类技术，会因为让回答“更相关”而顺带解决 prompt injection 问题。但研究实际显示，这两者都没有解决根本问题——它们只是改变了哪些内容会进入 context window，但并不能阻止其中藏着的指令被误当成真正的指令来执行。\n\n## Prompt Injection 不等于 Jailbreaking\n这两个词经常被当作同义词使用，但其实指的是不同的事：prompt injection 泛指操纵模型对输入做出反应的方式。jailbreaking（越狱）是其中一种影响范围特别大的形式，目标是彻底绕过内置的安全规则。不是每一次成功的 prompt injection 都等于一次 jailbreak。\n\n## 七项具体的应对措施\nOWASP 提到的措施包括：在 system prompt 里严格限定模型行为；预先规定期望的输出格式，并做确定性检查；对输入和输出按禁止的模式做过滤；只给模型最小必要的权限（专门的、受限的 API 访问，而不是完全访问）；对有风险的操作要求人工确认；把外部内容明确标注出来，并和真正的 prompt 分开处理；以及定期进行有针对性的攻击模拟测试。\n\n## 图片里也可能藏着指令\n随着多模态模型的普及，攻击面也在扩大：一条隐藏的指令，也可能被藏在一张和普通文本一起处理的图片里。如果模型把图片和文本放在一起处理，即使可见的文字看起来完全无害，图片里藏着的指令也可能影响模型的行为。"
   },
   {
     "slug": "structured-outputs",
@@ -1464,7 +1479,8 @@
         "title": "JSON Schema: Überblick",
         "url": "https://json-schema.org/overview/what-is-jsonschema"
       }
-    ]
+    ],
+    "bodyDetail": "## 和普通 JSON 模式的区别\n很多 API 都提供两个层级：简单的“JSON 模式”只保证输出是合法的 JSON——不保证它符合你想要的 schema（结构）。Structured Outputs（结构化输出）更进一步，还会强制符合一个具体的 schema：如果缺少一个必填字段，或者某个字段类型不对，输出在技术上根本无法生成，而不是等到后面解析（parsing）的时候才发现出错。\n\n## 强制机制在技术上是怎么实现的\n在 Structured Outputs 下，生成下一个 token 的过程会被限制，在每一个位置都只允许生成符合给定 schema 的 token——这被称为约束解码（Constrained Decoding）。这和单纯在 prompt 里写“请返回 JSON”有明显区别，因为模型完全可能忽略这句话，或者做错。\n\n## 不是每个模型都支持得一样好\n这种硬性的 schema 绑定，并不是在每个模型、每个模型版本上都同样可用——较旧或较小的模型版本，往往只支持不带 schema 保证的简单 JSON 模式。所以在正式上线之前，值得查一下最新的模型文档，确认你用的版本到底适用哪种机制。\n\n## 实践中：用带类型的类，而不是原始 schema\n在现代开发环境里，schema 通常不会直接写成原始的 JSON Schema，而是通过一个带类型的类来定义（比如 Python 里的 Pydantic，或者 JavaScript 里的 Zod）。一个辅助库会自动把这个类定义转换成技术上需要的 schema——转换出来的结果之后可以直接在代码里当作一个现成的、带类型的对象使用，完全不需要手动解析。"
   },
   {
     "slug": "evals",
@@ -1504,7 +1520,8 @@
         "title": "Hamel Husain: Your AI Product Needs Evals",
         "url": "https://hamel.dev/blog/posts/evals/"
       }
-    ]
+    ],
+    "bodyDetail": "## 在第一次测试之前，先定义好成功标准\n在真正搭建 eval（评测）之前，先把“成功”具体定义清楚是值得的：要具体而不是笼统（“准确的情感分类”而不是“表现良好”），要能用明确的数字或量表来衡量，要在当前模型现实能达到的范围之内，并且要贴合真正的应用场景。哪怕是安全性、语气这类难以量化的话题，也能通过这种方式变得可以检验，比如“低于 0.1% 的输出会被标记为不合适”。\n\n## 三种投入程度不同的评分方式\n基于代码的评分（精确匹配、关键词搜索）最快也最可靠，但不够细腻。人工评分最灵活，但慢而且贵——更适合抽样检查，而不是持续进行的测试。介于两者之间的是让第二个模型来评分（LLM-as-judge，LLM 当裁判）：速度快、易扩展，适合更复杂的判断，前提是评分标准事先已经写得足够清楚、详细。\n\n## 关于 LLM 裁判的一个重要技巧\n如果先让第二个模型简单说明一下自己的理由，再给出最终判断，评分会更可靠——就像人一样，“先想清楚再打分”这一步，能减少草率、流于表面的判断。这段理由本身之后可以丢弃，评测只看最终结果。\n\n## 宁要许多简单的案例，也不要少数完美的案例\n一个常见的错误是：迟迟不去搭建 eval，因为总觉得它“规模还不够大”。更好的做法是，早早地用一个小而真实的测试集开始，并且不要忘记边界情况（edge case）——用更多、评分方式相对简单的自动化测试题，通常胜过少数几个耗费大量人工精心检查过的案例。"
   },
   {
     "slug": "git-worktrees",
@@ -1540,7 +1557,8 @@
         "title": "Claude Code Doku: Common Workflows (Worktrees)",
         "url": "https://code.claude.com/docs/en/common-workflows"
       }
-    ]
+    ],
+    "bodyDetail": "## 哪些东西是共享的，哪些不是\nworktree 之间共享完整的 commit 历史和所有 branch（也就是 refs/ 下的所有内容），但每个 worktree 都有自己的 HEAD 状态、自己的索引（index，也就是 staging area）和自己签出（checkout）的文件。正是这种分离，让并行工作成为可能：在一个 worktree 里的一次 commit，会立刻出现在共享的历史记录里，并且在所有其他 worktree 里都能看到，而磁盘上的文件不会互相覆盖。\n\n## 实用的简便命令\n完全不指定 branch 名字的情况下，`git worktree add ../path` 会自动创建一个新 branch，名字就是路径里最后一级文件夹的名字。如果一个 worktree 存放在移动硬盘或者网络硬盘上、不总是保持连接，`git worktree lock` 可以防止它相关的管理文件被自动清理掉。如果一个工作目录是被手动删掉的（没有用 `git worktree remove`），之后可以用 `git worktree prune` 清理掉留下来的孤立元数据。\n\n## 一个经典的使用场景\nGit 官方文档里描述了一个日常场景：正在做一次大规模重构的过程中，突然收到一个需要立刻处理的紧急修复请求。这时候与其用 `git stash` 把这堆凌乱、没做完的改动先搁一边，冒着漏掉什么的风险，不如为这个修复单独建一个临时 worktree，在里面独立完成它，完成后再把这个 worktree 删掉，然后回到重构工作里，从刚才停下的地方接着做。\n\n## 一个误解\nworktree 并不是像 `git clone` 那样完整、独立的副本——它们共享同一个底层的对象数据库，因此比起同一个仓库的多个独立克隆，占用的磁盘空间要小得多。"
   },
   {
     "slug": "hooks",
@@ -1576,7 +1594,8 @@
         "title": "Claude Code Doku: Get Started with Hooks",
         "url": "https://code.claude.com/docs/en/hooks-guide"
       }
-    ]
+    ],
+    "bodyDetail": "## 三种触发时机\nhook 事件大致分成三种时间类别：每个 session 一次（比如开始或结束时）、每一轮对话一次（比如你发送一条消息，或者 Claude 回答完毕时），以及在 agentic loop 里每一次工具调用时（每个工具执行前后各一次）。除了正文里提到的这些基础事件之外，还有更多可以挂钩的时机，比如在自动 context 压缩之前、创建一个 subagent 时，或者创建一个 Git worktree 时。\n\n## 不只是 shell 命令\n一个 hook 不一定非得是纯粹的 shell 命令。Claude Code 还支持 HTTP hook，可以向你自己的服务器发起请求，以及基于 prompt 和基于 agent 的 hook，让一个小型 LLM 自己来做判断，而不是套用死板的规则。这样就可以做出一个 hook，靠自己的判断力来评估一次改动是否“足够有风险”需要确认，而不是只匹配固定的文本模式。\n\n## 主动介入，而不只是旁观\n有些 hook 能做的不只是记录日志：它们可以返回一个明确的决定（允许、阻止，或者把动作推迟到之后处理）。一个 PreToolUse hook 可以在一条计划中的指令还没到达模型或系统之前，就把它完全拦下来——而不只是事后发出一条警告。\n\n## 自己写 hook 时的安全问题\n因为 hook 是以你自己账号的完整权限运行的，官方文档特别提醒：hook 命令能修改、删除或读取你账号能访问到的任何东西——每一条 hook 命令在加入配置之前，都应该先检查和测试一遍。"
   },
   {
     "slug": "multi-agent-patterns",
@@ -1613,7 +1632,8 @@
         "title": "Claude Code Doku: Subagents",
         "url": "https://code.claude.com/docs/en/sub-agents"
       }
-    ]
+    ],
+    "bodyDetail": "## 有据可查的性能提升数据\n在 Anthropic 内部的一项测试中，一个 multi-agent 系统（一个主导模型加上多个并行的 subagent）在研究类任务上，比同等能力的单个模型高出 90.2%。分析还显示：三个因素合起来能解释研究类 benchmark 里 95% 的性能差异，其中光是 token 消耗量这一项，就占了 80%——agent 数量越多，主要意味着并行思考的容量越大，分摊在多个各自独立的 context window 里。\n\n## 这种性能的代价\n更多 agent 意味着明显更高的成本：根据同一批测量数据，单个 agent 平均消耗的 token 大约是一次普通聊天对话的四倍，而一个 multi-agent 系统更是达到大约十五倍。只有当任务本身的价值真的能覆盖这些额外成本时，这才划算——对很多简单任务来说，并不是这样。\n\n## 什么时候拆分工作反而不划算\n不是每个任务都能从多个 agent 里获益。子任务之间存在大量紧密依赖关系的任务——比如大多数编码任务，一个文件的改动会牵动另一个文件——比起可以让多条独立搜索线路并行推进的开放式研究任务，更难被干净地拆分。\n\n## 一个实用的杠杆：并行调用而不是串行调用\n一个简单但很有效的技巧：让工具同时被调用，而不是一个接一个地调用——既可以同时启动多个 subagent，也可以在单个 subagent 内部同时发出多条搜索请求。仅这一项改动，在测试中就把复杂研究任务的完成时间缩短了最多 90%。"
   },
   {
     "slug": "kontext-strategien",
@@ -1650,7 +1670,8 @@
         "title": "Claude-Doku: Tipps für lange Kontexte",
         "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/long-context-tips"
       }
-    ]
+    ],
+    "bodyDetail": "## “Context Rot”（上下文腐坏）现象\n针对“大海捞针”（needle-in-a-haystack）测试的研究显示出一个一致的现象：context window 里的 token 越多，模型从中准确取回单条信息的可靠性就越差——即便还没达到技术上的上限也是如此。原因之一在于架构本身：Transformer 模型会计算几乎每一对 token 之间的关系，这使得注意力（attention）会随着长度增加而被实实在在地“稀释”。所以 context window 是一种边际收益递减的资源，而不只是一个容量问题。\n\n## 以 Claude Code 为例，看压缩具体是怎么做的\n当 context 变得紧张时，Claude Code 会自动总结消息历史，但会有针对性地保留架构决策、尚未解决的 bug 和重要的实现细节——而单纯的工具输出会被舍弃。此外，最近打开过的五个文件会一直保留完整内容。真正的难点在于总结时不能太激进：现在看起来不重要的东西，后面完全可能变得关键。\n\n## 外部记忆当作笔记本\n有些 agent 不是把所有东西都留在 context window 里，而是持续把笔记写进一个外部文件（比如一个 NOTES.md），需要的时候再读回来。在一次 context 重置之后，agent 会读取自己之前写下的笔记，然后无缝接着做下去——这种模式让长达数小时、前后连贯的任务成为可能，远远超出单个 context window 的范围。\n\n## 通过 subagent 实现压缩\n一个 subagent 在内部做自己的研究时，可能会消耗掉几万个 token，但返回给主 agent 的，往往只是一份 1,000 到 2,000 个 token 的浓缩摘要。那些耗费大量资源的中间过程被隔离在外，只有提炼出来的结果会进入主 context。"
   },
   {
     "slug": "tool-use",

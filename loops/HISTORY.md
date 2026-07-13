@@ -479,3 +479,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Live verifiziert: Video-URL 200 + Content-Type video/mp4, Embeds auf /de/loops/ + /zh/lexikon/context-window/.
 - Remotion-Setup-Learnings: create-video nicht nötig — 6 Dateien reichen (package.json, tsconfig, index/Root/Comps); npm-allow-scripts-Warnung harmlos, Compositor lief; Render ~60s/Clip lokal.
 - Known-good Deploy: 959c555e.promptgarden.pages.dev
+
+### It. 78 (14.07.26 nachts) — 📰 Feed 14.07 + 🔬 ZWEI-DETAIL-LEVEL-DIREKTIVE KOMPLETT ✅
+- Feed: 3 selbst-verifizierte News ×5 (muse-spark-1-1, friendly-fire-exploit, claude-code-2.1.207 — Changelog wörtlich gegengeprüft; Research-Agent verwarf 9 Kandidaten wegen Aggregator-Datumsfehlern/fehlender Primärquelle). 22 Items total. Commit 45d7f2a.
+- bodyDetail-Batch 3: restliche 21 Kapitel ×5 Sprachen → **ALLE 51 Kapitel haben jetzt 🌱/🔬** (Marvin-Direktive 8 komplett). Adversarial-Review PASS (11/21 tiefgeprüft, alle Zahlen exakt quellengedeckt; 1 FIX hooks-Formulierung vor Übersetzung angewandt). NEU scripts/patch-bodydetail.mjs (patcht nur bodyDetail, wirft bei Drift).
+- Live verifiziert: /de/lexikon/rag/ (»Zwei Suchverfahren kombiniert«) + /zh/lexikon/hooks/ (»三种触发时机«).
+- Known-good Deploy: 1fce91e5.promptgarden.pages.dev
