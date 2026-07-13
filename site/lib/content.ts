@@ -26,6 +26,8 @@ export type Entry = {
   sources?: { title: string; url: string }[];
   /** Übung zum Nachmachen im eigenen Tool (Claude Code/Cursor/…) + Selbst-Check */
   exercise?: { task: string; steps: string[]; selfCheck: string[] };
+  /** Detail-Level (Marvin 13.07): optionale vertiefte Version des body — Toggle 🌱/🔬 */
+  bodyDetail?: string;
 };
 
 const byLang: Record<Lang, Entry[]> = {

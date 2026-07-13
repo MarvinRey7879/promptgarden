@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { marked } from 'marked';
+import BodyToggle from '@/components/BodyToggle';
 import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
 import TokenPlayground from '@/components/TokenPlayground';
@@ -41,6 +42,7 @@ export default async function EntryPage({
   const t = ui[lang];
 
   const bodyHtml = marked.parse(entry.body) as string;
+  const detailHtml = entry.bodyDetail ? (marked.parse(entry.bodyDetail) as string) : null;
   const related = entry.related
     .map((s) => getEntry(lang, s))
     .filter((e): e is NonNullable<typeof e> => Boolean(e));
@@ -79,7 +81,7 @@ export default async function EntryPage({
         {entry.teaser}
       </p>
 
-      <div className="prose" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+      <BodyToggle bodyHtml={bodyHtml} detailHtml={detailHtml} labelSimple={t.levelSimple} labelDetail={t.levelDetail} />
 
       {entry.example && (
         <div className="card" style={{ padding: '18px 22px', marginTop: 26, background: 'var(--blue)', boxShadow: '4px 4px 0 var(--ink)' }}>

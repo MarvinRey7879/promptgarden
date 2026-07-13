@@ -48,6 +48,8 @@ type Dict = {
   sources: string;
   exercise: string;
   selfCheck: string;
+  levelSimple: string;
+  levelDetail: string;
   feedTitle: string;
   feedSub: string;
   feedTags: Record<string, string>;
@@ -131,6 +133,8 @@ export const ui: Record<Lang, Dict> = {
     sources: 'Quellen',
     exercise: 'Übung — mach das bei dir',
     selfCheck: 'Selbst-Check',
+    levelSimple: '🌱 Einfach',
+    levelDetail: '🔬 Im Detail',
     feedTitle: 'Feed',
     feedSub: 'Was gerade in der KI-Welt passiert — kuratiert, verifiziert, mit Quellen.',
     feedTags: { modelle: 'Modelle', tools: 'Tools', mcp: 'MCP', security: 'Security' , papers: 'Papers' },
@@ -220,6 +224,8 @@ export const ui: Record<Lang, Dict> = {
     sources: 'Sources',
     exercise: 'Exercise — try it yourself',
     selfCheck: 'Self-check',
+    levelSimple: '🌱 Simple',
+    levelDetail: '🔬 In depth',
     feedTitle: 'Feed',
     feedSub: 'What is happening in the AI world right now — curated, verified, with sources.',
     feedTags: { modelle: 'Models', tools: 'Tools', mcp: 'MCP', security: 'Security' , papers: 'Papers' },
@@ -309,6 +315,8 @@ export const ui: Record<Lang, Dict> = {
     sources: 'Fuentes',
     exercise: 'Ejercicio — pruébalo tú',
     selfCheck: 'Autoevaluación',
+    levelSimple: '🌱 Sencillo',
+    levelDetail: '🔬 En detalle',
     feedTitle: 'Feed',
     feedSub: 'Lo que está pasando ahora en el mundo de la IA — curado, verificado, con fuentes.',
     feedTags: { modelle: 'Modelos', tools: 'Herramientas', mcp: 'MCP', security: 'Seguridad' , papers: 'Papers' },
@@ -398,6 +406,8 @@ export const ui: Record<Lang, Dict> = {
     sources: 'Sources',
     exercise: 'Exercice — à toi de jouer',
     selfCheck: 'Auto-vérification',
+    levelSimple: '🌱 Simple',
+    levelDetail: '🔬 En détail',
     feedTitle: 'Feed',
     feedSub: "Ce qui se passe en ce moment dans le monde de l'IA — sélectionné, vérifié, avec sources.",
     feedTags: { modelle: 'Modèles', tools: 'Outils', mcp: 'MCP', security: 'Sécurité' , papers: 'Papers' },
@@ -487,6 +497,8 @@ export const ui: Record<Lang, Dict> = {
     sources: '来源',
     exercise: '练习——自己动手试试',
     selfCheck: '自查清单',
+    levelSimple: '🌱 简明',
+    levelDetail: '🔬 深入',
     feedTitle: '资讯',
     feedSub: 'AI 世界正在发生的事 —— 精选、核实、附来源。',
     feedTags: { modelle: '模型', tools: '工具', mcp: 'MCP', security: '安全' , papers: '论文' },
