@@ -1,9 +1,9 @@
 import { type Lang, ui } from '@/lib/i18n';
 
-// TODO(It.2): echte Handles von Marvin eintragen (PayPal.me / Ko-fi / GitHub Sponsors)
+// Handles von Marvin (13.07.2026); GitHub Sponsors folgt nach Anmeldung
 const DONATE_LINKS: { label: string; href: string | null }[] = [
-  { label: 'PayPal', href: null },
-  { label: 'Ko-fi', href: null },
+  { label: 'PayPal', href: 'https://paypal.me/Marv7879' },
+  { label: 'Ko-fi', href: 'https://ko-fi.com/marvinm' },
   { label: 'GitHub Sponsors', href: null },
 ];
 

@@ -271,7 +271,35 @@ Jede Iteration IMMER: Admin-Summary zuerst (Marvin-Notes = höchste Prio), Artif
 - 3 Guides bestückt: erst-plan-dann-code, claude-code-befehle (/help, /doctor, /usage — Fakten aus offiziellen W21/W28-Digests von heute), kontext-fuettern — je ×5 Sprachen, live verifiziert DE/ZH/ES
 - Muster für weitere Übungen etabliert: Übung = im EIGENEN Tool nachmachen, 3 Schritte, 3 Selbst-Check-Fragen, keine erfundenen Behauptungen über Tool-Verhalten
 
-### Standard-Iteration ab It. 18 (Warte-auf-Marvin-Phase)
+### 🔴 MARVIN-DIREKTIVEN 12.07 (22:30) — überschreiben ältere Takt-Regeln
+1. **KEIN NACHTMODUS.** Loop läuft 24/7 im vollen Arbeitstakt. Nachts NICHT auf reine Poll-Iterationen drosseln — immer an Substanz weiterbauen (Content/Features/Research), Zone-Poll läuft nebenbei mit.
+2. **Neue Säule „Befehls-Referenz"** (höchste Content-Prio):
+   - Hierarchie: Plattform → Befehl (z.B. Claude Code → /goal). Eigene Sektion /[lang]/befehle/ mit Hub → Plattform-Seite → Befehls-Detailseite.
+   - Jede Befehlsseite: Was macht er (simpel, faktisch) · „Wann einsetzen?" mit 2-3 guten Beispielen · „Wann eher nicht?" mit Negativ-Beispielen + besserer Alternative (z.B. „Dauerauftrag? → eher /loop statt /goal") · Quellen (offizielle Doku, verifiziert).
+   - Plattformen: Claude Code zuerst (offizielle Doku code.claude.com), dann Codex CLI, dann weitere (Cursor CLI, Aider, Gemini-Nachfolger …).
+   - JEDER Befehl einzeln — Vollständigkeit zählt.
+3. **Addons/Ökosystem-Bereich**: Graphify, Obsidian + weitere wichtige Addons/Integrationen — erst Research mit Quellenpflicht (was ist Graphify wirklich? nur belegte Fakten), dann eigene Sektion oder Lexikon-Einträge.
+
+### Bau-Plan Befehls-Referenz (It. 56 ff.)
+- [x] Research A: Claude-Code-Befehle vollständig aus offizieller Doku (It. 56 gestartet)
+- [x] Research B: Codex CLI Stand + Befehle (It. 56 gestartet)
+- [x] Research C: Addons (Graphify, Obsidian, weitere) (It. 56 gestartet)
+- [ ] Datenmodell commands.<lang>.json {platform, slug, name, summary, whenGood[], whenBad[{why, alternative}], sources[]}
+- [ ] Routen /befehle/ + /befehle/[platform]/ + /befehle/[platform]/[slug]/ + Nav-Eintrag (5 Sprachen)
+- [ ] Claude-Code-Befehle Batch 1 live → dann Codex → dann Addons-Sektion
+
+### It. 56–57 (12.07 22:30 – 13.07 früh) — Marvin-Direktiven + Befehls-Referenz LIVE ✅
+- Marvin: kein Nachtmodus / Befehls-Referenz / Addons (Graphify, Obsidian) → verankert (oben) + Memory
+- Research ×3 fertig + gesichert in research/befehle/: claude-code-2026-07-12.json (92 Befehle, DE, offizielle Doku; /theme existiert NICHT als eigener Befehl), codex-cli-2026-07-12.md (~25 Slash + Subcommands/Flags; CLI lebt eigenständig, 09.07-Merge betraf nur Desktop-App), addons-2026-07-12.md (Graphify 83k★ verifiziert, 4 Obsidian-Integrationen, 7 Kern-Addons)
+- **LIVE:** /[lang]/befehle/ Hub → Plattform → Befehl (Nav in 5 Sprachen), 92 Claude-Code-Befehlsseiten DE mit Quellen; commands.<lang>.json + lib/commands.ts + 3 Routen
+- **LIVE:** giscus AN (Marvin hat App installiert; NEXT_PUBLIC_GISCUS=on in .env.production), Spenden-Links PayPal paypal.me/Marv7879 + Ko-fi ko-fi.com/marvinm im Footer (beide URLs 200-verifiziert); GitHub Sponsors wartet auf Marvins Anmeldung
+- ⚠️ Codex-Authoring-Agent starb an Wochen-Rate-Limit (Reset 3:00 Berlin) → Retry
+- Lektion: `npm run build | tail` maskiert Build-Fehler (Exit-Code von tail) → Deploy lief mit stalem out/. Ab jetzt Build-Erfolg separat prüfen (z.B. `npm run build && deploy` ohne Pipe oder `set -o pipefail`)
+- Lektion: static export verträgt KEINE leere generateStaticParams-Route → Routen erst mit Daten shippen
+- OFFEN (Reihenfolge): ① whenGood/whenBad-Batches für Top-Claude-Code-Befehle (DE+EN) ② Codex-Einträge (16, Agent-Retry) ③ Übersetzungen EN/ES/FR/ZH der 92 Summaries/Whats ④ Addons-Sektion ⑤ /admin abhakbare Marvin-Todo-Liste (Marvin-Wunsch 13.07) ⑥ Sitemap um /befehle/ erweitern
+- MARVIN-KANAL-Regel (13.07): Artifact kann nichts senden (CSP) → /admin-Prio-Feld ist der Schreibkanal; regelmäßig neue Marvin-Todos (GSC nach Domain, Reddit etc.) ins Statusboard posten
+
+### Standard-Iteration (aktualisiert 12.07 — Warte-auf-Marvin gilt NUR noch für Domain-Automatik)
 1. Admin-Summary (Notes = sofort umsetzen) — KORREKTER Aufruf:
    `curl -s .../v1/admin/summary -H "X-Admin-Key: $PG_ADMIN_KEY"` + im Parser `if(j.error) throw` (NIE Bearer, nie stumm defaulten)
 2. GENAU EINE Sache nach Tagesrhythmus: Research/Feed-Refresh (1×/Tag, neue News verifiziert in 5 Sprachen) ODER Qualitäts-Check (Link-Sample, Live-Smoke) ODER kleine Verbesserung aus TODO/Ideen-Parkplatz

@@ -6,7 +6,13 @@ export function isLang(x: string): x is Lang {
 }
 
 type Dict = {
-  nav: { lexikon: string; lernpfade: string; feed: string; vergleiche: string };
+  nav: { lexikon: string; lernpfade: string; feed: string; vergleiche: string; befehle: string };
+  cmdTitle: string;
+  cmdSub: string;
+  cmdWhenGood: string;
+  cmdWhenBad: string;
+  cmdAlternative: string;
+  cmdAllCommands: string;
   newsletter: string;
   newsletterSoonTitle: string;
   newsletterSoonBody: string;
@@ -75,7 +81,13 @@ type Dict = {
 
 export const ui: Record<Lang, Dict> = {
   de: {
-    nav: { lexikon: 'Lexikon', lernpfade: 'Lernpfade', feed: 'Feed', vergleiche: 'Vergleiche' },
+    nav: { lexikon: 'Lexikon', lernpfade: 'Lernpfade', feed: 'Feed', vergleiche: 'Vergleiche', befehle: 'Befehle' },
+    cmdTitle: 'Befehls-Referenz',
+    cmdSub: 'Jeder Befehl einzeln erklärt: was er macht, wann er glänzt — und wann etwas anderes besser passt.',
+    cmdWhenGood: 'Wann einsetzen?',
+    cmdWhenBad: 'Wann eher nicht?',
+    cmdAlternative: 'Besser',
+    cmdAllCommands: 'Alle Befehle',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'Newsletter kommt bald 🌱',
     newsletterSoonBody: 'Wir bauen gerade den Versand. Schau in ein paar Tagen wieder vorbei — oder merk dir die Seite.',
@@ -155,7 +167,13 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} Tag${n === 1 ? '' : 'e'}`,
   },
   en: {
-    nav: { lexikon: 'Glossary', lernpfade: 'Learning paths', feed: 'Feed', vergleiche: 'Compare' },
+    nav: { lexikon: 'Glossary', lernpfade: 'Learning paths', feed: 'Feed', vergleiche: 'Compare', befehle: 'Commands' },
+    cmdTitle: 'Command reference',
+    cmdSub: 'Every command explained one by one: what it does, when it shines — and when something else fits better.',
+    cmdWhenGood: 'When to use it?',
+    cmdWhenBad: 'When not to?',
+    cmdAlternative: 'Better',
+    cmdAllCommands: 'All commands',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'Newsletter coming soon 🌱',
     newsletterSoonBody: 'We are building the sending pipeline right now. Check back in a few days.',
@@ -235,7 +253,13 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} day${n === 1 ? '' : 's'}`,
   },
   es: {
-    nav: { lexikon: 'Glosario', lernpfade: 'Rutas de aprendizaje', feed: 'Feed', vergleiche: 'Comparar' },
+    nav: { lexikon: 'Glosario', lernpfade: 'Rutas de aprendizaje', feed: 'Feed', vergleiche: 'Comparar', befehle: 'Comandos' },
+    cmdTitle: 'Referencia de comandos',
+    cmdSub: 'Cada comando explicado uno por uno: qué hace, cuándo brilla — y cuándo encaja mejor otra cosa.',
+    cmdWhenGood: '¿Cuándo usarlo?',
+    cmdWhenBad: '¿Cuándo mejor no?',
+    cmdAlternative: 'Mejor',
+    cmdAllCommands: 'Todos los comandos',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'El newsletter llega pronto 🌱',
     newsletterSoonBody: 'Estamos construyendo el envío ahora mismo. Vuelve a pasarte en unos días — o guarda esta página.',
@@ -315,7 +339,13 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} día${n === 1 ? '' : 's'}`,
   },
   fr: {
-    nav: { lexikon: 'Lexique', lernpfade: "Parcours d'apprentissage", feed: 'Feed', vergleiche: 'Comparer' },
+    nav: { lexikon: 'Lexique', lernpfade: "Parcours d'apprentissage", feed: 'Feed', vergleiche: 'Comparer', befehle: 'Commandes' },
+    cmdTitle: 'Référence des commandes',
+    cmdSub: "Chaque commande expliquée une par une : ce qu'elle fait, quand elle brille — et quand autre chose convient mieux.",
+    cmdWhenGood: 'Quand l’utiliser ?',
+    cmdWhenBad: 'Quand éviter ?',
+    cmdAlternative: 'Mieux',
+    cmdAllCommands: 'Toutes les commandes',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'La newsletter arrive bientôt 🌱',
     newsletterSoonBody: "On est en train de construire l'envoi. Reviens dans quelques jours — ou garde cette page en favori.",
@@ -395,7 +425,13 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} jour${n === 1 ? '' : 's'}`,
   },
   zh: {
-    nav: { lexikon: '词典', lernpfade: '学习路径', feed: '资讯', vergleiche: '对比' },
+    nav: { lexikon: '词典', lernpfade: '学习路径', feed: '资讯', vergleiche: '对比', befehle: '命令' },
+    cmdTitle: '命令参考',
+    cmdSub: '每条命令逐一讲解：它做什么、什么时候好用——以及什么时候更适合用别的。',
+    cmdWhenGood: '什么时候用？',
+    cmdWhenBad: '什么时候不该用？',
+    cmdAlternative: '更好的选择',
+    cmdAllCommands: '全部命令',
     newsletter: '订阅',
     newsletterSoonTitle: '订阅邮件即将上线 🌱',
     newsletterSoonBody: '我们正在搭建发送系统。过几天再回来看看——或者先收藏这个页面。',
