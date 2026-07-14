@@ -1,0 +1,1550 @@
+{
+  "de": [
+    {
+      "platform": "antigravity-cli",
+      "slug": "start-tui",
+      "name": "agy",
+      "summary": "Startet die Antigravity-CLI-TUI im aktuellen Arbeitsverzeichnis.",
+      "what": "agy ohne Argumente öffnet die interaktive Terminal-Oberfläche (TUI) im aktuellen Verzeichnis. Beim ersten Start in einem Verzeichnis mit vorhandener Gemini-CLI-Konfiguration erkennt die CLI diese automatisch und bietet eine Migrations-Checkliste an. Die Anmeldung läuft über das Betriebssystem-Schlüsselbund (Keychain/Secret Service/Credential Manager); ist keine Sitzung gespeichert, öffnet sich automatisch der Standard-Browser. Über SSH ohne lokalen Browser druckt die CLI stattdessen eine Autorisierungs-URL zum Öffnen im lokalen Browser plus einen Code zum Zurückeinfügen im Terminal.",
+      "whenGood": [
+        {
+          "title": "Neues Projekt interaktiv starten",
+          "example": "agy im Projektordner ausführen, um die TUI zu öffnen und im Dialog mit dem Agent zu arbeiten"
+        },
+        {
+          "title": "Von Gemini CLI umsteigen",
+          "example": "agy in einem Ordner mit vorhandener Gemini-CLI-Konfiguration starten, um die automatische Migrations-Checkliste zu erhalten"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein einzelner Befehl soll ohne TUI laufen, z.B. in einem Skript",
+          "why": "agy ohne Flags öffnet immer die volle interaktive Oberfläche und blockiert das Terminal.",
+          "alternative": "agy -p / --print für nicht-interaktive Ausführung"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI README (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/README.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: Getting Started",
+          "url": "https://antigravity.google/docs/cli/getting-started"
+        },
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        },
+        {
+          "title": "Antigravity CLI Doku: Migration von Gemini CLI",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "print",
+      "name": "agy -p / --print",
+      "summary": "Führt einen Prompt nicht-interaktiv aus und beendet sich danach (Print-/Headless-Modus).",
+      "what": "agy -p bzw. --print \"<prompt>\" führt einen einzelnen Prompt ohne TUI aus und eignet sich für Git-Hooks, Skripte und Shell-Pipelines. Seit 1.1.1 schreibt der Modus Serverfehler nach stderr und liefert einen Exit-Code ungleich 0, statt still leer zu beenden; seit 1.1.2 bricht er bei nicht auflösbarem --model hart mit Exit-Code ungleich 0 und einer Liste verfügbarer Modelle ab, statt still auf das Standardmodell umzuschalten. Lässt sich mit -c bzw. --conversation <id> zum Fortsetzen einer bestehenden Konversation kombinieren.",
+      "whenGood": [
+        {
+          "title": "In ein Skript oder einen Git-Hook einbinden",
+          "example": "agy -p \"Review this git diff and draft a conventional commit message\" --cwd $(pwd)"
+        },
+        {
+          "title": "Vorherige Konversation nicht-interaktiv fortsetzen",
+          "example": "agy -c -p \"fasse den aktuellen Stand zusammen\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will während der Ausführung interaktiv nachsteuern oder Rückfragen live beantworten",
+          "why": "Der Print-Modus läuft ohne TUI und ohne interaktive Rückfragen durch.",
+          "alternative": "agy ohne -p für die normale interaktive TUI starten"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "continue",
+      "name": "agy -c / --continue",
+      "summary": "Nimmt die zuletzt aktive Konversation des aktuellen Arbeitsbereichs sofort wieder auf.",
+      "what": "agy -c bzw. --continue lädt direkt die zuletzt genutzte Konversation für das aktuelle Arbeitsverzeichnis, ohne den /resume-Auswahldialog zu öffnen. Die CLI merkt sich dafür pro Verzeichnis die letzte Konversations-ID in einer Cache-Datei. Lässt sich mit -p kombinieren, um eine bestehende Konversation nicht-interaktiv fortzusetzen.",
+      "whenGood": [
+        {
+          "title": "Schnell an derselben Aufgabe im selben Ordner weiterarbeiten",
+          "example": "agy -c direkt nach einem Neustart im selben Projektordner aufrufen"
+        },
+        {
+          "title": "Bestehende Konversation nicht-interaktiv fortsetzen",
+          "example": "agy -c -p \"was fehlt noch?\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will gezielt aus mehreren gespeicherten Konversationen wählen",
+          "why": "-c lädt immer nur die zuletzt aktive Konversation des Verzeichnisses, ohne Auswahlmöglichkeit.",
+          "alternative": "/resume im laufenden agy nutzen oder agy --conversation <id> für eine gezielte ID"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "conversation-id",
+      "name": "agy --conversation <id>",
+      "summary": "Lädt eine bestimmte Konversation direkt über ihre ID, ohne Auswahldialog.",
+      "what": "agy --conversation <id> lädt eine konkrete gespeicherte Konversation anhand ihrer eindeutigen ID und überspringt den interaktiven /resume-Auswahldialog. Lässt sich mit -p kombinieren, um diese Konversation nicht-interaktiv fortzusetzen; seit 1.0.9 gibt dieser kombinierte Modus nur noch die neu generierte Antwort statt des kompletten historischen Transkripts aus.",
+      "whenGood": [
+        {
+          "title": "Gezielt zu einer bekannten Konversations-ID zurückkehren",
+          "example": "agy --conversation 7f3a2b1c"
+        },
+        {
+          "title": "Bestimmte Konversation nicht-interaktiv fortsetzen",
+          "example": "agy --conversation 7f3a2b1c -p \"fasse zusammen\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Die genaue Konversations-ID ist nicht bekannt",
+          "why": "--conversation erwartet eine exakte ID, es gibt keine Fuzzy-Suche über das Flag.",
+          "alternative": "/resume im laufenden agy nutzen, um Konversationen zu durchsuchen und auszuwählen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "model-flag",
+      "name": "agy --model <name>",
+      "summary": "Legt beim Start das zu verwendende Modell fest.",
+      "what": "agy --model <name> setzt das Reasoning-Modell beim Start der CLI. Interaktive Sitzungen fallen bei einem nicht auflösbaren Modell mit einer Warnung auf das Standardmodell zurück; im Print-Modus (-p) bricht die CLI seit 1.1.2 stattdessen mit Exit-Code ungleich 0 und einer Liste der verfügbaren Modelle ab. Verfügbare Namen liefert der Subcommand agy models.",
+      "whenGood": [
+        {
+          "title": "Direkt mit einem bestimmten Modell starten",
+          "example": "agy --model=\"Gemini 3.1 Pro\""
+        },
+        {
+          "title": "Im Skript sicherstellen, dass ein bestimmtes Modell genutzt wird",
+          "example": "agy --model <name> -p \"<prompt>\" bricht bei falschem Namen hart ab, statt still ein anderes Modell zu nutzen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Modell soll dauerhaft für alle künftigen Sitzungen gelten",
+          "why": "--model wirkt nur für den aktuellen Start, nicht persistent.",
+          "alternative": "/model im laufenden agy nutzen, das das Modell sitzungsübergreifend persistiert"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "list-models",
+      "name": "agy models",
+      "summary": "Listet die verfügbaren Modelle auf.",
+      "what": "agy models (Subcommand) zeigt die für den aktuellen Plan verfügbaren Modelle. Auf allen Plänen stehen laut Doku Gemini 3.1 Pro und Gemini 3.5 Flash bereit; Claude Sonnet 4.6 (thinking), Claude Opus 4.6 (thinking) und GPT-OSS-120b sind nur auf Google AI Ultra verfügbar. Der gelistete Modellname lässt sich direkt an --model übergeben.",
+      "whenGood": [
+        {
+          "title": "Verfügbare Modellnamen vor dem Start nachschlagen",
+          "example": "agy models, um den exakten Namen für --model zu finden"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will das Modell für die laufende Sitzung wechseln",
+          "why": "agy models ist ein reiner Auflistungs-Subcommand außerhalb einer laufenden Sitzung.",
+          "alternative": "/model im laufenden agy nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "agent-flag",
+      "name": "agy --agent <name>",
+      "summary": "Wählt beim Start einen Custom Agent aus.",
+      "what": "agy --agent <name> (seit 1.1.1) wählt beim Start einen benutzerdefinierten Agent statt des Standardagents aus. Custom Agents lassen sich zuvor mit dem Subcommand agy agent bzw. agy agents auflisten.",
+      "whenGood": [
+        {
+          "title": "Mit einem spezialisierten Custom Agent statt dem Standardagent starten",
+          "example": "agy --agent code-reviewer"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der Name des gewünschten Custom Agents ist nicht bekannt",
+          "why": "--agent erwartet einen existierenden, exakten Agent-Namen.",
+          "alternative": "Erst agy agents zum Auflisten nutzen, dann --agent <name> setzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "list-agents",
+      "name": "agy agent / agy agents",
+      "summary": "Listet die verfügbaren Custom Agents auf.",
+      "what": "agy agent bzw. agy agents (Subcommand, seit 1.1.1) zeigt die verfügbaren benutzerdefinierten Agents. Der gefundene Name lässt sich direkt an --agent beim Start übergeben; innerhalb einer laufenden Sitzung übernimmt das /agents-Panel Auswahl und Überwachung laufender Subagents.",
+      "whenGood": [
+        {
+          "title": "Verfügbare Custom Agents vor dem Start nachschlagen",
+          "example": "agy agents, um den exakten Namen für --agent zu finden"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man ist bereits in einer laufenden Sitzung und will Agents verwalten oder Subagents überwachen",
+          "why": "Der Subcommand liefert nur eine einmalige Liste außerhalb der TUI.",
+          "alternative": "/agents im laufenden agy nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "project-flag",
+      "name": "agy --project <name>",
+      "summary": "Setzt beim Start explizit das zu verwendende Projekt.",
+      "what": "agy --project <name> (seit 1.0.12) legt beim Start explizit fest, welches Projekt verwendet wird, statt das Projekt automatisch aus dem aktiven Arbeitsbereich abzuleiten. Ergänzt --new-project, mit dem stattdessen ein neues Projekt angelegt wird.",
+      "whenGood": [
+        {
+          "title": "Ein bestehendes Projekt unabhängig vom aktuellen Verzeichnis auswählen",
+          "example": "agy --project mein-projekt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Es soll ein komplett neues Projekt entstehen",
+          "why": "--project wählt nur unter existierenden Projekten aus, legt aber keines an.",
+          "alternative": "agy --new-project <name> verwenden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "new-project",
+      "name": "agy --new-project <name>",
+      "summary": "Legt beim Start ein neues Projekt an.",
+      "what": "agy --new-project <name> (seit 1.0.12) erstellt beim Start ein neues Projekt mit dem angegebenen Namen. Ohne Namen vergibt die CLI seit 1.1.1 standardmäßig den Namen 'CLI Project' für neu initialisierte Projekte.",
+      "whenGood": [
+        {
+          "title": "Für eine neue Aufgabe ein frisches Projekt anlegen",
+          "example": "agy --new-project mein-neues-projekt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein bereits existierendes Projekt soll weiterverwendet werden",
+          "why": "--new-project legt immer ein neues Projekt an, statt ein bestehendes zu laden.",
+          "alternative": "agy --project <name> verwenden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "sandbox-flag",
+      "name": "agy --sandbox",
+      "summary": "Erzwingt Sandbox-Isolation für Terminal-Befehle, auch im Print-Modus.",
+      "what": "agy --sandbox schränkt alle vom Agent gestarteten lokalen Ausführungsbefehle auf Betriebssystem-Containment-Mechanismen ein: nsjail (Linux, kernel namespaces/cgroups), sandbox-exec (macOS, Policy-Profile) bzw. AppContainer (Windows). Seit 1.0.6 wird das Flag korrekt auch im nicht-interaktiven Print-Modus (-p/--print) durchgesetzt, nicht nur interaktiv. Dieselbe Einstellung lässt sich dauerhaft über enableTerminalSandbox in settings.json setzen (Default: false).",
+      "whenGood": [
+        {
+          "title": "Nicht vertrauenswürdigen oder generierten Code isoliert ausführen lassen",
+          "example": "agy --sandbox in einem neuen/unbekannten Repo starten"
+        },
+        {
+          "title": "Auch im Skript-/CI-Kontext Sandbox-Isolation erzwingen",
+          "example": "agy --sandbox -p \"<prompt>\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der Agent braucht vollen Zugriff auf Systemressourcen außerhalb des Workspace",
+          "why": "Die Sandbox schränkt Dateisystem-Sichtbarkeit und Netzwerkzugriff der Terminal-Befehle bewusst ein.",
+          "alternative": "agy ohne --sandbox starten oder pro Befehl die Option 'ohne Sandbox ausführen' bestätigen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: Sandbox",
+          "url": "https://antigravity.google/docs/cli/sandbox"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "mode-flag",
+      "name": "agy --mode <default|accept-edits|plan>",
+      "summary": "Legt beim Start den Agent-Ausführungsmodus fest.",
+      "what": "agy --mode (seit 1.1.0) setzt beim Start den Ausführungsmodus: default (= request-review, pausiert vor Dateischreibvorgängen für eine Zeilen-Diff-Vorschau zum Bestätigen/Ablehnen), accept-edits oder plan. Ohne das Flag lässt sich derselbe Modus dauerhaft im /settings-Panel unter 'Agent Mode' persistieren oder während der Sitzung per shift+tab durchschalten.",
+      "whenGood": [
+        {
+          "title": "Direkt im risikoärmeren Review-Modus starten",
+          "example": "agy --mode default"
+        },
+        {
+          "title": "Direkt im Auto-Accept-Modus starten, wenn Änderungen ohne Rückfrage übernommen werden sollen",
+          "example": "agy --mode accept-edits"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der Modus soll dauerhaft für alle künftigen Starts gelten, nicht nur diesen einen",
+          "why": "--mode wirkt nur für den aktuellen Start.",
+          "alternative": "Agent Mode dauerhaft im /settings-Panel setzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "dangerously-skip-permissions",
+      "name": "agy --dangerously-skip-permissions",
+      "summary": "Umgeht Permission-Restriktionen beim Start (Launch-Flag).",
+      "what": "agy --dangerously-skip-permissions wird in der Doku als Start-Flag genannt, das bestimmte Sicherheits-Restriktionen des Permission-Systems umgehen kann; das Settings-Panel zeigt dabei an, aus welcher Quelle der Override stammt. Das Flag ist nur auf der älteren Doku-Seite docs/cli-using belegt, nicht in der aktuellen Kern-Referenztabelle.",
+      "whenGood": [
+        {
+          "title": "In einer bewusst isolierten, vertrauenswürdigen Umgebung Rückfragen bei jedem Tool-Aufruf vermeiden",
+          "example": "agy --dangerously-skip-permissions ausschließlich in einer Wegwerf-/Sandbox-Umgebung nutzen, nie auf einem produktiven System"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man arbeitet an einem normalen Projekt mit sensiblen Daten oder Produktionszugriff",
+          "why": "Das Flag umgeht laut Namensgebung und Doku bewusst Sicherheits-Restriktionen des Permission-Systems.",
+          "alternative": "Normale Permission-Regeln nutzen und einzelne Regeln gezielt über /permissions freigeben"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-list",
+      "name": "agy plugin list",
+      "summary": "Zeigt installierte Plugins und ihre geladenen Komponenten an.",
+      "what": "agy plugin list zeigt aktive Plugin-Pakete und deren geladene Komponenten (z.B. Skills, Agents, MCP-Server) an. Plugins folgen dem plugin.json-Schema mit Pflichtfeld name (nur alphanumerisch, Bindestrich, Unterstrich) und optionalem description-Feld.",
+      "whenGood": [
+        {
+          "title": "Überblick über aktuell installierte Plugins verschaffen",
+          "example": "agy plugin list vor einer geplanten Deinstallation oder Aktualisierung ausführen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein Plugin soll de-/reaktiviert oder entfernt werden",
+          "why": "list zeigt nur den Bestand an, verändert aber nichts.",
+          "alternative": "agy plugin enable/disable <name> bzw. agy plugin uninstall <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-install",
+      "name": "agy plugin install <path>",
+      "summary": "Installiert ein lokales oder heruntergeladenes Plugin-Verzeichnis.",
+      "what": "agy plugin install /path/to/local/plugin lädt ein Plugin-Verzeichnis in das lokale Profil. Externe Plugin-Installationen lösen dabei automatisch Git-Submodule auf und initialisieren sie; Installation direkt aus GitHub-Subpfaden (mit Branch-Auflösung) wird ebenfalls unterstützt. Beim Import wird das komplette Plugin-Verzeichnis kopiert, inklusive Nicht-Skill-Unterordnern wie shared/.",
+      "whenGood": [
+        {
+          "title": "Ein lokal entwickeltes Plugin-Verzeichnis einbinden",
+          "example": "agy plugin install ./mein-plugin"
+        },
+        {
+          "title": "Ein Plugin direkt aus einem GitHub-Repo bzw. -Subpfad installieren",
+          "example": "agy plugin install github.com/org/repo/pfad/zum/plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will nur Legacy-Gemini-CLI-Extensions übernehmen",
+          "why": "plugin install erwartet ein Plugin im nativen plugin.json-Format, keine Gemini-CLI-Extension direkt.",
+          "alternative": "agy plugin import gemini nutzen, um Extensions vorher zu konvertieren"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-enable",
+      "name": "agy plugin enable <name>",
+      "summary": "Reaktiviert ein zuvor deaktiviertes Plugin, ohne es neu zu installieren.",
+      "what": "agy plugin enable <plugin_name> aktiviert die Tools eines Plugins wieder, das zuvor mit agy plugin disable pausiert wurde, ohne dass eine erneute Installation nötig ist.",
+      "whenGood": [
+        {
+          "title": "Ein pausiertes Plugin wieder nutzbar machen",
+          "example": "agy plugin enable mein-plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Plugin ist noch gar nicht installiert",
+          "why": "enable schaltet nur ein bereits installiertes, deaktiviertes Plugin wieder frei.",
+          "alternative": "Erst agy plugin install <path> nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-disable",
+      "name": "agy plugin disable <name>",
+      "summary": "Pausiert ein Plugin, ohne es zu deinstallieren.",
+      "what": "agy plugin disable <plugin_name> setzt die Tools eines Plugins aus, ohne das Plugin-Verzeichnis oder seine Konfiguration zu entfernen. Mit agy plugin enable <name> lässt es sich jederzeit wieder reaktivieren.",
+      "whenGood": [
+        {
+          "title": "Ein Plugin testweise ausschalten, ohne es zu verlieren",
+          "example": "agy plugin disable mein-plugin, um Konflikte mit einem anderen Plugin einzugrenzen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Plugin soll dauerhaft und vollständig entfernt werden",
+          "why": "disable lässt Verzeichnis und Registry-Einträge unangetastet.",
+          "alternative": "agy plugin uninstall <name> nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-uninstall",
+      "name": "agy plugin uninstall <name>",
+      "summary": "Entfernt ein Plugin-Verzeichnis vollständig inklusive Registry-Einträgen.",
+      "what": "agy plugin uninstall <plugin_name> entfernt das Plugin-Verzeichnis vollständig und bereinigt die zugehörigen Registry-Einträge.",
+      "whenGood": [
+        {
+          "title": "Ein nicht mehr benötigtes Plugin endgültig entfernen",
+          "example": "agy plugin uninstall mein-plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Plugin soll nur vorübergehend ausgesetzt werden",
+          "why": "uninstall entfernt Verzeichnis und Registry vollständig; ein späteres Wiedereinschalten erfordert erneute Installation.",
+          "alternative": "agy plugin disable <name> nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-import-gemini",
+      "name": "agy plugin import gemini",
+      "summary": "Konvertiert Legacy-Gemini-CLI-Extensions automatisch in native Antigravity-CLI-Plugins.",
+      "what": "agy plugin import gemini durchsucht lokale Gemini-CLI-Verzeichnisse, liest die Extension-Manifeste und konvertiert sie in das native Plugin-Layout. Dabei werden Legacy-Commands zu Skills konvertiert, vorhandene Skills übernommen und mcpServers-Einträge in eine dedizierte mcp_config.json migriert; bei Remote-Servern musst du den Schema-Key url/httpUrl anschließend manuell auf serverUrl umstellen. Die Ausgabe zeigt pro Extension einzeln, was konvertiert wurde, z.B. 'commands: 4 legacy commands converted to skills'.",
+      "whenGood": [
+        {
+          "title": "Beim Umstieg von Gemini CLI vorhandene Extensions automatisch übernehmen",
+          "example": "agy plugin import gemini direkt nach der Installation der Antigravity CLI ausführen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein einzelnes, frisches Plugin soll von Grund auf installiert werden",
+          "why": "import gemini konvertiert ausschließlich vorhandene Legacy-Gemini-CLI-Extensions, keine neuen Plugins.",
+          "alternative": "agy plugin install <path> nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Gemini CLI Migration",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "install-skip-aliases",
+      "name": "install.sh --skip-aliases",
+      "summary": "Überspringt beim Installieren die Bereinigung alter agy-/antigravity-Shell-Aliase.",
+      "what": "Das Flag --skip-aliases wird beim Ausführen des Install-Scripts (install.sh/install.ps1/install.cmd) übergeben und verhindert, dass das Script bestehende Legacy-agy- oder antigravity-Shell-Aliase im Shell-Profil bereinigt bzw. aktualisiert.",
+      "whenGood": [
+        {
+          "title": "Eigene, manuell gepflegte Shell-Aliase für agy/antigravity behalten",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-aliases"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Alte, kaputte oder auf eine falsche Binary zeigende Aliase liegen noch im Shell-Profil",
+          "why": "Mit --skip-aliases bereinigt das Installer-Script diese Alt-Aliase gerade nicht automatisch.",
+          "alternative": "Installer ohne --skip-aliases laufen lassen, damit alte Aliase automatisch bereinigt werden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "install-skip-path",
+      "name": "install.sh --skip-path",
+      "summary": "Überspringt beim Installieren das automatische Ergänzen des PATH im Shell-Profil.",
+      "what": "Das Flag --skip-path wird beim Ausführen des Install-Scripts übergeben und verhindert, dass die Umgebungsvariable PATH im Shell-Profil automatisch um das Binary-Verzeichnis (~/.local/bin bzw. %LOCALAPPDATA%\\agy\\bin) ergänzt wird.",
+      "whenGood": [
+        {
+          "title": "PATH-Eintrag manuell selbst verwalten, z.B. in einer bereits vorhandenen dotfiles-Konfiguration",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-path"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "agy soll direkt nach der Installation ohne weiteren manuellen Schritt aus jedem Terminal aufrufbar sein",
+          "why": "Ohne den automatischen PATH-Eintrag findet die Shell das agy-Binary nicht ohne manuelle PATH-Anpassung.",
+          "alternative": "Installer ohne --skip-path laufen lassen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "at-path",
+      "name": "@<pfad>",
+      "summary": "Öffnet ein interaktives Overlay zur Dateipfad-Auswahl direkt in der Prompt-Eingabe.",
+      "what": "Tippt man @ in der Prompt-Box, öffnet sich das Interactive-Path-Suggestion-Overlay: Es lässt Workspace-Dateipfade durchsuchen und per Auswahl direkt als absoluten Pfad in den Prompt einfügen, damit der Agent gezielter im Code suchen kann. Seit 1.0.6 löst @ die Vorschläge unconditional aus, auch direkt nach einer öffnenden Klammer.",
+      "whenGood": [
+        {
+          "title": "Eine bestimmte Datei gezielt referenzieren, ohne den Pfad manuell abzutippen",
+          "example": "@src/auth/ tippen, um im Overlay zur passenden Datei zu navigieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein Terminal-Befehl soll direkt ausgeführt werden",
+          "why": "@ fügt nur einen Dateipfad in den Prompt ein, führt aber nichts aus.",
+          "alternative": "! am Zeilenanfang für direkte Terminal-Befehle nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        },
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "shell-bang",
+      "name": "!<shell-command>",
+      "summary": "Führt einen Terminal-Befehl direkt aus der Prompt-Box aus.",
+      "what": "Ein ! am Anfang der Eingabe führt den nachfolgenden Text als Shell-Befehl direkt aus, ohne den Agent einzubeziehen.",
+      "whenGood": [
+        {
+          "title": "Schnell einen Terminal-Befehl ausführen, ohne die TUI zu verlassen",
+          "example": "!git status"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der Agent soll den Befehl selbst wählen oder das Ergebnis interpretieren",
+          "why": "! führt den Befehl direkt und unverändert aus, ohne Agent-Beteiligung.",
+          "alternative": "Den Wunsch normal als Prompt formulieren, damit der Agent den passenden Befehl selbst vorschlägt"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "help-question-mark",
+      "name": "?",
+      "summary": "Zeigt Hilfe und eine Liste aller Slash-Commands an.",
+      "what": "Ein ? in der Prompt-Box öffnet die Hilfe mit einer Liste aller verfügbaren Slash-Commands.",
+      "whenGood": [
+        {
+          "title": "Schnell nachsehen, welche Slash-Commands verfügbar sind",
+          "example": "? in der Prompt-Box tippen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man kennt den Befehl bereits und will ihn direkt ausführen",
+          "why": "? öffnet nur die Übersicht, führt aber selbst nichts aus.",
+          "alternative": "Den bekannten Slash-Command direkt eintippen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "clear-prompt-esc-esc",
+      "name": "esc esc",
+      "summary": "Leert die Prompt-Box, solange kein aktiver Antwort-Stream läuft.",
+      "what": "Zweimaliges Drücken von esc leert die aktuelle Eingabe in der Prompt-Box, sofern gerade kein Antwort-Stream aktiv ist.",
+      "whenGood": [
+        {
+          "title": "Eine fehlerhafte oder nicht mehr benötigte Eingabe schnell verwerfen",
+          "example": "esc esc drücken, um die aktuell getippte Eingabe zu leeren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Ein laufender Agent-Antwort-Stream soll abgebrochen werden",
+          "why": "esc esc leert nur die Prompt-Box; für das Abbrechen eines aktiven Streams ist stattdessen ctrl+c dokumentiert.",
+          "alternative": "ctrl+c nutzen, um eine aktive Agent-Ausführung zu unterbrechen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "skills-as-commands",
+      "name": ".agents/skills/*.md → /<skill-name>",
+      "summary": "Lokale oder globale Markdown-Skills werden automatisch als eigene /<skill-name>-Slash-Commands verfügbar.",
+      "what": "Eine Markdown-Datei mit Frontmatter (name, description) plus Agent-Anweisungen in .agents/skills/ im Workspace-Root wird beim nächsten agy-Start kompiliert und steht danach als /<skill-name> in der Prompt-Box zur Verfügung. Global gilt dasselbe für Markdown-Dateien in ~/.gemini/antigravity-cli/skills/ — diese werden automatisch als globaler Slash-Command über alle Workspaces hinweg importiert. Bei der Migration von Gemini CLI ändern sich die Pfade: workspace-lokal von .gemini/skills/ zu .agents/skills/, global von ~/.gemini/skills/ zu ~/.gemini/antigravity-cli/skills/.",
+      "whenGood": [
+        {
+          "title": "Einen wiederkehrenden Workflow als eigenen Befehl im Projekt verfügbar machen",
+          "example": "format-tests.md mit Frontmatter in .agents/skills/ anlegen, damit /format-tests in der Prompt-Box erscheint"
+        },
+        {
+          "title": "Einen Skill projektübergreifend nutzen",
+          "example": "Skill-Datei stattdessen in ~/.gemini/antigravity-cli/skills/ ablegen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Von Gemini CLI migrierte Skills liegen noch am alten Pfad (.gemini/skills/ bzw. ~/.gemini/skills/)",
+          "why": "Antigravity CLI erkennt Skills nur an den neuen Pfaden (.agents/skills/ bzw. ~/.gemini/antigravity-cli/skills/) — alte Pfade werden nicht mehr erkannt.",
+          "alternative": "Skill-Dateien manuell an den neuen Pfad verschieben (agy plugin import gemini konvertiert nur Extensions, keine losen Skill-Dateien)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        },
+        {
+          "title": "Antigravity CLI Doku: Gemini CLI Migration",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "platform": "antigravity-cli",
+      "slug": "start-tui",
+      "name": "agy",
+      "summary": "Starts the Antigravity CLI TUI in the current working directory.",
+      "what": "agy with no arguments opens the interactive terminal interface (TUI) in the current directory. On first launch in a directory with an existing Gemini CLI configuration, the CLI detects it automatically and offers an interactive migration checklist. Sign-in goes through the OS keyring (Keychain/Secret Service/Credential Manager); if no session is saved, it opens your default browser automatically. Over SSH without a local browser, the CLI instead prints an authorization URL to open in your local browser plus a code to paste back into the terminal.",
+      "whenGood": [
+        {
+          "title": "Start a new project interactively",
+          "example": "Run agy in the project folder to open the TUI and work with the agent in a dialogue"
+        },
+        {
+          "title": "Switch over from Gemini CLI",
+          "example": "Run agy in a folder with an existing Gemini CLI configuration to get the automatic migration checklist"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want a single command to run without a TUI, e.g. in a script",
+          "why": "agy with no flags always opens the full interactive interface and blocks the terminal.",
+          "alternative": "agy -p / --print for non-interactive execution"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI README (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/README.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: Getting Started",
+          "url": "https://antigravity.google/docs/cli/getting-started"
+        },
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        },
+        {
+          "title": "Antigravity CLI Doku: Migration von Gemini CLI",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "print",
+      "name": "agy -p / --print",
+      "summary": "Runs a prompt non-interactively and exits afterward (print/headless mode).",
+      "what": "agy -p or --print \"<prompt>\" runs a single prompt without the TUI, suited for git hooks, scripts, and shell pipelines. Since 1.1.1 the mode writes server errors to stderr and returns a non-zero exit code instead of silently exiting empty; since 1.1.2 it hard-fails with a non-zero exit code and a list of available models when --model can't be resolved, instead of silently falling back to the default model. It can be combined with -c or --conversation <id> to continue an existing conversation.",
+      "whenGood": [
+        {
+          "title": "Wire Antigravity into a script or git hook",
+          "example": "agy -p \"Review this git diff and draft a conventional commit message\" --cwd $(pwd)"
+        },
+        {
+          "title": "Continue a previous conversation non-interactively",
+          "example": "agy -c -p \"summarize where things stand\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to steer the run interactively or answer follow-up questions live",
+          "why": "Print mode runs straight through with no TUI and no interactive follow-up questions.",
+          "alternative": "Start agy without -p for the normal interactive TUI"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "continue",
+      "name": "agy -c / --continue",
+      "summary": "Instantly resumes the last active conversation for the current workspace.",
+      "what": "agy -c or --continue loads the most recently used conversation for the current working directory directly, without opening the /resume picker. The CLI keeps track of the last conversation ID per directory in a cache file. It can be combined with -p to continue an existing conversation non-interactively.",
+      "whenGood": [
+        {
+          "title": "Quickly keep working on the same task in the same folder",
+          "example": "Run agy -c right after restarting in the same project folder"
+        },
+        {
+          "title": "Continue an existing conversation non-interactively",
+          "example": "agy -c -p \"what's still missing?\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to choose from several saved conversations",
+          "why": "-c always loads only the directory's most recently active conversation, with no picker.",
+          "alternative": "Use /resume inside a running agy session, or agy --conversation <id> for a specific ID"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "conversation-id",
+      "name": "agy --conversation <id>",
+      "summary": "Loads a specific conversation directly by its ID, without a picker.",
+      "what": "agy --conversation <id> loads a specific saved conversation by its unique ID, skipping the interactive /resume picker. It can be combined with -p to continue that conversation non-interactively; since 1.0.9 this combined mode prints only the newly generated response instead of the entire historical transcript.",
+      "whenGood": [
+        {
+          "title": "Jump back to a known conversation ID directly",
+          "example": "agy --conversation 7f3a2b1c"
+        },
+        {
+          "title": "Continue a specific conversation non-interactively",
+          "example": "agy --conversation 7f3a2b1c -p \"summarize\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You don't know the exact conversation ID",
+          "why": "--conversation needs an exact ID; the flag has no fuzzy search.",
+          "alternative": "Use /resume inside a running agy session to browse and pick a conversation"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "model-flag",
+      "name": "agy --model <name>",
+      "summary": "Sets which model to use at startup.",
+      "what": "agy --model <name> sets the reasoning model when starting the CLI. Interactive sessions fall back to the default model with a warning if the model can't be resolved; in print mode (-p) the CLI instead hard-fails since 1.1.2 with a non-zero exit code and a list of available models. Available names come from the agy models subcommand.",
+      "whenGood": [
+        {
+          "title": "Start directly with a specific model",
+          "example": "agy --model=\"Gemini 3.1 Pro\""
+        },
+        {
+          "title": "Make sure a script uses exactly the intended model",
+          "example": "agy --model <name> -p \"<prompt>\" hard-fails on a wrong name instead of silently using a different model"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The model choice should persist for all future sessions",
+          "why": "--model only applies to the current launch, not persistently.",
+          "alternative": "Use /model inside a running agy session, which persists the model across sessions"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "list-models",
+      "name": "agy models",
+      "summary": "Lists the available models.",
+      "what": "agy models (subcommand) shows the models available for the current plan. According to the docs, Gemini 3.1 Pro and Gemini 3.5 Flash are available on every plan; Claude Sonnet 4.6 (thinking), Claude Opus 4.6 (thinking) and GPT-OSS-120b are Google AI Ultra only. The listed model name can be passed straight to --model.",
+      "whenGood": [
+        {
+          "title": "Look up the exact model name before starting",
+          "example": "agy models to find the exact name to pass to --model"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to switch the model for the running session",
+          "why": "agy models is a plain listing subcommand outside a running session.",
+          "alternative": "Use /model inside a running agy session"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "agent-flag",
+      "name": "agy --agent <name>",
+      "summary": "Selects a custom agent at startup.",
+      "what": "agy --agent <name> (since 1.1.1) selects a custom agent instead of the default agent when starting the CLI. Custom agents can be listed beforehand with the agy agent / agy agents subcommand.",
+      "whenGood": [
+        {
+          "title": "Start with a specialized custom agent instead of the default one",
+          "example": "agy --agent code-reviewer"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You don't know the name of the custom agent you want",
+          "why": "--agent expects an existing, exact agent name.",
+          "alternative": "Run agy agents to list them first, then set --agent <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "list-agents",
+      "name": "agy agent / agy agents",
+      "summary": "Lists the available custom agents.",
+      "what": "agy agent or agy agents (subcommand, since 1.1.1) shows the available custom agents. The name it returns can be passed straight to --agent at startup; inside a running session, the /agents panel takes over agent selection and subagent monitoring.",
+      "whenGood": [
+        {
+          "title": "Look up available custom agents before starting",
+          "example": "agy agents to find the exact name to pass to --agent"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You're already in a running session and want to manage agents or monitor subagents",
+          "why": "The subcommand only gives a one-off list outside the TUI.",
+          "alternative": "Use /agents inside a running agy session"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "project-flag",
+      "name": "agy --project <name>",
+      "summary": "Explicitly sets which project to use at startup.",
+      "what": "agy --project <name> (since 1.0.12) explicitly sets which project to use at startup, instead of deriving the project automatically from the active workspace. Complements --new-project, which creates a new project instead.",
+      "whenGood": [
+        {
+          "title": "Pick an existing project independent of the current directory",
+          "example": "agy --project my-project"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want a brand-new project to be created",
+          "why": "--project only picks among existing projects; it doesn't create one.",
+          "alternative": "Use agy --new-project <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "new-project",
+      "name": "agy --new-project <name>",
+      "summary": "Creates a new project at startup.",
+      "what": "agy --new-project <name> (since 1.0.12) creates a new project with the given name at startup. Without a name, the CLI has defaulted since 1.1.1 to naming newly initialized projects 'CLI Project'.",
+      "whenGood": [
+        {
+          "title": "Spin up a fresh project for a new task",
+          "example": "agy --new-project my-new-project"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to keep working in an already existing project",
+          "why": "--new-project always creates a new project instead of loading an existing one.",
+          "alternative": "Use agy --project <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "sandbox-flag",
+      "name": "agy --sandbox",
+      "summary": "Forces sandbox isolation for terminal commands, including in print mode.",
+      "what": "agy --sandbox confines every local execution command the agent launches to OS-level containment: nsjail (Linux, kernel namespaces/cgroups), sandbox-exec (macOS, policy profiles), or AppContainer (Windows). Since 1.0.6 the flag is also correctly enforced in non-interactive print mode (-p/--print), not just interactively. The same setting can be persisted via enableTerminalSandbox in settings.json (default: false).",
+      "whenGood": [
+        {
+          "title": "Run untrusted or generated code in isolation",
+          "example": "Launch agy --sandbox in a new or unfamiliar repo"
+        },
+        {
+          "title": "Force sandbox isolation in scripts/CI as well",
+          "example": "agy --sandbox -p \"<prompt>\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The agent needs full access to system resources outside the workspace",
+          "why": "The sandbox deliberately restricts filesystem visibility and network access for terminal commands.",
+          "alternative": "Start agy without --sandbox, or confirm 'run without sandbox restrictions' per command"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: Sandbox",
+          "url": "https://antigravity.google/docs/cli/sandbox"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "mode-flag",
+      "name": "agy --mode <default|accept-edits|plan>",
+      "summary": "Sets the agent execution mode at startup.",
+      "what": "agy --mode (since 1.1.0) sets the execution mode at startup: default (= request-review, pauses before file writes for a line-level diff preview to accept/reject), accept-edits, or plan. Without the flag, the same mode can be persisted permanently in the /settings panel under 'Agent Mode', or cycled during the session with shift+tab.",
+      "whenGood": [
+        {
+          "title": "Start directly in the lower-risk review mode",
+          "example": "agy --mode default"
+        },
+        {
+          "title": "Start directly in auto-accept mode when changes should apply without confirmation",
+          "example": "agy --mode accept-edits"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The mode should persist for all future launches, not just this one",
+          "why": "--mode only applies to the current launch.",
+          "alternative": "Set Agent Mode permanently in the /settings panel"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "dangerously-skip-permissions",
+      "name": "agy --dangerously-skip-permissions",
+      "summary": "Bypasses permission restrictions at startup (launch flag).",
+      "what": "agy --dangerously-skip-permissions is documented as a launch flag that can bypass certain safety restrictions of the permission system; the settings panel shows where the override came from. The flag is documented only on the older docs/cli-using page, not in the current core reference table.",
+      "whenGood": [
+        {
+          "title": "Avoid per-tool-call confirmations in a deliberately isolated, trusted environment",
+          "example": "Use agy --dangerously-skip-permissions only in a throwaway/sandbox environment, never on a production system"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You're working on a normal project with sensitive data or production access",
+          "why": "As the name and docs indicate, the flag deliberately bypasses safety restrictions of the permission system.",
+          "alternative": "Use normal permission rules and grant individual rules selectively via /permissions"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-list",
+      "name": "agy plugin list",
+      "summary": "Shows installed plugins and their loaded components.",
+      "what": "agy plugin list shows active plugin packages and the components they've loaded (e.g. skills, agents, MCP servers). Plugins follow the plugin.json schema with a required name field (alphanumeric, hyphens, underscores only) and an optional description field.",
+      "whenGood": [
+        {
+          "title": "Get an overview of currently installed plugins",
+          "example": "Run agy plugin list before a planned uninstall or update"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to enable/disable or remove a plugin",
+          "why": "list only shows the current state, it doesn't change anything.",
+          "alternative": "agy plugin enable/disable <name> or agy plugin uninstall <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-install",
+      "name": "agy plugin install <path>",
+      "summary": "Installs a local or downloaded plugin directory.",
+      "what": "agy plugin install /path/to/local/plugin stages a plugin directory into your local profile. External plugin installs automatically resolve and initialize git submodules; installing directly from GitHub subpaths (with branch resolution) is also supported. The import copies the entire plugin directory, including non-skill subfolders like shared/.",
+      "whenGood": [
+        {
+          "title": "Wire in a locally developed plugin directory",
+          "example": "agy plugin install ./my-plugin"
+        },
+        {
+          "title": "Install a plugin straight from a GitHub repo or subpath",
+          "example": "agy plugin install github.com/org/repo/path/to/plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You only want to bring over legacy Gemini CLI extensions",
+          "why": "plugin install expects a plugin in the native plugin.json format, not a Gemini CLI extension directly.",
+          "alternative": "Use agy plugin import gemini to convert extensions first"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-enable",
+      "name": "agy plugin enable <name>",
+      "summary": "Reactivates a previously disabled plugin without reinstalling it.",
+      "what": "agy plugin enable <plugin_name> reactivates the tools of a plugin that was previously suspended with agy plugin disable, without needing to reinstall it.",
+      "whenGood": [
+        {
+          "title": "Make a suspended plugin usable again",
+          "example": "agy plugin enable my-plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The plugin isn't installed yet",
+          "why": "enable only re-activates an already installed, disabled plugin.",
+          "alternative": "Use agy plugin install <path> first"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-disable",
+      "name": "agy plugin disable <name>",
+      "summary": "Suspends a plugin without uninstalling it.",
+      "what": "agy plugin disable <plugin_name> suspends a plugin's tools without removing the plugin directory or its configuration. It can be reactivated at any time with agy plugin enable <name>.",
+      "whenGood": [
+        {
+          "title": "Switch a plugin off for testing without losing it",
+          "example": "agy plugin disable my-plugin to narrow down a conflict with another plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The plugin should be removed permanently and completely",
+          "why": "disable leaves the directory and registry entries untouched.",
+          "alternative": "Use agy plugin uninstall <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-uninstall",
+      "name": "agy plugin uninstall <name>",
+      "summary": "Fully removes a plugin directory including its registry entries.",
+      "what": "agy plugin uninstall <plugin_name> purges the plugin directory completely and cleans up the associated registry entries.",
+      "whenGood": [
+        {
+          "title": "Permanently remove a plugin you no longer need",
+          "example": "agy plugin uninstall my-plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The plugin should only be suspended temporarily",
+          "why": "uninstall fully removes the directory and registry entries; re-enabling it later requires reinstalling.",
+          "alternative": "Use agy plugin disable <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-import-gemini",
+      "name": "agy plugin import gemini",
+      "summary": "Automatically converts legacy Gemini CLI extensions into native Antigravity CLI plugins.",
+      "what": "agy plugin import gemini scans local Gemini CLI directories, reads the extension manifests, and converts them into the native plugin layout. Legacy commands get converted to skills, existing skills are carried over, and mcpServers entries migrate into a dedicated mcp_config.json; for remote servers you then need to rename the url/httpUrl schema key to serverUrl manually. The output lists per extension exactly what was converted, e.g. 'commands: 4 legacy commands converted to skills'.",
+      "whenGood": [
+        {
+          "title": "Automatically bring over existing extensions when switching from Gemini CLI",
+          "example": "Run agy plugin import gemini right after installing Antigravity CLI"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to install a single, brand-new plugin from scratch",
+          "why": "import gemini only converts existing legacy Gemini CLI extensions, not new plugins.",
+          "alternative": "Use agy plugin install <path>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Gemini CLI Migration",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "install-skip-aliases",
+      "name": "install.sh --skip-aliases",
+      "summary": "Skips cleaning up old agy/antigravity shell aliases during install.",
+      "what": "The --skip-aliases flag is passed when running the install script (install.sh/install.ps1/install.cmd) and stops the script from cleaning up or updating existing legacy agy or antigravity shell aliases in your shell profile.",
+      "whenGood": [
+        {
+          "title": "Keep your own, manually maintained agy/antigravity shell aliases",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-aliases"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Old, broken, or wrongly-pointed aliases are still in your shell profile",
+          "why": "With --skip-aliases, the installer specifically won't clean up those old aliases automatically.",
+          "alternative": "Run the installer without --skip-aliases so old aliases get cleaned up automatically"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "install-skip-path",
+      "name": "install.sh --skip-path",
+      "summary": "Skips automatically appending PATH in your shell profile during install.",
+      "what": "The --skip-path flag is passed when running the install script and stops it from automatically appending the binary directory (~/.local/bin or %LOCALAPPDATA%\\agy\\bin) to PATH in your shell profile.",
+      "whenGood": [
+        {
+          "title": "Manage the PATH entry yourself, e.g. in an existing dotfiles setup",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-path"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "agy should be callable from any terminal right after installing, with no extra manual step",
+          "why": "Without the automatic PATH entry, the shell won't find the agy binary without a manual PATH change.",
+          "alternative": "Run the installer without --skip-path"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "at-path",
+      "name": "@<path>",
+      "summary": "Opens an interactive overlay for picking a file path right in the prompt box.",
+      "what": "Typing @ in the prompt box opens the Interactive Path Suggestion overlay: it lets you browse workspace file paths and insert one directly into your prompt as an absolute path, helping the agent search the code more precisely. Since 1.0.6, @ triggers suggestions unconditionally, including right after an opening parenthesis.",
+      "whenGood": [
+        {
+          "title": "Reference a specific file precisely without typing the path by hand",
+          "example": "Type @src/auth/ to browse to the right file in the overlay"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to run a terminal command directly",
+          "why": "@ only inserts a file path into the prompt, it doesn't execute anything.",
+          "alternative": "Use ! at the start of a line for direct terminal commands"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        },
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "shell-bang",
+      "name": "!<shell-command>",
+      "summary": "Runs a terminal command directly from the prompt box.",
+      "what": "A ! at the start of your input runs the rest of the line as a shell command directly, without involving the agent.",
+      "whenGood": [
+        {
+          "title": "Quickly run a terminal command without leaving the TUI",
+          "example": "!git status"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want the agent to choose the command itself or interpret the result",
+          "why": "! runs the command directly and unmodified, with no agent involvement.",
+          "alternative": "Phrase the request as a normal prompt so the agent suggests the right command itself"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "help-question-mark",
+      "name": "?",
+      "summary": "Shows help and a list of all slash commands.",
+      "what": "Typing ? in the prompt box opens help with a list of all available slash commands.",
+      "whenGood": [
+        {
+          "title": "Quickly check which slash commands are available",
+          "example": "Type ? in the prompt box"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You already know the command and want to run it directly",
+          "why": "? only opens the overview, it doesn't execute anything itself.",
+          "alternative": "Type the known slash command directly"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "clear-prompt-esc-esc",
+      "name": "esc esc",
+      "summary": "Clears the prompt box, as long as no response is currently streaming.",
+      "what": "Pressing esc twice clears the current input in the prompt box, as long as no response stream is currently active.",
+      "whenGood": [
+        {
+          "title": "Quickly discard a wrong or no-longer-needed input",
+          "example": "Press esc esc to clear what you've typed so far"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to cancel a running agent response stream",
+          "why": "esc esc only clears the prompt box; ctrl+c is documented for interrupting an active stream.",
+          "alternative": "Use ctrl+c to interrupt an active agent run"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "skills-as-commands",
+      "name": ".agents/skills/*.md → /<skill-name>",
+      "summary": "Local or global markdown skills automatically become their own /<skill-name> slash commands.",
+      "what": "A markdown file with frontmatter (name, description) plus agent instructions in .agents/skills/ at the workspace root gets compiled the next time agy starts and is then available as /<skill-name> in the prompt box. The same applies globally to markdown files in ~/.gemini/antigravity-cli/skills/ — these are automatically imported as a global slash command across all workspaces. Migrating from Gemini CLI changes the paths: workspace-local moves from .gemini/skills/ to .agents/skills/, global moves from ~/.gemini/skills/ to ~/.gemini/antigravity-cli/skills/.",
+      "whenGood": [
+        {
+          "title": "Turn a recurring workflow into its own command for the project",
+          "example": "Add format-tests.md with frontmatter to .agents/skills/ so /format-tests shows up in the prompt box"
+        },
+        {
+          "title": "Use a skill across every project",
+          "example": "Put the skill file in ~/.gemini/antigravity-cli/skills/ instead"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Skills migrated from Gemini CLI still sit at the old path (.gemini/skills/ or ~/.gemini/skills/)",
+          "why": "Antigravity CLI only recognizes skills at the new paths (.agents/skills/ or ~/.gemini/antigravity-cli/skills/) — the old paths are no longer picked up.",
+          "alternative": "Move the skill files to the new path manually (agy plugin import gemini only converts extensions, not loose skill files)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        },
+        {
+          "title": "Antigravity CLI Doku: Gemini CLI Migration",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    }
+  ]
+}
