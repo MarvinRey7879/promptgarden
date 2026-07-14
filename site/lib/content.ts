@@ -125,6 +125,7 @@ export const WORLD_3: string[] = [
   'evals',
   'refactoring-mit-ki',
   'code-verstehen-mit-ki',
+  'rag-selbst-bauen',
   'projekt-deployen',
   'benchmarks-lesen',
 ];

@@ -622,3 +622,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Verify: BUILD_EXIT=0, Deploy 8c625917, Desktop-Screenshot (alle 4 Inseln, Scroll greift bei W2/W3). Views 331.
 - Marvin-Ideen-Wahl Runde 1 vollständig ausgeliefert am selben Tag: 🔍 Suche, 💶 Preisrechner, 🧩 Prompt-Bibliothek, 🗺️ Landkarte.
 - Known-good: 8c625917.
+
+## It. 103 — 14.07. ~21:35 — KAPITEL-BATCH 5: 71 → 81 Kapitel ×5 (~2012 Seiten), erstmals DATENGETRIEBENE Themenwahl
+- Themen aus top_paths_7d abgeleitet (Klick-Signale: Einsteiger-Seiten, claude-code, RAG, Addons): eigene-agenten-bauen-sdk, mcp-server-selbst-schreiben, was-ist-antigravity (aus Plattform-5-Research), agenten-observability, open-source-modelle-lokal, prompt-injection-abwehr-praxis, ki-tools-im-team-einfuehren, rag-selbst-bauen, web-scraping-mit-agenten, performance-optimierung-mit-ki.
+- Autoren-Highlights: B fing selbst difficulty-Typgrenze (1-3, dots crasht bei 4 — A hatte 4 benutzt → von mir vor Review gefixt); A sortierte selbst tote Quelle aus.
+- Adversarial-Review (10. Fang-Serie): 1 BLOCK (Session-JSONL-Claims ungedeckt — Format ist laut Doku intern, „Token-Zahlen pro Call" nirgends belegt) + 13 FIX (u.a. gemma3→gemma4-Drift, fehlende OTEL_METRICS_EXPORTER-Variable, 2 komplett fehlende EN-Abschnitte, 307-Redirect-URLs) + WICHTIG: Quiz-correct-Bias — BEIDE Batches hatten correct=1 bei allen 10; Review lieferte Permutationen → angewandt (Verteilung jetzt 0:2/2:4/3:4). Bestands-Befund notiert: 45/71 alte Kapitel haben correct=1 → Cleanup-Kandidat.
+- Fix-Agent wandte alle 15+10 Punkte an (PASS, MD5-gepinnt); Bestands-URL agent-sdk/permissions ×5 gefixt. 3 Übersetzer (alle MD5-verifiziert, 0 Drift). WORLD: rag-selbst-bauen→W3 (=19); was-ist-antigravity bewusst NICHT in W1 (Welt = LLM-Grundlagen, kein Tool-Intro).
+- lint 0 Fehler, Suchindex 402 Docs, BUILD_EXIT=0, Deploy 89e023c1, Live-Verify DE-Antigravity + ZH-RAG-Titel geechot + W3-Link.
+- Known-good: 89e023c1.
