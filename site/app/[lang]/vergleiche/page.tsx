@@ -41,6 +41,20 @@ type Vergleich = {
     intro: string;
     tools: { tool: string; standard: string; empfehlungen: { aufgabe: string; wahl: string; warum: string }[]; sources: Source[] }[];
   };
+  duelle?: {
+    title: string;
+    intro: string;
+    items: {
+      id: string;
+      titel: string;
+      frage: string;
+      a: { name: string; nimm: string; beispiele: string[] };
+      b: { name: string; nimm: string; beispiele: string[] };
+      nichtLohnen: string;
+      benchmark?: string;
+      sources: Source[];
+    }[];
+  };
   toolsTitle?: string;
   tools: ToolCard[];
 };
@@ -156,6 +170,45 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
             </div>
           ))}
           <Sources sources={data.modelle.sources} />
+        </div>
+      )}
+
+      {/* ③b Modell-Duelle: wann nimmst du was — konkret */}
+      {data.duelle && (
+        <div style={{ marginBottom: 34 }}>
+          <h2 style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 800, letterSpacing: '-.02em' }}>{data.duelle.title}</h2>
+          <p style={{ margin: '0 0 18px', fontSize: 14.5, color: 'var(--muted)', maxWidth: 680 }}>{data.duelle.intro}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {data.duelle.items.map((d, i) => (
+              <div key={d.id} className="card" style={{ padding: '20px 24px', transform: `rotate(${i % 2 === 0 ? '-.25deg' : '.25deg'})`, boxShadow: '5px 5px 0 var(--ink)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                  <h3 style={{ margin: 0, fontSize: 21, fontWeight: 800 }}>⚔️ {d.titel}</h3>
+                  <span className="mono" style={{ fontSize: 12.5, color: 'var(--muted)', fontWeight: 700 }}>{d.frage}</span>
+                </div>
+                <div className="duel-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, margin: '14px 0' }}>
+                  {[d.a, d.b].map((side, si) => (
+                    <div key={side.name} style={{ border: '2.5px solid var(--ink)', borderRadius: 14, padding: '12px 16px', background: si === 0 ? 'var(--lime)' : 'var(--blue)' }}>
+                      <p style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800 }}>{side.name}</p>
+                      <p style={{ margin: '0 0 8px', fontSize: 13.5, fontWeight: 700, lineHeight: 1.5 }}>{side.nimm}</p>
+                      <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12.5, lineHeight: 1.6 }}>
+                        {side.beispiele.map((bsp) => (
+                          <li key={bsp}>{bsp}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ margin: '0 0 8px', fontSize: 13.5, background: 'var(--pink)', border: '2px solid var(--ink)', borderRadius: 10, padding: '8px 12px' }}>
+                  <b>💸 {lang === 'de' ? 'Wann es sich NICHT lohnt' : lang === 'en' ? 'When it is NOT worth it' : lang === 'es' ? 'Cuándo NO merece la pena' : lang === 'fr' ? 'Quand ça ne vaut PAS le coup' : '什么时候不值得'}:</b>{' '}
+                  {d.nichtLohnen}
+                </p>
+                {d.benchmark && (
+                  <p style={{ margin: '0 0 8px', fontSize: 12.5, color: 'var(--muted)' }}>📊 {d.benchmark}</p>
+                )}
+                <Sources sources={d.sources} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

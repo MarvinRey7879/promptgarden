@@ -582,3 +582,13 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 
 ## It. 97 — 14.07. ~18:05 — Remotion R6: Antigravity-Demo (55 → 60 Clips)
 - agy-print-demo ×5 (agy -p für Skripte/Hooks, -c -p Fortsetzung — Fakten aus commands.de.json print). COMMAND_VIDEOS + antigravity-cli/print. Alle 5 Plattformen haben jetzt Video-Demos (9 Befehle). BUILD_EXIT=0, Deploy cf61c5a5, Live-Verify Embed+mp4 206.
+
+## It. 98 — 14.07. ~19:50 — VERGLEICHE V2 LIVE + Favicon + Direktive 13 (Ideen-Pitches)
+- Marvin-Direktiven umgesetzt: „Vergleichsseite super geil und simpel, glasklar wann man was benutzt" + „Haiku vs Sonnet mit Beispielen, wann Fable, wann lohnt es sich NICHT, ggf. Benchmarks".
+- Neu auf /vergleiche ×5: ① Szenario-Picker (7 Szenarien → Tool+Modell+Warum+Beispiel+Link, Client) ② Preis-vs-Positionierungs-Quadrant (SVG, 10 Modelle, nur Anbieter-Aussagen+Listenpreise) ③ 13 Modell-Karten (Anthropic/OpenAI/Google/xAI) mit stark/schwach/wofuer ④ 4 DUELLE (haiku-vs-sonnet mit SWE-bench 73,3%, sonnet-vs-spitze mit Preis-Multiplikatoren 1,7-5x, flash-vs-pro, abo-vs-api) je mit „💸 Wann es sich NICHT lohnt" ⑤ Im-Tool-Empfehlungen (5 Tools, Default+Wechsel+3 Aufgaben-Empfehlungen) ⑥ Tool-Karten +Antigravity (jetzt 5).
+- Pipeline: Research (19 Modelle, 58 Quellen) → Autor → Haupt-Review FAIL→fix (BLOCK: „keine xAI-Positionierung" widerlegt durch die selbst zitierte Quelle docs.x.ai! + 6 FIX) → Duelle-Autor → Mini-Review PASS mit 1 FIX (Flash/Pro haben BEIDE 1M-Kontext — langer Kontext ist kein Pro-Argument) → 3 Übersetzer (MD5 bfda7468, alle deckungsgleich) → Komplett-Ersatz der 5 Dateien (v1-Backup in research/vergleiche-v1-backup/).
+- Favicon (Marvin-Meldung): app/icon.svg (🌱 1d-Rahmen) + app/apple-icon.png (512px via Playwright-Render) — beide 200, link-Tag im Head.
+- Bing: Sitemap von Marvin eingereicht (Property-Host war das Problem) → Todo #6 done. Sponsors: Marvin angemeldet, Rest-Schritte als neues Admin-Todo detailliert.
+- BUILD_EXIT=0, Deploy 70f90f0f, Live-Verify: Duell-Titel DE, Picker-Kicker, ZH-Duell-String (geechot), icon.svg+apple-icon 200, 375px-Screenshot ok.
+- Direktive 13 NEU: wiederkehrende Ideen-Pitches; Runde 1: Marvin wählt alle 4 (Suche→Preisrechner→Prompt-Bibliothek→Landkarte), loops/IDEEN.md angelegt.
+- Known-good: 70f90f0f.

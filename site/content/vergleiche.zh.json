@@ -1,7 +1,572 @@
 {
-  "updated": "2026-07-10",
-  "title": "工具对比：编程 Agent",
-  "intro": "四种用 AI 写代码的方式——诚实对比。没有适合所有人的赢家：取决于你的工作方式。日期见上方，每张卡片下方是来源。",
+  "updated": "2026-07-14",
+  "title": "我该在什么时候用什么？—— 模型与工具对比",
+  "intro": "七种常见场景，一键直达：我们为你展示对应的工具、模型，以及一个可以直接照做的示例。接下来你会看到各大厂商目前所有的模型，以及每个工具默认使用的是哪一个。",
+  "picker": {
+    "kicker": "🧭 你想做什么？—— 点击你的场景",
+    "toolLabel": "工具",
+    "modellLabel": "模型",
+    "szenarien": [
+      {
+        "id": "erste-app",
+        "emoji": "🌱",
+        "frage": "我想搭建我的第一个应用",
+        "tool": "Cursor",
+        "modell": "Auto",
+        "warum": "Cursor 会把代码和预览直接并排显示给你——非常适合学习。“Auto”模式会自动为你选择合适的模型，你不需要去纠结具体的模型名称（Cursor 称其“适合日常任务”）。",
+        "beispiel": "帮我搭建一个简单的待办事项网页（HTML/CSS/JS）。之后简单解释一下这段代码的作用。",
+        "link": "lexikon/vibe-coding/",
+        "linkLabel": "什么是 Vibe Coding？"
+      },
+      {
+        "id": "grosses-refactoring",
+        "emoji": "🏚️",
+        "frage": "我想重构大型旧代码库",
+        "tool": "Claude Code",
+        "modell": "Opus 4.8",
+        "warum": "根据 Anthropic 的说法，Opus 4.8 是为“复杂的智能体编程和企业级工作”打造的——大型旧代码重构正好属于这一类。如果是需要反复核查、耗时数天的超大规模改造，则改用 Fable 5（`/model fable`）。",
+        "beispiel": "/model opus\n将 src/payments/ 重构为新接口。每改完一个文件后运行现有测试。",
+        "link": "lexikon/legacy-code-modernisieren/",
+        "linkLabel": "老旧代码库的现代化改造"
+      },
+      {
+        "id": "ide-statt-terminal",
+        "emoji": "🖱️",
+        "frage": "我想在编辑器里工作，而不是在终端里",
+        "tool": "Cursor",
+        "modell": "Composer",
+        "warum": "Composer 是 Cursor 自家的快速模型，据 Cursor 介绍是“为交互式编程打造”的——你在编辑器里输入，就能立刻看到结果，而不用敲终端命令。遇到非常棘手的任务时，可以在选择器里切换到 Premium 或 Grok 4.5。",
+        "beispiel": "在 Cursor 中打开 Composer：“搭建一个带邮箱和密码字段的登录页面，包含校验逻辑。”",
+        "link": "lexikon/pair-programming-muster/",
+        "linkLabel": "与 AI 结对编程的模式"
+      },
+      {
+        "id": "ci-automatisierung",
+        "emoji": "⚙️",
+        "frage": "我需要 CI/自动化/脚本",
+        "tool": "Codex CLI",
+        "modell": "GPT-5.6 Sol",
+        "warum": "`codex exec` 无需 TUI 界面即可运行，并返回结构化的 JSON 输出——非常适合脚本、CI 流水线或定时任务。其他工具也有同样的思路：Claude Code 用 `claude -p \"...\"`，Antigravity CLI 用 `agy -p \"...\"`。",
+        "beispiel": "codex exec \"总结最近几次提交的改动\" --json",
+        "link": "lexikon/ci-cd-mit-agenten/",
+        "linkLabel": "使用智能体的 CI/CD"
+      },
+      {
+        "id": "open-source-eigene-keys",
+        "emoji": "🔑",
+        "frage": "我想要开源方案 + 自己的密钥",
+        "tool": "Aider",
+        "modell": "你自己的模型（自备密钥）",
+        "warum": "Aider 刻意做到与模型无关——你可以通过环境变量或 `--model` 指定自己的模型和 API 密钥，完全开源，不绑定任何厂商。选用哪个模型完全由你决定；Aider 几乎能连接任何 LLM。",
+        "beispiel": "export ANTHROPIC_API_KEY=你的密钥\naider --model anthropic/claude-sonnet-5",
+        "link": "befehle/aider/",
+        "linkLabel": "所有 Aider 命令"
+      },
+      {
+        "id": "guenstig-lernen",
+        "emoji": "💸",
+        "frage": "我想低成本地实验/学习",
+        "tool": "Claude Code",
+        "modell": "Haiku 4.5",
+        "warum": "据 Anthropic 介绍，Haiku 4.5 是“具有接近前沿智能水平、速度最快的模型”——以 1 $/5 $ 每 MTok（截至 2026 年 7 月）的价格，是最便宜的 Claude 模型。非常适合用来试验，又不用担心费用失控。",
+        "beispiel": "/model haiku\n解释一下这段 Python 代码的作用，并提出 3 个小的改进建议。",
+        "link": "lexikon/kosten-kontrolle-agenten/",
+        "linkLabel": "AI 智能体的成本控制"
+      },
+      {
+        "id": "langer-loop",
+        "emoji": "🔁",
+        "frage": "我想跑一个带验证的长循环任务",
+        "tool": "Claude Code",
+        "modell": "Fable 5",
+        "warum": "据 Anthropic 介绍，Fable 5 是“Claude Code 中能力最强的模型，适合超出单次会话规模的任务”——它会先调查、后行动，并且比更小的模型更频繁地检查自己的结果。这正是一个长时间、无人值守的循环任务所需要的。",
+        "beispiel": "/model fable\n/loop \"完整实现功能 X，为它编写测试，并修复所有问题，直到测试套件全部通过。\"",
+        "link": "lexikon/loops-fuer-agenten/",
+        "linkLabel": "理解智能体的循环任务（Loop）"
+      }
+    ]
+  },
+  "quadrant": {
+    "title": "价格 vs. 厂商定位",
+    "xLow": "便宜",
+    "xHigh": "昂贵",
+    "yLow": "入门",
+    "yHigh": "旗舰",
+    "hinweis": "分类仅依据各厂商的官方说法和官方标价，截至 2026 年 7 月——不包含我们自己的基准测试评判。",
+    "models": [
+      {
+        "name": "Fable 5",
+        "anbieter": "Anthropic",
+        "kostenTier": 3,
+        "capTier": 3
+      },
+      {
+        "name": "Opus 4.8",
+        "anbieter": "Anthropic",
+        "kostenTier": 3,
+        "capTier": 3
+      },
+      {
+        "name": "Sonnet 5",
+        "anbieter": "Anthropic",
+        "kostenTier": 2,
+        "capTier": 2
+      },
+      {
+        "name": "Haiku 4.5",
+        "anbieter": "Anthropic",
+        "kostenTier": 1,
+        "capTier": 1
+      },
+      {
+        "name": "GPT-5.6 Sol",
+        "anbieter": "OpenAI",
+        "kostenTier": 3,
+        "capTier": 3
+      },
+      {
+        "name": "GPT-5.6 Terra",
+        "anbieter": "OpenAI",
+        "kostenTier": 2,
+        "capTier": 2
+      },
+      {
+        "name": "GPT-5.6 Luna",
+        "anbieter": "OpenAI",
+        "kostenTier": 1,
+        "capTier": 1
+      },
+      {
+        "name": "Gemini 3.5 Flash",
+        "anbieter": "Google",
+        "kostenTier": 1.5,
+        "capTier": 3
+      },
+      {
+        "name": "Gemini 3.1 Flash-Lite",
+        "anbieter": "Google",
+        "kostenTier": 1,
+        "capTier": 1
+      },
+      {
+        "name": "Grok 4.5",
+        "anbieter": "xAI",
+        "kostenTier": 1.5,
+        "capTier": 3
+      }
+    ]
+  },
+  "modelle": {
+    "title": "各大厂商的模型",
+    "intro": "Anthropic、OpenAI、Google 和 xAI 目前的旗舰模型与日常模型——包含价格、上下文长度，以及各自适合的用途。",
+    "anbieter": [
+      {
+        "name": "Anthropic",
+        "modelle": [
+          {
+            "name": "Fable 5",
+            "positionierung": "Anthropic 能力最强、且广泛可用的模型——专为最苛刻的推理任务和长时间运行的智能体任务打造（据 Anthropic 介绍）。",
+            "kontext": "1M Token",
+            "preis": "10 $ / 50 $ 每 MTok（截至 2026 年 7 月）",
+            "stark": [
+              "据 Anthropic 介绍，能力等级最高，适合长时间的自主智能体运行",
+              "默认 1M Token 上下文",
+              "比更小的模型更频繁地检查自己的工作成果"
+            ],
+            "schwach": [
+              "当前 Claude 系列中最贵的模型（10 $/50 $，截至 2026 年 7 月）",
+              "在 Claude Code 中不是默认模型——需要手动选择（`/model fable`）"
+            ],
+            "wofuer": "适用于风险高、耗时数小时的超大型任务。"
+          },
+          {
+            "name": "Opus 4.8",
+            "positionierung": "用于复杂的智能体编程和企业级工作——一款面向严肃编程和知识工作的高端模型（据 Anthropic 介绍）。",
+            "kontext": "1M Token",
+            "preis": "5 $ / 25 $ 每 MTok（截至 2026 年 7 月）",
+            "stark": [
+              "推荐用于复杂的架构决策和多步推理",
+              "1M Token 上下文"
+            ],
+            "schwach": [
+              "在类似的日常任务上比 Sonnet 5 更贵"
+            ],
+            "wofuer": "适用于复杂的架构决策和大型重构。"
+          },
+          {
+            "name": "Sonnet 5",
+            "positionierung": "速度与智能的最佳结合——迄今为止最具智能体特质的 Sonnet 系列（据 Anthropic 介绍）。",
+            "kontext": "1M Token",
+            "preis": "2 $ / 10 $ 每 MTok（至 31.08.2026），此后为 3 $ / 15 $（截至 2026 年 7 月）",
+            "stark": [
+              "能很好地完成大多数编程任务",
+              "比 Opus 便宜",
+              "Pro/Team 标准账户在 Claude Code 中的默认模型"
+            ],
+            "schwach": [
+              "在非常复杂的架构问题上不如 Opus/Fable"
+            ],
+            "wofuer": "作为处理大多数编程任务的日常模型使用。"
+          },
+          {
+            "name": "Haiku 4.5",
+            "positionierung": "具有接近前沿智能水平、速度最快的模型——以更低的价格提供 Anthropic 最强模型的轻量版本（据 Anthropic 介绍）。",
+            "kontext": "200K Token",
+            "preis": "1 $ / 5 $ 每 MTok（截至 2026 年 7 月）",
+            "stark": [
+              "最便宜的 Claude 模型",
+              "速度非常快",
+              "根据 Anthropic 自己的数据，在 SWE-bench Verified 上达到 73.3%"
+            ],
+            "schwach": [
+              "上下文窗口更小（200K 而非 1M）",
+              "在非常复杂的任务上不如 Sonnet/Opus"
+            ],
+            "wofuer": "适用于低成本实验，以及简单、边界清晰的任务。"
+          }
+        ]
+      },
+      {
+        "name": "OpenAI",
+        "modelle": [
+          {
+            "name": "GPT-5.6 Sol",
+            "positionierung": "面向复杂专业工作的前沿模型——用于复杂推理和编程的旗舰模型（据 OpenAI 介绍）。",
+            "kontext": "~1.05M Token",
+            "preis": "5 $ / 30 $ 每 MTok，缓存输入 0.50 $（截至 2026 年 7 月）",
+            "stark": [
+              "GPT-5.6 系列中最强的模型",
+              "Codex CLI 中的默认模型（推理强度为“medium”）"
+            ],
+            "schwach": [
+              "5.6 系列中最贵的模型"
+            ],
+            "wofuer": "适用于注重细节和精确度的任务。"
+          },
+          {
+            "name": "GPT-5.6 Terra",
+            "positionierung": "在智能水平和成本之间取得平衡——大致相当于早期 GPT-5 系列中的 mini 级别模型（据 OpenAI 介绍）。",
+            "kontext": "~1.05M Token",
+            "preis": "2.50 $ / 15 $ 每 MTok，缓存输入 0.25 $（截至 2026 年 7 月）",
+            "stark": [
+              "在成本与能力之间取得了不错的平衡",
+              "在 Codex CLI 中被推荐为“日常主力模型”"
+            ],
+            "schwach": [
+              "在最难的任务上不如 Sol"
+            ],
+            "wofuer": "当 Sol 太贵时，可作为日常模型使用。"
+          },
+          {
+            "name": "GPT-5.6 Luna",
+            "positionierung": "针对成本敏感型工作负载优化——大致相当于 nano 级别模型（据 OpenAI 介绍）。",
+            "kontext": "~1.05M Token",
+            "preis": "1 $ / 6 $ 每 MTok，缓存输入 0.10 $（截至 2026 年 7 月）",
+            "stark": [
+              "5.6 系列中最便宜的模型",
+              "在 Codex CLI 中被推荐用于“清晰、可重复的工作”"
+            ],
+            "schwach": [
+              "OpenAI 仅将其定位于清晰、可重复的工作"
+            ],
+            "wofuer": "适用于大批量、简单且重复性的编程任务。"
+          },
+          {
+            "name": "GPT-5.3-Codex",
+            "positionierung": "迄今为止能力最强的智能体编程模型——针对 Codex 或类似环境中的智能体编程任务进行了优化（据 OpenAI 介绍）。",
+            "kontext": "400K Token",
+            "preis": "1.75 $ / 14 $ 每 MTok，缓存输入 0.175 $（截至 2026 年 7 月）",
+            "stark": [
+              "专门针对智能体编程进行了优化",
+              "在保持强劲编程表现的同时比 Sol 更便宜"
+            ],
+            "schwach": [
+              "在使用 ChatGPT 登录的 Codex 中被标记为已弃用——可用性不一致（截至 2026 年 7 月）"
+            ],
+            "wofuer": "如果你想要专门针对智能体编程优化的质量，而不是通用模型，就用它。"
+          }
+        ]
+      },
+      {
+        "name": "Google",
+        "modelle": [
+          {
+            "name": "Gemini 3.5 Flash",
+            "positionierung": "在智能体和编程任务上具备持续前沿表现的最智能模型（据 Google 介绍）。",
+            "kontext": "~1M Token（输出最高 65K）",
+            "preis": "1.50 $ / 9 $ 每 MTok，Batch/Flex 0.75 $ / 4.50 $（截至 2026 年 7 月）",
+            "stark": [
+              "尽管名字里带“Flash”，Google 仍将其定位为“最智能”的模型",
+              "提供免费额度",
+              "比 Google 自家的 Pro 模型更便宜"
+            ],
+            "schwach": [
+              "知识截止日期为 2025 年 1 月"
+            ],
+            "wofuer": "作为 Google 对智能体编程任务的首选推荐使用。"
+          },
+          {
+            "name": "Gemini 3.1 Flash-Lite",
+            "positionierung": "以极低的成本达到与更大模型相当的前沿级性能——用于大批量智能体任务时性价比最高的模型（据 Google 介绍）。",
+            "kontext": "~1M Token（输出最高 65K）",
+            "preis": "0.25 $（文本/图像/视频）或 0.50 $（音频）/ 1.50 $ 每 MTok（截至 2026 年 7 月）",
+            "stark": [
+              "本次对比中最便宜的模型",
+              "提供免费额度"
+            ],
+            "schwach": [
+              "并非面向复杂任务定位"
+            ],
+            "wofuer": "适用于翻译、简单数据处理，以及大批量、简单的智能体运行任务。"
+          },
+          {
+            "name": "Gemini 3.1 Pro Preview",
+            "positionierung": "先进的智能水平、复杂问题解决能力，以及强大的智能体和 Vibe Coding 能力（据 Google 介绍）——目前仍处于预览阶段。",
+            "kontext": "~1M Token（输出最高 65K）",
+            "preis": "2–4 $ / 12–18 $ 每 MTok，按提示词长度分级（截至 2026 年 7 月）",
+            "stark": [
+              "Google 处理复杂多步任务能力最强的模型",
+              "据 Google 介绍，具备强大的 Vibe Coding 能力"
+            ],
+            "schwach": [
+              "仍处于预览阶段，没有免费额度",
+              "比 Flash 更贵（提示词超过 200K 时还会再分一档）"
+            ],
+            "wofuer": "适用于 Flash 力所不及的复杂多步问题。"
+          }
+        ]
+      },
+      {
+        "name": "xAI",
+        "modelle": [
+          {
+            "name": "Grok 4.5",
+            "positionierung": "xAI：“For everything else, including code, use Grok 4.5. It is the most intelligent and fastest model we’ve built.” Cursor 与其共同训练，并将其称为自己的旗舰模型。",
+            "kontext": "500K Token",
+            "preis": "2 $ / 6 $ 每 MTok，缓存输入 0.50 $（截至 2026 年 7 月）",
+            "stark": [
+              "由 Cursor 共同训练，作为其旗舰合作模型",
+              "比其他厂商的多数顶级模型更便宜"
+            ],
+            "schwach": [
+              "上下文窗口比同类竞品更小（500K 而非 1M）"
+            ],
+            "wofuer": "在 Cursor 中用于最难的任务——据 xAI 介绍，这是他们最智能、最快的模型。"
+          },
+          {
+            "name": "Grok 4.3",
+            "positionierung": "未找到官方定位说明——在与 Grok 4.5 相同的 xAI 模型页面上，被列为价格更低、上下文更大的姊妹模型。",
+            "kontext": "1M Token",
+            "preis": "1.25 $ / 2.50 $ 每 MTok（截至 2026 年 7 月）",
+            "stark": [
+              "比 Grok 4.5 拥有更大的上下文（1M 而非 500K）",
+              "比 Grok 4.5 更便宜"
+            ],
+            "schwach": [
+              "文档极少——未找到独立的定位说明或模型页面"
+            ],
+            "wofuer": "当 Grok 4.5 太贵时，可作为上下文更大、价格更低的 xAI 替代方案使用。"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "title": "Claude Docs: Models Overview",
+        "url": "https://platform.claude.com/docs/en/about-claude/models/overview"
+      },
+      {
+        "title": "Claude Docs: Pricing",
+        "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+      },
+      {
+        "title": "Anthropic: Claude Sonnet 5 Launch",
+        "url": "https://www.anthropic.com/news/claude-sonnet-5"
+      },
+      {
+        "title": "OpenAI Docs: Pricing",
+        "url": "https://developers.openai.com/api/docs/pricing"
+      },
+      {
+        "title": "OpenAI Docs: GPT-5.6 Sol",
+        "url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
+      },
+      {
+        "title": "Google AI: Gemini Models",
+        "url": "https://ai.google.dev/gemini-api/docs/models"
+      },
+      {
+        "title": "Google AI: Gemini Pricing",
+        "url": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      {
+        "title": "xAI Docs: Models",
+        "url": "https://docs.x.ai/docs/models"
+      }
+    ]
+  },
+  "imTool": {
+    "title": "工具内部：什么任务用什么模型？",
+    "intro": "每个工具都有自己的默认模型，以及针对特定任务的推荐用法。这里介绍如何切换模型——以及什么时候值得切换。",
+    "tools": [
+      {
+        "tool": "Claude Code",
+        "standard": "默认模型取决于账户类型（通常是 Opus 4.8 或 Sonnet 5）——可以用 `/model <name>` 切换，或通过 `/model` 打开选择器。",
+        "empfehlungen": [
+          {
+            "aufgabe": "日常编程任务",
+            "wahl": "sonnet",
+            "warum": "能很好地处理大多数任务，且比 Opus 便宜（据 Anthropic 介绍）。"
+          },
+          {
+            "aufgabe": "复杂的架构决策",
+            "wahl": "opus",
+            "warum": "推荐用于复杂的推理任务（据 Anthropic 介绍）。"
+          },
+          {
+            "aufgabe": "简单的子智能体任务",
+            "wahl": "haiku",
+            "warum": "对简单任务而言快速且高效（据 Anthropic 介绍）。"
+          }
+        ],
+        "sources": [
+          {
+            "title": "Claude Code Doku: Model Config",
+            "url": "https://code.claude.com/docs/en/model-config"
+          },
+          {
+            "title": "Claude Code Doku: Costs",
+            "url": "https://code.claude.com/docs/en/costs"
+          }
+        ]
+      },
+      {
+        "tool": "Codex CLI",
+        "standard": "默认模型是 GPT-5.6 Sol，推理强度为“medium”——可以用 `/model` 或 `codex --model <id>` 切换。",
+        "empfehlungen": [
+          {
+            "aufgabe": "注重细节和精确度的工作",
+            "wahl": "5.6 Sol",
+            "warum": "“用于细节打磨”——如果拿不准，先从 Sol 开始（据 OpenAI 介绍）。"
+          },
+          {
+            "aufgabe": "日常主力模型",
+            "wahl": "5.6 Terra",
+            "warum": "以更低成本媲美 GPT-5.5 的表现（据 OpenAI 介绍）。"
+          },
+          {
+            "aufgabe": "清晰、可重复的工作",
+            "wahl": "5.6 Luna",
+            "warum": "该系列中成本最低（据 OpenAI 介绍）。"
+          }
+        ],
+        "sources": [
+          {
+            "title": "OpenAI: Codex-Modelle",
+            "url": "https://learn.chatgpt.com/docs/models"
+          },
+          {
+            "title": "OpenAI: Codex CLI Quickstart",
+            "url": "https://learn.chatgpt.com/docs/codex/cli"
+          }
+        ]
+      },
+      {
+        "tool": "Cursor",
+        "standard": "通过选择器来选模型；“Auto”会自动在智能水平、成本和可靠性之间做平衡。",
+        "empfehlungen": [
+          {
+            "aufgabe": "日常任务",
+            "wahl": "Auto",
+            "warum": "“适合日常任务”（据 Cursor 介绍）。"
+          },
+          {
+            "aufgabe": "复杂的多步骤任务",
+            "wahl": "Premium / Grok 4.5",
+            "warum": "Premium 会选用能力最强的模型；Grok 4.5 是 Cursor 自己的旗舰模型（据 Cursor 介绍）。"
+          },
+          {
+            "aufgabe": "快速的交互式编程",
+            "wahl": "Composer",
+            "warum": "Cursor 快速、性价比高的模型，专为交互式编程打造（据 Cursor 介绍）。"
+          }
+        ],
+        "sources": [
+          {
+            "title": "Cursor Docs: Models",
+            "url": "https://cursor.com/docs/models"
+          },
+          {
+            "title": "Cursor Help: Available Models",
+            "url": "https://cursor.com/help/models-and-usage/available-models"
+          }
+        ]
+      },
+      {
+        "tool": "Aider",
+        "standard": "目前没有统一记录在案的默认模型——你需要通过 `--model` 或 API 密钥环境变量来指定自己的模型。",
+        "empfehlungen": [
+          {
+            "aufgabe": "选择模型",
+            "wahl": "--model <name>",
+            "warum": "Aider 刻意做到与模型无关——几乎可以搭配任何 LLM 运行（据 Aider 文档介绍）。"
+          },
+          {
+            "aufgabe": "列出某个厂商的模型",
+            "wahl": "--list-models anthropic/",
+            "warum": "在选择之前列出某个厂商的可用模型。"
+          },
+          {
+            "aufgabe": "精细设置（例如思考预算 Thinking-Budget）",
+            "wahl": ".aider.model.settings.yml",
+            "warum": "针对单个项目的持久化高级模型设置。"
+          }
+        ],
+        "sources": [
+          {
+            "title": "Aider Docs: LLMs",
+            "url": "https://aider.chat/docs/llms.html"
+          },
+          {
+            "title": "Aider Docs: Anthropic",
+            "url": "https://aider.chat/docs/llms/anthropic.html"
+          }
+        ]
+      },
+      {
+        "tool": "Antigravity CLI",
+        "standard": "所有套餐都包含两款 Gemini 核心模型（3.5 Flash、3.1 Pro）——用 `/model` 切换；从 Ultra 套餐起还会加入第三方模型（Claude、GPT-OSS）。",
+        "empfehlungen": [
+          {
+            "aufgabe": "快速的日常任务",
+            "wahl": "Gemini 3.5 Flash",
+            "warum": "所有套餐均可使用，定位于智能体和编程任务（据 Google 介绍）。"
+          },
+          {
+            "aufgabe": "更复杂的问题",
+            "wahl": "Gemini 3.1 Pro",
+            "warum": "智能水平更高，同样所有套餐均可使用（据 Google 介绍）。"
+          },
+          {
+            "aufgabe": "使用第三方模型",
+            "wahl": "Claude Opus/Sonnet 4.6（仅限 Ultra）",
+            "warum": "仅在最贵的“Google AI Ultra”套餐中可用。"
+          }
+        ],
+        "sources": [
+          {
+            "title": "Antigravity Doku: Modelle",
+            "url": "https://antigravity.google/docs/models"
+          },
+          {
+            "title": "Antigravity Doku: Pläne",
+            "url": "https://antigravity.google/docs/plans"
+          }
+        ]
+      }
+    ]
+  },
+  "toolsTitle": "工具直接对比",
   "tools": [
     {
       "id": "claude-code",
@@ -9,19 +574,25 @@
       "typ": "CLI + IDE 扩展 + Web",
       "openSource": "否",
       "preis": "Claude 订阅或 API 费用",
-      "bestFor": "在终端里做 agentic 工作：长任务、自动化、loop、subagent。",
+      "bestFor": "在终端中进行智能体工作：长任务、自动化、循环任务、子智能体。",
       "highlights": [
-        "内置 subagent、hook 和 MCP 连接",
-        "Artifacts：可从会话中直接分享的实时页面",
-        "默认模型 Sonnet 5，支持 1M token 上下文"
+        "内置子智能体、Hooks 和 MCP 接入",
+        "Artifacts：可直接从会话生成的可分享实时页面",
+        "默认模型取决于订阅类型（Opus 4.8 或 Sonnet 5，Sonnet 5 支持 1M Token 上下文）——可通过 /model 切换"
       ],
       "caveats": [
-        "没有图形化编辑器——终端优先是个人喜好问题",
-        "绑定 Claude 生态系统"
+        "没有图形化编辑器——以终端为核心的方式见仁见智",
+        "绑定在 Claude 生态系统中"
       ],
       "sources": [
-        { "title": "Claude Code 文档：What's new", "url": "https://code.claude.com/docs/en/whats-new" },
-        { "title": "Claude Code 文档：Subagents", "url": "https://code.claude.com/docs/en/sub-agents" }
+        {
+          "title": "Claude Code Doku: What's new",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Claude Code Doku: Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        }
       ]
     },
     {
@@ -29,20 +600,26 @@
       "name": "Cursor",
       "typ": "IDE（基于 VS Code）",
       "openSource": "否",
-      "preis": "订阅制",
-      "bestFor": "IDE 优先：看、点、编辑——agent 在后台工作。",
+      "preis": "订阅",
+      "bestFor": "以 IDE 为核心：所见即所得，点击编辑——同时有智能体在后台运行。",
       "highlights": [
-        "你在编辑时，后台和云端 agent 继续工作",
-        "Composer 支持多文件修改",
-        "自动化：agent 可根据仓库事件或定时器启动"
+        "后台和云端智能体会在你编辑时持续工作",
+        "Composer 用于多文件改动",
+        "Automations：智能体可根据仓库事件或定时器自动启动"
       ],
       "caveats": [
         "闭源，订阅制",
-        "已宣布被 SpaceX 收购（2026年6月16日）——需持续关注"
+        "已宣布被 SpaceX 收购（16.06.2026）——未来走向有待观察"
       ],
       "sources": [
-        { "title": "Cursor 更新日志", "url": "https://cursor.com/changelog" },
-        { "title": "TechCrunch: SpaceX to acquire Cursor", "url": "https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/" }
+        {
+          "title": "Cursor Changelog",
+          "url": "https://cursor.com/changelog"
+        },
+        {
+          "title": "TechCrunch: SpaceX to acquire Cursor",
+          "url": "https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/"
+        }
       ]
     },
     {
@@ -51,18 +628,21 @@
       "typ": "CLI",
       "openSource": "是",
       "preis": "ChatGPT 订阅或 API",
-      "bestFor": "适合活在 OpenAI 生态里、又想要开源 CLI 的人。",
+      "bestFor": "适合生活在 OpenAI 生态系统中、又想要一个开放式 CLI 的人。",
       "highlights": [
-        "Subagent：最多可并行 6 个",
-        "通过持久 WebSocket 实现快速往返",
-        "已集成进 ChatGPT 桌面应用"
+        "子智能体：最多可 6 个并行运行",
+        "通过持久 WebSocket 实现快速往返通信",
+        "已捆绑集成到 ChatGPT 桌面应用中"
       ],
       "caveats": [
-        "优势很大程度上依赖 OpenAI 的模型阵容",
-        "比竞品更年轻，生态仍在成长"
+        "其优势高度依赖 OpenAI 的模型阵容",
+        "比同类产品更年轻，生态系统仍在发展中"
       ],
       "sources": [
-        { "title": "OpenAI Codex 更新日志", "url": "https://developers.openai.com/codex/changelog" }
+        {
+          "title": "OpenAI Codex Changelog",
+          "url": "https://developers.openai.com/codex/changelog"
+        }
       ]
     },
     {
@@ -70,20 +650,215 @@
       "name": "Aider",
       "typ": "CLI",
       "openSource": "是",
-      "preis": "免费——只需支付你自己的模型 API 费用",
-      "bestFor": "完全掌控：自己的模型、自己的密钥、原生 git 工作方式。",
+      "preis": "免费——你只需支付自己使用的模型 API 费用",
+      "bestFor": "完全掌控：自选模型、自备密钥、原生 Git 工作方式。",
       "highlights": [
-        "模型无关——几乎兼容所有 LLM",
-        "原生 git：每次改动都有干净的自动 commit",
+        "与模型无关——几乎可以搭配任何 LLM 运行",
+        "原生 Git 支持：每次改动都会生成清晰的自动提交",
         "完全开源，不绑定任何厂商"
       ],
       "caveats": [
-        "自动化便利性不如大型套件",
-        "配置和模型选择都要自己搞定"
+        "自动化的便利程度不如大型套件产品",
+        "配置和选择模型都需要你自己动手"
       ],
       "sources": [
-        { "title": "Aider——官方网站", "url": "https://aider.chat/" }
+        {
+          "title": "Aider — offizielle Seite",
+          "url": "https://aider.chat/"
+        }
+      ]
+    },
+    {
+      "id": "antigravity-cli",
+      "name": "Antigravity CLI",
+      "typ": "CLI",
+      "openSource": "否",
+      "preis": "Google 账户——Free/Pro/Ultra 额度（不支持自带 API 密钥）",
+      "bestFor": "面向个人用户、作为 Gemini CLI 的继任者：Google 生态系统中的终端智能体，支持 MCP、插件和 Skills。",
+      "highlights": [
+        "被 Google 官方指定为面向个人用户的 Gemini CLI 继任产品",
+        "完整的 MCP 支持（stdio + 远程）以及自有的插件/Skill 系统（`agy plugin`、`/skills`）",
+        "与其他 CLI 一样，提供用于脚本的非交互模式（`agy -p`）"
+      ],
+      "caveats": [
+        "产品非常新（仓库始建于 2026 年 5 月）——仓库中没有开源许可证文件（`license: null`）",
+        "免费额度仅有定性描述（“meaningful”/“generous”），没有具体数字"
+      ],
+      "sources": [
+        {
+          "title": "Google Blog: Transition von Gemini CLI zu Antigravity CLI",
+          "url": "https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/"
+        },
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
       ]
     }
-  ]
+  ],
+  "duelle": {
+    "title": "模型对决",
+    "intro": "问题不是“哪个模型最好”，而是“这一件具体任务该用哪个模型”。四组直接对比，依据价格和厂商自身说法整理而成——并回答了最关键的问题：什么时候更贵的模型并不划算。价格和数字：截至 2026 年 7 月。",
+    "items": [
+      {
+        "id": "haiku-vs-sonnet",
+        "titel": "Haiku 4.5 vs. Sonnet 5",
+        "frage": "这个任务是机械且明确的——还是你需要一个会“动脑子”的模型？",
+        "a": {
+          "name": "Claude Haiku 4.5",
+          "nimm": "适用于机械、边界清晰、没有解读空间的任务——指令明确，没有什么需要判断的，只需要执行。",
+          "beispiele": [
+            "根据 diff 生成提交信息",
+            "在 100 行日志中按已知错误模式进行过滤",
+            "在 40 个文件中统一重命名某个 JSON 字段"
+          ]
+        },
+        "b": {
+          "name": "Claude Sonnet 5",
+          "nimm": "适用于构建功能、进行多步骤调试，或者在修改代码之前需要先弄清楚代码是如何运作的情况。",
+          "beispiele": [
+            "构建一个涉及多个文件和模块的新功能",
+            "排查一个错误原因不在报错信息中的 bug",
+            "理解陌生代码，然后干净利落地对其进行扩展"
+          ]
+        },
+        "nichtLohnen": "经验法则：把 Sonnet 5 用在简单、明确的编辑任务上是在浪费钱——Sonnet 的价格是 $2/$10 每 MTok（输入/输出，推出价有效期至 31.08.2026），之后为 $3/$15，而 Haiku 4.5 只要 $1/$5（截至 2026 年 7 月）——对于一个 Haiku 同样能出色完成的任务，价格却贵了 2 到 3 倍。反过来，一旦需求变得隐晦，Haiku 就会力不从心：比如“把这个改得更干净一点”却没有定义什么是“干净”、需要在两种都合理的方案之间做架构取舍，或者一个任务需要你先理解代码上下文才知道到底该做什么。",
+        "benchmark": "SWE-bench Verified：73.3% —— Anthropic 官方数据显示，Haiku 4.5 在 SWE-bench Verified 上达到 73.3%——接近那些价格明显更高的模型。这是 Anthropic 自己给出的数据，并非独立测试结果，但也说明：在表述清晰的编程任务上，Haiku 的表现很强，而不只是“快且便宜”。（截至 2026 年 7 月）",
+        "sources": [
+          {
+            "title": "Anthropic: Claude Haiku",
+            "url": "https://www.anthropic.com/claude/haiku"
+          },
+          {
+            "title": "Anthropic-Plattform: Preise",
+            "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+          },
+          {
+            "title": "Claude Code Doku: Kosten",
+            "url": "https://code.claude.com/docs/en/costs"
+          }
+        ]
+      },
+      {
+        "id": "sonnet-vs-spitze",
+        "titel": "Sonnet 5 vs. Opus 4.8 / Fable 5",
+        "frage": "标准主力模型就够用了——还是你需要旗舰模型？",
+        "a": {
+          "name": "Claude Sonnet 5",
+          "nimm": "作为处理日常编程工作的默认选择。Anthropic 针对 Claude Code 的官方指导是：“Sonnet handles most coding tasks well and costs less than Opus.”",
+          "beispiele": [
+            "在正在进行的项目中处理日常功能开发和 bug 修复",
+            "代码评审和常规重构",
+            "不需要数小时自主自我纠错的调试会话"
+          ]
+        },
+        "b": {
+          "name": "Claude Opus 4.8 / Fable 5",
+          "nimm": "适用于复杂的架构决策、跨越多个文件和子系统的棘手 bug，或是需要大量自我纠错的长时间自主智能体运行任务。",
+          "beispiele": [
+            "规划一次同时影响多个模块的架构重新设计",
+            "排查一个横跨 10 多个文件和多个子系统的 bug",
+            "一次长达数小时的自主运行，模型自己进行调研、执行操作并验证自己的结果——据 Anthropic 介绍，这正是 Fable 5 的强项：“sustains long autonomous sessions, investigates before acting, and verifies its work more often than smaller models.”"
+          ]
+        },
+        "nichtLohnen": "经验法则：用旗舰模型来处理日常编辑，就是在烧钱。Sonnet 5 的价格是 $2/$10 每 MTok（输入/输出，推出价有效期至 31.08.2026），之后为 $3/$15。Opus 4.8 的价格是 $5/$25——是 Sonnet 的 1.7 到 2.5 倍，具体取决于你比较的是哪个价格档位。Fable 5 的价格是 $10/$50——是 Sonnet 的 3.3 到 5 倍（所有数字截至 2026 年 7 月）。Anthropic 自己的指导原则把 Opus 保留给“complex architectural decisions or multi-step reasoning”；Fable 5 在任何账户类型下都不是默认模型，必须通过 `/model fable` 手动选择——它并非为常规工作而定位。",
+        "sources": [
+          {
+            "title": "Anthropic: Claude Opus",
+            "url": "https://www.anthropic.com/claude/opus"
+          },
+          {
+            "title": "Anthropic-Plattform: Einführung Fable 5",
+            "url": "https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5.md"
+          },
+          {
+            "title": "Anthropic-Plattform: Preise",
+            "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+          },
+          {
+            "title": "Claude Code Doku: Modellwahl",
+            "url": "https://code.claude.com/docs/en/model-config"
+          },
+          {
+            "title": "Claude Code Doku: Kosten",
+            "url": "https://code.claude.com/docs/en/costs"
+          }
+        ]
+      },
+      {
+        "id": "flash-vs-pro",
+        "titel": "Gemini 3.5 Flash vs. Gemini 3.1 Pro Preview",
+        "frage": "这款被 Google 自己称为“最智能”的快速模型——还是价格更高的预览版旗舰模型？",
+        "a": {
+          "name": "Gemini 3.5 Flash",
+          "nimm": "作为处理智能体和编程任务的默认选择。Google 自己将其定位为“most intelligent model for sustained frontier performance on agentic and coding tasks”——而不是 Pro 模型。",
+          "beispiele": [
+            "包含大量连续工具调用的智能体编程工作流",
+            "需要搜索和事实核查（grounding）能力的任务（Google 称之为“superior search and grounding”）",
+            "几乎所有以前你会下意识选择“Pro”的场景，现在都可以先用它试试"
+          ]
+        },
+        "b": {
+          "name": "Gemini 3.1 Pro Preview",
+          "nimm": "当你想专门测试 Google 为复杂问题解决而定位的 Pro 模型时使用——并且能接受它仍处于预览阶段。注意：Flash 和 Pro 拥有相同的 1M 上下文长度。",
+          "beispiele": [
+            "Google 明确将 Pro 定位于复杂问题解决场景——但要知道，超过 200,000 Token 的提示词在 Pro 上会进入更贵的价格档位",
+            "Google 将 Pro 描述为“the best model family … for multimodal understanding, agentic capabilities, and vibe-coding”的探索性场景"
+          ]
+        },
+        "nichtLohnen": "一个有趣的事实（截至 2026 年 7 月）：在 Google 自己的模型文档中，被列为“most intelligent model”的偏偏是速度更快的 Flash 模型，而 Pro 模型不仅仍处于预览阶段，每个 Token 的价格还明显更高：Flash 为 $1.50/$9 每 MTok（输入/输出），而 Pro 为 $2–4/$12–18（按提示词长度分级）。经验法则：对于大多数编程任务而言，目前很难为 Pro 预览版的加价找到理由——你多付的钱，买的是一个连 Google 自己都不认为是最智能的模型。两款模型拥有相同的约 1M 上下文——所以长上下文并不是选择 Pro 的理由；提示词超过 200k 时 Pro 还会变得更贵，而 Flash 保持不变。只有当你确实需要 Pro 针对复杂问题解决的定位时，选它才划算。",
+        "sources": [
+          {
+            "title": "Google AI: Gemini-Modelle im Überblick",
+            "url": "https://ai.google.dev/gemini-api/docs/models"
+          },
+          {
+            "title": "Google AI: Preise",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing"
+          },
+          {
+            "title": "Google AI: Gemini 3.5 Flash",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash"
+          },
+          {
+            "title": "Google AI: Gemini 3.1 Pro Preview",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview"
+          }
+        ]
+      },
+      {
+        "id": "abo-vs-api",
+        "titel": "订阅 vs. API 计费（按 Token 付费）",
+        "frage": "有额度上限的固定费用——还是没有上限的按量计费？",
+        "a": {
+          "name": "订阅（例如 Claude Pro/Max、ChatGPT Plus/Pro、Cursor 订阅）",
+          "nimm": "适用于你想要可预测、有上限的费用，并且使用频率稳定但不算极端的情况——每月固定价格，而不是波动的账单。",
+          "beispiele": [
+            "个人开发者每天使用 Claude Code 或 Cursor",
+            "团队席位需要可预测的月度预算，而不是波动的 API 账单"
+          ]
+        },
+        "b": {
+          "name": "API / 按 Token 付费",
+          "nimm": "适用于用量波动很大、需要跑自动化批处理任务，或者需要的用量超出订阅额度上限的情况。",
+          "beispiele": [
+            "夜间大批量处理——所有 Claude 模型的 Batch API 对输入和输出都提供 50% 的折扣（截至 2026 年 7 月）",
+            "每天自动调用几次 Haiku 4.5 这类便宜模型的 CI 步骤",
+            "通过 Prompt Caching 反复使用大段上下文——命中缓存的价格只是正常输入价格的 0.1 倍，也就是便宜 90%（截至 2026 年 7 月）"
+          ]
+        },
+        "nichtLohnen": "经验法则：对偶尔使用的用户来说，按 Token 付费的 API 很少划算——使用不规律、量又小的情况下，固定价格的订阅通常更便宜，而且你也不用时刻盯着 Token 用量。反过来，订阅对大批量处理来说是错误的选择：订阅额度是为交互式会话使用设计的，不是为成千上万次自动化调用设计的——这种场景下，带有批处理折扣（Claude 为 50%）和 Prompt Caching（对重复上下文最高可省 90%）的 API 明显更划算（截至 2026 年 7 月）。",
+        "sources": [
+          {
+            "title": "Anthropic-Plattform: Preise (Batch, Caching)",
+            "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+          },
+          {
+            "title": "Claude: Pricing (Abos)",
+            "url": "https://claude.com/pricing"
+          }
+        ]
+      }
+    ]
+  }
 }
