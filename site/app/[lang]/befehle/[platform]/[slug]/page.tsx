@@ -15,6 +15,7 @@ const COMMAND_VIDEOS: Record<string, string> = {
   'aider/add': 'aider-add-demo',
   'codex-cli/exec': 'codex-exec-demo',
   'codex-cli/review': 'codex-review-demo',
+  'antigravity-cli/print': 'agy-print-demo',
 };
 
 export function generateStaticParams() {

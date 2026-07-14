@@ -546,3 +546,59 @@ export const codexReviewScripts: Record<Lang, TermScript> = {
 
 export const CodexExecDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={codexExecScripts[lang]} />;
 export const CodexReviewDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={codexReviewScripts[lang]} />;
+
+// ---------- Demo 9: agy -p / --print (Antigravity CLI) — Fakten aus commands.de.json antigravity-cli/print ----------
+export const agyPrintScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Antigravity CLI: agy -p — ohne TUI, für Skripte',
+    lines: [
+      { kind: 'cmd', text: 'agy -p "prüfe dieses Git-Diff und entwirf eine Commit-Message" --cwd $(pwd)' },
+      { kind: 'out', text: 'Analysiere 3 geänderte Dateien …' },
+      { kind: 'out', text: 'fix(auth): Token-Ablauf vor Refresh prüfen' },
+      { kind: 'ok', text: 'Fertig — Ausgabe direkt in der Pipeline nutzbar.' },
+      { kind: 'note', text: 'Konversation fortsetzen: agy -c -p "fasse den Stand zusammen"' },
+    ],
+  },
+  en: {
+    title: 'Antigravity CLI: agy -p — no TUI, for scripts',
+    lines: [
+      { kind: 'cmd', text: 'agy -p "Review this git diff and draft a conventional commit message" --cwd $(pwd)' },
+      { kind: 'out', text: 'Analyzing 3 changed files …' },
+      { kind: 'out', text: 'fix(auth): check token expiry before refresh' },
+      { kind: 'ok', text: 'Done — output ready for your pipeline.' },
+      { kind: 'note', text: 'Continue a conversation: agy -c -p "summarize where we are"' },
+    ],
+  },
+  es: {
+    title: 'Antigravity CLI: agy -p — sin TUI, para scripts',
+    lines: [
+      { kind: 'cmd', text: 'agy -p "revisa este diff de Git y redacta un mensaje de commit" --cwd $(pwd)' },
+      { kind: 'out', text: 'Analizando 3 archivos modificados …' },
+      { kind: 'out', text: 'fix(auth): comprobar expiración del token antes del refresh' },
+      { kind: 'ok', text: 'Listo — salida lista para tu pipeline.' },
+      { kind: 'note', text: 'Continuar una conversación: agy -c -p "resume el estado actual"' },
+    ],
+  },
+  fr: {
+    title: 'Antigravity CLI : agy -p — sans TUI, pour les scripts',
+    lines: [
+      { kind: 'cmd', text: 'agy -p "vérifie ce diff Git et rédige un message de commit" --cwd $(pwd)' },
+      { kind: 'out', text: 'Analyse de 3 fichiers modifiés …' },
+      { kind: 'out', text: "fix(auth): vérifier l'expiration du token avant le refresh" },
+      { kind: 'ok', text: 'Terminé — sortie prête pour ton pipeline.' },
+      { kind: 'note', text: 'Continuer une conversation : agy -c -p "résume l’état actuel"' },
+    ],
+  },
+  zh: {
+    title: 'Antigravity CLI：agy -p——无界面运行，适合脚本',
+    lines: [
+      { kind: 'cmd', text: 'agy -p "审查这个 Git diff 并起草一条提交信息" --cwd $(pwd)' },
+      { kind: 'out', text: '正在分析 3 个改动的文件 …' },
+      { kind: 'out', text: 'fix(auth): 在刷新前检查 token 是否过期' },
+      { kind: 'ok', text: '完成——输出可直接用于流水线。' },
+      { kind: 'note', text: '继续会话：agy -c -p "总结当前进度"' },
+    ],
+  },
+};
+
+export const AgyPrintDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={agyPrintScripts[lang]} />;
