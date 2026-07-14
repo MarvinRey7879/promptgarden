@@ -73,6 +73,11 @@ type Dict = {
   wizardResults: { beginner: string; intermediate: string; pro: string };
   wizardGo: string;
   wizardRestart: string;
+  wizardToolQ: { q: string; options: string[] };
+  wizardNextTitle: string;
+  wizardNextPath: string;
+  wizardNextTool: string;
+  wizardNextInstall: string;
   bugBtn: string;
   bugTitle: string;
   bugPlaceholder: string;
@@ -152,7 +157,7 @@ export const ui: Record<Lang, Dict> = {
     newsThanks: 'Danke! Du bekommst eine Bestätigung, sobald der Versand startet.',
     newsHint: 'Kein Spam. Abmelden jederzeit. Versand startet in Kürze.',
     wizardTitle: 'Wo stehst du?',
-    wizardSub: '3 Fragen, 20 Sekunden — dann weißt du, wo du am besten anfängst.',
+    wizardSub: '4 Fragen, 30 Sekunden — dann weißt du, wo du am besten anfängst.',
     wizardQ: [
       { q: 'Wie viel hast du schon mit KI gebaut?', options: ['Noch nichts', 'Ein paar Sachen', 'Ich arbeite täglich damit'] },
       { q: 'Was beschreibt dich am besten?', options: ['Nur neugierig', 'Vibe-Coder (KI schreibt, ich lenke)', 'Programmierer:in'] },
@@ -166,6 +171,11 @@ export const ui: Record<Lang, Dict> = {
     },
     wizardGo: 'Los geht’s →',
     wizardRestart: 'Nochmal',
+    wizardToolQ: { q: 'Womit arbeitest du (hauptsächlich)?', options: ['Claude Code', 'Cursor', 'Aider', 'Codex CLI', 'Noch mit gar keinem Tool'] },
+    wizardNextTitle: 'Deine nächsten Schritte',
+    wizardNextPath: 'Starte deinen Lernpfad',
+    wizardNextTool: 'Befehls-Referenz für dein Tool',
+    wizardNextInstall: 'Kapitel: Claude Code installieren',
     bugBtn: '🐛 Bug melden',
     bugTitle: 'Was ist kaputt oder falsch?',
     bugPlaceholder: 'Falscher Fakt, veraltetes Element, Tippfehler, Idee…',
@@ -243,7 +253,7 @@ export const ui: Record<Lang, Dict> = {
     newsThanks: 'Thanks! You will get a confirmation once sending starts.',
     newsHint: 'No spam. Unsubscribe anytime. Sending starts soon.',
     wizardTitle: 'Where do you stand?',
-    wizardSub: '3 questions, 20 seconds — then you know the best place to start.',
+    wizardSub: '4 questions, 30 seconds — then you know the best place to start.',
     wizardQ: [
       { q: 'How much have you built with AI so far?', options: ['Nothing yet', 'A few things', 'I work with it daily'] },
       { q: 'What describes you best?', options: ['Just curious', 'Vibe coder (AI writes, I steer)', 'Programmer'] },
@@ -257,6 +267,11 @@ export const ui: Record<Lang, Dict> = {
     },
     wizardGo: 'Let’s go →',
     wizardRestart: 'Again',
+    wizardToolQ: { q: 'What do you (mainly) work with?', options: ['Claude Code', 'Cursor', 'Aider', 'Codex CLI', 'No tool yet'] },
+    wizardNextTitle: 'Your next steps',
+    wizardNextPath: 'Start your learning path',
+    wizardNextTool: 'Command reference for your tool',
+    wizardNextInstall: 'Chapter: Install Claude Code',
     bugBtn: '🐛 Report a bug',
     bugTitle: 'What is broken or wrong?',
     bugPlaceholder: 'Wrong fact, outdated element, typo, idea…',
@@ -334,7 +349,7 @@ export const ui: Record<Lang, Dict> = {
     newsThanks: '¡Gracias! Recibirás una confirmación en cuanto empiece el envío.',
     newsHint: 'Sin spam. Cancela cuando quieras. El envío empieza pronto.',
     wizardTitle: '¿Dónde estás?',
-    wizardSub: '3 preguntas, 20 segundos — y sabrás por dónde es mejor empezar.',
+    wizardSub: '4 preguntas, 30 segundos — y sabrás por dónde es mejor empezar.',
     wizardQ: [
       { q: '¿Cuánto has construido ya con IA?', options: ['Nada todavía', 'Algunas cosas', 'Trabajo con ella cada día'] },
       { q: '¿Qué te describe mejor?', options: ['Solo tengo curiosidad', 'Vibe coder (la IA escribe, yo dirijo)', 'Programador/a'] },
@@ -348,6 +363,11 @@ export const ui: Record<Lang, Dict> = {
     },
     wizardGo: 'Vamos →',
     wizardRestart: 'Otra vez',
+    wizardToolQ: { q: '¿Con qué trabajas (principalmente)?', options: ['Claude Code', 'Cursor', 'Aider', 'Codex CLI', 'Con ninguna herramienta aún'] },
+    wizardNextTitle: 'Tus próximos pasos',
+    wizardNextPath: 'Empieza tu ruta de aprendizaje',
+    wizardNextTool: 'Referencia de comandos para tu herramienta',
+    wizardNextInstall: 'Capítulo: Instalar Claude Code',
     bugBtn: '🐛 Reportar un error',
     bugTitle: '¿Qué está roto o mal?',
     bugPlaceholder: 'Dato incorrecto, elemento desactualizado, error tipográfico, idea…',
@@ -425,7 +445,7 @@ export const ui: Record<Lang, Dict> = {
     newsThanks: "Merci ! Tu recevras une confirmation dès que l'envoi commence.",
     newsHint: "Pas de spam. Désabonnement à tout moment. L'envoi démarre bientôt.",
     wizardTitle: 'Où en es-tu ?',
-    wizardSub: '3 questions, 20 secondes — et tu sauras par où commencer.',
+    wizardSub: '4 questions, 30 secondes — et tu sauras par où commencer.',
     wizardQ: [
       { q: "Combien as-tu déjà construit avec l'IA ?", options: ['Rien encore', 'Quelques trucs', "J'y travaille tous les jours"] },
       { q: "Qu'est-ce qui te décrit le mieux ?", options: ['Juste curieux', "Vibe coder (l'IA écrit, je pilote)", 'Développeur/développeuse'] },
@@ -439,6 +459,11 @@ export const ui: Record<Lang, Dict> = {
     },
     wizardGo: "C'est parti →",
     wizardRestart: 'Recommencer',
+    wizardToolQ: { q: 'Avec quoi travailles-tu (principalement) ?', options: ['Claude Code', 'Cursor', 'Aider', 'Codex CLI', "Avec aucun outil pour l'instant"] },
+    wizardNextTitle: 'Tes prochaines étapes',
+    wizardNextPath: 'Commence ton parcours',
+    wizardNextTool: 'Référence des commandes pour ton outil',
+    wizardNextInstall: 'Chapitre : Installer Claude Code',
     bugBtn: '🐛 Signaler un bug',
     bugTitle: "Qu'est-ce qui est cassé ou faux ?",
     bugPlaceholder: 'Fait erroné, élément dépassé, faute de frappe, idée…',
@@ -516,7 +541,7 @@ export const ui: Record<Lang, Dict> = {
     newsThanks: '谢谢！一旦开始发送，你会收到一封确认邮件。',
     newsHint: '不会发垃圾邮件，随时可以取消订阅。发送即将开始。',
     wizardTitle: '你现在在哪个阶段？',
-    wizardSub: '3 个问题，20 秒 —— 就知道从哪里开始最合适。',
+    wizardSub: '4 个问题，30 秒 —— 就知道从哪里开始最合适。',
     wizardQ: [
       { q: '你已经用 AI 做过多少东西了？', options: ['还什么都没做过', '做过一些', '我每天都在用它工作'] },
       { q: '哪个描述更符合你？', options: ['只是好奇', 'Vibe coder（AI 写代码，我来把关）', '程序员'] },
@@ -530,6 +555,11 @@ export const ui: Record<Lang, Dict> = {
     },
     wizardGo: '开始吧 →',
     wizardRestart: '重新来',
+    wizardToolQ: { q: '你（主要）用什么工具？', options: ['Claude Code', 'Cursor', 'Aider', 'Codex CLI', '还没有用任何工具'] },
+    wizardNextTitle: '你的下一步',
+    wizardNextPath: '开始你的学习路径',
+    wizardNextTool: '你的工具的命令参考',
+    wizardNextInstall: '章节：安装 Claude Code',
     bugBtn: '🐛 反馈问题',
     bugTitle: '哪里坏了，或者哪里说错了？',
     bugPlaceholder: '错误的事实、过时的内容、错别字、新想法……',

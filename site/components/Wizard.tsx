@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { type Lang, ui } from '@/lib/i18n';
 
-const CARD_COLORS = ['var(--lime)', 'var(--blue)', 'var(--pink)'];
+const CARD_COLORS = ['var(--lime)', 'var(--blue)', 'var(--pink)', 'var(--yellow)', '#e8d9c3'];
 
 type Level = 'beginner' | 'intermediate' | 'pro';
 
@@ -20,32 +20,65 @@ const TARGET: Record<Level, (lang: Lang) => string> = {
   pro: (lang) => `/${lang}/lexikon/`,
 };
 
+// Tool-Frage (4. Schritt, unbewertet): Index → Ziel-Link
+const TOOL_TARGET: ((lang: Lang) => string)[] = [
+  (lang) => `/${lang}/befehle/claude-code/`,
+  (lang) => `/${lang}/befehle/cursor-cli/`,
+  (lang) => `/${lang}/befehle/aider/`,
+  (lang) => `/${lang}/befehle/codex-cli/`,
+  (lang) => `/${lang}/lexikon/claude-code-installieren/`,
+];
+
 export default function Wizard({ lang }: { lang: Lang }) {
   const t = ui[lang];
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
+  const [tool, setTool] = useState<number | null>(null);
 
-  const done = step >= t.wizardQ.length;
+  const totalSteps = t.wizardQ.length + 1; // 3 bewertete Fragen + Tool-Frage
+  const done = step >= totalSteps;
   const score = answers.reduce((a, b) => a + b, 0);
   const level = levelFor(score);
+  const isToolStep = step === t.wizardQ.length;
 
-  const pick = (i: number) => {
-    const next = [...answers, i];
-    setAnswers(next);
-    setStep(step + 1);
-    if (step + 1 >= t.wizardQ.length) {
-      try {
-        localStorage.setItem(
-          'pg_wizard',
-          JSON.stringify({ answers: next, level: levelFor(next.reduce((a, b) => a + b, 0)), at: Date.now() }),
-        );
-      } catch {
-        /* optional */
-      }
+  const finish = (nextAnswers: number[], pickedTool: number) => {
+    try {
+      localStorage.setItem(
+        'pg_wizard',
+        JSON.stringify({
+          answers: nextAnswers,
+          level: levelFor(nextAnswers.reduce((a, b) => a + b, 0)),
+          tool: pickedTool,
+          at: Date.now(),
+        }),
+      );
+    } catch {
+      /* optional */
     }
   };
 
+  const pick = (i: number) => {
+    if (isToolStep) {
+      setTool(i);
+      setStep(step + 1);
+      finish(answers, i);
+      return;
+    }
+    setAnswers([...answers, i]);
+    setStep(step + 1);
+  };
+
   if (done) {
+    // 2-3 konkrete nächste Schritte statt eines einzelnen Links
+    const steps: { label: string; href: string }[] = [
+      { label: t.wizardNextPath, href: TARGET[level](lang) },
+    ];
+    if (tool !== null) {
+      steps.push({
+        label: tool === 4 ? t.wizardNextInstall : t.wizardNextTool,
+        href: TOOL_TARGET[tool](lang),
+      });
+    }
     return (
       <div
         className="card"
@@ -54,32 +87,43 @@ export default function Wizard({ lang }: { lang: Lang }) {
         <p className="kicker" style={{ color: 'var(--ink)' }}>
           {t.wizardResultTitle.toUpperCase()}
         </p>
-        <p style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5, margin: '10px 0 20px' }}>
+        <p style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5, margin: '10px 0 16px' }}>
           {t.wizardResults[level]}
         </p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href={TARGET[level](lang)} className="btn">
-            {t.wizardGo}
-          </Link>
-          <button
-            className="btn secondary"
-            onClick={() => {
-              setStep(0);
-              setAnswers([]);
-            }}
-          >
-            {t.wizardRestart}
-          </button>
+        <p className="kicker" style={{ color: 'var(--ink)', marginBottom: 10 }}>
+          {t.wizardNextTitle.toUpperCase()}
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center', marginBottom: 16 }}>
+          {steps.map((s, i) => (
+            <Link
+              key={s.href}
+              href={s.href}
+              className="btn"
+              style={{ minWidth: 260, textAlign: 'center' }}
+            >
+              {i + 1}. {s.label} →
+            </Link>
+          ))}
         </div>
+        <button
+          className="btn secondary"
+          onClick={() => {
+            setStep(0);
+            setAnswers([]);
+            setTool(null);
+          }}
+        >
+          {t.wizardRestart}
+        </button>
       </div>
     );
   }
 
-  const q = t.wizardQ[step];
+  const q = isToolStep ? t.wizardToolQ : t.wizardQ[step];
   return (
     <div>
       <p className="mono" style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center' }}>
-        {step + 1} / {t.wizardQ.length}
+        {step + 1} / {totalSteps}
       </p>
       <div
         className="card"

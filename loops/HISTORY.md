@@ -529,3 +529,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - lib/schema.ts (breadcrumbLd-Helper) + JSON-LD auf 3 Templates: Befehls-Detail (Home→Befehle→Plattform→Befehl), Lexikon-Detail (Home→Lexikon→Kapitel, zusätzlich zum bestehenden Article-Schema), Addon-Detail (Home→Addons→Addon) — deckt ~1470 Detail-Seiten ×5 Sprachen ab, Labels aus ui.nav (lokalisiert).
 - Live verifiziert auf /de/lexikon/mcp/, /zh/befehle/aider/add/, /fr/addons/graphify/.
 - Known-good Deploy: 2f772433.promptgarden.pages.dev
+
+### It. 86 (14.07.26 abends) — 🧭 Wizard-Vertiefung: 4. Frage + konkrete Nächste-Schritte ✅
+- Start-Wizard (Original-Spec »verschiedene Einstiegswege«): neue 4. Frage »Womit arbeitest du (hauptsächlich)?« (Claude Code/Cursor/Aider/Codex/noch gar nicht, unbewertet) — Ergebnis-Karte zeigt jetzt nummerierte nächste Schritte: ① Lernpfad (level-basiert) ② Befehls-Referenz des eigenen Tools bzw. Kapitel »Claude Code installieren« bei Neulingen. localStorage pg_wizard um tool erweitert. ×5 Sprachen (neue Dict-Keys wizardToolQ/wizardNext*), Intro 3→4 Fragen.
+- Lektionen: FR-Apostroph (l'instant) brach i18n-Build → bei automatisierten String-Inserts Apostroph-haltige Strings mit JSON.stringify quoten; Client-Komponenten-Strings im JS-Bundle prüfen, nicht im SSG-HTML (Wizard client-only — Frage-Texte via Bundle-grep + Live-Screenshot verifiziert).
+- 375px-Screenshot ✅ (1/4-Fortschritt sichtbar). Known-good Deploy: 2031d54c.promptgarden.pages.dev
