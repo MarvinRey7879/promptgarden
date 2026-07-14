@@ -634,3 +634,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ## It. 104 — 14.07. ~21:45 — Quiz-Bias-Cleanup im Bestand (45→17 auf Index 1)
 - Befund aus Batch-5-Review: 45/71 Alt-Kapitel hatten quiz.correct=1. 28 deterministisch verschoben (13→Index 2, 15→Index 3, per Swap 1↔Ziel, IDENTISCH über alle 5 Sprachen; explain-Felder vorher auf Positions-Referenzen gescannt: 0 Treffer). Verteilung jetzt 0:23/1:17/2:21/3:20.
 - Validierung: correct-Options-Text pro Sprache unverändert (Text-Drift-Check), BUILD_EXIT=0, Deploy e581e802, Live-Stichprobe mcp-Quiz. Known-good: e581e802.
+
+## It. 105 — 14.07. ~22:30 — Remotion R7: Suche-Demo (60 → 65 Clips)
+- SearchDemo-Composition (UI-Demo, kein Terminal): Modal tippt „mcp", Gruppen Kapitel/Befehle/Addons erscheinen gestaffelt (echte Treffer als Inhalt), Auswahl wandert, Enter → Kapitel-Karte MCP. ×5 Sprachen, ~11s, je <1MB. Eingebettet auf /start unter dem Wizard (Neulinge lernen 🔍/Strg+K).
+- ⚠️ cwd-Zwischenfall: ein Deploy lief versehentlich erneut aus site/ mit STALE out/ (Pfad-Verwechslung nach Background-Task — Deploy 0916b0a1 war altes valides Build, kein Schaden, prod durchgehend grün); Lesson: nach run_in_background-Rückkehr pwd nicht annehmen — erster Befehl prüft pwd.
+- BUILD_EXIT=0, Deploy c9b84390, Live-Verify Embed + ZH-mp4 200. Known-good: c9b84390.
