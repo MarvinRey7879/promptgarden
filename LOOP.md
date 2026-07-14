@@ -60,21 +60,17 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 103, 14.07.26 nachts, Commit-Stand siehe HISTORY)
-81 Kapitel ×5 (~2012 Seiten) — Batch 5 mit erstmals datengetriebener Themenwahl aus top_paths (u.a. was-ist-antigravity, rag-selbst-bauen→W3=19, eigene-agenten-bauen-sdk, mcp-server-selbst-schreiben). Quiz-correct-Bias in neuen Batches entzerrt; BESTANDS-CLEANUP OFFEN: 45/71 Alt-Kapitel haben quiz.correct=1 → permutieren (kleine Iteration). Suchindex 402 Docs.
-## Stand It. 102
-NEU seit It. 96: Vergleiche v2 ×5 (Szenario-Picker, Quadrant, 13 Modell-Karten, 4 Duelle, Im-Tool, 💶 Preisrechner, 5 Tool-Karten), Favicon, 🔍 Volltext-Suche (Header+Ctrl K, 392 Docs/Sprache inkl. Prompts), 🧩 Prompt-Bibliothek /prompts ×5 (16 Vorlagen, Nav+Suche+Sitemap), 🗺️ Lern-Landkarte auf /lernpfade (SVG-Inseln, localStorage-Fortschritt), WERBUNG AN außer Landing (Google-CMP; Marvin-Todo: DSGVO-Message+Limited Ads im AdSense-Konto), Bing-Sitemap ✓, Sponsors angemeldet (Restschritte /admin). Direktive 13 aktiv — Runde 1 KOMPLETT (alle 4 geliefert 14.07.); Runde-2-Kandidaten: Newsletter-Digest, Tages-Challenge, RSS, PWA.
-## Alter Stand (It. 96)
-1962 Seiten live auf promptgarten.com: 71 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity CLI 57/Aider 48/Codex 16), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=14, W3=18), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 55 Remotion-Clips (8 Befehls-Demos auf 4 Plattformen + 42s-Flaggschiff-Explainer prominent auf Landing), Forum (leer, bereit), freie API, Admin V2 mit Unique-Besuchern (Tages-Hash) + Internal-Filter (Marvin/Loop/Bots raus, ?ich=1-Opt-out), Landing komplett, Wizard mit 4 Fragen + Tool-Empfehlung. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~256, besucher_7d zählt ab 14.07. Gemini CLI: Free-Aus 18.06.26 → Antigravity (Feed-Item 15.07 fällig).
+## Aktueller Stand (It. 104, 14.07.26 nachts, Commit-Stand siehe HISTORY)
+~2012 Seiten live auf promptgarten.com: 81 Kapitel ×5 (ALLE 🌱/🔬, Quiz [Bias entzerrt: correct-Verteilung 23/17/21/20], Übungen; Batch 5 erstmals datengetrieben aus top_paths), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity 57/Aider 48/Codex 16), 🧩 Prompt-Bibliothek /prompts (16 Vorlagen), 12 Addons, 4 Welten (W0=5, W1=9, W2=14, W3=19), Vergleiche v2 (Szenario-Picker, Quadrant, 13 Modell-Karten, 4 Duelle, Im-Tool, 💶 Preisrechner), 🔍 Suche (Header+Ctrl K, 402 Docs/Sprache), 🗺️ Lern-Landkarte, Feed (22 News), 🎬 60 Remotion-Clips (9 Befehls-Demos alle 5 Plattformen + 42s-Explainer auf Landing), Favicon, Forum (leer), freie API, Admin V2 (Unique-Besucher Tages-Hash + Internal-Filter ?ich=1), WERBUNG AN außer Landing (Google-CMP nötig — Marvin-Todo). Traffic: views_7d ~340, besucher_7d zählt ab 14.07. Direktive 13: Runde 1 komplett geliefert; Runde-2-Kandidaten: Newsletter-Digest, Tages-Challenge, RSS, PWA.
 
 ## Rotation (nächste Arbeit)
-① Vergleiche v2 fertigstellen (Übersetzer→Deploy, läuft) ② Marvin-Auswahl 14.07 in Reihenfolge: 🔍 Volltext-Suche → 💶 Modell-Preisrechner → 🧩 Prompt-Bibliothek → 🗺️ Lern-Landkarte ③ Feed täglich (nächster 15.07 früh, + Gemini→Antigravity-Item) ④ Kapitel-Batch 5 (Themen aus Statistik) ⑤ Link-Audit wöchentlich (~21.07) ⑥ LOOP.md-Pruning wöchentlich ⑦ Remotion R7 ⑧ Ideen-Pitch Runde 2 (~15./16.07, Direktive 13) ⑨ Statusboard bei Substanz.
+① Feed täglich (nächster 15.07 früh, + Gemini→Antigravity-Item) ② Ideen-Pitch Runde 2 (15.07, Direktive 13) ③ Remotion R7 (Kandidat: Suche/Cmd+K-Demo) ④ Kapitel-Batch 6 (~16./17.07, Themen aus Statistik) ⑤ Link-Audit wöchentlich (~21.07, jetzt ~350 URLs) ⑥ LOOP.md-Pruning wöchentlich (zuletzt 14.07) ⑦ Statusboard bei Substanz.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
-- #2 GitHub Sponsors anmelden → Footer-Link
+- Sponsors: angemeldet ✓ — Restschritte (Bio/Tier/Stripe/W-8BEN/2FA/Submit) in /admin, danach Footer-Link
 - #4 GSC: TXT-Verifizierungswert schicken → Loop setzt DNS-TXT + reicht Sitemap ein
-- #5 AdSense-Code → ads.txt + Snippet + EU-Consent-Banner (Pflicht!)
-- #6 Bing (nach GSC via Import)
+- AdSense: Code eingebaut ✓ — Marvin: Site-Review anstoßen + Datenschutz & Mitteilungen (DSGVO-Message + Limited Ads) aktivieren
+- Bing: Sitemap eingereicht ✓ (14.07.)
 - Ko-fi-Verification-Token → `wrangler secret put KOFI_TOKEN` (Webhook liegt bereit)
 - www→apex-Redirect: kein Token mit Ruleset-Recht (canonical entschärft)
 - 🔔 28.07.: MCP-Spec final? → Feed-Update
