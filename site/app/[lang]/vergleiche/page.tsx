@@ -5,6 +5,7 @@ import vglEs from '@/content/vergleiche.es.json';
 import vglFr from '@/content/vergleiche.fr.json';
 import vglZh from '@/content/vergleiche.zh.json';
 import ScenarioPicker, { type Szenario } from '@/components/ScenarioPicker';
+import PriceCalculator from '@/components/PriceCalculator';
 import ModelQuadrant, { type QuadrantModel } from '@/components/ModelQuadrant';
 import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 
@@ -211,6 +212,9 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
           </div>
         </div>
       )}
+
+      {/* ③c Preisrechner (Ideen-Wahl #2) */}
+      <PriceCalculator lang={lang} />
 
       {/* ④ Im Tool: welches Modell wofür */}
       {data.imTool && (

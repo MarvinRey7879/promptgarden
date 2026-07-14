@@ -604,3 +604,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Verify: BUILD_EXIT=0, Deploy df59ad91, index.de.json 200, ZH-Index-Inhalt geprüft, Modal-String im Bundle, Header-Screenshot (🔍 sichtbar, AdsConsent-Banner rendert korrekt daneben).
 - Addon-Schema-Falle: items nutzen what/why statt summary/body — beim ersten Index-Lauf leer, gefixt vor Deploy.
 - Known-good: df59ad91.
+
+## It. 100 — 14.07. ~18:45 — 💶 Modell-Preisrechner live (Marvin-Ideen-Wahl #2)
+- PriceCalculator.tsx auf /vergleiche (nach Duellen): 3 Slider (Input 1-200k, Output 0,5-32k, Anfragen/Tag 1-500) → sortierte Monatskosten-Balken für die 10 Quadrant-Modelle; Batch-50%-Toggle nur für Claude-Zeilen (belegt); Fußnoten Sonnet-Intro-Preis + Gemini-Pro-Staffel; Labels ×5 im Komponenten-Dict; Disclaimer mit 4 Anbieter-Preisquellen. Preise aus verifizierter Research-Tabelle (Stand: Juli 2026).
+- Mathe-Stichprobe: Haiku 20k/2k/50/Tag → $45/Monat ✓. BUILD_EXIT=0, Deploy 69ea2729, Bundle-Verify PREISRECHNER, 375px-Screenshot ok.
+- Known-good: 69ea2729.
