@@ -112,6 +112,10 @@ export default async function EntryPage({
         </>
       )}
 
+      {(entry.slug === 'agent-loop' || entry.slug === 'loops-fuer-agenten') && (
+        <ExampleVideo lang={lang} name="loop-zyklus" label={entry.title} />
+      )}
+
       {entry.exercise && (
         <div className="card" style={{ padding: '18px 22px', marginTop: 26, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
           <p className="kicker" style={{ color: 'var(--ink)' }}>
