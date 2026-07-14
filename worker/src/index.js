@@ -9,7 +9,10 @@
  *   GET  /v1/admin/summary               [X-Admin-Key]   — Zähler + offene Notes/Feedback/Bugs
  *   GET  /v1/health
  *
- * Datenschutz: keine IPs, keine User-Agents, keine Cookies, keine Identifier.
+ * Datenschutz: keine IPs, keine User-Agents, keine Cookies gespeichert.
+ * Besucher-Zählung: täglich rotierender, nicht rückrechenbarer Hash (Plausible-Prinzip) —
+ * Rohwerte (IP/UA) werden nie gespeichert. Eigene Aufrufe (Admin-Browser, Bots, Headless)
+ * werden mit internal=1 markiert und aus allen Statistiken gefiltert.
  */
 
 const MAX_LEN = { message: 4000, note: 4000, email: 254, path: 300, page: 300 };
@@ -98,34 +101,38 @@ export default {
 
       if (request.method === 'GET' && path === '/v1/admin/summary') {
         if (!isAdmin) return json({ error: 'unauthorized' }, 401, cors);
-        const [bugs, feedback, notes, signups, views, topPaths, forumRecent, forumBlocked, todos, viewsByDay, viewsByLang, viewsByCountry, topRefs, viewsTotal, signupsRecent, donations, revenue] = await Promise.all([
+        const [bugs, feedback, notes, signups, views, topPaths, forumRecent, forumBlocked, todos, viewsByDay, viewsByLang, viewsByCountry, topRefs, viewsTotal, signupsRecent, donations, revenue, visitors7d, internal7d] = await Promise.all([
           env.DB.prepare("SELECT * FROM bug_reports WHERE status='open' ORDER BY id DESC LIMIT 50").all(),
           env.DB.prepare("SELECT * FROM feedback WHERE status='new' ORDER BY id DESC LIMIT 50").all(),
           env.DB.prepare("SELECT * FROM admin_notes WHERE status='open' ORDER BY prio, id DESC LIMIT 50").all(),
           env.DB.prepare('SELECT COUNT(*) AS n FROM newsletter_signups').first(),
-          env.DB.prepare("SELECT COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day')").first(),
+          env.DB.prepare("SELECT COUNT(*) AS n FROM page_views WHERE internal=0 AND day >= date('now','-7 day')").first(),
           env.DB.prepare(
-            "SELECT path, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') GROUP BY path ORDER BY n DESC LIMIT 15",
+            "SELECT path, COUNT(*) AS n, COUNT(DISTINCT visitor) AS u FROM page_views WHERE internal=0 AND day >= date('now','-7 day') GROUP BY path ORDER BY n DESC LIMIT 30",
           ).all(),
           env.DB.prepare('SELECT id, created_at, name, message, lang, status FROM forum_posts ORDER BY id DESC LIMIT 20').all(),
           env.DB.prepare("SELECT COUNT(*) AS n FROM forum_posts WHERE status='blocked'").first(),
           env.DB.prepare('SELECT * FROM marvin_todos ORDER BY done, id DESC LIMIT 50').all(),
           env.DB.prepare(
-            "SELECT day, COUNT(*) AS n FROM page_views WHERE day >= date('now','-30 day') GROUP BY day ORDER BY day",
+            "SELECT day, COUNT(*) AS n, COUNT(DISTINCT visitor) AS u FROM page_views WHERE internal=0 AND day >= date('now','-30 day') GROUP BY day ORDER BY day",
           ).all(),
           env.DB.prepare(
-            "SELECT COALESCE(lang,'?') AS lang, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') GROUP BY lang ORDER BY n DESC",
+            "SELECT COALESCE(lang,'?') AS lang, COUNT(*) AS n FROM page_views WHERE internal=0 AND day >= date('now','-7 day') GROUP BY lang ORDER BY n DESC",
           ).all(),
           env.DB.prepare(
-            "SELECT COALESCE(country,'?') AS country, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') GROUP BY country ORDER BY n DESC LIMIT 12",
+            "SELECT COALESCE(country,'?') AS country, COUNT(*) AS n FROM page_views WHERE internal=0 AND day >= date('now','-7 day') GROUP BY country ORDER BY n DESC LIMIT 12",
           ).all(),
           env.DB.prepare(
-            "SELECT ref_host, COUNT(*) AS n FROM page_views WHERE day >= date('now','-7 day') AND ref_host IS NOT NULL AND ref_host NOT LIKE '%promptgart%' GROUP BY ref_host ORDER BY n DESC LIMIT 10",
+            "SELECT ref_host, COUNT(*) AS n FROM page_views WHERE internal=0 AND day >= date('now','-7 day') AND ref_host IS NOT NULL AND ref_host NOT LIKE '%promptgart%' GROUP BY ref_host ORDER BY n DESC LIMIT 10",
           ).all(),
-          env.DB.prepare('SELECT COUNT(*) AS n FROM page_views').first(),
+          env.DB.prepare('SELECT COUNT(*) AS n FROM page_views WHERE internal=0').first(),
           env.DB.prepare('SELECT id, created_at, email FROM newsletter_signups ORDER BY id DESC LIMIT 20').all(),
           env.DB.prepare('SELECT * FROM donations ORDER BY id DESC LIMIT 20').all(),
           env.DB.prepare('SELECT COALESCE(SUM(amount_cents),0) AS cents, COUNT(*) AS n FROM donations').first(),
+          env.DB.prepare(
+            "SELECT COUNT(DISTINCT visitor) AS n FROM page_views WHERE internal=0 AND visitor IS NOT NULL AND day >= date('now','-7 day')",
+          ).first(),
+          env.DB.prepare("SELECT COUNT(*) AS n FROM page_views WHERE internal=1 AND day >= date('now','-7 day')").first(),
         ]);
         return json(
           {
@@ -147,6 +154,8 @@ export default {
             donations: donations.results,
             revenue_total_cents: revenue?.cents ?? 0,
             revenue_count: revenue?.n ?? 0,
+            visitors_7d: visitors7d?.n ?? 0,
+            views_internal_7d: internal7d?.n ?? 0,
           },
           200,
           cors,
@@ -196,10 +205,20 @@ export default {
         } catch {
           /* ignorieren — Referrer optional */
         }
+        // Unique-Besucher ohne Identifier-Speicherung: täglich rotierender Hash aus
+        // Salt+Tag+IP+UA (Plausible-Prinzip) — Rohwerte landen nie in der DB.
+        const ua = request.headers.get('User-Agent') || '';
+        const ip = request.headers.get('CF-Connecting-IP') || '';
+        const visitor = (await hashIp(`${day}:${ip}:${ua}`, env.IP_SALT || 'pg-default')).slice(0, 16);
+        // Eigene/automatisierte Aufrufe markieren statt zählen: Admin-Browser sendet
+        // internal:true (localStorage-Flag), dazu Bots/Headless/CLI per UA-Heuristik.
+        const isInternal =
+          body.internal === true ||
+          /bot|crawl|spider|headless|playwright|puppeteer|curl|wget|python|node-fetch|axios|lighthouse/i.test(ua);
         await env.DB.prepare(
-          'INSERT INTO page_views (day, path, lang, country, ref_host) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO page_views (day, path, lang, country, ref_host, visitor, internal) VALUES (?, ?, ?, ?, ?, ?, ?)',
         )
-          .bind(day, p, clip(body.lang, 8), country, refHost)
+          .bind(day, p, clip(body.lang, 8), country, refHost, visitor, isInternal ? 1 : 0)
           .run();
         return json({ ok: true }, 201, cors);
       }

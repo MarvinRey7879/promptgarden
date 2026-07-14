@@ -37,7 +37,11 @@ export default function Impressum() {
       <p style={{ lineHeight: 1.7 }}>
         promptgarten verwendet keine Cookies und kein personenbezogenes Tracking. Erfasst werden
         ausschließlich anonyme Seitenaufrufe (Pfad, Sprache, Herkunftsland, Datum) — ohne
-        IP-Adressen, ohne Nutzer-IDs, ohne Profile. Lernfortschritt (XP, Streak) wird nur lokal in
+        Speicherung von IP-Adressen, ohne Nutzer-IDs, ohne Profile. Zur ungefähren Zählung
+        einzelner Besucher wird ein täglich wechselnder, nicht rückrechenbarer Kurz-Hash
+        verwendet; IP-Adresse und Browser-Kennung werden dafür nie gespeichert und der Hash ist
+        nach 24 Stunden wertlos. Aufrufe des Betreibers werden aus den Statistiken
+        herausgefiltert. Lernfortschritt (XP, Streak) wird nur lokal in
         deinem Browser gespeichert und nie übertragen. Freiwillige Eingaben (Bug-Meldungen,
         Feedback, Newsletter-E-Mail) werden zweckgebunden gespeichert und nicht weitergegeben.
         Hosting und Datenspeicherung: Cloudflare (Pages, Workers, D1). Auskunft und Löschung

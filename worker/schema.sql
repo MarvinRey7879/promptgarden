@@ -39,13 +39,19 @@ CREATE TABLE IF NOT EXISTS newsletter_signups (
 
 -- Cookieless Page-Views: nur Datum (kein Timestamp), Pfad, Sprache, Land (CF-Header), Referrer-Host.
 -- Bewusst KEINE Session-/User-Zuordnung → nicht-optionales Tracking, kein Consent nötig.
+-- visitor = täglich rotierender Hash (Plausible-Prinzip), Rohwerte (IP/UA) nie gespeichert.
+-- internal = 1 → eigener Aufruf (Betreiber/Loop/Bot), wird aus allen Statistiken gefiltert.
 CREATE TABLE IF NOT EXISTS page_views (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   day TEXT NOT NULL,        -- YYYY-MM-DD
   path TEXT NOT NULL,
   lang TEXT,
   country TEXT,
-  ref_host TEXT
+  ref_host TEXT,
+  visitor TEXT,
+  internal INTEGER DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_views_day ON page_views(day);
 CREATE INDEX IF NOT EXISTS idx_views_path ON page_views(path);
+CREATE INDEX IF NOT EXISTS idx_views_visitor ON page_views(visitor);
+CREATE INDEX IF NOT EXISTS idx_views_internal ON page_views(internal);

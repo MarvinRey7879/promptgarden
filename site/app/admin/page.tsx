@@ -15,9 +15,11 @@ type Summary = {
   open_admin_notes: { id: number; created_at: string; note: string; prio: number }[];
   newsletter_count: number;
   views_7d: number;
-  top_paths_7d: { path: string; n: number }[];
+  visitors_7d?: number;
+  views_internal_7d?: number;
+  top_paths_7d: { path: string; n: number; u?: number }[];
   marvin_todos?: { id: number; created_at: string; title: string; detail: string; done: number }[];
-  views_by_day?: { day: string; n: number }[];
+  views_by_day?: { day: string; n: number; u?: number }[];
   views_by_lang?: { lang: string; n: number }[];
   views_by_country?: { country: string; n: number }[];
   top_refs?: { ref_host: string; n: number }[];
@@ -28,7 +30,7 @@ type Summary = {
   revenue_count?: number;
 };
 
-function BarChart({ data }: { data: { day: string; n: number }[] }) {
+function BarChart({ data }: { data: { day: string; n: number; u?: number }[] }) {
   if (!data.length) return <p style={{ fontSize: 13 }}>Noch keine Daten.</p>;
   const max = Math.max(...data.map((d) => d.n), 1);
   const w = Math.max(data.length * 22, 200);
@@ -40,7 +42,7 @@ function BarChart({ data }: { data: { day: string; n: number }[] }) {
           return (
             <g key={d.day}>
               <rect x={i * 22 + 3} y={104 - h} width={16} height={h} rx={3} fill="var(--lime)" stroke="var(--ink)" strokeWidth={1.5} />
-              <title>{`${d.day}: ${d.n}`}</title>
+              <title>{`${d.day}: ${d.n} Views · ${d.u ?? '–'} Besucher`}</title>
               {i % 5 === 0 && (
                 <text x={i * 22 + 11} y={116} textAnchor="middle" fontSize={8} fill="var(--muted)">
                   {d.day.slice(5)}
@@ -174,6 +176,9 @@ export default function AdminPage() {
         <>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '18px 0' }}>
             <span className="chip">👀 {summary.views_7d} Views (7d)</span>
+            <span className="chip" title="Einzelne Besucher der letzten 7 Tage — täglich rotierender Hash, zählt ab 14.07.">
+              👤 {summary.visitors_7d ?? '–'} Besucher (7d)
+            </span>
             <span className="chip">Σ {summary.views_total ?? '–'} Views gesamt</span>
             <span className="chip">💶 {((summary.revenue_total_cents ?? 0) / 100).toFixed(2)} € Spenden ({summary.revenue_count ?? 0})</span>
             <span className="chip">📬 {summary.newsletter_count} Newsletter</span>
@@ -297,17 +302,26 @@ export default function AdminPage() {
 
           <div style={{ display: 'grid', gap: 18, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
             <div className="card" style={{ padding: '16px 20px', boxShadow: 'none' }}>
-              <p className="kicker">TOP-SEITEN (7 TAGE)</p>
-              <table style={{ width: '100%', fontSize: 13 }}>
-                <tbody>
-                  {summary.top_paths_7d.map((p) => (
-                    <tr key={p.path}>
-                      <td className="mono" style={{ padding: '3px 0' }}>{p.path}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{p.n}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <p className="kicker">TOP-SEITEN (7 TAGE) — VIEWS · 👤 BESUCHER</p>
+              <div style={{ maxHeight: 340, overflowY: 'auto' }}>
+                <table style={{ width: '100%', fontSize: 13 }}>
+                  <tbody>
+                    {summary.top_paths_7d.map((p) => (
+                      <tr key={p.path} title={`${p.path} — ${p.n} Views von ${p.u || '?'} Besucher${(p.u ?? 0) === 1 ? '' : 'n'} (Besucher-Zählung ab 14.07.)`}>
+                        <td className="mono" style={{ padding: '3px 8px 3px 0', wordBreak: 'break-all' }}>{p.path}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700, whiteSpace: 'nowrap' }}>{p.n}</td>
+                        <td className="mono" style={{ textAlign: 'right', color: 'var(--muted)', whiteSpace: 'nowrap', paddingLeft: 8 }}>
+                          👤 {p.u ?? '–'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p style={{ fontSize: 11.5, color: 'var(--muted)', margin: '8px 0 0' }}>
+                Eigene Aufrufe (dein Browser, Loop, Bots) sind gefiltert — 7 Tage:{' '}
+                {summary.views_internal_7d ?? 0} interne Views aussortiert.
+              </p>
             </div>
             <div className="card" style={{ padding: '16px 20px', boxShadow: 'none' }}>
               <p className="kicker">🐛 OFFENE BUGS</p>

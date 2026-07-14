@@ -542,3 +542,14 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ### It. 88 (14.07.26 ~21:45) — 📋 Statusboard-Refresh It. 86-88 ✅
 - Statusboard: ITERATION 88, Chip 🎬 40 Videos, neue Karte (Wizard-Vertiefung + R4-Demos); LOOP.md-Stand aktualisiert.
 - Nacht-Rhythmus: ab jetzt ruhigere Wakeups bis Feed 15.07 früh (~07:00) + Kapitel-Batch 4 (vormittags).
+
+## It. 89 — 14.07. ~23:15 — Admin-Analytics: Unique-Besucher + Internal-Filter (Marvin-Direktive im Chat)
+- Marvin: Admin-Tabelle → Hover mit Nutzerzahl, Unterseiten sichtbar, eigene Aufrufe rausfiltern.
+- D1-Migration: page_views + visitor (Tages-Hash, Plausible-Prinzip: SHA-256(salt:day:ip:ua), Rohwerte nie gespeichert) + internal (0/1) + 2 Indizes.
+- Worker /v1/track: visitor-Hash + isInternal (body.internal ODER UA-Regex bot|crawl|headless|playwright|curl|python|…). Alle Summary-Queries mit internal=0 gefiltert; neu: visitors_7d, views_internal_7d, top_paths mit u=COUNT(DISTINCT visitor), LIMIT 15→30, views_by_day mit u.
+- Track.tsx: sendet internal:true wenn localStorage pg_admin_key ODER pg_internal; ?ich=1 setzt pg_internal (für Marvins Geräte ohne Admin-Key).
+- Admin-UI: Chip 👤 Besucher (7d), Bar-Hover "Views · Besucher", Top-Seiten-Tabelle mit 👤-Spalte + Row-Tooltip + Scroll (30 Zeilen) + Fußnote "X interne Views aussortiert".
+- Impressum: Datenschutz-Absatz ehrlich erweitert (täglich wechselnder, nicht rückrechenbarer Kurz-Hash; Betreiber-Aufrufe gefiltert).
+- Getestet: 2 Track-POSTs → DB-Rows korrekt (internal 1/0, Hash gesetzt) → Test-Rows gelöscht. BUILD_EXIT=0, Deploy 0d6c2786, Live-Verify: Impressum-String ✓, Admin-Bundle "Besucher (7d)" ✓, layout-Bundle pg_internal ✓.
+- Grenze: Alt-Daten (vor 14.07.) haben keinen visitor-Hash → u zählt erst ab jetzt; alte eigene Views nicht rückwirkend identifizierbar (war by design identifier-frei).
+- Lesson: Marvins Browser wird über pg_admin_key-localStorage automatisch gefiltert — auf anderen Geräten einmal /?ich=1 öffnen.
