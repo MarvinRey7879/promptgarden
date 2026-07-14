@@ -1,12 +1,22 @@
 import { Composition } from 'remotion';
 import { LoopZyklus } from './LoopZyklus';
 import { ContextWindow } from './ContextWindow';
+import { PromptgartenExplainer } from './PromptgartenExplainer';
 import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo } from './TerminalDemo';
 import type { Lang } from './theme';
 
 export const RemotionRoot = () => {
   return (
     <>
+      <Composition
+        id="PromptgartenExplainer"
+        component={PromptgartenExplainer}
+        durationInFrames={1260}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{ lang: 'de' as Lang }}
+      />
       <Composition
         id="GoalDemo"
         component={GoalDemo}

@@ -553,3 +553,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Getestet: 2 Track-POSTs → DB-Rows korrekt (internal 1/0, Hash gesetzt) → Test-Rows gelöscht. BUILD_EXIT=0, Deploy 0d6c2786, Live-Verify: Impressum-String ✓, Admin-Bundle "Besucher (7d)" ✓, layout-Bundle pg_internal ✓.
 - Grenze: Alt-Daten (vor 14.07.) haben keinen visitor-Hash → u zählt erst ab jetzt; alte eigene Views nicht rückwirkend identifizierbar (war by design identifier-frei).
 - Lesson: Marvins Browser wird über pg_admin_key-localStorage automatisch gefiltert — auf anderen Geräten einmal /?ich=1 öffnen.
+
+## It. 91 — 15.07. ~01:35 — Flaggschiff-Explainer-Video (Marvin: „dicke geile Motion-Grafik")
+- PromptgartenExplainer.tsx: 42s/1260 Frames, 5 Szenen — S1 Logo-Intro (Letter-Stagger+Underline-Draw), S2 Tool-Chaos→Raster (10 Chips wild→geordnet, Headline-Swap), S3 Counter (60+ Kapitel · 230+ Befehle · 4 Plattformen · 5 Sprachen, zukunftssichere Rundungen statt exakter Zahlen) + Feature-Chips, S4 3-Schritte (Wizard→Lernpfad→XP/Streak mit Count-up + Flammen-Puls), S5 Ink-Panel-Outro mit pulsierendem CTA promptgarten.com.
+- Deterministische BG-Shapes via remotion random(seed); Szenen als Sequences mit 15-Frame-Fadeout.
+- ×5 Sprachen gerendert (je ~2,6MB, CRF 28) + 5 Poster (Frame 140); Stills aller 5 Szenen visuell geprüft, ZH-CJK sauber.
+- HeroVideo.tsx (preload=none + Poster → Landing bleibt schnell) prominent nach Hero auf app/[lang]/page.tsx.
+- BUILD_EXIT=0, Deploy 39f56e85, Live-Verify: alle 5 Landings enthalten Embed, mp4 Range-Request 206, Poster 200. /zh/ war kurz CDN-stale — bei Live-Verify direkt nach Deploy Deployment-URL als Referenz nutzen.
+- Lesson: 1260-Frame-Renders ×4 + Stills als EIN Hintergrund-Task mit Notification — Stunden-Check lief parallel weiter.

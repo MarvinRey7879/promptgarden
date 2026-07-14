@@ -4,6 +4,7 @@ import { getEntries, getFeed, getEntry, difficultyDots, WORLD_0, WORLD_1, WORLD_
 import { getCommands } from '@/lib/commands';
 import { landing } from '@/lib/landing';
 import ContinueCard from '@/components/ContinueCard';
+import HeroVideo from '@/components/HeroVideo';
 import { notFound } from 'next/navigation';
 import addonsDe from '@/content/addons.de.json';
 
@@ -121,6 +122,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           {L.statsTemplate(entries.length, nCommands, nAddons, nWorlds)}
         </p>
       </div>
+
+      <HeroVideo lang={lang} />
 
       <ContinueCard lang={lang} chapters={pathChapters} />
 
