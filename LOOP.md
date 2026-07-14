@@ -32,6 +32,7 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 - **Static Export**: leere generateStaticParams bricht Build → Route in site/_hold/ parken bis Daten da.
 - **JSON nach Hand-Autoring immer mit node parsen**; Feed-date = Ereignisdatum, nie Zukunft (Guard in build-api.mjs + lint).
 - **Poll-Parser wirft hart** auf `j.error` UND undefined Keys — leere Antwort ≠ Fehler-Antwort.
+- **Uhrzeit IMMER per `date` prüfen**, nie aus Session-Verlauf/Wakeup-Labels ableiten (It. 89-93: „Nacht-Takt" gefahren, real war 09-15 Uhr — Marvin-Rüge 14.07). KEIN Nachtmodus heißt: identisches Substanz-Pensum rund um die Uhr; Checks-only nur wenn wirklich nichts ansteht, nie zeitgesteuert.
 
 ## ✅ Verify-Gate (Pflicht vor „fertig" — DR-Umsetzung It. 73)
 1. `node scripts/lint-content.mjs` (läuft auch als prebuild, blockt Build): Slug-Parität ×5, Quiz-Indizes, Quellenpflicht, Quellen-Konsistenz (Wiki lokalisiert ok), bodyDetail-Parität, Feed-Daten.

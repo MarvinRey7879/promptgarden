@@ -104,6 +104,7 @@ export const WORLD_2: string[] = [
   'agent-teams',
   'debugging-mit-agenten',
   'kontext-strategien',
+  'memory-systeme-fuer-agenten',
 ];
 
 /** Welt 3 — Werkzeugkasten: Praxis-Guides als Pfad */
@@ -122,6 +123,8 @@ export const WORLD_3: string[] = [
   'caching-strategien',
   'testing-mit-agenten',
   'evals',
+  'refactoring-mit-ki',
+  'code-verstehen-mit-ki',
   'projekt-deployen',
   'benchmarks-lesen',
 ];

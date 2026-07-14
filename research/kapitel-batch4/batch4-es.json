@@ -1,0 +1,536 @@
+{
+  "es": [
+    {
+      "slug": "monorepo-mit-agenten",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Usar agentes de IA en monorepos grandes",
+      "teaser": "En un monorepo, un agente de IA se pierde fácilmente en el subproyecto equivocado. Con la estructura correcta de CLAUDE.md, se mantiene enfocado.",
+      "body": "## El problema en repos grandes\nUn monorepo suele contener muchos subproyectos: un backend, un frontend, bibliotecas compartidas. Un único archivo CLAUDE.md para todo se vuelve o bien enorme (y consume contexto en cada sesión, incluso cuando la tarea no lo necesita) o demasiado general como para ayudar de verdad.\n\n## La solución: varios archivos CLAUDE.md\nEn lugar de un archivo para todo, creas un CLAUDE.md propio por cada subproyecto. Un archivo en el directorio raíz contiene las reglas que aplican en todas partes (estilo de commit, estructura general). Cada subproyecto tiene su propio archivo con sus comandos y convenciones específicas.\n\n## Cómo funciona la carga\nSi inicias el agente en el directorio raíz, al arrancar carga solo el CLAUDE.md de la raíz; los archivos en subcarpetas se cargan solo cuando el agente realmente lee archivos ahí. Si lo inicias directamente en un subproyecto, obtiene el archivo de esa carpeta más todos los de las carpetas superiores, pero por defecto solo tiene acceso a ese subárbol.\n\n## Forzar el enfoque\nPara tareas que claramente pertenecen a un subproyecto, vale la pena iniciar el agente ahí directamente en lugar de en el directorio raíz. Eso mantiene el contexto y el acceso a archivos automáticamente acotados, sin que tengas que explicar en cada tarea qué partes del repo son irrelevantes en ese momento.",
+      "bodyDetail": "## El orden de carga en detalle\nAl arrancar, Claude Code recorre el directorio desde el que inicias el agente y todos los directorios superiores en busca de archivos CLAUDE.md, y los carga por completo en el contexto, desde la raíz hasta el directorio de inicio, de modo que las reglas más cercanas al proyecto se leen al final. Los archivos en subdirectorios por debajo del punto de inicio, en cambio, se cargan solo cuando hacen falta: en cuanto el agente lee un archivo en esa subcarpeta, también carga su CLAUDE.md.\n\n## claudeMdExcludes contra equipos ajenos\nEn monorepos muy grandes puede pasar que, al trabajar desde el directorio raíz, también se carguen los CLAUDE.md de otros equipos en cuanto el agente lee por casualidad un archivo en su carpeta. Con la opción `claudeMdExcludes` puedes excluir rutas o patrones específicos, por ejemplo paquetes legacy o carpetas de otros equipos que son irrelevantes para la tarea actual.\n\n## El lugar de inicio determina el acceso\nDónde inicias el agente no solo decide qué archivos CLAUDE.md se cargan automáticamente, sino también a qué archivos puede acceder sin preguntar. Desde el directorio raíz ve todo el repo; desde una subcarpeta, al principio solo ese subárbol. Si una tarea necesita acceso a un paquete vecino (por ejemplo, porque hay que ajustar un tipo compartido en varios paquetes), se puede habilitar de forma puntual con `additionalDirectories` o el flag `--add-dir`, en lugar de abrir todo desde el principio.\n\n## Skills por directorio\nLas skills también se pueden colocar por subproyecto (`.claude/skills/` dentro de cada carpeta). Una skill con patrones de test de API solo se carga cuando el agente realmente trabaja en el paquete de API, y se queda fuera durante una tarea de frontend. Así el contexto disponible no crece automáticamente con el tamaño del repo.\n\n## Un malentendido\nMás archivos CLAUDE.md no significa automáticamente más carga de contexto. Al contrario: bien organizado, un conjunto de archivos pequeños y específicos sustituye a un único archivo gigante que siempre se carga por completo. El objetivo no es \"cuantas más reglas mejor\", sino que en cada tarea solo se carguen las reglas que realmente aplican a la parte que se está trabajando.",
+      "example": "Un monorepo con packages/api, packages/web y packages/shared recibe un CLAUDE.md raíz ('Tres paquetes: api (Node/Express), web (React/Vite), shared (utilidades TS). Ejecutar siempre los comandos dentro de la carpeta del paquete correspondiente.') más su propio packages/api/CLAUDE.md con los comandos de test específicos de la API. Si el agente se inicia directamente en packages/api/, ve ambos archivos, pero nada de packages/web/.",
+      "related": [
+        "claude-md",
+        "subagents",
+        "git-worktrees",
+        "kontext-strategien"
+      ],
+      "quiz": {
+        "question": "¿Qué ocurre por defecto si inicias Claude Code directamente en una subcarpeta de un monorepo (por ejemplo, packages/api/) en lugar del directorio raíz?",
+        "options": [
+          "El agente también carga automáticamente todos los archivos CLAUDE.md de otros paquetes, como packages/web/",
+          "El agente carga el CLAUDE.md de esa subcarpeta más el de todas las carpetas superiores, y al principio solo tiene acceso a ese subárbol",
+          "El agente ignora cualquier CLAUDE.md y solo usa el system prompt",
+          "El agente obtiene automáticamente acceso a todo el repositorio, incluidos todos los paquetes vecinos"
+        ],
+        "correct": 1,
+        "explain": "Si inicias desde una subcarpeta, Claude Code carga su CLAUDE.md más el de todos los directorios superiores, pero por defecto solo tiene acceso a archivos de ese subárbol. El acceso a paquetes vecinos debe habilitarse explícitamente con additionalDirectories o --add-dir."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Monorepos und große Codebases",
+          "url": "https://code.claude.com/docs/en/large-codebases"
+        },
+        {
+          "title": "Claude Code Doku: CLAUDE.md und Memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        },
+        {
+          "title": "Claude Code Doku: Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        }
+      ]
+    },
+    {
+      "slug": "refactoring-mit-ki",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Refactoring seguro con agentes de IA",
+      "teaser": "Un agente puede cambiar silenciosamente el comportamiento durante un refactoring, en vez de solo la estructura. Los tests y los pasos pequeños lo evitan.",
+      "body": "## Qué significa realmente hacer refactoring\nRefactoring significa mejorar la estructura interna del código sin cambiar su comportamiento visible desde fuera. El término se popularizó sobre todo gracias al libro homónimo de Martin Fowler. El \"sin cambiar el comportamiento\" es la parte decisiva, y es justo lo que se pierde fácilmente con agentes de IA cuando nadie lo exige explícitamente.\n\n## Por qué los agentes se desvían aquí\nAl reestructurar, un agente suele ver cosas que le parecen \"incorrectas\": una condición extraña, una comprobación duplicada. Sin una instrucción clara, las \"arregla\" de paso en lugar de limitarse a reestructurar. Así, un refactoring puro se convierte, sin que nadie lo note, en un cambio de comportamiento.\n\n## Las tres salvaguardas más importantes\n1. Tests primero: antes de reestructurar debe existir una suite de tests que asegure el comportamiento actual. Sin tests no puedes comprobar si algo ha cambiado.\n2. Pasos pequeños: una reestructuración por paso, ejecutar los tests después de cada paso, hacer commit de cada paso en verde por separado.\n3. Exigir el comportamiento explícitamente: di claramente 'haz refactoring sin cambiar el comportamiento' en vez de solo 'mejora el código'.\n\n## Trampas típicas\nEl agente cambia en silencio una interfaz pública, borra código que le parece muerto pero que en realidad se llama de forma dinámica, o mezcla refactoring con peticiones de nuevas funciones en una sola pasada.",
+      "bodyDetail": "## La diferencia entre refactoring y reescritura\nUn refactoring de verdad preserva el comportamiento por definición: al final, el código produce las mismas salidas para las mismas entradas, solo cambia la estructura. Un agente que, durante un \"refactoring\", corrige un caso límite, cambia un mensaje de error o elimina una comprobación que considera redundante se ha salido del encargo, aunque el cambio parezca objetivamente razonable. Ese tipo de cambios pertenece a un paso propio, revisado por separado, no al mismo refactoring.\n\n## Por qué los pasos pequeños marcan la diferencia\nUn único encargo de refactoring gigantesco (\"ordena todo el módulo\") es casi imposible de verificar: pasan demasiados cambios a la vez, y un solo test que falla no revela cuál de los veinte cambios lo causó. Si en cambio pides un paso tras otro (extraer una función, probar, hacer commit; extraer la siguiente función, probar, hacer commit), cada fallo se puede acotar localmente. Las propias recomendaciones de Claude Code para tareas complejas van en esa línea: planificar primero (modo de planificación), implementar de forma incremental, probar después de cada archivo, e interrumpir de inmediato ante una dirección equivocada en lugar de seguir adelante.\n\n## Sin tests no hay refactoring seguro\nEn código sin ninguna cobertura de tests, la preservación del comportamiento no se puede comprobar de forma automática, ni para ti ni para el agente. En ese caso, el primer paso no es el refactoring en sí, sino escribir tests que registren el comportamiento actual (no el deseado) antes de reestructurar nada.\n\n## Un malentendido\n\"La IA consiguió que los tests pasaran en verde\" no demuestra automáticamente que el comportamiento se haya preservado, solo que los tests existentes no midieron nada más. La cobertura de tests siempre es un límite inferior de la seguridad, nunca una garantía. En código crítico, vale la pena además una revisión manual del diff por parte de una persona, sobre todo en los puntos que ningún test cubre.",
+      "example": "Prompt: 'Extrae la lógica de validación de processOrder() a una función propia, validateOrder(). El comportamiento no debe cambiar. Después de la extracción, ejecuta la suite de tests existente y avísame si algún test falla, antes de continuar.'",
+      "related": [
+        "testing-mit-agenten",
+        "erst-plan-dann-code",
+        "git-github-basics",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "¿Cuál es el requisito más importante antes de que un agente de IA haga un refactoring grande sobre código existente?",
+        "options": [
+          "Una suite de tests (o tests escritos primero) que asegure el comportamiento actual",
+          "Un prompt lo más largo y detallado posible, con cada paso por separado",
+          "Un modelo especialmente potente, con eso solo ya basta",
+          "Un historial de Git limpio, sin commits antiguos"
+        ],
+        "correct": 0,
+        "explain": "Sin tests no se puede comprobar si un refactoring realmente dejó el comportamiento sin cambios. Los tests son la salvaguarda que hace visible la diferencia entre un refactoring real y un cambio de comportamiento que pasa desapercibido."
+      },
+      "sources": [
+        {
+          "title": "Martin Fowler: Refactoring (Buchübersicht)",
+          "url": "https://martinfowler.com/books/refactoring.html"
+        },
+        {
+          "title": "Refactoring.com: Katalog der Refactorings",
+          "url": "https://refactoring.com/catalog/"
+        },
+        {
+          "title": "Anthropic: Claude Code Best Practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Claude Code: Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        }
+      ],
+      "exercise": {
+        "task": "Toma una función de tu propio proyecto que haga demasiadas cosas a la vez y haz que un agente la refactorice en pasos pequeños respaldados por tests.",
+        "steps": [
+          "Comprueba primero si existe un test que cubra la función. Si no lo hay, haz que se escriba primero un test que registre el comportamiento actual.",
+          "Pide al agente explícitamente: 'Extrae [parte X] a una función propia, el comportamiento no debe cambiar. Ejecuta los tests después de cada paso.'",
+          "Lee el diff antes de hacer commit y busca específicamente cambios que vayan más allá de una simple reestructuración."
+        ],
+        "selfCheck": [
+          "¿Siguen todos los tests en verde después del refactoring, y ya se había comprobado eso antes?",
+          "¿Contiene el diff alguna línea que no solo mueva código, sino que cambie una condición, un valor o un mensaje de error?",
+          "¿Se hizo commit de todo de una vez, o se pueden rastrear los pasos individuales por separado?"
+        ]
+      }
+    },
+    {
+      "slug": "legacy-code-modernisieren",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Entender y modernizar codebases antiguas con IA",
+      "teaser": "El legacy code sin tests no se puede reescribir sin más. Los characterization tests y los pasos pequeños hacen segura la modernización con ayuda de IA.",
+      "body": "## Qué hace especial al legacy code\nEl desarrollador de software Michael Feathers definió una vez el legacy code, de forma escueta, como \"código sin tests\". Precisamente eso es lo que lo hace peligroso de modificar: nadie, ni siquiera un agente de IA, puede comprobar si un cambio rompe el comportamiento cuando no hay tests que lo registren.\n\n## Primer paso: registrar el comportamiento, no mejorarlo\nAntes de reestructurar nada, necesitas characterization tests. Son tests que anotan lo que el código hace AHORA MISMO, aunque parezca extraño o incluso erróneo. No son un juicio de calidad, sino una instantánea que protege los cambios posteriores.\n\n## Segundo paso: migrar de forma gradual\nReescribir todo desde cero es arriesgado: hasta que la nueva versión esté lista, nada funciona de forma fiable, y a menudo se pierde comportamiento antiguo sutil. La migración gradual es el enfoque más probado, un patrón conocido como \"strangler fig\": las partes nuevas crecen poco a poco alrededor del código antiguo, hasta que este último se puede apagar por completo.\n\n## Para qué son especialmente útiles los agentes de IA aquí\nUn agente puede resumir rápidamente módulos grandes y sin documentar, y proponer posibles characterization tests, un trabajo que sin documentación suele costar mucho esfuerzo. Lo importante sigue siendo: primero entender y proteger, solo después cambiar.",
+      "bodyDetail": "## El principio detrás de los characterization tests\nUn characterization test se diferencia de un test unitario normal en la intención: un test normal comprueba si el código HACE lo que DEBERÍA hacer. Un characterization test solo comprueba si el código hace lo que hace AHORA MISMO, sin importar si eso es correcto. En la práctica, ejecutas el código existente con entradas típicas, anotas la salida real como valor esperado en el test, y así obtienes una línea base contra la que se puede comprobar cualquier cambio posterior.\n\n## Seams: por dónde se puede empezar\nEl legacy code suele estar muy entrelazado: una función depende de una variable global, un constructor abre directamente una conexión a la base de datos. Ese tipo de código es casi imposible de probar de forma aislada. El término \"seam\", acuñado por Feathers, designa un punto del código donde se puede cambiar el comportamiento sin editar el código justo en ese punto, por ejemplo mediante inyección de dependencias en una interfaz. Un agente puede ayudar a encontrar esos seams en una codebase desconocida, algo que de entrada ya es difícil.\n\n## Strangler fig en concreto\nEn la migración gradual, la nueva implementación funciona en paralelo con la antigua, al principio solo para una pequeña parte de los casos (por ejemplo, una ruta, un tipo de cliente). Un router decide qué peticiones van a la versión antigua y cuáles a la nueva. A medida que crece la confianza en la nueva versión, más tráfico se traslada ahí, hasta que la implementación antigua acaba desapareciendo por completo. La ventaja: el sistema sigue funcionando durante toda la migración, y un fallo solo afecta a la parte que se está migrando en ese momento.\n\n## Una trampa típica en la modernización con IA\nUn agente que, al entender código antiguo, se topa con una regla que le parece extraña ('¿por qué aquí se resta un descuento en vez de sumarlo en pedidos de menos de 5 euros?') tiende a corregirla 'de paso'. Sin una instrucción explícita de modernizar solamente, sin tocar la lógica de negocio, reglas que tal vez crecieron así a propósito desaparecen de esta manera, y nadie se da cuenta hasta que un cliente se queja.",
+      "example": "Prompt: 'Este módulo de 1.800 líneas no tiene tests ni documentación. Primero resume qué hace a nivel funcional. Después escribe characterization tests para las cinco funciones más importantes que registren el comportamiento ACTUAL, aunque parezca extraño. Todavía no cambies nada de código.'",
+      "related": [
+        "testing-mit-agenten",
+        "dokumentation-mit-ki",
+        "debugging-mit-agenten",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "¿Qué es un characterization test?",
+        "options": [
+          "Un test que registra el comportamiento actual de código sin tests, sin importar si ese comportamiento es correcto",
+          "Un test que solo mide el rendimiento de un sistema",
+          "Un test que se genera automáticamente en cuanto un agente lee código",
+          "Un test que comprueba si el código nuevo cumple los requisitos oficiales"
+        ],
+        "correct": 0,
+        "explain": "Los characterization tests registran lo que el código hace AHORA MISMO, no lo que debería hacer. Crean una línea base para código sin tests, contra la que se pueden comprobar los cambios posteriores."
+      },
+      "sources": [
+        {
+          "title": "Characterization test — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Characterization_test"
+        },
+        {
+          "title": "Legacy code — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Legacy_code"
+        },
+        {
+          "title": "Strangler Fig Application — martinfowler.com",
+          "url": "https://martinfowler.com/bliki/StranglerFigApplication.html"
+        },
+        {
+          "title": "Strangler Fig pattern — Microsoft Learn",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig"
+        },
+        {
+          "title": "Legacy Seam — martinfowler.com",
+          "url": "https://martinfowler.com/bliki/LegacySeam.html"
+        }
+      ],
+      "exercise": {
+        "task": "Toma un módulo sin tests y desordenado de tu propio proyecto (o de un proyecto open source) y protégelo con characterization tests antes de cambiar nada.",
+        "steps": [
+          "Haz que el agente resuma primero qué hace el módulo a nivel funcional, sin cambiar código.",
+          "Identifica junto con el agente entre 3 y 5 entradas o llamadas típicas y haz que escriba tests que registren las salidas actuales como valor esperado.",
+          "Solo después: haz un primer cambio pequeño y aislado, y comprueba si los characterization tests siguen en verde."
+        ],
+        "selfCheck": [
+          "¿Los tests cubren los caminos más importantes, no solo el caso más simple?",
+          "¿Registraste conscientemente el comportamiento ACTUAL, en vez de ya 'mejorarlo' al escribir los tests?",
+          "¿Sigue todo en verde después del primer cambio, o un test en rojo muestra exactamente qué cambió?"
+        ]
+      }
+    },
+    {
+      "slug": "memory-systeme-fuer-agenten",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Cómo recuerdan cosas los agentes de IA",
+      "teaser": "Un agente empieza cada sesión con la mente en blanco. Los sistemas de memoria como CLAUDE.md y los archivos de memoria salvan esa distancia.",
+      "body": "## El problema de fondo\nCada nueva sesión de un agente de IA empieza con una ventana de contexto vacía. Sin mecanismos adicionales, el agente no sabe nada de ayer: qué reglas aplican, qué salió mal la última vez, qué biblioteca usa tu equipo.\n\n## Dos tipos de memoria\nSe puede distinguir a grandes rasgos entre dos tipos de memoria. La memoria semántica son reglas y hechos fijos y duraderos: 'usamos pnpm, no npm', el estilo de código, las decisiones de arquitectura. Eso está en archivos como CLAUDE.md o AGENTS.md, que tú mantienes. La memoria episódica son notas sobre eventos concretos del pasado: 'en la sesión X, el enfoque Y falló porque Z'. Ese tipo de notas suele escribirlas el propio agente en archivos de memoria separados.\n\n## Cómo se ve esto a nivel técnico\nCLAUDE.md/AGENTS.md se carga por completo en cada sesión. Los archivos de memoria suelen funcionar de otra forma: un archivo índice corto se carga siempre, mientras que los archivos temáticos más extensos el agente los carga solo cuando los necesita, algo parecido a un índice que apunta a páginas de detalle.\n\n## Compactación\nSi el contexto dentro de una sesión en curso se llena demasiado, el agente resume automáticamente las partes más antiguas de la conversación (compactación) para hacer espacio. Es un mecanismo distinto al de los archivos persistentes: actúa dentro de una sesión, no entre sesiones.",
+      "bodyDetail": "## Memoria semántica vs. episódica en detalle\nLa distinción proviene originalmente de la psicología cognitiva y se traslada bien a los agentes. El conocimiento semántico es estable y de validez general: cambia poco y aplica sin importar cuándo se escribió. El conocimiento episódico está ligado a un evento concreto: tiene un momento, un contexto, a menudo también un resultado ('funcionó' / 'falló'). En Claude Code, CLAUDE.md corresponde a la parte semántica (escrita por humanos, estable, cargada por completo en cada sesión), mientras que los archivos de auto-memoria cubren la parte episódica: notas que el propio agente crea a partir de correcciones y observaciones durante el trabajo.\n\n## El archivo índice como compromiso\nUna colección puramente episódica crecería enormemente con el tiempo y acabaría desbordando el propio contexto. La solución es un modelo de dos niveles: un archivo resumen corto (a menudo solo las primeras líneas) se carga siempre automáticamente y remite a archivos temáticos más detallados, que solo se consultan cuando realmente hacen falta. Así el contexto base se mantiene pequeño, mientras el conocimiento detallado sigue disponible cuando se necesita.\n\n## La compactación como tercer elemento\nAdemás de las dos formas de memoria escrita, hay un tercer mecanismo que actúa dentro de una sola sesión larga: la compactación. Cuando el contexto se acerca al límite, el modelo resume los mensajes más antiguos, conservando de forma deliberada las decisiones importantes, los errores abiertos y los detalles de implementación, mientras descarta los pasos intermedios redundantes. El arte está en no resumir de forma demasiado agresiva y perder así información importante pero poco visible.\n\n## Un malentendido\nUn archivo de memoria o CLAUDE.md no \"aprende\" por sí solo en el sentido humano. Cada línea tuvo que escribirse en algún momento, ya sea por ti o por el agente a partir de una observación concreta durante el trabajo. Si un archivo no se mantiene, se vuelve impreciso con el tiempo, igual que una documentación desactualizada. La memoria persistente no sustituye el mantenimiento, solo traslada dónde queda la información.",
+      "example": "Ejemplo de reparto: en CLAUDE.md pone 'Los tests se ejecutan con npm test, nunca uses npm run test:ci en local' (semántico, duradero). En un archivo de memoria pone 'Sesión del 12/07: la migración con db:push falló por una violación de clave foránea; la próxima vez probar primero db:migrate:dry-run' (episódico, ligado a un evento concreto).",
+      "related": [
+        "claude-md",
+        "context-window",
+        "kontext-strategien",
+        "agent-loop"
+      ],
+      "quiz": {
+        "question": "¿Qué distingue mejor a una nota de memoria episódica de una regla en CLAUDE.md?",
+        "options": [
+          "La nota de memoria está ligada a un evento concreto del pasado, mientras que la regla de CLAUDE.md aplica de forma duradera y general",
+          "Las notas de memoria nunca se cargan automáticamente, mientras que CLAUDE.md se carga en cada llamada a una herramienta",
+          "No hay ninguna diferencia real, ambos términos significan exactamente lo mismo",
+          "CLAUDE.md solo puede escribirlo la propia IA, y las notas de memoria solo las personas"
+        ],
+        "correct": 0,
+        "explain": "Las notas episódicas registran eventos concretos y ligados a un momento ('en la sesión X, Y falló'), mientras que CLAUDE.md contiene reglas duraderas y de validez general, independientes de un evento aislado."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: CLAUDE.md und Auto Memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        },
+        {
+          "title": "Anthropic: Effective Context Engineering for AI Agents",
+          "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+        },
+        {
+          "title": "agents.md: AGENTS.md-Standard",
+          "url": "https://agents.md/"
+        }
+      ]
+    },
+    {
+      "slug": "kosten-optimierung-praxis",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Reducir costes al usar agentes: la checklist práctica",
+      "teaser": "Cuatro palancas reducen notablemente los costes de los agentes de IA: el modelo adecuado, el caching, un contexto ligero y el procesamiento por lotes.",
+      "body": "## Por qué los costes se disparan tan rápido\nUn agente no llama al modelo una sola vez, sino a menudo decenas de veces por tarea: para planificar, usar herramientas, pasos intermedios. Sin un control consciente, con frecuencia pagas el precio máximo por tareas que ni siquiera lo necesitan.\n\n## Palanca 1: enrutamiento de modelos\nNo todas las subtareas necesitan el modelo más potente. Lo mecánico (clasificar, dar formato, resúmenes simples) va a un modelo barato y rápido. La planificación compleja y las decisiones difíciles se quedan con el modelo fuerte.\n\n## Palanca 2: caching\nSi un agente envía repetidamente el mismo inicio largo (system prompt, definiciones de herramientas), gracias al prompt caching esa parte no hace falta recalcularla cada vez, siempre que las peticiones se sucedan dentro de una ventana de tiempo corta.\n\n## Palanca 3: mantener el contexto ligero\nDesactivar las herramientas que no se usan, vaciar el contexto entre tareas independientes, filtrar de antemano las salidas extensas de logs o tests en vez de pasarlas completas, y trasladar el conocimiento detallado a skills en vez de arrastrarlo permanentemente en el CLAUDE.md.\n\n## Palanca 4: procesamiento por lotes\nPara grandes volúmenes de peticiones no urgentes (clasificación masiva, evaluaciones), una API de batch compensa frente a las llamadas individuales: mucho más barata, a cambio de no tener respuesta inmediata.\n\nEstas cuatro palancas se pueden combinar: el modelo más barato que aún sea suficiente, con un inicio de prompt en caché, un contexto ligero, procesado por lotes.",
+      "bodyDetail": "## Enrutamiento de modelos, con números\nLa propia lista de precios de Anthropic (a fecha de julio de 2026) muestra el orden de magnitud: un modelo barato como Claude Haiku cuesta, por millón de tokens, una fracción de lo que cuesta el modelo más potente. Para subagentes con una subtarea claramente mecánica, muchos frameworks de agentes permiten fijar directamente un modelo más barato, en vez de heredar automáticamente el modelo de la tarea principal.\n\n## Caching, con números (a fecha de julio de 2026)\nUn acierto de caché en Claude cuesta solo una fracción del precio normal de los tokens de entrada, mientras que escribir en caché es algo más caro de lo normal. La caché por defecto vive 5 minutos; quien envía muchas peticiones seguidas (por ejemplo, un bucle de agente con muchos pasos intermedios) es quien más se beneficia, porque el inicio caro se escribe una sola vez pero se lee muchas veces de forma barata.\n\n## Mantener el contexto ligero: palancas concretas\nLas propias recomendaciones de Anthropic para Claude Code mencionan varias técnicas muy concretas: vaciar el contexto entre tareas independientes en lugar de dejarlo crecer, mantener CLAUDE.md compacto (referencia orientativa: menos de 200 líneas, y trasladar el conocimiento detallado a skills que se cargan bajo demanda), y filtrar automáticamente las salidas extensas en bruto (por ejemplo, un archivo de log de 10.000 líneas) antes de pasarlas al modelo, de modo que solo las líneas relevantes (por ejemplo, los errores) lleguen al contexto, en lugar del archivo completo.\n\n## Procesamiento por lotes, con números (a fecha de julio de 2026)\nLa Message Batches API reduce los costes un 50 % frente a las llamadas individuales, y la mayoría de los batches terminan en menos de una hora. La contrapartida: no hay respuesta inmediata y síncrona, a cambio de un precio mucho más bajo para volúmenes grandes y no urgentes, como evaluaciones masivas o ejecuciones de test sobre miles de casos.\n\n## Una advertencia: agentes en paralelo\nVarias instancias de agente trabajando en paralelo (por ejemplo, un equipo de agentes) multiplican los costes, porque cada instancia mantiene su propia ventana de contexto; en casos desfavorables, esto puede multiplicar el consumo de tokens varias veces respecto a una sola sesión. La paralelización ahorra tiempo, pero rara vez dinero; el beneficio debe justificarlo.",
+      "example": "Un job nocturno clasifica 8.000 tickets de soporte por urgencia. En vez de consultar cada ticket individualmente y de forma síncrona con el modelo más potente: las reglas de clasificación y los ejemplos forman un inicio de prompt compartido y en caché, un modelo barato se encarga de la clasificación propiamente dicha, y las 8.000 peticiones se procesan juntas a través de la batch API en lugar de una por una.",
+      "related": [
+        "model-routing",
+        "caching-strategien",
+        "kosten-kontrolle-agenten",
+        "batch-processing"
+      ],
+      "quiz": {
+        "question": "¿Qué combinación suele reducir más los costes de un job nocturno de clasificación masiva?",
+        "options": [
+          "Usar exclusivamente el modelo disponible más caro, a cambio de la máxima velocidad",
+          "Un modelo barato para la clasificación mecánica, un inicio de prompt compartido en caché y procesamiento a través de la batch API",
+          "Construir cada petición de forma individual y síncrona con un contexto completamente nuevo",
+          "Lanzar al mismo tiempo tantas instancias de agente en paralelo como sea posible"
+        ],
+        "correct": 1,
+        "explain": "Un job de clasificación mecánica suele beneficiarse más de la combinación de un modelo barato, un inicio de prompt en caché y reutilizado, y la batch API asíncrona y más barata, no de un modelo caro, un contexto completamente nuevo por petición o una paralelización innecesaria."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Kosten verwalten",
+          "url": "https://code.claude.com/docs/en/costs"
+        },
+        {
+          "title": "Claude-Doku: Prompt Caching",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+        },
+        {
+          "title": "Claude-Doku: Batch Processing",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+        },
+        {
+          "title": "Anthropic: Building Effective AI Agents",
+          "url": "https://www.anthropic.com/research/building-effective-agents"
+        }
+      ],
+      "exercise": {
+        "task": "Analiza uno de tus propios workflows de agente (recurrente) según las cuatro palancas de costes e identifica dónde al menos una de ellas no se está aprovechando.",
+        "steps": [
+          "Enumera los pasos de tu workflow y marca qué modelo se usa actualmente en cada paso.",
+          "Comprueba: ¿hay un inicio de prompt largo y repetido (system prompt, reglas, ejemplos) que se beneficiaría del caching?",
+          "Comprueba: ¿el workflow es urgente o síncrono, o podría ejecutarse parte de él como un batch no urgente?"
+        ],
+        "selfCheck": [
+          "¿Hay al menos un subpaso mecánico que actualmente corre innecesariamente en un modelo caro?",
+          "¿Sabes si el inicio de tu prompt se reutiliza dentro del TTL de la caché, o si se reescribe cada vez?",
+          "¿Hay alguna parte de tu workflow que no necesite una respuesta inmediata y sea apta para batch?"
+        ]
+      }
+    },
+    {
+      "slug": "sicherheits-audits-mit-ki",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 50,
+      "title": "Auditorías de seguridad con IA: revisar el código en busca de fallos",
+      "teaser": "Los agentes de IA encuentran muchas vulnerabilidades de seguridad de forma automática, pero los hallazgos críticos siempre necesitan que una persona los confirme.",
+      "body": "## Qué hace una auditoría de seguridad con IA\nUn agente de IA lee tu código o un diff y busca patrones conocidos de vulnerabilidades de seguridad: inyección SQL, deserialización insegura, contraseñas escritas directamente en el código, comprobaciones de permisos ausentes. Eso es mucho más rápido que leer cada línea a mano.\n\n## Hallazgos típicos\nSe encuentran con frecuencia: vulnerabilidades de inyección (SQL, de comandos, XSS), comprobaciones de autorización ausentes, secretos expuestos como API keys, cifrado débil y llamadas a funciones inseguras como `eval()`. Estos patrones aparecen una y otra vez en código real, a menudo por falta de tiempo o desconocimiento.\n\n## Dónde están los límites\nUn agente puede reconocer patrones, pero no entiende automáticamente tu modelo de amenazas: quién es el atacante, cuál es el objetivo más valioso, qué compromisos son aceptables. Un hallazgo puede ser inofensivo en un contexto y crítico en otro, y eso solo lo sabe quien conoce el sistema.\n\n## Una persona revisa lo crítico\nLas revisiones automáticas son un primer paso, no un sustituto de la revisión humana. Sobre todo en hallazgos relacionados con autenticación, datos de pago o permisos de acceso: haz que una persona lo confirme antes de marcar el hallazgo como resuelto o de ignorarlo. Y además: una herramienta de seguridad que a su vez usa una IA puede ser engañada mediante texto malicioso incrustado en el código; revisar código desconocido y no confiable requiere precaución adicional.",
+      "bodyDetail": "## Las capas de defensa en la práctica\nUna buena configuración combina varias capas que revisan con distinta profundidad. Una simple detección de patrones sin llamada al modelo puede reaccionar de inmediato ante llamadas arriesgadas como `eval()` u `os.system` en cada cambio de código, sin coste adicional. Una segunda capa hace que una instancia nueva del modelo revise el diff al final de cada paso de trabajo, centrada en seguridad; encuentra también patrones más complejos, como fallos de autorización, referencias directas a objetos inseguras o server-side request forgery, que la simple búsqueda de texto pasa por alto. Una tercera capa, más profunda, revisa el código en cada commit o push, incluyendo quién lo llama y el contexto circundante, para reducir las falsas alarmas.\n\n## La revisión humana sigue siendo obligatoria\nNinguna de estas capas bloquea automáticamente la escritura o el commit de código: los hallazgos se reportan, no se imponen a la fuerza. Para los pull requests existen además revisiones en varias etapas, en las que varios agentes de revisión especializados buscan en paralelo distintas clases de errores, y un paso de verificación propio comprueba los candidatos contra el comportamiento real del código para descartar falsas alarmas. Una conocida herramienta de GitHub Action para revisiones automáticas de PR cubre, por ejemplo, inyección, fallos de autenticación, secretos expuestos y criptografía insegura, pero su documentación advierte expresamente de que la herramienta no está reforzada contra prompt injection y solo debería ejecutarse en pull requests de confianza.\n\n## El modelo de amenazas primero\nAntes de soltar un agente sobre tu código, vale la pena una breve reflexión previa: ¿quién podría atacar tu sistema, qué quiere conseguir, y qué partes son especialmente valiosas (datos de pago, login, permisos de administrador)? Estas son justo las preguntas que catálogos de seguridad clásicos como la lista OWASP Top 10 ofrecen como marco básico para aplicaciones web: inyección, autenticación deficiente, mala configuración de seguridad y categorías similares. Un agente puede recorrer sistemáticamente estas categorías, pero la ponderación (qué es realmente crítico en tu caso) sigue siendo cuestión de interpretación.\n\n## Un malentendido\n\"El agente no encontró nada\" no significa \"el código es seguro\". Solo significa que los patrones revisados no coincidieron en esa pasada. Las revisiones automatizadas son una de varias capas de defensa, no un sustituto de una auditoría de seguridad real en infraestructura crítica.",
+      "example": "Prompt de ejemplo: 'Usa un subagente y revisa el diff de la ruta de login en busca de vulnerabilidades de seguridad: inyección, autorización ausente, secrets expuestos. Clasifica cada hallazgo por categoría OWASP y marca lo que una persona debe confirmar antes del merge.'",
+      "related": [
+        "agent-sicherheit",
+        "vibe-coding-sicherheit",
+        "prompt-injection",
+        "code-review-mit-ki"
+      ],
+      "quiz": {
+        "question": "¿Por qué una revisión de seguridad con IA no sustituye la revisión humana en hallazgos críticos?",
+        "options": [
+          "Porque las revisiones con IA son fundamentalmente más lentas que las manuales",
+          "Porque un agente puede reconocer patrones, pero no conoce automáticamente el modelo de amenazas ni la criticidad real de un hallazgo",
+          "Porque los modelos de IA no pueden leer código",
+          "Porque las revisiones automatizadas solo funcionan con código de frontend"
+        ],
+        "correct": 1,
+        "explain": "Un agente reconoce patrones conocidos, pero si un hallazgo es realmente crítico en tu sistema concreto depende de un contexto que solo una persona puede valorar por completo."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Security Guidance Plugin",
+          "url": "https://code.claude.com/docs/en/security-guidance"
+        },
+        {
+          "title": "GitHub: anthropics/claude-code-security-review",
+          "url": "https://github.com/anthropics/claude-code-security-review"
+        },
+        {
+          "title": "OWASP Top 10",
+          "url": "https://owasp.org/Top10/"
+        },
+        {
+          "title": "Claude Code: Code review",
+          "url": "https://code.claude.com/docs/en/code-review"
+        }
+      ],
+      "exercise": {
+        "task": "Haz que un agente revise un fragmento de código pequeño y deliberadamente inseguro (por ejemplo, una función de login con una query SQL construida por concatenación de strings) en busca de vulnerabilidades de seguridad.",
+        "steps": [
+          "Escribe o toma una función con una vulnerabilidad conocida, por ejemplo `query = \"SELECT * FROM users WHERE name='\" + input + \"'\"`.",
+          "Haz que el agente revise la función y clasifique los hallazgos por categoría OWASP (inyección, autenticación, etc.).",
+          "Pregunta específicamente: '¿Cuáles de estos hallazgos tendría que hacer confirmar a una persona antes de un merge real, y por qué?'"
+        ],
+        "selfCheck": [
+          "¿El agente identificó y nombró correctamente la inyección SQL?",
+          "¿Evaluó la gravedad o criticidad de forma realista, o solo dijo 'peligroso' de forma genérica?",
+          "¿Pudiste explicar por qué un hallazgo como este necesita confirmación humana antes de marcarlo como resuelto?"
+        ]
+      }
+    },
+    {
+      "slug": "datenbanken-mit-agenten",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 50,
+      "title": "Bases de datos con agentes: seguro en vez de arriesgado",
+      "teaser": "Un agente con acceso a la base de datos puede romper más cosas en segundos de las que una persona rompería en horas. Empezar en modo solo lectura te protege de eso.",
+      "body": "## Por qué las bases de datos son especialmente arriesgadas\nUn agente que escribe código incorrecto produce un bug. Un agente que ejecuta una query incorrecta contra la base de datos puede borrar o alterar datos reales, a menudo sin posibilidad de deshacerlo. Por eso las bases de datos tienen reglas más estrictas que el código normal.\n\n## Solo lectura primero\nPara investigación y depuración, dale a un agente solo acceso de lectura. Un agente que solo puede hacer consultas `SELECT` te ayuda a entender los datos y el esquema, pero no puede destruir nada. El acceso de escritura se añade solo cuando realmente hace falta, y de forma limitada.\n\n## Disciplina en las migraciones\nLos cambios de esquema (migraciones) nunca van directamente contra una base de datos en producción. Se gestionan mediante archivos de migración versionados, que se revisan, se prueban y solo entonces se aplican. Un agente puede proponer y escribir una migración, pero ejecutarla debería ser un proceso controlado, no un comando de shell espontáneo.\n\n## Nunca a producción sin una compuerta\nEl acceso a la base de datos de producción siempre necesita una autorización deliberada: una persona que confirme, un token de acceso separado, o ambos. Un agente nunca debería poder pasar automáticamente de un entorno de staging a uno de producción.\n\n## No olvides las copias de seguridad\nAntes de que se ejecute cualquier operación de escritura, por pequeña que sea: debe existir una copia de seguridad actual. Es la última red de seguridad cuando todo lo demás falla.",
+      "bodyDetail": "## Cómo limitar los permisos a nivel técnico\nEn la práctica, el acceso de lectura se puede imponer directamente a nivel del rol de la base de datos: un usuario de BD con permisos exclusivamente de SELECT, sin permisos para INSERT, UPDATE, DELETE ni comandos DDL. Eso es más fuerte que cualquier instrucción en el prompt, porque no depende del comportamiento del agente, sino que lo impone la propia base de datos. Como complemento, en herramientas como Claude Code se pueden fijar reglas de permisos que denieguen de raíz ciertos comandos de shell o herramientas (`permissions.deny`), así como hooks que, por ejemplo, bloqueen cualquier intento de escritura en una carpeta de migraciones antes incluso de que se ejecute.\n\n## Por qué las migraciones necesitan un sistema propio\nUna migración que se ejecuta directamente y sin revisar contra una base de datos en producción puede dañar datos reales al instante si algo falla, y a diferencia del código, a menudo no existe un simple \"git revert\" para eso. Un flujo de migraciones limpio se ejecuta por etapas: probar la migración en local o sobre una copia, revisión por una persona, aplicación a través de una pipeline controlada en vez de manualmente, y una vía de rollback documentada por si algo sale mal.\n\n## La compuerta de producción, en concreto\nUna compuerta puede verse de formas técnicas distintas: credenciales separadas para staging y producción, un paso de aprobación en la pipeline de despliegue, o simplemente la regla de que el acceso a producción nunca ocurre en la misma ejecución de agente que las pruebas experimentales. Lo importante es que el paso a producción sea un paso deliberado y visible, no el efecto secundario de una herramienta configurada de forma demasiado permisiva.\n\n## Un malentendido\n'El agente solo lo intentó una vez' no es excusa: un único comando `DELETE` o `DROP` equivocado basta. El servidor de referencia de Postgres del proyecto MCP (ahora archivado) presumía explícitamente de tener solo acceso de lectura e inspección de esquema como medida de seguridad por defecto, y ese tipo de implementaciones de referencia dejan claro que están pensadas como referencia, y que el uso en producción necesita su propia revisión de seguridad.\n\n## Un ejemplo más a fondo\nUn agente debe investigar un bug en el que los pedidos de los usuarios se muestran de forma incorrecta. Con acceso de solo lectura a la base de datos, puede consultar las filas afectadas, entender el esquema y formular una hipótesis, todo sin ningún riesgo. Solo cuando la causa está clara escribe una migración o un comando de corrección, que una persona revisa en staging antes de ejecutarlo.",
+      "example": "Ejemplo de configuración: un agente obtiene acceso a través de un usuario de BD llamado `readonly_agent`, que solo tiene permisos SELECT sobre la base de datos de staging. Para cambios de esquema, el agente escribe un archivo de migración (por ejemplo, con una herramienta de migraciones) que solo se aplica después de una revisión humana, a través de la pipeline habitual, nunca directamente con un comando de shell en producción.",
+      "related": [
+        "agent-sicherheit",
+        "permissions-modes",
+        "guardrails-fuer-agenten",
+        "api-keys-sicher-verwalten"
+      ],
+      "quiz": {
+        "question": "¿Cuál es la regla básica más segura para el acceso de un agente a una base de datos?",
+        "options": [
+          "El agente obtiene acceso de escritura completo desde el principio, para que pueda trabajar más rápido",
+          "El acceso a la base de datos debería negarse a los agentes por principio",
+          "Acceso de solo lectura por defecto, acceso de escritura solo de forma limitada, y acceso a producción solo a través de una compuerta deliberada",
+          "Las copias de seguridad solo son necesarias en bases de datos muy grandes"
+        ],
+        "correct": 2,
+        "explain": "Empezar en solo lectura, tener permisos de escritura controlados y una compuerta deliberada para el acceso a producción minimizan el riesgo de que un error del agente dañe datos reales."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Permissions",
+          "url": "https://code.claude.com/docs/en/permissions"
+        },
+        {
+          "title": "GitHub: modelcontextprotocol/servers",
+          "url": "https://github.com/modelcontextprotocol/servers"
+        },
+        {
+          "title": "Claude Code Doku: Hooks Guide",
+          "url": "https://code.claude.com/docs/en/hooks-guide"
+        },
+        {
+          "title": "PostgreSQL Doku: Backup and Restore",
+          "url": "https://www.postgresql.org/docs/current/backup.html"
+        }
+      ]
+    },
+    {
+      "slug": "code-verstehen-mit-ki",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Entender código ajeno con IA",
+      "teaser": "En vez de pasar horas navegando por código ajeno, dejas primero que un agente lo explore y lo resuma.",
+      "body": "## El camino antiguo frente al nuevo\nAntes te abrías paso archivo por archivo en un proyecto nuevo. Con un agente de IA, en cambio, puedes preguntar: 'Dame una visión general de esta codebase' y en segundos obtienes una estructura que de otro modo te habría llevado horas.\n\n## Deja que explore\nUn agente puede leer archivos, reconocer patrones y describir relaciones sin que tú mismo mires cada línea. Empieza con preguntas amplias: '¿Cómo está organizado el proyecto?', '¿Cuáles son los modelos de datos principales?', '¿Cómo funciona la autenticación?', y luego ve siendo más específico.\n\n## Resumen de arquitectura\nUn buen primer paso es un resumen de la arquitectura: qué componentes principales hay, cómo interactúan, qué patrones se usan. Eso te da un mapa antes de perderte en los detalles.\n\n## Preguntar de forma específica\nPuedes preguntar igual que le preguntarías a un colega con experiencia: '¿Qué hace esta función en la línea 134?', '¿Por qué aquí se llama a `foo()` en vez de a `bar()`?', '¿Qué casos límite cubre este código?' Este tipo de preguntas no necesita una formulación especial, simplemente pregunta directamente.\n\n## Los diagramas ayudan\nPara flujos complejos, pide un diagrama o un boceto textual del flujo, por ejemplo cómo viaja una petición desde el frontend hasta la base de datos. Eso hace visibles relaciones que de otro modo pasarían desapercibidas.",
+      "bodyDetail": "## De lo general a lo específico\nEl proceso más efectivo siempre va de lo amplio a lo específico: primero entender la estructura general, luego los componentes individuales, luego las líneas concretas. Quien pregunta directamente por un detalle sin conocer el contexto suele recibir una respuesta técnicamente correcta pero poco útil. La documentación oficial recomienda exactamente este orden: primero pedir una visión general de alto nivel, luego profundizar en componentes individuales, y solo después preguntar por convenciones de código o un glosario de términos específicos del proyecto.\n\n## Encontrar código en vez de buscarlo\nPara buscar el código relacionado con una función concreta, ayuda pedirle al agente explícitamente que identifique primero los archivos implicados, luego cómo interactúan esos archivos entre sí, y solo entonces que trace el camino de ejecución completo, por ejemplo desde el formulario de login en el frontend hasta la consulta a la base de datos. Usar el lenguaje de dominio del propio proyecto (en vez de tus propias paráfrasis) mejora notablemente la tasa de acierto.\n\n## Subagentes para investigaciones grandes\nEn codebases grandes, cada archivo leído llena el contexto de la conversación principal. Para exploraciones extensas, vale la pena delegar la investigación a un subagente: lee muchos archivos en su propio contexto separado y solo devuelve un resumen. Así tu conversación principal se mantiene manejable, mientras el trabajo de búsqueda ocurre en segundo plano.\n\n## Un malentendido\nUn agente que entrega un resumen no ha entendido automáticamente el código de forma correcta: hace coincidir probabilidades a partir de sus datos de entrenamiento y de lo que ha leído. En puntos críticos de seguridad o especialmente enredados, vale la pena preguntar específicamente: '¿Estás seguro? Muéstrame el punto exacto del código que lo demuestra.' Un resumen sin referencia de línea es una pista, no una prueba.\n\n## Un ejemplo más a fondo\nEn un proyecto nuevo con una lógica de login desconocida: primero 'Dame una visión general de la codebase', luego 'Explica los patrones de arquitectura principales', luego '¿Cómo se gestiona la autenticación?', y solo después 'Traza el flujo desde el formulario de login hasta la creación de la sesión, con referencias de archivo.'",
+      "example": "Secuencia de prompts para un proyecto nuevo: 1) 'Dame una visión general de esta codebase.' 2) 'Explica los patrones de arquitectura principales.' 3) 'Encuentra los archivos que gestionan la autenticación de usuarios y traza el flujo desde el formulario de login hasta la base de datos.'",
+      "related": [
+        "claude-code",
+        "kontext-strategien",
+        "subagents",
+        "dokumentation-mit-ki"
+      ],
+      "quiz": {
+        "question": "¿Cuál es el proceso más efectivo para orientarte rápido en una codebase ajena con ayuda de una IA?",
+        "options": [
+          "Preguntar de inmediato por la función más complicada del código",
+          "Leer tú mismo todos los archivos antes de usar la IA siquiera",
+          "Preguntar solo por el nombre del lenguaje de programación utilizado",
+          "Empezar con una pregunta amplia de visión general, y luego ir bajando paso a paso hacia componentes y detalles concretos"
+        ],
+        "correct": 3,
+        "explain": "Preguntar de lo general a lo específico (primero visión general, luego componentes, luego detalles) da respuestas mucho más útiles que preguntas de detalle inmediatas sin contexto."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Common Workflows (Understand new codebases)",
+          "url": "https://code.claude.com/docs/en/common-workflows"
+        },
+        {
+          "title": "Claude Code Doku: Best Practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Claude Code Doku: Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        }
+      ]
+    },
+    {
+      "slug": "frontend-mit-ki",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Frontend con IA: capturas de pantalla como feedback",
+      "teaser": "Un agente no ve tu interfaz, hasta que le das una captura de pantalla. El feedback visual es la clave para un buen trabajo de frontend con IA.",
+      "body": "## El problema: la IA no ve tu interfaz\nUn agente que escribe código no 've' automáticamente el resultado en el navegador. No sabe si un botón está mal alineado o si el texto se desborda, a menos que se lo muestres. Esa es precisamente la diferencia entre 'haz el dashboard más bonito' (vago) y una captura de pantalla más una instrucción concreta.\n\n## Capturas de pantalla como feedback\nPuedes insertar capturas directamente: arrastrando y soltando, con copiar y pegar, o como ruta de archivo. Dale al agente una imagen del diseño que quieres y luego haz que tome una captura del resultado y la compare. Así se crea un ciclo que el propio agente puede cerrar, en lugar de que tú revises manualmente cada paso intermedio.\n\n## Iteración por componentes\nTrabaja en pasos pequeños: construir un componente, hacer una captura, señalar las diferencias con el objetivo, corregir. Esto funciona mejor que pedir 'construye toda la página' de una vez, porque los errores se vuelven visibles antes.\n\n## Aprovecha los sistemas de diseño\nSi tu proyecto tiene un sistema de diseño (colores fijos, espaciados, componentes), díselo al agente explícitamente o muéstrale componentes existentes como plantilla. Eso evita que invente sus propias soluciones inconsistentes.\n\n## Verificar visualmente\nAl final lo que cuenta no es el código, sino el resultado visible. Pide siempre una captura de pantalla del resultado real, no solo una descripción de que ya está 'terminado'.",
+      "bodyDetail": "## Por qué una imagen de referencia marca la diferencia\nLa documentación oficial de buenas prácticas explicita el contraste: 'haz el dashboard más bonito' produce un resultado aleatorio, porque no hay un criterio de éxito. En cambio, una captura de pantalla insertada más 'implementa este diseño, luego haz tú mismo una captura del resultado, compárala con el original y enumera las diferencias' le da al agente un objetivo comprobable. El agente puede recorrer este ciclo (implementar, capturar, comparar, ajustar) varias veces por su cuenta, sin que tú tengas que revisar manualmente después de cada paso.\n\n## El bucle de verificación a nivel técnico\nPara que un agente pueda cerrar realmente este ciclo por sí mismo, necesita una herramienta que pueda hacer de verdad una captura de pantalla en el navegador, por ejemplo, una automatización del navegador que pueda invocar como herramienta. Sin una herramienta así, la 'verificación' sigue siendo una afirmación del agente, no una comprobación real. Precisamente por eso aplica aquí el mismo principio que con los tests o las comprobaciones de build: un agente que puede verificar su propio resultado con una señal real (aprobado/no aprobado, o aquí: comparación visual) trabaja de forma más fiable que uno que solo afirma haber terminado.\n\n## Los pasos pequeños superan a los grandes saltos\nEl trabajo de frontend con agentes funciona mejor por componentes: un componente por pasada, con verificación visual inmediata, en vez de pedir una página completa de golpe. Los errores en un solo componente son más fáciles de detectar y describir que los errores repartidos por toda una página.\n\n## Un malentendido\n'A mí me parece que se ve bien', en la descripción del agente, no es una prueba. Un agente puede escribir código que parece sintácticamente correcto pero que visualmente está completamente descolocado, por ejemplo espaciados incorrectos o elementos superpuestos, algo que solo revela una captura de pantalla real. Por eso exige siempre la evidencia (la captura), no solo la afirmación.\n\n## Un ejemplo más a fondo\nPara una nueva tabla de precios: inserta el mockup de diseño como imagen, con el prompt 'Implementa este diseño con nuestros componentes Card existentes de @src/components/Card.tsx. Después haz una captura y compárala con el mockup, enumera las diferencias y corrígelas.' El agente entonces itera por su cuenta hasta que el mockup y la captura coinciden.",
+      "example": "Prompt con imagen: '[captura del diseño objetivo adjunta] Implementa este diseño para la cabecera del dashboard. Usa nuestros componentes existentes de @src/components. Después haz una captura del resultado, compárala con el original y enumera las diferencias.'",
+      "related": [
+        "vibe-coding",
+        "claude-code",
+        "testing-mit-agenten",
+        "computer-use"
+      ],
+      "quiz": {
+        "question": "¿Por qué es más efectiva una captura de pantalla del diseño objetivo que el prompt 'haz el dashboard más bonito'?",
+        "options": [
+          "Porque las capturas de pantalla son más cortas que las descripciones de texto",
+          "Porque los agentes de IA procesan imágenes más rápido que texto",
+          "Porque una captura de pantalla le da al agente un objetivo concreto y comprobable, que puede comparar con su propia captura",
+          "Porque con imágenes ya no hacen falta sistemas de diseño"
+        ],
+        "correct": 2,
+        "explain": "Una imagen objetivo concreta más la instrucción de autocomparar le da al agente un criterio de éxito que puede comprobar por su cuenta; una instrucción vaga, en cambio, produce un resultado aleatorio."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Best Practices (Give Claude a way to verify its work)",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Claude Code Doku: Common Workflows (Work with images)",
+          "url": "https://code.claude.com/docs/en/common-workflows"
+        },
+        {
+          "title": "Claude Code Doku: Chrome / Browser",
+          "url": "https://code.claude.com/docs/en/chrome"
+        }
+      ],
+      "exercise": {
+        "task": "Toma un componente de UI pequeño de un proyecto de práctica (o crea un componente de tarjeta sencillo) y haz que un agente lo itere contra una imagen de referencia.",
+        "steps": [
+          "Busca o crea una imagen de referencia (captura de una web, mockup de diseño) y adjúntala al agente.",
+          "Prompt: 'Implementa este diseño como componente. Después haz una captura del resultado y compárala con el original.'",
+          "Deja que el agente se autocorrija al menos una vez a partir de la comparación, antes de intervenir tú mismo."
+        ],
+        "selfCheck": [
+          "¿El agente realmente hizo una captura y la comparó, o solo afirmó que se veía bien?",
+          "¿Qué diferencias concretas reveló la comparación?",
+          "¿El resultado quedó más cerca del original después de la autocorrección que en el primer intento?"
+        ]
+      }
+    },
+    {
+      "slug": "pair-programming-muster",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Patrones de pair programming con IA",
+      "teaser": "Las personas y la IA trabajan mejor juntas cuando está claro quién conduce y quién navega, y cuándo intervienes tú.",
+      "body": "## Driver y navigator\nDel pair programming clásico viene una imagen que también encaja con el trabajo con IA: una parte 'conduce' (escribe/ejecuta), la otra 'navega' (piensa junto con el otro, corrige, mantiene la visión de conjunto). Con un agente, normalmente inviertes ese papel: el agente conduce (escribe código), tú navegas (marcas la dirección, corriges pronto).\n\n## Plan, review, ejecución\nUn patrón probado tiene tres fases: primero hacer que se cree un plan (todavía sin código), luego leer el plan y corregirlo, y solo entonces hacer que se implemente. Eso evita que el agente escriba mucho código para la solución equivocada.\n\n## Cuándo intervenir\nInterviene en cuanto notes que algo va en la dirección equivocada, no solo al final. Si tienes que corregir el mismo error dos veces, normalmente vale más la pena reiniciar con un prompt más preciso que hacer una tercera corrección.\n\n## Bucles de feedback\nEl bucle más corto es el mejor: el agente da un paso, tú (u otro agente) lo revisas, el feedback vuelve, siguiente paso. Esto aplica tanto al código como a las revisiones: una mirada fresca de alguien que no ha escrito la solución encuentra más cosas.",
+      "bodyDetail": "## Las cuatro fases en detalle\nUn flujo que ha demostrado su valor en la práctica: explorar (el agente lee código, hace preguntas de comprensión, no cambia nada), planificar (el agente propone un plan de implementación concreto, tú lo lees y lo corriges), implementar (el agente lo construye siguiendo el plan, escribe tests), cerrar (commit con un mensaje claro, PR). Separar la planificación de la implementación es la palanca más importante: dejar que el agente se ponga a programar de inmediato arriesga que mucho trabajo fluya en la dirección equivocada antes de que alguien lo note. La planificación merece la pena especialmente cuando el alcance no está claro, cuando afecta a varios archivos, o cuando tú mismo no conoces bien el código; en un cambio de una sola línea, en cambio, es una sobrecarga innecesaria.\n\n## Writer/reviewer como segundo patrón\nUn segundo patrón probado separa la escritura y la evaluación en sesiones distintas: una sesión implementa, una segunda sesión con contexto fresco revisa el diff contra criterios claros, y la primera sesión incorpora el feedback. La razón: quien ha escrito algo tiende a considerarlo correcto. Un revisor sin ese sesgo previo, que solo ve el diff y los criterios, evalúa de forma más independiente. El mismo patrón funciona para tests: una sesión escribe los tests, otra escribe el código que los pasa.\n\n## Intervenir: pronto, no tarde\nLos bucles de feedback ajustados superan a las correcciones grandes y poco frecuentes. Una parada breve en cuanto un agente se desvía de forma visible ahorra más tiempo que esperar hasta el final. Como regla general: si el mismo error se ha corregido dos veces, el contexto suele estar ya atascado de intentos fallidos; reiniciar con un prompt más preciso casi siempre gana a una tercera corrección en la misma conversación.\n\n## Un malentendido\nHacer pair programming con IA no significa que estés mirando todo el tiempo. Significa que intervienes en los puntos correctos: en el plan, en los estados intermedios, en la revisión final. Entre medias, el agente puede trabajar de forma autónoma, siempre que tenga una señal contra la que comprobar su propio resultado.",
+      "example": "Flujo para una nueva funcionalidad: 1) 'Explora cómo gestionamos actualmente las sesiones y lee los archivos relevantes. Todavía sin código.' 2) 'Crea un plan para el login con Google OAuth.' - leer el plan, eliminar un paso demasiado grande. 3) 'Implementa el plan, escribe tests para el callback.' 4) 'Usa un subagente y revisa el diff contra el plan; reporta carencias, no preferencias de estilo.'",
+      "related": [
+        "erst-plan-dann-code",
+        "agent-loop",
+        "code-review-mit-ki",
+        "vibe-coding"
+      ],
+      "quiz": {
+        "question": "¿Cuál es la ventaja clave de separar la planificación y la implementación en pasos distintos al trabajar con un agente?",
+        "options": [
+          "Puedes corregir el enfoque antes de que se escriba mucho código para la solución equivocada",
+          "Ahorra tokens por principio, porque se escribe menos",
+          "Los agentes no pueden escribir código en absoluto sin un paso de planificación explícito",
+          "Elimina la necesidad de probar el resultado más adelante"
+        ],
+        "correct": 0,
+        "explain": "Un plan antes del código te permite corregir errores pronto, antes de que el agente haya invertido mucho trabajo en un enfoque equivocado."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Best Practices (Explore, plan, code, commit)",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Claude Code Doku: Permission Modes",
+          "url": "https://code.claude.com/docs/en/permission-modes"
+        },
+        {
+          "title": "Claude Code Doku: Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        }
+      ],
+      "exercise": {
+        "task": "Practica el flujo de plan-revisión-ejecución con una tarea real pequeña en tu proyecto.",
+        "steps": [
+          "Elige una tarea pequeña pero no trivial (por ejemplo, un nuevo campo de formulario con validación).",
+          "Haz que primero solo se cree un plan, sin código: 'Crea un plan en 3-5 pasos, todavía sin código.'",
+          "Lee el plan, corrige al menos un paso de forma consciente, y luego haz que se implemente paso a paso."
+        ],
+        "selfCheck": [
+          "¿Realmente corregiste un paso del plan antes de que se generara código?",
+          "¿El código final está más cerca de tu intención que si hubieras escrito directamente 'construye X'?",
+          "¿En qué punto habrías tenido que intervenir si no hubieras leído el plan?"
+        ]
+      }
+    }
+  ]
+}

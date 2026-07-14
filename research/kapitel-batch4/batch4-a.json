@@ -1,0 +1,546 @@
+{
+  "de": [
+    {
+      "slug": "monorepo-mit-agenten",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 40,
+      "title": "KI-Agenten in großen Monorepos einsetzen",
+      "teaser": "In einem Monorepo verliert sich ein KI-Agent leicht im falschen Teilprojekt – mit der richtigen CLAUDE.md-Struktur bleibt er fokussiert.",
+      "body": "## Das Problem in großen Repos\nEin Monorepo enthält oft viele Teilprojekte: ein Backend, ein Frontend, gemeinsame Bibliotheken. Eine einzige CLAUDE.md-Datei für alles wird entweder riesig (und frisst bei jeder Session Kontext, den die Aufgabe gar nicht braucht) oder bleibt zu allgemein, um wirklich zu helfen.\n\n## Die Lösung: mehrere CLAUDE.md-Dateien\nStatt einer Datei für alles legst du pro Teilprojekt eine eigene CLAUDE.md an. Eine Datei im Wurzelverzeichnis enthält Regeln, die überall gelten (Commit-Stil, grober Aufbau). Jedes Unterprojekt bekommt eine eigene Datei mit seinen spezifischen Befehlen und Konventionen.\n\n## Wie das Laden funktioniert\nStartest du den Agenten im Wurzelverzeichnis, lädt er beim Start nur die Wurzel-CLAUDE.md; Dateien in Unterordnern lädt er erst, wenn er dort tatsächlich Dateien liest. Startest du ihn direkt in einem Teilprojekt, bekommt er dessen Datei plus alle übergeordneten – aber standardmäßig nur Zugriff auf diesen Teilbaum.\n\n## Fokus erzwingen\nFür Aufgaben, die klar zu einem Teilprojekt gehören, lohnt es sich, den Agenten direkt dort zu starten statt im Wurzelverzeichnis. Das hält Kontext und Dateizugriff automatisch eng – ganz ohne dass du bei jeder Aufgabe erklären musst, welche Teile des Repos gerade irrelevant sind.",
+      "bodyDetail": "## Ladereihenfolge im Detail\nClaude Code durchsucht beim Start das Verzeichnis, in dem du den Agenten startest, sowie alle übergeordneten Verzeichnisse nach CLAUDE.md-Dateien und lädt sie vollständig in den Kontext – von der Wurzel bis zum Startverzeichnis, sodass projektnahe Regeln zuletzt gelesen werden. Dateien in Unterverzeichnissen unterhalb des Startpunkts werden dagegen erst bei Bedarf geladen: Sobald der Agent eine Datei in diesem Unterordner liest, zieht er auch dessen CLAUDE.md nach.\n\n## claudeMdExcludes gegen fremde Teams\nIn sehr großen Monorepos kann es passieren, dass beim Arbeiten vom Wurzelverzeichnis aus auch CLAUDE.md-Dateien anderer Teams mitgeladen werden, sobald der Agent zufällig eine Datei in deren Ordner liest. Mit der Einstellung `claudeMdExcludes` lassen sich bestimmte Pfade oder Muster gezielt ausschließen – etwa Legacy-Pakete oder Ordner anderer Teams, die für die aktuelle Aufgabe irrelevant sind.\n\n## Start-Ort bestimmt Zugriff\nWo du den Agenten startest, entscheidet nicht nur, welche CLAUDE.md-Dateien automatisch geladen werden, sondern auch, auf welche Dateien er ohne Rückfrage zugreifen darf. Vom Wurzelverzeichnis aus sieht er das ganze Repo; aus einem Unterordner heraus zunächst nur diesen Teilbaum. Braucht eine Aufgabe Zugriff auf ein Nachbarpaket (z. B. weil ein gemeinsamer Typ in mehreren Paketen angepasst werden muss), lässt sich das gezielt über `additionalDirectories` oder das Flag `--add-dir` freigeben, statt von vornherein alles zu öffnen.\n\n## Pro-Verzeichnis-Skills\nAuch Skills lassen sich pro Teilprojekt ablegen (`.claude/skills/` innerhalb des jeweiligen Ordners). Eine Skill mit API-Testmustern lädt nur, wenn der Agent tatsächlich im API-Paket arbeitet – während einer Frontend-Aufgabe bleibt sie außen vor. So wächst der verfügbare Kontext nicht automatisch mit der Größe des Repos mit.\n\n## Ein Missverständnis\nMehr CLAUDE.md-Dateien bedeuten nicht automatisch mehr Kontext-Last. Im Gegenteil: Richtig geschichtet ersetzt eine Sammlung kleiner, gezielter Dateien eine einzige, immer vollständig geladene Mammut-Datei. Das Ziel ist nicht \"möglichst viele Regeln\", sondern dass bei jeder Aufgabe nur die Regeln geladen werden, die für den gerade bearbeiteten Teil auch wirklich gelten.",
+      "example": "Ein Monorepo mit packages/api, packages/web und packages/shared bekommt eine Wurzel-CLAUDE.md ('Drei Pakete: api (Node/Express), web (React/Vite), shared (TS-Utils). Befehle immer im jeweiligen Paket-Ordner ausführen.') plus eine eigene packages/api/CLAUDE.md mit den API-spezifischen Testbefehlen. Wird der Agent direkt in packages/api/ gestartet, sieht er beide Dateien – aber nichts aus packages/web/.",
+      "related": [
+        "claude-md",
+        "subagents",
+        "git-worktrees",
+        "kontext-strategien"
+      ],
+      "quiz": {
+        "question": "Was passiert standardmäßig, wenn du Claude Code direkt in einem Unterordner eines Monorepos (z. B. packages/api/) statt im Wurzelverzeichnis startest?",
+        "options": [
+          "Der Agent lädt automatisch auch alle CLAUDE.md-Dateien anderer Pakete wie packages/web/",
+          "Der Agent lädt die CLAUDE.md dieses Unterordners plus aller übergeordneten Ordner und hat zunächst nur Zugriff auf diesen Teilbaum",
+          "Der Agent ignoriert jede CLAUDE.md und nutzt nur den System-Prompt",
+          "Der Agent bekommt automatisch Zugriff auf das gesamte Repository inklusive aller Nachbarpakete"
+        ],
+        "correct": 1,
+        "explain": "Startest du aus einem Unterordner, lädt Claude Code dessen CLAUDE.md plus die aller übergeordneten Verzeichnisse, hat aber standardmäßig nur Dateizugriff auf diesen Teilbaum – Zugriff auf Nachbarpakete muss explizit über additionalDirectories oder --add-dir freigegeben werden."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Monorepos und große Codebases",
+          "url": "https://code.claude.com/docs/en/large-codebases"
+        },
+        {
+          "title": "Claude Code Doku: CLAUDE.md und Memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        },
+        {
+          "title": "Claude Code Doku: Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        }
+      ]
+    },
+    {
+      "slug": "refactoring-mit-ki",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Sicheres Refactoring mit KI-Agenten",
+      "teaser": "Ein Agent kann beim Refactoring leise das Verhalten ändern, statt nur die Struktur – Tests und kleine Schritte verhindern das.",
+      "body": "## Was Refactoring eigentlich bedeutet\nRefactoring heißt: die innere Struktur von Code verbessern, ohne sein von außen sichtbares Verhalten zu ändern. Bekannt wurde der Begriff vor allem durch Martin Fowlers gleichnamiges Buch. Das \"ohne Verhalten zu ändern\" ist der entscheidende Teil – und genau der geht bei KI-Agenten leicht verloren, wenn niemand ihn einfordert.\n\n## Warum Agenten hier abrutschen\nEin Agent sieht beim Umbauen oft Dinge, die ihm \"falsch\" vorkommen – eine seltsame Bedingung, eine doppelte Prüfung. Ohne klare Anweisung \"fixt\" er das gleich mit, statt nur umzustrukturieren. Aus einem reinen Refactoring wird so unbemerkt eine Verhaltensänderung.\n\n## Die drei wichtigsten Absicherungen\n1. Tests zuerst: Vor dem Umbau muss eine Testsuite existieren, die das aktuelle Verhalten absichert. Ohne Tests kannst du nicht prüfen, ob sich etwas geändert hat.\n2. Kleine Schritte: Ein Umbau pro Schritt, nach jedem Schritt Tests laufen lassen, jeden grünen Schritt einzeln committen.\n3. Verhalten explizit einfordern: Sag klar \"refactor, ohne das Verhalten zu ändern\" statt nur \"mach den Code besser\".\n\n## Typische Fallen\nDer Agent ändert stillschweigend eine öffentliche Schnittstelle, löscht Code, der ihm tot vorkommt, aber dynamisch aufgerufen wird, oder vermischt Refactoring mit Feature-Wünschen in einem Rutsch.",
+      "bodyDetail": "## Der Unterschied zwischen Refactoring und Umschreiben\nEin echtes Refactoring ist per Definition verhaltenserhaltend: Am Ende liefert der Code für dieselben Eingaben dieselben Ausgaben, nur die Struktur ist anders. Ein Agent, der während eines \"Refactorings\" eine Randbedingung korrigiert, eine Fehlermeldung ändert oder eine als redundant erkannte Prüfung entfernt, hat den Auftrag verlassen – auch wenn die Änderung objektiv sinnvoll wirkt. Solche Änderungen gehören in einen eigenen, separat geprüften Schritt, nicht ins selbe Refactoring.\n\n## Warum kleine Schritte den Unterschied machen\nEin einzelner riesiger Refactoring-Auftrag (\"räume das ganze Modul auf\") lässt sich kaum noch gegenprüfen: Zu viele Änderungen passieren gleichzeitig, ein einzelner fehlgeschlagener Test verrät nicht, welche der zwanzig Änderungen ihn verursacht hat. Bittest du stattdessen um einen Schritt nach dem anderen – Funktion extrahieren, testen, committen; nächste Funktion extrahieren, testen, committen –, bleibt jeder Fehlschlag lokal eingrenzbar. Claude Codes eigene Empfehlungen für komplexe Aufgaben decken sich damit: erst planen (Plan Mode), dann inkrementell umsetzen, nach jeder Datei testen, und bei einer falschen Richtung sofort unterbrechen statt weiterlaufen zu lassen.\n\n## Ohne Tests kein sicheres Refactoring\nBei Code ohne jede Testabdeckung lässt sich Verhaltenserhaltung gar nicht maschinell prüfen – weder für dich noch für den Agenten. In diesem Fall ist der erste Schritt nicht das Refactoring selbst, sondern das Schreiben von Tests, die das jetzige (nicht das gewünschte) Verhalten festhalten, bevor überhaupt etwas umgebaut wird.\n\n## Ein Missverständnis\n\"Die KI hat die Tests grün bekommen\" beweist nicht automatisch Verhaltenserhaltung – nur, dass die vorhandenen Tests nichts anderes gemessen haben. Testabdeckung ist immer eine Untergrenze der Absicherung, keine Garantie. Bei kritischem Code lohnt sich zusätzlich eine manuelle Diff-Prüfung durch einen Menschen, gerade an Stellen, die keine Tests abdecken.",
+      "example": "Prompt: 'Extrahiere die Validierungslogik aus processOrder() in eine eigene Funktion validateOrder(). Verhalten darf sich nicht ändern. Führe nach der Extraktion die bestehende Testsuite aus und melde dich, falls ein Test fehlschlägt, bevor du weitermachst.'",
+      "related": [
+        "testing-mit-agenten",
+        "erst-plan-dann-code",
+        "git-github-basics",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "Was ist die wichtigste Voraussetzung, bevor ein KI-Agent ein größeres Refactoring an bestehendem Code durchführen sollte?",
+        "options": [
+          "Eine Testsuite (oder zuerst geschriebene Tests), die das aktuelle Verhalten absichert",
+          "Ein möglichst langer, detaillierter Prompt mit jedem Einzelschritt",
+          "Ein besonders leistungsstarkes Modell – dann reicht das allein",
+          "Ein bereinigter Git-Verlauf ohne alte Commits"
+        ],
+        "correct": 0,
+        "explain": "Ohne Tests lässt sich nicht überprüfen, ob ein Refactoring das Verhalten wirklich unverändert gelassen hat. Tests sind die Absicherung, die den Unterschied zwischen echtem Refactoring und einer unbemerkten Verhaltensänderung sichtbar macht."
+      },
+      "sources": [
+        {
+          "title": "Martin Fowler: Refactoring (Buchübersicht)",
+          "url": "https://martinfowler.com/books/refactoring.html"
+        },
+        {
+          "title": "Refactoring.com: Katalog der Refactorings",
+          "url": "https://refactoring.com/catalog/"
+        },
+        {
+          "title": "Anthropic: Claude Code Best Practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Claude Code: Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        }
+      ],
+      "exercise": {
+        "task": "Nimm eine Funktion aus deinem eigenen Projekt, die zu viel auf einmal macht, und lass sie von einem Agenten in kleinen, testabgesicherten Schritten refactoren.",
+        "steps": [
+          "Prüfe zuerst, ob es einen Test gibt, der die Funktion abdeckt. Falls nicht: lass zuerst einen Test schreiben, der das aktuelle Verhalten festhält.",
+          "Bitte den Agenten explizit: 'Extrahiere [Teil X] in eine eigene Funktion, Verhalten darf sich nicht ändern. Nach jedem Schritt Tests laufen lassen.'",
+          "Lies den Diff durch, bevor du committest – suche gezielt nach Änderungen, die über reine Umstrukturierung hinausgehen."
+        ],
+        "selfCheck": [
+          "Sind alle Tests nach dem Refactoring noch grün – und war das vorher schon geprüft?",
+          "Enthält der Diff irgendeine Zeile, die nicht nur Code verschiebt, sondern eine Bedingung, einen Wert oder eine Fehlermeldung ändert?",
+          "Wurde in einem Rutsch committet, oder ließen sich einzelne Teilschritte separat nachvollziehen?"
+        ]
+      }
+    },
+    {
+      "slug": "legacy-code-modernisieren",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Alte Codebasen mit KI verstehen und modernisieren",
+      "teaser": "Legacy-Code ohne Tests lässt sich nicht einfach umschreiben – Characterization-Tests und kleine Schritte machen KI-gestützte Modernisierung sicher.",
+      "body": "## Was Legacy-Code besonders macht\nDer Softwareentwickler Michael Feathers definierte Legacy-Code einmal knapp als \"Code ohne Tests\". Genau das macht ihn gefährlich für Veränderungen: Niemand – auch kein KI-Agent – kann prüfen, ob eine Änderung das Verhalten kaputt macht, wenn es keine Tests gibt, die dieses Verhalten festhalten.\n\n## Erster Schritt: Verhalten festhalten, nicht verbessern\nBevor irgendetwas umgebaut wird, brauchst du Characterization-Tests. Das sind Tests, die aufschreiben, was der Code JETZT tut – auch wenn das seltsam oder sogar fehlerhaft wirkt. Sie sind kein Qualitätsurteil, sondern eine Momentaufnahme, die spätere Änderungen absichert.\n\n## Zweiter Schritt: schrittweise migrieren\nEin komplettes Neuschreiben ist riskant: Bis die neue Version fertig ist, läuft nichts zuverlässig, und subtiles Altverhalten geht oft verloren. Bewährter ist die schrittweise Migration – ein als \"Strangler Fig\" bekanntes Muster: Neue Teile wachsen Stück für Stück um den alten Code herum, bis der alte irgendwann abgeschaltet werden kann.\n\n## Wofür KI-Agenten hier besonders nützlich sind\nEin Agent kann große, undokumentierte Module schnell zusammenfassen und mögliche Characterization-Tests vorschlagen – Arbeit, die bei fehlender Doku sonst viel Aufwand kostet. Wichtig bleibt: erst verstehen und absichern, dann erst verändern.",
+      "bodyDetail": "## Das Prinzip hinter Characterization-Tests\nEin Characterization-Test unterscheidet sich von einem normalen Unit-Test in der Absicht: Ein normaler Test prüft, ob Code das TUT, was er tun SOLL. Ein Characterization-Test prüft nur, ob Code das tut, was er JETZT tut – unabhängig davon, ob das richtig ist. Praktisch läuft man dafür den bestehenden Code mit typischen Eingaben, schreibt die tatsächliche Ausgabe als erwarteten Wert in den Test und hat damit eine Baseline, gegen die jede spätere Änderung geprüft werden kann.\n\n## Seams: wo man überhaupt ansetzen kann\nLegacy-Code ist oft eng verwoben – eine Funktion hängt von einer globalen Variable ab, ein Konstruktor öffnet direkt eine Datenbankverbindung. Solcher Code lässt sich kaum isoliert testen. Der von Feathers geprägte Begriff \"Seam\" bezeichnet eine Stelle im Code, an der sich Verhalten ändern lässt, ohne den Code an genau dieser Stelle zu editieren – etwa durch Dependency Injection an einer Schnittstelle. Ein Agent kann helfen, solche Seams in einer fremden Codebase überhaupt erst zu finden.\n\n## Strangler Fig konkret\nBei der schrittweisen Migration läuft die neue Implementierung parallel zur alten, zunächst nur für einen kleinen Teil der Fälle (z. B. eine Route, einen Kunden-Typ). Ein Router entscheidet, welche Anfragen zur alten und welche zur neuen Version gehen. Wächst das Vertrauen in die neue Version, wandert mehr Verkehr dorthin, bis die alte Implementierung irgendwann ganz verschwindet. Der Vorteil: Das System bleibt während der gesamten Migration lauffähig, und ein Fehlschlag betrifft nur den gerade migrierten Ausschnitt.\n\n## Eine typische Falle bei KI-gestützter Modernisierung\nEin Agent, der beim Verstehen alten Codes auf eine seltsam wirkende Regel stößt (\"warum wird hier bei Bestellungen unter 5 Euro ein Rabatt abgezogen statt addiert?\"), korrigiert das gerne \"im Vorbeigehen\". Ohne explizite Anweisung, nur zu modernisieren und keine Fachlogik zu ändern, verschwinden auf diese Weise Regeln, die vielleicht absichtlich so gewachsen sind – und niemand merkt es, bis ein Kunde sich beschwert.",
+      "example": "Prompt: 'Dieses 1.800-Zeilen-Modul hat keine Tests und keine Doku. Fasse zuerst zusammen, was es fachlich tut. Schreibe dann Characterization-Tests für die fünf wichtigsten Funktionen, die das AKTUELLE Verhalten festhalten – auch wenn es merkwürdig wirkt. Ändere noch keinen Code.'",
+      "related": [
+        "testing-mit-agenten",
+        "dokumentation-mit-ki",
+        "debugging-mit-agenten",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "Was ist ein Characterization-Test?",
+        "options": [
+          "Ein Test, der das aktuelle Verhalten von ungetestetem Code festhält – unabhängig davon, ob dieses Verhalten korrekt ist",
+          "Ein Test, der nur die Performance eines Systems misst",
+          "Ein Test, der automatisch generiert wird, sobald ein Agent Code liest",
+          "Ein Test, der prüft, ob neuer Code den offiziellen Anforderungen entspricht"
+        ],
+        "correct": 0,
+        "explain": "Characterization-Tests halten fest, was Code JETZT tut, nicht was er tun sollte. Sie schaffen eine Baseline für ungetesteten Code, gegen die spätere Änderungen geprüft werden können."
+      },
+      "sources": [
+        {
+          "title": "Characterization test — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Characterization_test"
+        },
+        {
+          "title": "Legacy code — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Legacy_code"
+        },
+        {
+          "title": "Strangler Fig Application — martinfowler.com",
+          "url": "https://martinfowler.com/bliki/StranglerFigApplication.html"
+        },
+        {
+          "title": "Strangler Fig pattern — Microsoft Learn",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig"
+        },
+        {
+          "title": "Legacy Seam — martinfowler.com",
+          "url": "https://martinfowler.com/bliki/LegacySeam.html"
+        }
+      ],
+      "exercise": {
+        "task": "Nimm ein ungetestetes, unübersichtliches Modul aus einem eigenen (oder einem Open-Source-)Projekt und sichere es mit Characterization-Tests ab, bevor du etwas änderst.",
+        "steps": [
+          "Lass den Agenten zuerst zusammenfassen, was das Modul fachlich tut, ohne Code zu ändern.",
+          "Identifiziere gemeinsam 3-5 typische Eingaben/Aufrufe und lass den Agenten Tests schreiben, die die aktuellen Ausgaben als erwarteten Wert festhalten.",
+          "Erst danach: eine erste kleine, isolierte Änderung vornehmen und prüfen, ob die Characterization-Tests noch grün sind."
+        ],
+        "selfCheck": [
+          "Decken die Tests die wichtigsten Pfade ab, nicht nur den einfachsten Fall?",
+          "Hast du bewusst das AKTUELLE Verhalten festgehalten, statt es beim Testen schon zu 'verbessern'?",
+          "Ist nach der ersten Änderung noch alles grün – oder zeigt ein roter Test genau, was sich verändert hat?"
+        ]
+      }
+    },
+    {
+      "slug": "memory-systeme-fuer-agenten",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Wie sich KI-Agenten Dinge merken",
+      "teaser": "Ein Agent startet jede Session mit leerem Kopf – Memory-Systeme wie CLAUDE.md und Memory-Dateien überbrücken das.",
+      "body": "## Das Grundproblem\nJede neue Session eines KI-Agenten beginnt mit einem leeren Kontextfenster. Ohne zusätzliche Mechanismen weiß der Agent nichts mehr von gestern – welche Regeln gelten, was letztes Mal schiefging, welche Bibliothek ihr nutzt.\n\n## Zwei Arten von Gedächtnis\nMan kann grob zwischen zwei Gedächtnis-Arten unterscheiden. Semantisches Gedächtnis sind feste, dauerhafte Regeln und Fakten – \"wir nutzen pnpm, nicht npm\", Code-Style, Architekturentscheidungen. Das steht in Dateien wie CLAUDE.md oder AGENTS.md, die du pflegst. Episodisches Gedächtnis sind Notizen zu konkreten vergangenen Ereignissen – \"in Session X ist Ansatz Y gescheitert, weil Z\". Solche Notizen schreibt oft der Agent selbst in separate Memory-Dateien.\n\n## Wie das technisch aussieht\nCLAUDE.md/AGENTS.md wird bei jeder Session komplett geladen. Memory-Dateien funktionieren oft anders: Eine kurze Index-Datei wird immer geladen, ausführlichere Themen-Dateien lädt der Agent nur bei Bedarf nach – ähnlich wie ein Inhaltsverzeichnis, das auf Detailseiten verweist.\n\n## Kompaktierung\nWird der Kontext innerhalb einer laufenden Session zu voll, fasst der Agent ältere Teile des Gesprächs automatisch zusammen (Kompaktierung), um Platz zu schaffen. Das ist ein anderer Mechanismus als persistente Dateien: Er wirkt innerhalb einer Session, nicht über Sessions hinweg.",
+      "bodyDetail": "## Semantisches vs. episodisches Gedächtnis im Detail\nDie Unterscheidung stammt ursprünglich aus der Kognitionspsychologie und lässt sich gut auf Agenten übertragen. Semantisches Wissen ist stabil und allgemeingültig – es ändert sich selten und gilt unabhängig davon, wann es aufgeschrieben wurde. Episodisches Wissen ist an ein konkretes Ereignis gebunden – es hat einen Zeitpunkt, einen Kontext, oft auch einen Ausgang (\"hat funktioniert\" / \"ist gescheitert\"). Bei Claude Code entspricht CLAUDE.md dem semantischen Teil (von Menschen geschrieben, stabil, bei jeder Session vollständig geladen), während Auto-Memory-Dateien den episodischen Teil abdecken: Notizen, die der Agent selbst aus Korrekturen und Beobachtungen während der Arbeit anlegt.\n\n## Die Indexdatei als Kompromiss\nEine reine episodische Sammlung würde mit der Zeit riesig werden und irgendwann selbst den Kontext sprengen. Die Lösung ist ein zweistufiges Modell: Eine kurze Übersichtsdatei (oft nur die ersten paar hundert Zeilen) wird immer automatisch geladen und verweist auf ausführlichere Themen-Dateien, die nur bei tatsächlichem Bedarf nachgelesen werden. So bleibt der Grundkontext klein, während das Detailwissen trotzdem verfügbar bleibt, wenn es gebraucht wird.\n\n## Kompaktierung als drittes Element\nNeben den beiden geschriebenen Gedächtnisformen gibt es einen dritten Mechanismus, der innerhalb einer einzelnen, langen Session wirkt: Kompaktierung. Nähert sich der Kontext dem Limit, fasst das Modell ältere Nachrichten zusammen und behält dabei gezielt wichtige Entscheidungen, offene Fehler und Implementierungsdetails – während redundante Zwischenschritte wegfallen. Die Kunst liegt darin, beim Zusammenfassen nicht zu aggressiv zu kürzen und dabei wichtige, aber unauffällige Informationen zu verlieren.\n\n## Ein Missverständnis\nEine Memory- oder CLAUDE.md-Datei \"lernt\" nicht von selbst im menschlichen Sinn. Jede Zeile musste einmal geschrieben werden – entweder von dir oder vom Agenten auf Basis einer konkreten Beobachtung während der Arbeit. Bleibt eine Datei ungepflegt, wird sie mit der Zeit ungenau, genau wie veraltete Dokumentation. Persistentes Gedächtnis ersetzt keine Pflege, es verschiebt nur, wo die Information landet.",
+      "example": "Beispiel für die Aufteilung: In CLAUDE.md steht 'Tests laufen mit npm test, niemals npm run test:ci lokal nutzen' (semantisch, dauerhaft). In einer Memory-Datei steht 'Session vom 12.07: Migration mit db:push ist an einer Fremdschlüssel-Verletzung gescheitert – beim nächsten Mal zuerst db:migrate:dry-run probieren' (episodisch, an ein konkretes Ereignis gebunden).",
+      "related": [
+        "claude-md",
+        "context-window",
+        "kontext-strategien",
+        "agent-loop"
+      ],
+      "quiz": {
+        "question": "Was unterscheidet eine episodische Memory-Notiz am ehesten von einer Regel in CLAUDE.md?",
+        "options": [
+          "Die Memory-Notiz ist an ein konkretes vergangenes Ereignis gebunden, die CLAUDE.md-Regel gilt dauerhaft und allgemein",
+          "Memory-Notizen werden nie automatisch geladen, CLAUDE.md dagegen schon bei jedem einzelnen Tool-Aufruf",
+          "Es gibt keinen echten Unterschied, beide Begriffe meinen exakt dasselbe",
+          "CLAUDE.md kann nur von der KI selbst geschrieben werden, Memory-Notizen nur von Menschen"
+        ],
+        "correct": 0,
+        "explain": "Episodische Notizen halten konkrete, zeitgebundene Ereignisse fest ('in Session X ist Y gescheitert'), während CLAUDE.md dauerhafte, allgemeingültige Regeln enthält, die unabhängig von einem einzelnen Ereignis gelten."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: CLAUDE.md und Auto Memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        },
+        {
+          "title": "Anthropic: Effective Context Engineering for AI Agents",
+          "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+        },
+        {
+          "title": "agents.md: AGENTS.md-Standard",
+          "url": "https://agents.md/"
+        }
+      ]
+    },
+    {
+      "slug": "kosten-optimierung-praxis",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Kosten senken bei Agenten-Nutzung: die Praxis-Checkliste",
+      "teaser": "Vier Hebel senken die Kosten von KI-Agenten spürbar: das richtige Modell, Caching, ein schlanker Kontext und Batch-Verarbeitung.",
+      "body": "## Warum Kosten schnell aus dem Ruder laufen\nEin Agent ruft das Modell nicht einmal auf, sondern oft dutzendfach pro Aufgabe – für Planung, Werkzeugnutzung, Zwischenschritte. Ohne bewusste Steuerung zahlst du dabei häufig den Höchstpreis für Aufgaben, die das gar nicht brauchen.\n\n## Hebel 1: Modell-Routing\nNicht jede Teilaufgabe braucht das stärkste Modell. Mechanisches – Klassifizieren, Formatieren, einfache Zusammenfassungen – geht an ein günstiges, schnelles Modell. Komplexe Planung und schwierige Entscheidungen bleiben beim starken Modell.\n\n## Hebel 2: Caching\nSchickt ein Agent wiederholt denselben langen Anfang (System-Prompt, Tool-Definitionen), muss dieser Teil dank Prompt Caching nicht jedes Mal neu berechnet werden – solange die Anfragen innerhalb eines kurzen Zeitfensters aufeinanderfolgen.\n\n## Hebel 3: Kontext klein halten\nUngenutzte Werkzeuge deaktivieren, zwischen unabhängigen Aufgaben den Kontext leeren, ausführliche Log- oder Testausgaben vorfiltern statt komplett durchreichen, und Detailwissen in Skills auslagern statt es dauerhaft in CLAUDE.md mitzuschleppen.\n\n## Hebel 4: Batch-Verarbeitung\nFür große Mengen nicht-dringender Anfragen (Massen-Klassifikation, Auswertungen) lohnt sich eine Batch-API statt Einzelaufrufen – deutlich günstiger, dafür ohne sofortige Antwort.\n\nDiese vier Hebel lassen sich kombinieren: das billigste Modell, das noch reicht, mit gecachtem Prompt-Anfang, schlankem Kontext, im Batch verarbeitet.",
+      "bodyDetail": "## Modell-Routing mit Zahlen\nAnthropics eigene Preisliste (Stand: Juli 2026) zeigt die Größenordnung: Ein günstiges Modell wie Claude Haiku kostet pro Million Tokens ein Vielfaches weniger als das leistungsstärkste Modell. Für Subagenten mit klar mechanischer Teilaufgabe lässt sich in vielen Agenten-Frameworks direkt ein günstigeres Modell festlegen, statt automatisch das Modell der Hauptaufgabe zu übernehmen.\n\n## Caching mit Zahlen (Stand: Juli 2026)\nEin Cache-Treffer kostet bei Claude nur einen Bruchteil des normalen Preises für Input-Tokens, ein Cache-Schreiben ist dagegen etwas teurer als normal. Der Standard-Cache lebt 5 Minuten; wer viele Anfragen kurz hintereinander schickt (z. B. ein Agent-Loop mit vielen Zwischenschritten), profitiert am meisten, weil der teure Anfang nur einmal geschrieben, aber mehrfach günstig gelesen wird.\n\n## Kontext klein halten – konkrete Hebel\nAnthropics eigene Empfehlungen für Claude Code nennen mehrere sehr konkrete Techniken: den Kontext zwischen unabhängigen Aufgaben leeren statt ihn anwachsen zu lassen, CLAUDE.md kompakt halten (Richtwert: unter 200 Zeilen, Detailwissen stattdessen in bedarfsweise geladene Skills auslagern), und ausführliche Rohausgaben – etwa ein 10.000-Zeilen-Logfile – vor der Übergabe an das Modell automatisch filtern, sodass nur die relevanten Zeilen (z. B. Fehler) im Kontext landen, statt der kompletten Datei.\n\n## Batch-Verarbeitung mit Zahlen (Stand: Juli 2026)\nDie Message Batches API senkt die Kosten gegenüber Einzelaufrufen um 50 Prozent, die meisten Batches sind in unter einer Stunde fertig. Der Tausch: keine sofortige, synchrone Antwort – dafür deutlich günstiger bei großen, nicht zeitkritischen Mengen wie Massenauswertungen oder Testläufen über tausende Fälle.\n\n## Eine Warnung: parallele Agenten\nMehrere parallel arbeitende Agenten-Instanzen (etwa ein Agenten-Team) vervielfachen die Kosten, weil jede Instanz ihr eigenes Kontextfenster führt – in ungünstigen Fällen kann das den Tokenverbrauch gegenüber einer einzelnen Session um ein Vielfaches erhöhen. Parallelität spart Zeit, aber selten Geld; das muss der Nutzen rechtfertigen.",
+      "example": "Ein nächtlicher Job klassifiziert 8.000 Support-Tickets nach Dringlichkeit. Statt jedes Ticket einzeln mit dem stärksten Modell synchron abzufragen: Klassifikationsregeln und Beispiele bilden einen gemeinsamen, gecachten Prompt-Anfang, ein günstiges Modell übernimmt die eigentliche Klassifikation, und alle 8.000 Anfragen laufen gesammelt über die Batch-API statt einzeln.",
+      "related": [
+        "model-routing",
+        "caching-strategien",
+        "kosten-kontrolle-agenten",
+        "batch-processing"
+      ],
+      "quiz": {
+        "question": "Welche Kombination senkt die Kosten eines nächtlichen Massen-Klassifikations-Jobs typischerweise am stärksten?",
+        "options": [
+          "Ausschließlich das teuerste verfügbare Modell nutzen, dafür mit maximaler Geschwindigkeit",
+          "Ein günstiges Modell für die mechanische Klassifikation, ein gecachter gemeinsamer Prompt-Anfang und Verarbeitung über die Batch-API",
+          "Jede Anfrage einzeln und synchron mit komplett neuem Kontext aufbauen",
+          "Möglichst viele parallele Agenten-Instanzen gleichzeitig starten"
+        ],
+        "correct": 1,
+        "explain": "Ein mechanischer Klassifikations-Job profitiert typischerweise am meisten von der Kombination aus günstigem Modell, gecachtem, wiederverwendetem Prompt-Anfang und der günstigeren, asynchronen Batch-API – nicht von einem teuren Modell, komplett neuem Kontext pro Anfrage oder unnötiger Parallelität."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Kosten verwalten",
+          "url": "https://code.claude.com/docs/en/costs"
+        },
+        {
+          "title": "Claude-Doku: Prompt Caching",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+        },
+        {
+          "title": "Claude-Doku: Batch Processing",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+        },
+        {
+          "title": "Anthropic: Building Effective AI Agents",
+          "url": "https://www.anthropic.com/research/building-effective-agents"
+        }
+      ],
+      "exercise": {
+        "task": "Analysiere einen eigenen (wiederkehrenden) Agenten-Workflow auf die vier Kosten-Hebel und identifiziere, wo mindestens einer davon ungenutzt bleibt.",
+        "steps": [
+          "Liste die Schritte deines Workflows auf und markiere, welches Modell aktuell für welchen Schritt läuft.",
+          "Prüfe: Gibt es einen langen, wiederholten Prompt-Anfang (System-Prompt, Regeln, Beispiele), der von Caching profitieren würde?",
+          "Prüfe: Läuft der Workflow zeitkritisch/synchron, oder könnte ein Teil davon als nicht-dringender Batch laufen?"
+        ],
+        "selfCheck": [
+          "Läuft mindestens ein mechanischer Teilschritt aktuell unnötig auf einem teuren Modell?",
+          "Weißt du, ob dein Prompt-Anfang innerhalb der Cache-TTL wiederverwendet wird oder ob er jedes Mal neu geschrieben wird?",
+          "Gibt es einen Teil deines Workflows, der nicht sofort eine Antwort braucht und sich für Batch eignet?"
+        ]
+      }
+    }
+  ],
+  "en": [
+    {
+      "slug": "monorepo-mit-agenten",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Running AI Agents in Large Monorepos",
+      "teaser": "In a monorepo, an AI agent easily loses focus and drifts into the wrong subproject — the right CLAUDE.md structure keeps it on track.",
+      "body": "## The problem with big repos\nA monorepo often holds many subprojects: a backend, a frontend, shared libraries. One single CLAUDE.md for everything either grows huge (eating up context on every session, even for tasks that don't need it) or stays so generic it barely helps.\n\n## The fix: multiple CLAUDE.md files\nInstead of one file for everything, give each subproject its own CLAUDE.md. A file at the repo root holds rules that apply everywhere (commit style, overall layout). Each subproject gets its own file with its specific commands and conventions.\n\n## How loading actually works\nStart the agent at the repo root, and it loads only the root CLAUDE.md at launch; files in subfolders load only once the agent actually reads files there. Start it directly inside a subproject, and it gets that folder's file plus every parent one — but by default only file access to that subtree.\n\n## Forcing focus\nFor tasks that clearly belong to one subproject, it pays to start the agent right there instead of at the root. That keeps context and file access narrow automatically, without you having to explain on every task which parts of the repo are irrelevant right now.",
+      "bodyDetail": "## The load order in detail\nAt startup, Claude Code walks the directory you launched it from plus every parent directory looking for CLAUDE.md files, and loads them fully into context — from the root down to your starting directory, so instructions closest to where you launched are read last. Files in subdirectories below your starting point load differently: only once the agent actually reads a file in that subfolder does its CLAUDE.md load too.\n\n## claudeMdExcludes against other teams' files\nIn a very large monorepo, working from the repo root can pull in other teams' CLAUDE.md files the moment the agent happens to read a file in their folder. The `claudeMdExcludes` setting lets you skip specific paths or patterns — legacy packages, or other teams' folders that are irrelevant to the current task.\n\n## Where you start determines access\nWhere you launch the agent decides not just which CLAUDE.md files load automatically, but also which files it can touch without asking. From the repo root it sees the whole repo; from a subfolder, at first only that subtree. If a task needs access to a sibling package — say, a shared type used across several packages — you can grant that explicitly with `additionalDirectories` or the `--add-dir` flag instead of opening everything up front.\n\n## Per-directory skills\nSkills can live per subproject too (`.claude/skills/` inside each folder). A skill with API testing patterns loads only when the agent is actually working in the API package — it stays out of the way during frontend work. That way, available context doesn't automatically grow with the size of the repo.\n\n## A common misconception\nMore CLAUDE.md files doesn't automatically mean more context load. The opposite is true: layered correctly, a collection of small, targeted files replaces one giant file that's always loaded in full. The goal isn't \"as many rules as possible\" — it's that every task only loads the rules that actually apply to the part being worked on.",
+      "example": "A monorepo with packages/api, packages/web, and packages/shared gets a root CLAUDE.md ('Three packages: api (Node/Express), web (React/Vite), shared (TS utils). Always run commands from the relevant package folder.') plus its own packages/api/CLAUDE.md with API-specific test commands. Start the agent directly inside packages/api/, and it sees both files — but nothing from packages/web/.",
+      "related": [
+        "claude-md",
+        "subagents",
+        "git-worktrees",
+        "kontext-strategien"
+      ],
+      "quiz": {
+        "question": "By default, what happens when you start Claude Code directly inside a monorepo subfolder (e.g. packages/api/) instead of the repo root?",
+        "options": [
+          "It automatically loads every other package's CLAUDE.md too, such as packages/web/",
+          "It loads that subfolder's CLAUDE.md plus every parent folder's, and initially has file access only to that subtree",
+          "It ignores every CLAUDE.md and relies only on the system prompt",
+          "It automatically gets access to the entire repository, including every sibling package"
+        ],
+        "correct": 1,
+        "explain": "Starting from a subfolder, Claude Code loads that folder's CLAUDE.md plus every parent directory's, but by default only has file access to that subtree — access to sibling packages must be granted explicitly via additionalDirectories or --add-dir."
+      },
+      "sources": [
+        {
+          "title": "Claude Code docs: Monorepos and large codebases",
+          "url": "https://code.claude.com/docs/en/large-codebases"
+        },
+        {
+          "title": "Claude Code docs: CLAUDE.md and memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        },
+        {
+          "title": "Claude Code docs: Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        }
+      ]
+    },
+    {
+      "slug": "refactoring-mit-ki",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 4,
+      "xp": 40,
+      "title": "Safe Refactoring with AI Agents",
+      "teaser": "An agent can quietly change behavior instead of just structure during a refactor — tests and small steps prevent that.",
+      "body": "## What refactoring actually means\nRefactoring means improving code's internal structure without changing its externally visible behavior. The term was popularized by Martin Fowler's book of the same name. The \"without changing behavior\" part is the crucial bit — and it's exactly what gets lost with AI agents if nobody insists on it.\n\n## Why agents slip up here\nWhile restructuring, an agent often spots things that look \"wrong\" to it — an odd condition, a duplicate check. Without a clear instruction, it fixes that along the way instead of just restructuring. A pure refactor quietly turns into a behavior change.\n\n## The three key safeguards\n1. Tests first: before restructuring, a test suite must exist that locks in current behavior. Without tests you can't verify whether anything changed.\n2. Small steps: one change per step, run tests after each step, commit each green step separately.\n3. Demand behavior preservation explicitly: say \"refactor without changing behavior\" instead of just \"make this code better.\"\n\n## Typical traps\nThe agent silently changes a public interface, deletes code that looks dead to it but is actually called dynamically, or mixes refactoring with feature requests in one pass.",
+      "bodyDetail": "## The difference between refactoring and rewriting\nA true refactor is behavior-preserving by definition: at the end, the code returns the same outputs for the same inputs — only the structure differs. An agent that corrects an edge case, changes an error message, or removes a check it judges redundant during a \"refactor\" has left the assignment, even if the change looks objectively reasonable. Changes like that belong in their own, separately reviewed step, not the same refactor.\n\n## Why small steps make the difference\nA single giant refactoring request (\"clean up the whole module\") is nearly impossible to verify: too many changes happen at once, and one failing test doesn't tell you which of twenty changes caused it. Ask instead for one step at a time — extract a function, test, commit; extract the next function, test, commit — and every failure stays locally traceable. Claude Code's own guidance for complex tasks lines up with this: plan first (plan mode), implement incrementally, test after each file, and interrupt immediately at the first sign of a wrong direction instead of letting it run.\n\n## No tests, no safe refactor\nFor code with zero test coverage, behavior preservation can't be verified mechanically at all — not by you, not by the agent. In that case the first step isn't the refactor itself, but writing tests that lock in the current (not the desired) behavior before anything gets restructured.\n\n## A common misconception\n\"The AI got the tests green\" doesn't automatically prove behavior preservation — it only proves the existing tests didn't measure anything else. Test coverage is always a lower bound on your safety net, never a guarantee. For critical code, a manual diff review by a human is worth the extra step, especially in places tests don't cover.",
+      "example": "Prompt: 'Extract the validation logic from processOrder() into its own function, validateOrder(). Behavior must not change. After extracting, run the existing test suite and stop to report if any test fails before continuing.'",
+      "related": [
+        "testing-mit-agenten",
+        "erst-plan-dann-code",
+        "git-github-basics",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "What's the single most important prerequisite before letting an AI agent do a significant refactor on existing code?",
+        "options": [
+          "A test suite (or tests written first) that locks in current behavior",
+          "As long and detailed a prompt as possible, spelling out every single step",
+          "A particularly powerful model — that alone is enough",
+          "A cleaned-up git history with old commits removed"
+        ],
+        "correct": 0,
+        "explain": "Without tests, there's no way to verify that a refactor truly left behavior unchanged. Tests are the safeguard that exposes the difference between a genuine refactor and an unnoticed behavior change."
+      },
+      "sources": [
+        {
+          "title": "Martin Fowler: Refactoring (book overview)",
+          "url": "https://martinfowler.com/books/refactoring.html"
+        },
+        {
+          "title": "Refactoring.com: Catalog of refactorings",
+          "url": "https://refactoring.com/catalog/"
+        },
+        {
+          "title": "Anthropic: Claude Code Best Practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Claude Code: Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        }
+      ],
+      "exercise": {
+        "task": "Take a function from one of your own projects that does too much at once, and have an agent refactor it in small, test-backed steps.",
+        "steps": [
+          "Check first whether a test covers the function. If not, have a test written first that locks in current behavior.",
+          "Ask the agent explicitly: 'Extract [part X] into its own function, behavior must not change. Run tests after each step.'",
+          "Read the diff before committing — look specifically for changes that go beyond pure restructuring."
+        ],
+        "selfCheck": [
+          "Are all tests still green after the refactor — and had that already been checked beforehand?",
+          "Does the diff contain any line that doesn't just move code, but changes a condition, a value, or an error message?",
+          "Was everything committed in one shot, or could individual steps be traced separately?"
+        ]
+      }
+    },
+    {
+      "slug": "legacy-code-modernisieren",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Understanding and Modernizing Old Codebases with AI",
+      "teaser": "Legacy code without tests can't just be rewritten — characterization tests and small steps make AI-assisted modernization safe.",
+      "body": "## What makes legacy code different\nSoftware developer Michael Feathers once defined legacy code bluntly as \"code without tests.\" That's exactly what makes it dangerous to change: nobody — not even an AI agent — can verify whether a change breaks behavior if there are no tests capturing that behavior in the first place.\n\n## Step one: capture behavior, don't improve it\nBefore restructuring anything, you need characterization tests. These are tests that write down what the code does RIGHT NOW — even if that looks odd or outright buggy. They're not a quality judgment, just a snapshot that protects later changes.\n\n## Step two: migrate incrementally\nA full rewrite is risky: nothing runs reliably until the new version is done, and subtle old behavior often gets lost along the way. Incremental migration is the more proven approach — a pattern known as the \"strangler fig\": new pieces grow around the old code bit by bit, until the old one can eventually be switched off.\n\n## Where AI agents help most\nAn agent can quickly summarize large, undocumented modules and propose candidate characterization tests — work that's normally very costly without documentation. What still matters: understand and secure first, only then change.",
+      "bodyDetail": "## The principle behind characterization tests\nA characterization test differs from a normal unit test in intent: a normal test checks whether code does what it SHOULD do. A characterization test only checks whether code does what it does RIGHT NOW — regardless of whether that's correct. In practice, you run the existing code with typical inputs, write the actual output down as the expected value in the test, and end up with a baseline any later change can be checked against.\n\n## Seams: where you can even get a foothold\nLegacy code is often tightly tangled — a function depends on a global variable, a constructor opens a database connection directly. Code like that is nearly impossible to test in isolation. The term \"seam,\" coined by Feathers, describes a place in the code where you can alter behavior without editing the code at that exact spot — for example, through dependency injection at an interface. An agent can help find such seams in an unfamiliar codebase in the first place.\n\n## The strangler fig pattern, concretely\nIn incremental migration, the new implementation runs alongside the old one, initially handling only a small slice of cases (say, one route, one customer type). A router decides which requests go to the old version and which to the new one. As confidence in the new version grows, more traffic shifts there, until the old implementation eventually disappears entirely. The advantage: the system stays operational throughout the migration, and a failure only affects the slice currently being migrated.\n\n## A typical trap in AI-assisted modernization\nAn agent that stumbles onto a strange-looking rule while understanding old code (\"why does this subtract a discount instead of adding it for orders under 5 euros?\") is happy to fix it \"in passing.\" Without an explicit instruction to modernize only, and not touch business logic, rules like this — which may have grown that way on purpose — quietly disappear, and nobody notices until a customer complains.",
+      "example": "Prompt: 'This 1,800-line module has no tests and no docs. First summarize what it does functionally. Then write characterization tests for the five most important functions that capture the CURRENT behavior — even if it looks odd. Don't change any code yet.'",
+      "related": [
+        "testing-mit-agenten",
+        "dokumentation-mit-ki",
+        "debugging-mit-agenten",
+        "agent-festgefahren"
+      ],
+      "quiz": {
+        "question": "What is a characterization test?",
+        "options": [
+          "A test that captures the current behavior of untested code, regardless of whether that behavior is correct",
+          "A test that only measures a system's performance",
+          "A test that gets generated automatically the moment an agent reads code",
+          "A test that checks whether new code meets the official requirements"
+        ],
+        "correct": 0,
+        "explain": "Characterization tests capture what code does RIGHT NOW, not what it should do. They create a baseline for untested code that later changes can be checked against."
+      },
+      "sources": [
+        {
+          "title": "Characterization test — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Characterization_test"
+        },
+        {
+          "title": "Legacy code — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Legacy_code"
+        },
+        {
+          "title": "Strangler Fig Application — martinfowler.com",
+          "url": "https://martinfowler.com/bliki/StranglerFigApplication.html"
+        },
+        {
+          "title": "Strangler Fig pattern — Microsoft Learn",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig"
+        },
+        {
+          "title": "Legacy Seam — martinfowler.com",
+          "url": "https://martinfowler.com/bliki/LegacySeam.html"
+        }
+      ],
+      "exercise": {
+        "task": "Take an untested, tangled module from one of your own (or an open-source) projects and lock it down with characterization tests before changing anything.",
+        "steps": [
+          "Have the agent first summarize what the module does functionally, without changing any code.",
+          "Together, identify 3-5 typical inputs/calls and have the agent write tests that capture the current outputs as expected values.",
+          "Only then: make one small, isolated change and check whether the characterization tests are still green."
+        ],
+        "selfCheck": [
+          "Do the tests cover the most important paths, not just the simplest case?",
+          "Did you deliberately capture the CURRENT behavior instead of already 'improving' it while testing?",
+          "Is everything still green after the first change — or does a failing test show exactly what changed?"
+        ]
+      }
+    },
+    {
+      "slug": "memory-systeme-fuer-agenten",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 40,
+      "title": "How AI Agents Remember Things",
+      "teaser": "An agent starts every session with a blank mind — memory systems like CLAUDE.md and memory files bridge that gap.",
+      "body": "## The core problem\nEvery new session of an AI agent begins with an empty context window. Without extra mechanisms, the agent has no idea what happened yesterday — which rules apply, what went wrong last time, which library your team uses.\n\n## Two kinds of memory\nYou can roughly split memory into two kinds. Semantic memory is fixed, durable rules and facts — \"we use pnpm, not npm,\" code style, architecture decisions. That lives in files like CLAUDE.md or AGENTS.md, which you maintain. Episodic memory is notes about specific past events — \"in session X, approach Y failed because Z.\" Notes like that are often written by the agent itself, in separate memory files.\n\n## How this looks technically\nCLAUDE.md/AGENTS.md loads in full at every session. Memory files often work differently: a short index file always loads, while more detailed topic files load only on demand — much like a table of contents pointing to detail pages.\n\n## Compaction\nWhen context inside a running session gets too full, the agent automatically summarizes older parts of the conversation to free up room (compaction). That's a different mechanism from persistent files: it works within a session, not across sessions.",
+      "bodyDetail": "## Semantic vs. episodic memory in detail\nThe distinction originally comes from cognitive psychology and maps cleanly onto agents. Semantic knowledge is stable and general — it changes rarely and holds regardless of when it was written down. Episodic knowledge is tied to a specific event — it has a timestamp, a context, often an outcome (\"worked\" / \"failed\"). In Claude Code, CLAUDE.md corresponds to the semantic side (human-written, stable, loaded in full every session), while auto-memory files cover the episodic side: notes the agent writes itself from corrections and observations made while working.\n\n## The index file as a compromise\nA purely episodic collection would grow huge over time and eventually blow the context budget itself. The fix is a two-tier model: a short overview file (often just the first few hundred lines) always loads automatically and points to more detailed topic files, which get read only when actually needed. That keeps the base context small while detail knowledge stays available when it matters.\n\n## Compaction as a third element\nBeyond the two written memory forms, there's a third mechanism that works within a single, long session: compaction. As context approaches its limit, the model summarizes older messages, deliberately keeping key decisions, open bugs, and implementation details, while dropping redundant intermediate steps. The art lies in not summarizing too aggressively and losing information that's important but easy to overlook.\n\n## A common misconception\nA memory or CLAUDE.md file doesn't \"learn\" on its own in any human sense. Every line had to be written once — either by you, or by the agent based on a concrete observation made while working. Left unmaintained, a file grows inaccurate over time, just like stale documentation. Persistent memory doesn't replace upkeep — it just shifts where the information lives.",
+      "example": "An example split: CLAUDE.md says 'Tests run with npm test, never use npm run test:ci locally' (semantic, durable). A memory file says 'Session from July 12: migration with db:push failed on a foreign-key violation — try db:migrate:dry-run first next time' (episodic, tied to a specific event).",
+      "related": [
+        "claude-md",
+        "context-window",
+        "kontext-strategien",
+        "agent-loop"
+      ],
+      "quiz": {
+        "question": "What best distinguishes an episodic memory note from a rule in CLAUDE.md?",
+        "options": [
+          "The memory note is tied to a specific past event, while the CLAUDE.md rule holds permanently and generally",
+          "Memory notes never load automatically, while CLAUDE.md loads on every single tool call",
+          "There's no real difference — both terms mean exactly the same thing",
+          "CLAUDE.md can only be written by the AI itself, memory notes only by humans"
+        ],
+        "correct": 0,
+        "explain": "Episodic notes capture specific, time-bound events ('in session X, Y failed'), while CLAUDE.md holds durable, general-purpose rules that apply regardless of any single event."
+      },
+      "sources": [
+        {
+          "title": "Claude Code docs: CLAUDE.md and auto memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        },
+        {
+          "title": "Anthropic: Effective context engineering for AI agents",
+          "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+        },
+        {
+          "title": "agents.md: The AGENTS.md standard",
+          "url": "https://agents.md/"
+        }
+      ]
+    },
+    {
+      "slug": "kosten-optimierung-praxis",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "title": "Cutting Agent Costs: A Practical Checklist",
+      "teaser": "Four levers meaningfully cut AI agent costs: the right model, caching, a lean context, and batch processing.",
+      "body": "## Why costs spiral fast\nAn agent doesn't call the model once — it often calls it dozens of times per task, for planning, tool use, intermediate steps. Without deliberate control, you frequently pay top price for work that never needed it.\n\n## Lever 1: model routing\nNot every subtask needs the strongest model. Mechanical work — classifying, formatting, simple summaries — goes to a cheap, fast model. Complex planning and hard decisions stay with the strong model.\n\n## Lever 2: caching\nWhen an agent repeatedly sends the same long prefix (system prompt, tool definitions), prompt caching means that part doesn't have to be recomputed every time — as long as requests follow each other within a short time window.\n\n## Lever 3: keep context lean\nDisable tools you're not using, clear context between unrelated tasks, pre-filter verbose log or test output instead of passing it through whole, and offload detail knowledge into skills instead of dragging it along in CLAUDE.md permanently.\n\n## Lever 4: batch processing\nFor large volumes of non-urgent requests (bulk classification, evaluations), a batch API beats individual calls — significantly cheaper, in exchange for no immediate response.\n\nThese four levers combine: the cheapest model that still does the job, with a cached prompt prefix, a lean context, processed in batch.",
+      "bodyDetail": "## Model routing, with numbers\nAnthropic's own pricing (as of July 2026) shows the scale involved: a cheap model like Claude Haiku costs a fraction per million tokens compared to the most capable model. For subagents with a clearly mechanical subtask, many agent frameworks let you pin a cheaper model directly instead of automatically inheriting the main task's model.\n\n## Caching, with numbers (as of July 2026)\nA cache hit with Claude costs only a fraction of the normal input-token price, while a cache write costs somewhat more than normal. The default cache lives for 5 minutes; anyone sending many requests in quick succession (say, an agent loop with lots of intermediate steps) benefits most, because the expensive prefix gets written once but read cheaply many times.\n\n## Keeping context lean — concrete levers\nAnthropic's own guidance for Claude Code lists several very specific techniques: clear context between unrelated tasks instead of letting it grow, keep CLAUDE.md compact (rule of thumb: under 200 lines, with detail knowledge moved into skills loaded on demand instead), and automatically filter verbose raw output — a 10,000-line log file, say — before it reaches the model, so only the relevant lines (errors, for instance) land in context instead of the whole file.\n\n## Batch processing, with numbers (as of July 2026)\nThe Message Batches API cuts costs by 50% compared to individual calls, and most batches finish in under an hour. The trade-off: no immediate, synchronous response — in exchange for a much lower price on large, non-time-critical volumes like bulk evaluations or test runs across thousands of cases.\n\n## A warning: parallel agents\nMultiple agent instances running in parallel (an agent team, say) multiply costs, because each instance maintains its own context window — in unfavorable cases this can push token usage several times higher than a single session. Parallelism saves time, rarely money; the benefit has to justify that.",
+      "example": "A nightly job classifies 8,000 support tickets by urgency. Instead of querying each ticket individually and synchronously with the strongest model: classification rules and examples form a shared, cached prompt prefix, a cheap model handles the actual classification, and all 8,000 requests run together through the batch API instead of one by one.",
+      "related": [
+        "model-routing",
+        "caching-strategien",
+        "kosten-kontrolle-agenten",
+        "batch-processing"
+      ],
+      "quiz": {
+        "question": "Which combination typically cuts the cost of a nightly bulk classification job the most?",
+        "options": [
+          "Using only the most expensive available model, for maximum speed",
+          "A cheap model for the mechanical classification, a cached shared prompt prefix, and processing via the batch API",
+          "Handling every request individually and synchronously, rebuilding context from scratch each time",
+          "Spinning up as many parallel agent instances as possible"
+        ],
+        "correct": 1,
+        "explain": "A mechanical classification job typically benefits most from combining a cheap model, a cached and reused prompt prefix, and the cheaper, asynchronous batch API — not from an expensive model, a fully rebuilt context per request, or unnecessary parallelism."
+      },
+      "sources": [
+        {
+          "title": "Claude Code docs: Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        },
+        {
+          "title": "Claude docs: Prompt caching",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+        },
+        {
+          "title": "Claude docs: Batch processing",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+        },
+        {
+          "title": "Anthropic: Building Effective AI Agents",
+          "url": "https://www.anthropic.com/research/building-effective-agents"
+        }
+      ],
+      "exercise": {
+        "task": "Analyze one of your own recurring agent workflows against the four cost levers and identify where at least one of them goes unused.",
+        "steps": [
+          "List your workflow's steps and mark which model currently handles which step.",
+          "Check: is there a long, repeated prompt prefix (system prompt, rules, examples) that would benefit from caching?",
+          "Check: does the workflow run time-critically/synchronously, or could part of it run as a non-urgent batch instead?"
+        ],
+        "selfCheck": [
+          "Is at least one mechanical substep currently running unnecessarily on an expensive model?",
+          "Do you know whether your prompt prefix gets reused within the cache TTL, or gets rewritten every time?",
+          "Is there a part of your workflow that doesn't need an immediate answer and would fit batch processing?"
+        ]
+      }
+    }
+  ]
+}
