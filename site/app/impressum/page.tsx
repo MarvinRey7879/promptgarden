@@ -48,16 +48,15 @@ export default function Impressum() {
         jederzeit per E-Mail.
       </p>
       <p style={{ lineHeight: 1.7 }}>
-        <b>Werbung (optional, nur mit Einwilligung):</b> Zur Finanzierung der kostenlosen Inhalte
-        kann Google AdSense (Google Ireland Ltd.) eingebunden werden. Das Werbe-Skript wird
-        ausschließlich geladen, wenn du im Hinweis-Banner ausdrücklich zustimmst — erst dann setzt
-        Google Cookies bzw. verarbeitet Daten gemäß den{' '}
+        <b>Werbung:</b> Zur Finanzierung der kostenlosen Inhalte wird Google AdSense
+        (Google Ireland Ltd.) eingebunden — nicht auf der Startseite. Die Einwilligungs-Verwaltung
+        (DSGVO) übernimmt Googles Consent-Dialog: Stimmst du zu, können personalisierte Anzeigen
+        mit Cookies gezeigt werden; lehnst du ab, werden höchstens eingeschränkte, nicht
+        personalisierte Anzeigen ohne Werbe-Cookies ausgeliefert. Details in den{' '}
         <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
           Google-Richtlinien
         </a>
-        . Ohne Zustimmung bleibt die Seite werbefrei und cookielos. Deine Entscheidung wird lokal
-        gespeichert (pg_ads_consent) und lässt sich durch Löschen der Website-Daten im Browser
-        jederzeit widerrufen.
+        ; deine Auswahl kannst du im Google-Dialog jederzeit ändern.
       </p>
     </div>
   );

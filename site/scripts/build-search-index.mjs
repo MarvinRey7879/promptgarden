@@ -28,6 +28,9 @@ for (const lang of LANGS) {
   for (const a of read(`addons.${lang}.json`).items) {
     docs.push({ id: `a:${a.id}`, g: 'a', t: a.name, s: strip(a.what, 140), b: strip(a.why, 300), u: `addons/${a.id}/` });
   }
+  for (const pr of read(`prompts.${lang}.json`).items) {
+    docs.push({ id: `p:${pr.id}`, g: 'p', t: pr.title, s: strip(pr.wann, 140), b: strip(pr.prompt, 300), u: `prompts/#${pr.category}` });
+  }
   const out = join(ROOT, 'public', 'search', `index.${lang}.json`);
   writeFileSync(out, JSON.stringify(docs));
   console.log(`✅ search-index [${lang}]: ${docs.length} Dokumente, ${(JSON.stringify(docs).length / 1024).toFixed(0)} KB`);

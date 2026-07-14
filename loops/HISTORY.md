@@ -609,3 +609,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - PriceCalculator.tsx auf /vergleiche (nach Duellen): 3 Slider (Input 1-200k, Output 0,5-32k, Anfragen/Tag 1-500) → sortierte Monatskosten-Balken für die 10 Quadrant-Modelle; Batch-50%-Toggle nur für Claude-Zeilen (belegt); Fußnoten Sonnet-Intro-Preis + Gemini-Pro-Staffel; Labels ×5 im Komponenten-Dict; Disclaimer mit 4 Anbieter-Preisquellen. Preise aus verifizierter Research-Tabelle (Stand: Juli 2026).
 - Mathe-Stichprobe: Haiku 20k/2k/50/Tag → $45/Monat ✓. BUILD_EXIT=0, Deploy 69ea2729, Bundle-Verify PREISRECHNER, 375px-Screenshot ok.
 - Known-good: 69ea2729.
+
+## It. 101 — 14.07. ~19:40 — 🧩 PROMPT-BIBLIOTHEK LIVE (Wahl #3) + Werbung umgestellt (Marvin-Direktive)
+- /prompts ×5: 16 tool-neutrale, kopierbare Vorlagen in 6 Kategorien (Refactoring/Debugging/Review/Planung/Testing/Verstehen), je „Wann nutzen"+Vorlage in dunkler pre-Box+CopyButton+Hinweis+Quellen. Review PASS mit 4 FIX (u.a. '->' in Platzhaltern bricht Parser, fehlendes Stopp-Kriterium in Repro-Vorlage, BEA-Quellen-Falschzuordnung) + 5 NOTEs übernommen; 3 Übersetzer MD5-gepinnt, Platzhalter lokalisiert.
+- Integration: Nav „Prompts" ×5 (i18n nav.prompts; FR-Apostroph-Regex-Falle → node-Fix), Sitemap, Such-Index +16 Docs (Gruppe „Prompt-Vorlagen" ×5, 392 Docs gesamt), Breadcrumb-Schema.
+- WERBUNG UMGESTELLT (Marvin: „wieso optional? Werbung an, nur nicht Landingpage"): eigenes Consent-Banner RAUS, adsbygoogle lädt jetzt überall AUSSER /{lang}/ (Landing); Einwilligung übernimmt Googles CMP — Marvin-Todo: AdSense → Datenschutz & Mitteilungen → DSGVO-Nachricht + Limited Ads aktivieren (sonst EU leer). Impressum-Text angepasst.
+- Verify: BUILD_EXIT=0, Deploy bd5e1841, 16 Copy-Buttons DE, ZH-Titel 提示词库, Nav-Link, search p-Docs, altes Banner 0 Treffer, 375px-Screenshot ok.
+- Known-good: bd5e1841.

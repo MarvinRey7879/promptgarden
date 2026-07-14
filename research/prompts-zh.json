@@ -1,0 +1,273 @@
+{
+  "zh": {
+    "updated": "2026-07-14",
+    "title": "提示词库",
+    "intro": "为你的 AI 编程智能体（Claude Code、Cursor、Aider、Codex、Antigravity 等）准备的现成提示词模板——只需填写 <占位符> 即可开始使用。",
+    "categories": [
+      {
+        "id": "refactoring",
+        "name": "重构",
+        "emoji": "🔧"
+      },
+      {
+        "id": "debugging",
+        "name": "调试",
+        "emoji": "🐛"
+      },
+      {
+        "id": "review",
+        "name": "审查",
+        "emoji": "🔎"
+      },
+      {
+        "id": "planung",
+        "name": "规划",
+        "emoji": "🗺️"
+      },
+      {
+        "id": "testing",
+        "name": "测试",
+        "emoji": "🧪"
+      },
+      {
+        "id": "verstehen",
+        "name": "理解",
+        "emoji": "📖"
+      }
+    ],
+    "items": [
+      {
+        "id": "safe-refactor-small-steps",
+        "category": "refactoring",
+        "title": "小步安全重构",
+        "wann": "当你想要重构现有代码而不改变其行为时。",
+        "prompt": "重构 <文件/模块>，以改善<目标，例如可读性/结构>。\n规则：\n- 不要改变外部行为（输入/输出、API、副作用必须保持一致）\n- 以小的、可单独审查的步骤进行\n- 每完成一步后运行测试（<测试命令>）并把结果给我看\n- 如果某一步会改变行为，停下来并询问我\n最后总结所有步骤和测试结果作为证明。",
+        "hinweis": "保持每次改动（diff）小——逐步审查比一次性审查全部改动更容易。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "extract-function-no-behavior-change",
+        "category": "refactoring",
+        "title": "提取函数且不改变行为",
+        "wann": "当一个函数/方法过大或嵌套过深，你想把其中一部分干净地拆分出来时。",
+        "prompt": "在 <文件> 中，函数 <函数名>：将执行<该部分的描述>的代码块提取到一个独立的、命名清晰的函数中。\n- 行为必须完全保持一致（相同输入 -> 相同输出，相同的错误情况）\n- 遵循该文件现有的命名/风格约定\n- 如果还没有测试：先写一个能保护当前行为的测试，然后再重构\n- 之后运行测试并把结果给我看\n简要说明为什么新结构更清晰。",
+        "hinweis": "还没有测试？请先写一个特征化测试（characterization test，见测试模板），然后再重构。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "migrate-pattern-file-by-file",
+        "category": "refactoring",
+        "title": "逐文件迁移模式/依赖",
+        "wann": "当你需要在多个文件中迁移某个库、模式或 API 版本时。",
+        "prompt": "将<范围，例如文件夹/模块>中的 <旧模式/库> 迁移到 <新模式/库>。\n- 在改动任何内容之前，先列出所有受影响的文件\n- 逐个文件迁移（相互依赖的文件作为一个小组一起处理），单独展示每处改动\n- 每处理完一个文件后运行测试/构建（<测试命令>）并展示结果\n- 如果不确定（例如旧行为不清楚）：停下来询问，而不是猜测\n最后：列出已迁移的文件以及仍然遗留的问题。",
+        "hinweis": "文件数量很多时：先在 2-3 个文件上测试，改进提示词，再应用到其余文件。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          },
+          {
+            "title": "Anthropic: Building Effective Agents",
+            "url": "https://www.anthropic.com/engineering/building-effective-agents"
+          }
+        ]
+      },
+      {
+        "id": "hypothesis-driven-debugging",
+        "category": "debugging",
+        "title": "基于假设的系统化调试",
+        "wann": "当出现 bug 而原因不明显时。",
+        "prompt": "Bug：<错误描述 / 错误信息>\n可能所在区域：<文件/模块，如果已知>\n按以下步骤进行：\n1. 提出 2-3 个具体的假设，说明可能的原因\n2. 有针对性地逐一验证每个假设（阅读代码、查看日志、写小测试）——不要猜测\n3. 在修复之前，先写一个能复现该 bug 的测试\n4. 修复根本原因，而不仅仅是表面症状（不要用 try/catch 掩盖问题）\n5. 展示测试修复前失败、修复后通过的结果\n如果没有任何假设能解释这个 bug，停下来并询问我。",
+        "hinweis": "\"根本原因，而非表面症状\"——不要只是捕获错误，而要修复导致它的原因。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "flaky-test-triage",
+        "category": "debugging",
+        "title": "定位不稳定测试（flaky）",
+        "wann": "当测试偶尔失败，你想找出原因（时序、执行顺序、状态）时。",
+        "prompt": "测试 <测试名称/文件> 不稳定（flaky，偶尔失败）。\n- 单独运行该测试 <N，例如 20> 次（<测试命令>），记录成功/失败情况\n- 检查常见原因：测试间共享状态、竞态条件（race condition）、时间/顺序依赖、未 mock 的外部调用\n- 提出一个关于原因的假设，并用一个有针对性的复现测试来验证\n- 提出一个能解决根本原因的修复方案（而不仅仅是重试/跳过）\n- 修复后：多次重新运行测试，展示结果\n如果没有找到明确原因：总结已经排除的可能性，以及接下来应该检查什么。",
+        "hinweis": "重试逻辑或 @skip 不是修复——只是一个临时补丁，这个提示词有意排除了这种做法。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "reproduce-before-fix",
+        "category": "debugging",
+        "title": "先复现，再修复",
+        "wann": "当用户/报告提交了一个 bug，但你还没有可靠的复现方法时。",
+        "prompt": "报告的 bug：<描述，例如来自工单/客服>\n预期行为：<应该发生什么>\n实际行为：<实际发生了什么>\n1. 找到相关的代码路径（起点：<相关区域，例如 src/auth/>）\n2. 写一个能精确复现该 bug 的失败测试\n3. 在写修复之前，先把失败的测试给我看——我来确认这就是那个 bug\n如果你无法复现该 bug：停下来，说明你检查过并排除了哪些可能性。\n4. 之后才能：实现修复，新测试必须通过，整个测试套件必须继续保持通过",
+        "hinweis": "修复前的确认停顿可以防止修复了错误的 bug。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "adversarial-self-review",
+        "category": "review",
+        "title": "对抗式自我审查",
+        "wann": "在把某个改动标记为完成之前——让一个全新的实例批判性地审视一遍。",
+        "prompt": "使用一个子智能体（subagent）/全新会话，对照 <计划/需求，例如 PLAN.md 或工单描述> 审查 <范围，例如 PR/分支/文件> 的 diff。\n审查者只能拿到 diff 和需求本身——不知道这个改动为什么会这样实现的理由。\n检查：\n- 每一项需求是否都真正实现了？\n- 需求中是否有边界情况（edge case）没有测试覆盖？\n- 是否改动了范围之外的内容？\n只报告影响正确性或需求的问题——不要报告纯粹的风格偏好。",
+        "hinweis": "一个专门找漏洞的审查者几乎总能找到一些——不要追着每个发现不放，只关注那些真正影响正确性的。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "severity-tiered-pr-review",
+        "category": "review",
+        "title": "带严重程度分级的 PR 审查",
+        "wann": "当你想结构化地审查一个 Pull Request/diff，而不是列出一长串未分类的清单时。",
+        "prompt": "审查 <范围，例如 PR #123 / 分支名> 中的 diff。\n将每个发现归入恰好一个等级：\n- CRITICAL：bug、安全漏洞或数据丢失风险\n- MAJOR：在现实场景下的错误行为、缺少错误处理\n- MINOR：风格、命名、小的改进建议\n对每个发现：给出 文件:行号、问题是什么、具体的修复建议。\n不要写笼统的表扬性评论。如果没有发现任何问题，明确说明，而不要编造发现。",
+        "hinweis": "明确的等级划分可以防止一个吹毛求疵的小问题和真正的 bug 获得同样的权重。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "verify-against-plan",
+        "category": "review",
+        "title": "对照计划验证实现",
+        "wann": "在完成一项已规划任务的实现之后——检查计划中的内容是否真的都已实现。",
+        "prompt": "将 <范围> 中当前的实现与 <计划来源，例如 PLAN.md 或工单> 中的计划进行比较。\n根据计划生成一份检查清单，并逐项过一遍：\n- 已实现并已测试\n- 已实现，但没有测试\n- 未实现\n- 额外完成的内容（不在计划中，但出现在 diff 里）\n每一项都要用文件/行号引用或测试结果来证明，不要凭猜测。",
+        "hinweis": "把这个当作停止标准——只有当所有项都是\"已实现并已测试\"时，这项任务才算完成。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "plan-before-code",
+        "category": "planung",
+        "title": "先计划，再写代码",
+        "wann": "适用于涉及多个文件、方案不明确，或者你不熟悉相关模块的任务。",
+        "prompt": "在改动任何内容之前：阅读 <相关区域，例如 src/auth/>，理解 <主题，例如登录/会话> 目前是如何工作的。\n然后为 <目标/功能> 制定一个计划：\n- 哪些文件需要修改？\n- 什么样的步骤顺序是合理的？\n- 你看到了哪些边界情况/风险？\n- 最后如何验证（用哪些测试/检查）？\n先把计划给我看。只有在我确认计划之后，才开始写代码。",
+        "hinweis": "对于小的、显而易见的改动（错别字、一行代码），做计划这一步不值得——直接让它实现即可。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "feature-in-stages",
+        "category": "planung",
+        "title": "把功能拆分成阶段",
+        "wann": "当一个功能太大，无法一次完成，需要拆分成可审查的小块时。",
+        "prompt": "我想构建 <功能描述>。\n把这个功能拆分成若干个阶段，每个阶段都应该：\n- 本身可运行/可测试（不存在半损坏的中间状态）\n- 有明确的验证方式（测试、构建、手动检查）\n按顺序列出各阶段，每个阶段用 1-2 句话描述。\n只实现第 1 阶段，运行验证并把结果给我看，然后再进入下一个阶段。",
+        "hinweis": "这样每个阶段都保持可审查，而不是最后得到一个巨大的 diff。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          },
+          {
+            "title": "Anthropic: Building Effective Agents",
+            "url": "https://www.anthropic.com/engineering/building-effective-agents"
+          }
+        ]
+      },
+      {
+        "id": "interview-then-spec",
+        "category": "planung",
+        "title": "先被访谈，再写规格说明",
+        "wann": "适用于较大/全新的功能，而你自己还没有把所有细节想清楚。",
+        "prompt": "我想构建 <简短的功能想法>。在开始构建任何东西之前，先详细访谈我。\n询问技术实现、用户体验（UX）、边界情况、权衡取舍——不要问显而易见的问题，而要挖掘我可能忽略的难点。\n持续提问，直到所有重要问题都澄清为止。\n然后把完整的规格说明（涉及的文件/接口、明确不在范围内的内容、最后的验证步骤）写入 <规格文件，例如 SPEC.md>。",
+        "hinweis": "在真正开始实现时，用写好的规格说明作为上下文，开启一个全新、干净的会话。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "characterization-tests-legacy",
+        "category": "testing",
+        "title": "为遗留代码写特征化测试（characterization test）",
+        "wann": "当你需要改动不熟悉/没有测试覆盖的遗留代码，并想先保护好当前行为时。",
+        "prompt": "文件/模块 <文件/模块> 目前没有（足够的）测试，而我很快就需要修改它。\n先写特征化测试（characterization test）：记录并保护当前行为的测试——包括边界情况和错误情况，即使这些行为看起来很奇怪。\n- 这一步不改变代码本身的行为\n- 运行测试，展示它们全部通过\n- 简要列出哪些行为让人意外/值得怀疑（供之后澄清）",
+        "hinweis": "这些测试是你下一步重构的安全网——不要删除它们，即使之后有意改变了相关行为。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "test-first-bugfix",
+        "category": "testing",
+        "title": "Bug 修复采用测试先行（test-first）",
+        "wann": "当你要修复一个具体的 bug，并想确保它不会再次出现时。",
+        "prompt": "Bug：<文件/模块> 中的 <描述/错误信息>\n1. 先写一个当前会失败、并能精确复现这个 bug 的测试\n2. 把失败的测试给我看\n3. 之后才实现修复\n4. 新测试必须通过，所有已有测试必须继续保持通过\n测试应覆盖的示例情况：<测试用例，例如输入 X 得到 Y>",
+        "hinweis": "这个测试在修复后会保留在仓库中——它可以防止同一个 bug 悄悄地再次出现（回归）。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "codebase-overview-three-levels",
+        "category": "verstehen",
+        "title": "三层级代码库概览",
+        "wann": "初次接触一个新的/不熟悉的代码库或模块时。",
+        "prompt": "给我一个关于 <范围，例如这个仓库 / src/payments 文件夹> 的三层级概览：\n1. 大局观：这个系统做什么，主要有哪些构建模块（1 段话 + 列表）\n2. 结构：最重要的文件夹/模块及其职责\n3. 细节：针对 <具体部分，例如一次请求的流程>：一步一步说明涉及哪些文件/函数\n只使用代码中实际能找到的内容，不要猜测——如果有不清楚的地方，明确说出来。",
+        "hinweis": "之后再有针对性地追问，而不是一次性要求全部内容——这样可以让上下文保持精简。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "trace-data-flow",
+        "category": "verstehen",
+        "title": "追踪函数的数据流",
+        "wann": "当你想了解数据在某个特定流程中从哪里来、又流向哪里时。",
+        "prompt": "追踪从 <起点，例如函数/端点 X> 开始的数据流。\n- 输入数据来自哪里（调用方、请求、数据库等）？\n- 哪些函数/模块按什么顺序处理这些数据？\n- 状态在哪里被改变（state、数据库写入、副作用）？\n- 数据流在哪里结束（响应、存储、传递给下游）？\n把这些整理成一个带编号的、逐步的列表，并附上 文件:行号 引用。如果某一步不清楚/存在歧义，标记出来，而不要猜测。",
+        "hinweis": "对于更复杂的流程，可以再额外要求生成一个简短的 Mermaid 图。",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      }
+    ]
+  }
+}

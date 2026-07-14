@@ -10,18 +10,18 @@ import type { Lang } from '@/lib/i18n';
  * /search/index.<lang>.json (Kapitel + Befehle + Addons). Lazy: MiniSearch und
  * Index laden erst beim ersten Öffnen. Öffnen per 🔍-Button oder Cmd/Ctrl+K.
  */
-type Doc = { id: string; g: 'k' | 'b' | 'a'; t: string; s: string; b: string; u: string };
+type Doc = { id: string; g: 'k' | 'b' | 'a' | 'p'; t: string; s: string; b: string; u: string };
 
-const TXT: Record<Lang, { placeholder: string; empty: string; hint: string; groups: Record<'k' | 'b' | 'a', string> }> = {
-  de: { placeholder: 'Suche in Kapiteln, Befehlen, Addons …', empty: 'Nichts gefunden — anders formulieren?', hint: '↑↓ wählen · Enter öffnen · Esc schließen', groups: { k: 'Kapitel', b: 'Befehle', a: 'Addons' } },
-  en: { placeholder: 'Search chapters, commands, add-ons …', empty: 'Nothing found — try different words?', hint: '↑↓ select · Enter open · Esc close', groups: { k: 'Chapters', b: 'Commands', a: 'Add-ons' } },
-  es: { placeholder: 'Busca en capítulos, comandos, add-ons …', empty: 'Nada encontrado — ¿pruebas otras palabras?', hint: '↑↓ elegir · Enter abrir · Esc cerrar', groups: { k: 'Capítulos', b: 'Comandos', a: 'Add-ons' } },
-  fr: { placeholder: 'Cherche dans les chapitres, commandes, add-ons …', empty: 'Rien trouvé — essaie d’autres mots ?', hint: '↑↓ choisir · Entrée ouvrir · Échap fermer', groups: { k: 'Chapitres', b: 'Commandes', a: 'Add-ons' } },
-  zh: { placeholder: '搜索章节、命令、扩展 …', empty: '没有找到——换个词试试？', hint: '↑↓ 选择 · Enter 打开 · Esc 关闭', groups: { k: '章节', b: '命令', a: '扩展' } },
+const TXT: Record<Lang, { placeholder: string; empty: string; hint: string; groups: Record<'k' | 'b' | 'a' | 'p', string> }> = {
+  de: { placeholder: 'Suche in Kapiteln, Befehlen, Prompts, Addons …', empty: 'Nichts gefunden — anders formulieren?', hint: '↑↓ wählen · Enter öffnen · Esc schließen', groups: { k: 'Kapitel', b: 'Befehle', a: 'Addons', p: 'Prompt-Vorlagen' } },
+  en: { placeholder: 'Search chapters, commands, prompts, add-ons …', empty: 'Nothing found — try different words?', hint: '↑↓ select · Enter open · Esc close', groups: { k: 'Chapters', b: 'Commands', a: 'Add-ons', p: 'Prompt templates' } },
+  es: { placeholder: 'Busca en capítulos, comandos, prompts, add-ons …', empty: 'Nada encontrado — ¿pruebas otras palabras?', hint: '↑↓ elegir · Enter abrir · Esc cerrar', groups: { k: 'Capítulos', b: 'Comandos', a: 'Add-ons', p: 'Plantillas de prompt' } },
+  fr: { placeholder: 'Cherche dans les chapitres, commandes, prompts, add-ons …', empty: 'Rien trouvé — essaie d’autres mots ?', hint: '↑↓ choisir · Entrée ouvrir · Échap fermer', groups: { k: 'Chapitres', b: 'Commandes', a: 'Add-ons', p: 'Modèles de prompt' } },
+  zh: { placeholder: '搜索章节、命令、提示词、扩展 …', empty: '没有找到——换个词试试？', hint: '↑↓ 选择 · Enter 打开 · Esc 关闭', groups: { k: '章节', b: '命令', a: '扩展', p: '提示词模板' } },
 };
 
-const GROUP_ORDER: ('k' | 'b' | 'a')[] = ['k', 'b', 'a'];
-const GROUP_COLORS = { k: 'var(--lime)', b: 'var(--blue)', a: 'var(--pink)' } as const;
+const GROUP_ORDER: ('k' | 'b' | 'p' | 'a')[] = ['k', 'b', 'p', 'a'];
+const GROUP_COLORS = { k: 'var(--lime)', b: 'var(--blue)', a: 'var(--pink)', p: 'var(--yellow)' } as const;
 
 export default function SearchModal({ lang }: { lang: Lang }) {
   const t = TXT[lang];

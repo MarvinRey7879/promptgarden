@@ -1,0 +1,273 @@
+{
+  "fr": {
+    "updated": "2026-07-14",
+    "title": "Bibliothèque de prompts",
+    "intro": "Des modèles de prompts prêts à l'emploi pour ton agent de codage IA (Claude Code, Cursor, Aider, Codex, Antigravity & Cie) — remplis juste les <PLACEHOLDERS> et lance-toi.",
+    "categories": [
+      {
+        "id": "refactoring",
+        "name": "Refactoring",
+        "emoji": "🔧"
+      },
+      {
+        "id": "debugging",
+        "name": "Débogage",
+        "emoji": "🐛"
+      },
+      {
+        "id": "review",
+        "name": "Revue",
+        "emoji": "🔎"
+      },
+      {
+        "id": "planung",
+        "name": "Planification",
+        "emoji": "🗺️"
+      },
+      {
+        "id": "testing",
+        "name": "Tests",
+        "emoji": "🧪"
+      },
+      {
+        "id": "verstehen",
+        "name": "Compréhension",
+        "emoji": "📖"
+      }
+    ],
+    "items": [
+      {
+        "id": "safe-refactor-small-steps",
+        "category": "refactoring",
+        "title": "Refactoring sûr en petites étapes",
+        "wann": "Quand tu veux restructurer du code existant sans changer son comportement.",
+        "prompt": "Refactore <FICHIER/MODULE> pour améliorer <OBJECTIF, ex. lisibilité/structure>.\nRègles :\n- NE change PAS le comportement externe (input/output, API, effets de bord restent identiques)\n- Travaille par petites étapes, vérifiables une par une\n- Après chaque étape, lance les tests (<COMMANDE DE TEST>) et montre-moi le résultat\n- Arrête-toi et demande si une étape changerait le comportement\nÀ la fin, résume toutes les étapes et les résultats des tests comme preuve.",
+        "hinweis": "Garde les diffs petits — une revue par étape est plus simple qu'une revue de tout d'un coup.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "extract-function-no-behavior-change",
+        "category": "refactoring",
+        "title": "Extraire une fonction sans changer le comportement",
+        "wann": "Quand une fonction/méthode est trop grande ou trop imbriquée et que tu veux en extraire proprement une partie.",
+        "prompt": "Dans <FICHIER>, fonction <NOM DE LA FONCTION> : extrais le bloc de code qui <DESCRIPTION DE LA PARTIE> dans une fonction séparée, avec un nom clair.\n- Le comportement doit rester exactement identique (mêmes entrées -> mêmes sorties, mêmes cas d'erreur)\n- Suis les conventions de nommage/style déjà utilisées dans le fichier\n- Si aucun test n'existe : écris d'abord un test qui verrouille le comportement actuel, puis refactore\n- Lance les tests ensuite et montre-moi le résultat\nExplique brièvement pourquoi la nouvelle structure est plus claire.",
+        "hinweis": "Pas de test ? Écris d'abord un test de caractérisation (voir les modèles Tests), puis refactore.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "migrate-pattern-file-by-file",
+        "category": "refactoring",
+        "title": "Migrer un pattern/une dépendance, fichier par fichier",
+        "wann": "Quand tu migres une librairie, un pattern ou une version d'API sur plusieurs fichiers.",
+        "prompt": "Migre <ANCIEN PATTERN/LIBRAIRIE> vers <NOUVEAU PATTERN/LIBRAIRIE> dans <PÉRIMÈTRE, ex. dossier/module>.\n- Liste d'abord TOUS les fichiers concernés avant de changer quoi que ce soit\n- Migre les fichiers un par un (les fichiers interdépendants en petit groupe), montre chaque changement séparément\n- Après chaque fichier, lance les tests/le build (<COMMANDE DE TEST>) et montre le résultat\n- En cas de doute (ex. ancien comportement pas clair) : arrête-toi et demande plutôt que de deviner\nÀ la fin : liste des fichiers migrés plus les cas encore en suspens.",
+        "hinweis": "S'il y a beaucoup de fichiers : teste d'abord sur 2-3, affine le prompt, puis applique-le au reste.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          },
+          {
+            "title": "Anthropic: Building Effective Agents",
+            "url": "https://www.anthropic.com/engineering/building-effective-agents"
+          }
+        ]
+      },
+      {
+        "id": "hypothesis-driven-debugging",
+        "category": "debugging",
+        "title": "Recherche systématique de bugs par hypothèses",
+        "wann": "Quand un bug apparaît et que la cause n'est pas évidente.",
+        "prompt": "Bug : <DESCRIPTION DE L'ERREUR / MESSAGE D'ERREUR>\nZone probable : <FICHIER/MODULE, si connu>\nProcède comme ça :\n1. Formule 2-3 hypothèses concrètes sur la cause possible\n2. Vérifie chaque hypothèse de façon ciblée (lire le code, les logs, un petit test) — ne devine pas\n3. Écris un test qui reproduit le bug AVANT de le corriger\n4. Corrige la cause racine, pas juste le symptôme (pas de try/catch qui étouffe l'erreur)\n5. Montre le test qui échoue avant, puis qui passe après\nArrête-toi et demande si aucune hypothèse n'explique le bug.",
+        "hinweis": "« Root cause, not symptom » — ne te contente pas d'attraper l'erreur, corrige ce qui la cause.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "flaky-test-triage",
+        "category": "debugging",
+        "title": "Cerner un test flaky",
+        "wann": "Quand un test échoue parfois et que tu veux trouver la cause (timing, ordre, état partagé).",
+        "prompt": "Le test <NOM DU TEST/FICHIER> est flaky (échoue de temps en temps).\n- Lance le test <N, ex. 20> fois de façon isolée (<COMMANDE DE TEST>) et note succès/échec\n- Vérifie les causes classiques : état partagé entre les tests, race conditions, dépendance au timing/à l'ordre, appels externes non mockés\n- Formule une hypothèse sur la cause et prouve-la avec un test de reproduction ciblé\n- Propose un fix qui corrige la cause (pas juste un retry/skip)\n- Après le fix : relance le test plusieurs fois et montre le résultat\nSi aucune cause claire n'est trouvée : résume ce qui a été écarté et ce qu'il faudrait vérifier ensuite.",
+        "hinweis": "Une logique de retry ou @skip n'est pas un fix — juste un pansement, que ce prompt exclut volontairement.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "reproduce-before-fix",
+        "category": "debugging",
+        "title": "D'abord reproduire, ensuite corriger",
+        "wann": "Quand un utilisateur/rapport signale un bug, mais que tu n'as pas encore de moyen fiable de le reproduire.",
+        "prompt": "Bug signalé : <DESCRIPTION, ex. venant d'un ticket/du support>\nComportement attendu : <CE QUI DEVRAIT SE PASSER>\nComportement réel : <CE QUI SE PASSE À LA PLACE>\n1. Trouve le chemin de code concerné (point de départ : <ZONE CONCERNÉE, ex. src/auth/>)\n2. Écris un test qui échoue et reproduit exactement le bug\n3. Montre-moi le test qui échoue AVANT d'écrire le fix — je confirme que c'est le bon bug\nSi tu n'arrives pas à reproduire le bug : arrête-toi et rapporte ce que tu as vérifié et écarté.\n4. Seulement après : implémente le fix, le nouveau test doit passer, et toute la suite de tests doit rester verte",
+        "hinweis": "Cette pause de confirmation avant le fix évite de corriger le mauvais bug.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "adversarial-self-review",
+        "category": "review",
+        "title": "Auto-revue adversariale",
+        "wann": "Avant de marquer un changement comme terminé — fais-le examiner d'un œil critique par une instance fraîche.",
+        "prompt": "Utilise un subagent/une session fraîche pour vérifier le diff de <PÉRIMÈTRE, ex. PR/branche/fichier> par rapport à <PLAN/EXIGENCE, ex. PLAN.md ou description du ticket>.\nLe reviewer ne reçoit QUE le diff et l'exigence — pas la justification de pourquoi le changement a été fait ainsi.\nVérifie :\n- Est-ce que chaque exigence est vraiment implémentée ?\n- Y a-t-il des cas limites de l'exigence sans test ?\n- Est-ce que quelque chose en dehors du périmètre a été modifié ?\nNe signale que les lacunes qui concernent la correction ou les exigences — pas de simples préférences de style.",
+        "hinweis": "Un reviewer qui cherche activement des lacunes en trouve presque toujours — ne pourchasse pas chaque trouvaille, seulement celles qui ont un vrai impact sur la correction.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "severity-tiered-pr-review",
+        "category": "review",
+        "title": "Revue de PR avec niveaux de gravité",
+        "wann": "Quand tu veux reviewer une pull request/un diff de façon structurée plutôt qu'avec une longue liste non triée.",
+        "prompt": "Review le diff dans <PÉRIMÈTRE, ex. PR #123 / nom de branche>.\nClasse chaque trouvaille dans exactement un niveau :\n- CRITICAL : bug, faille de sécurité ou risque de perte de données\n- MAJOR : comportement incorrect dans un cas réaliste, gestion d'erreur manquante\n- MINOR : style, nommage, petites améliorations\nPour chaque trouvaille : fichier:ligne, quel est le problème, proposition de fix concrète.\nPas de commentaires élogieux génériques. Si rien n'est trouvé, dis-le explicitement plutôt que d'inventer des findings.",
+        "hinweis": "Des niveaux explicites évitent qu'un détail cosmétique ait autant de poids qu'un vrai bug.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "verify-against-plan",
+        "category": "review",
+        "title": "Vérifier l'implémentation par rapport au plan",
+        "wann": "Après l'implémentation d'une tâche planifiée — vérifier que tout ce qui était dans le plan a vraiment été réalisé.",
+        "prompt": "Compare l'implémentation actuelle dans <PÉRIMÈTRE> avec le plan dans <SOURCE DU PLAN, ex. PLAN.md ou ticket>.\nÉtablis une checklist à partir du plan et passe-la en revue point par point :\n- Implémenté et testé\n- Implémenté, mais sans test\n- Non implémenté\n- Fait en plus (pas dans le plan, mais présent dans le diff)\nJustifie chaque point avec une référence fichier/ligne ou un résultat de test, pas de suppositions.",
+        "hinweis": "Utilise ça comme critère d'arrêt — la tâche n'est considérée comme terminée que quand tous les points sont « implémenté et testé ».",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "plan-before-code",
+        "category": "planung",
+        "title": "D'abord le plan, ensuite le code",
+        "wann": "Pour les tâches qui touchent plusieurs fichiers, dont l'approche n'est pas claire, ou quand tu ne connais pas bien le module.",
+        "prompt": "Avant de changer quoi que ce soit : lis <ZONE CONCERNÉE, ex. src/auth/> et comprends comment <SUJET, ex. login/sessions> fonctionne actuellement.\nÉtablis ensuite un plan pour <OBJECTIF/FEATURE> :\n- Quels fichiers doivent changer ?\n- Quel ordre des étapes a du sens ?\n- Quels cas limites/risques vois-tu ?\n- Comment ce sera vérifié à la fin (quels tests/checks) ?\nMontre-moi le plan d'abord. Ne commence le code qu'après que j'ai confirmé le plan.",
+        "hinweis": "Pour les petits changements évidents (faute de frappe, une ligne), l'étape de planification n'en vaut pas la peine — fais-le implémenter directement.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "feature-in-stages",
+        "category": "planung",
+        "title": "Découper une feature en étapes",
+        "wann": "Quand une feature est trop grosse pour être faite en une fois et doit être découpée en morceaux vérifiables.",
+        "prompt": "Je veux construire <DESCRIPTION DE LA FEATURE>.\nDécoupe la feature en étapes, où chaque étape :\n- fonctionne/est testable de manière autonome (pas d'état intermédiaire à moitié cassé)\n- a une vérification claire (test, build, check manuel)\nListe les étapes dans l'ordre avec 1-2 phrases de description chacune.\nImplémente SEULEMENT l'étape 1, lance la vérification, et montre-moi le résultat avant de passer à l'étape suivante.",
+        "hinweis": "Comme ça, chaque étape reste review-able, au lieu de te retrouver avec un diff énorme à la fin.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          },
+          {
+            "title": "Anthropic: Building Effective Agents",
+            "url": "https://www.anthropic.com/engineering/building-effective-agents"
+          }
+        ]
+      },
+      {
+        "id": "interview-then-spec",
+        "category": "planung",
+        "title": "Se faire interviewer d'abord, puis écrire la spec",
+        "wann": "Pour les features plus grosses/nouvelles, où tu n'as pas encore réfléchi à tous les détails toi-même.",
+        "prompt": "Je veux construire <IDÉE DE FEATURE COURTE>. Interviewe-moi en détail à ce sujet avant que quoi que ce soit soit construit.\nPose des questions sur l'implémentation technique, l'UX, les cas limites, les compromis — pas de questions évidentes, mais les points difficiles que j'ai peut-être négligés.\nContinue à poser des questions jusqu'à ce que tout soit clarifié.\nÉcris ensuite une spec complète (fichiers/interfaces concernés, ce qui est explicitement HORS périmètre, étape de vérification à la fin) dans <FICHIER SPEC, ex. SPEC.md>.",
+        "hinweis": "Pour l'implémentation proprement dite, démarre une nouvelle session propre avec la spec finalisée comme contexte.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "characterization-tests-legacy",
+        "category": "testing",
+        "title": "Tests de caractérisation pour du code legacy",
+        "wann": "Quand tu dois toucher à du code legacy inconnu/non testé et que tu veux d'abord verrouiller le comportement actuel.",
+        "prompt": "Le fichier/module <FICHIER/MODULE> n'a actuellement pas (assez) de tests, et je dois bientôt le modifier.\nÉcris d'abord des tests de caractérisation : des tests qui documentent et verrouillent le comportement ACTUEL — y compris les cas limites et d'erreur, même si le comportement semble bizarre.\n- Pas de changement de comportement du code lui-même à cette étape\n- Lance les tests et montre qu'ils passent\n- Liste brièvement quel comportement était surprenant/discutable (pour clarification ultérieure)",
+        "hinweis": "Ces tests sont ton filet de sécurité pour la prochaine étape de refactoring — ne les supprime pas, même si le comportement est volontairement changé plus tard.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "test-first-bugfix",
+        "category": "testing",
+        "title": "Test-first pour un bugfix",
+        "wann": "Quand tu corriges un bug concret et que tu veux t'assurer qu'il ne revienne pas.",
+        "prompt": "Bug : <DESCRIPTION/MESSAGE D'ERREUR> dans <FICHIER/MODULE>\n1. Écris d'abord un test qui échoue actuellement et reproduit exactement ce bug\n2. Montre-moi le test qui échoue\n3. Implémente le fix seulement après\n4. Le nouveau test doit passer, tous les tests existants doivent rester au vert\nExemples de cas que le test doit couvrir : <CAS DE TEST, ex. l'entrée X donne Y>",
+        "hinweis": "Le test reste dans le repo après le fix — il évite que le même bug revienne discrètement (régression).",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "codebase-overview-three-levels",
+        "category": "verstehen",
+        "title": "Vue d'ensemble de la codebase en 3 niveaux",
+        "wann": "Quand tu débarques dans une codebase ou un module nouveau/inconnu.",
+        "prompt": "Donne-moi une vue d'ensemble de <PÉRIMÈTRE, ex. ce repo / le dossier src/payments> sur 3 niveaux :\n1. Vue générale : que fait le système, quels sont les principaux blocs (1 paragraphe + liste)\n2. Structure : dossiers/modules les plus importants et leur responsabilité\n3. Détails : pour <PARTIE SPÉCIFIQUE, ex. le flux d'une requête> : étape par étape, quels fichiers/fonctions sont impliqués\nN'utilise que ce qui se trouve vraiment dans le code, pas de suppositions — quand quelque chose n'est pas clair, dis-le explicitement.",
+        "hinweis": "Pose ensuite des questions ciblées, plutôt que de tout demander d'un coup — ça garde le contexte réduit.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      },
+      {
+        "id": "trace-data-flow",
+        "category": "verstehen",
+        "title": "Retracer le flux de données d'une fonction",
+        "wann": "Quand tu veux comprendre d'où viennent les données et où elles circulent dans un flux donné.",
+        "prompt": "Retrace le flux de données à partir de <POINT DE DÉPART, ex. fonction/endpoint X>.\n- D'où viennent les données d'entrée (appelant, requête, BDD, etc.) ?\n- Quelles fonctions/modules traitent les données, dans quel ordre ?\n- Où l'état est-il modifié (state, écritures en BDD, effets de bord) ?\n- Où le flux se termine-t-il (réponse, stockage, transmission) ?\nPrésente ça comme une liste numérotée étape par étape avec des références fichier:ligne. Si une étape n'est pas claire/ambiguë, signale-le au lieu de deviner.",
+        "hinweis": "Pour des flux plus complexes, demande en plus un court diagramme Mermaid.",
+        "sources": [
+          {
+            "title": "Claude Code: Best practices",
+            "url": "https://code.claude.com/docs/en/best-practices"
+          }
+        ]
+      }
+    ]
+  }
+}

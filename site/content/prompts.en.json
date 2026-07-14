@@ -1,0 +1,271 @@
+{
+  "updated": "2026-07-14",
+  "title": "Prompt Library",
+  "intro": "Ready-to-use prompt templates for your AI coding agent (Claude Code, Cursor, Aider, Codex, Antigravity & more) — just fill in the <PLACEHOLDERS> and go.",
+  "categories": [
+    {
+      "id": "refactoring",
+      "name": "Refactoring",
+      "emoji": "🔧"
+    },
+    {
+      "id": "debugging",
+      "name": "Debugging",
+      "emoji": "🐛"
+    },
+    {
+      "id": "review",
+      "name": "Review",
+      "emoji": "🔎"
+    },
+    {
+      "id": "planung",
+      "name": "Planning",
+      "emoji": "🗺️"
+    },
+    {
+      "id": "testing",
+      "name": "Testing",
+      "emoji": "🧪"
+    },
+    {
+      "id": "verstehen",
+      "name": "Understanding",
+      "emoji": "📖"
+    }
+  ],
+  "items": [
+    {
+      "id": "safe-refactor-small-steps",
+      "category": "refactoring",
+      "title": "Safe Refactoring in Small Steps",
+      "wann": "When you want to restructure existing code without changing its behavior.",
+      "prompt": "Refactor <FILE/MODULE> to improve <GOAL, e.g. readability/structure>.\nRules:\n- Do NOT change external behavior (input/output, API, side effects must stay identical)\n- Work in small, individually reviewable steps\n- After each step, run the tests (<TEST COMMAND>) and show me the result\n- Stop and ask if a step would change behavior\nAt the end, summarize all steps and the test results as evidence.",
+      "hinweis": "Keep the diffs small — reviewing one step at a time beats reviewing everything at once.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "extract-function-no-behavior-change",
+      "category": "refactoring",
+      "title": "Extract Function Without Changing Behavior",
+      "wann": "When a function/method is too large or nested and you want to cleanly pull a part out.",
+      "prompt": "In <FILE>, function <FUNCTION NAME>: extract the code block that does <DESCRIPTION OF THE PART> into its own, clearly named function.\n- Behavior must stay exactly the same (same inputs -> same outputs, same error cases)\n- Follow the file's existing naming/style conventions\n- If no test exists yet: write one that locks in the current behavior first, then refactor\n- Run the tests afterward and show me the result\nBriefly explain why the new structure is clearer.",
+      "hinweis": "No test yet? Write a characterization test first (see the Testing templates), then refactor.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "migrate-pattern-file-by-file",
+      "category": "refactoring",
+      "title": "Migrate a Pattern/Dependency File by File",
+      "wann": "When you're migrating a library, pattern, or API version across many files.",
+      "prompt": "Migrate <OLD PATTERN/LIBRARY> to <NEW PATTERN/LIBRARY> in <SCOPE, e.g. folder/module>.\n- First list ALL affected files before changing anything\n- Migrate one file at a time (migrate interdependent files as one small group), show each change separately\n- After each file, run the tests/build (<TEST COMMAND>) and show the result\n- If unsure (e.g. unclear old behavior): stop and ask instead of guessing\nAt the end: list of migrated files plus any remaining open cases.",
+      "hinweis": "For a large number of files, test on 2-3 first, refine the prompt, then run it on the rest.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Anthropic: Building Effective Agents",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ]
+    },
+    {
+      "id": "hypothesis-driven-debugging",
+      "category": "debugging",
+      "title": "Systematic Debugging with Hypotheses",
+      "wann": "When a bug shows up and the cause isn't obvious.",
+      "prompt": "Bug: <ERROR DESCRIPTION / ERROR MESSAGE>\nLikely area: <FILE/MODULE, if known>\nProceed like this:\n1. State 2-3 concrete hypotheses for the cause\n2. Check each hypothesis deliberately (read code, logs, a small test) — don't guess\n3. Write a test that reproduces the bug BEFORE fixing it\n4. Fix the root cause, not just the symptom (no swallowing errors with try/catch)\n5. Show the test failing before and passing after\nStop and ask if none of the hypotheses explain the bug.",
+      "hinweis": "\"Root cause, not symptom\" — don't just catch the error, fix what's causing it.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "flaky-test-triage",
+      "category": "debugging",
+      "title": "Track Down a Flaky Test",
+      "wann": "When a test fails intermittently and you want to find the cause (timing, ordering, shared state).",
+      "prompt": "Test <TEST NAME/FILE> is flaky (fails intermittently).\n- Run the test <N, e.g. 20> times in isolation (<TEST COMMAND>) and log pass/fail\n- Check typical causes: shared state between tests, race conditions, timing/order dependence, unmocked external calls\n- State a hypothesis for the cause and back it with a targeted reproduction test\n- Propose a fix that addresses the cause (not just retries/skip)\n- After the fix: run the test multiple times again and show the result\nIf no clear cause is found, summarize what's been ruled out and what to check next.",
+      "hinweis": "Retry logic or @skip isn't a fix — it's a band-aid this prompt explicitly rules out.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "reproduce-before-fix",
+      "category": "debugging",
+      "title": "Reproduce First, Then Fix",
+      "wann": "When a bug is reported but you don't yet have a reliable way to reproduce it.",
+      "prompt": "Reported bug: <DESCRIPTION, e.g. from a ticket/support>\nExpected behavior: <WHAT SHOULD HAPPEN>\nActual behavior: <WHAT HAPPENS INSTEAD>\n1. Find the relevant code path (starting point: <RELEVANT AREA, e.g. src/auth/>)\n2. Write a failing test that exactly reproduces the bug\n3. Show me the failing test BEFORE writing the fix — I'll confirm it's the right bug\nIf you cannot reproduce the bug: stop and report what you checked and ruled out.\n4. Only then: implement the fix, the new test must pass, and the whole test suite must stay green",
+      "hinweis": "The confirmation stop before the fix prevents you from fixing the wrong bug.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "adversarial-self-review",
+      "category": "review",
+      "title": "Adversarial Self-Review",
+      "wann": "Before marking a change done — have a fresh instance look at it critically.",
+      "prompt": "Use a subagent/fresh session to review the diff of <SCOPE, e.g. PR/branch/file> against <PLAN/REQUIREMENT, e.g. PLAN.md or the ticket description>.\nThe reviewer gets ONLY the diff and the requirement — not the reasoning behind why the change was built this way.\nCheck:\n- Is every requirement actually implemented?\n- Are there edge cases from the requirement with no test?\n- Was anything outside the scope changed?\nReport only gaps that affect correctness or requirements — not pure style preferences.",
+      "hinweis": "A reviewer told to hunt for gaps will almost always find some — don't chase every finding, only the ones that actually affect correctness.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "severity-tiered-pr-review",
+      "category": "review",
+      "title": "PR Review with Severity Levels",
+      "wann": "When you want a structured review of a pull request/diff instead of one long unsorted list.",
+      "prompt": "Review the diff in <SCOPE, e.g. PR #123 / branch name>.\nSort every finding into exactly one level:\n- CRITICAL: bug, security issue, or risk of data loss\n- MAJOR: wrong behavior in a realistic case, missing error handling\n- MINOR: style, naming, small improvements\nFor each finding: file:line, what the problem is, a concrete fix suggestion.\nNo generic praise comments. If nothing is found, say so explicitly instead of inventing findings.",
+      "hinweis": "Explicit levels stop a nitpick from carrying the same weight as a real bug.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "verify-against-plan",
+      "category": "review",
+      "title": "Verify the Implementation Against the Plan",
+      "wann": "After implementing a planned task — check whether everything from the plan actually got done.",
+      "prompt": "Compare the current implementation in <SCOPE> with the plan in <PLAN SOURCE, e.g. PLAN.md or the ticket>.\nBuild a checklist from the plan and go through it point by point:\n- Implemented and tested\n- Implemented but without a test\n- Not implemented\n- Done in addition (not in the plan, but present in the diff)\nBack up every point with a file/line reference or test result, no guessing.",
+      "hinweis": "Use this as your stop criterion — the task only counts as done once every point is 'implemented and tested'.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "plan-before-code",
+      "category": "planung",
+      "title": "Plan First, Then Code",
+      "wann": "For tasks that touch multiple files, have an unclear approach, or involve a module you don't know well.",
+      "prompt": "Before changing anything: read <RELEVANT AREA, e.g. src/auth/> and understand how <TOPIC, e.g. login/sessions> currently works.\nThen create a plan for <GOAL/FEATURE>:\n- Which files need to change?\n- What order of steps makes sense?\n- What edge cases/risks do you see?\n- How will this be verified at the end (which tests/checks)?\nShow me the plan first. Only start coding after I've confirmed the plan.",
+      "hinweis": "For small, obvious changes (typo, one line) the planning step isn't worth it — just have it implement directly.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "feature-in-stages",
+      "category": "planung",
+      "title": "Cut a Feature into Stages",
+      "wann": "When a feature is too big for one pass and needs to be broken into checkable pieces.",
+      "prompt": "I want to build <FEATURE DESCRIPTION>.\nBreak the feature into stages, where each stage:\n- runs/tests on its own (no half-broken intermediate state)\n- has a clear verification step (test, build, manual check)\nList the stages in order with 1-2 sentences each.\nImplement ONLY stage 1, run the verification, and show me the result before moving to the next stage.",
+      "hinweis": "This keeps every stage reviewable instead of ending up with one giant diff.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Anthropic: Building Effective Agents",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ]
+    },
+    {
+      "id": "interview-then-spec",
+      "category": "planung",
+      "title": "Get Interviewed First, Then Write the Spec",
+      "wann": "For bigger/new features where you haven't thought through every detail yet.",
+      "prompt": "I want to build <SHORT FEATURE IDEA>. Interview me about it in detail before anything gets built.\nAsk about technical implementation, UX, edge cases, and tradeoffs — skip the obvious questions, dig into the hard parts I might not have considered.\nKeep asking until everything important is covered.\nThen write a complete spec (files/interfaces involved, what's explicitly OUT of scope, an end-to-end verification step) to <SPEC FILE, e.g. SPEC.md>.",
+      "hinweis": "Start a fresh, clean session for the actual implementation, with the finished spec as context.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "characterization-tests-legacy",
+      "category": "testing",
+      "title": "Characterization Tests for Legacy Code",
+      "wann": "When you need to touch unfamiliar/untested legacy code and want to lock in current behavior first.",
+      "prompt": "File/module <TARGET> currently has no (or not enough) tests, and I need to change it soon.\nFirst write characterization tests: tests that document and lock in the CURRENT behavior — including edge and error cases, even if the behavior looks strange.\n- No behavior change to the code itself in this step\n- Run the tests and show that they pass\n- Briefly list any behavior that seemed surprising/questionable (for later clarification)",
+      "hinweis": "These tests are your safety net for the next refactoring step — don't delete them, even once the behavior is later changed on purpose.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "test-first-bugfix",
+      "category": "testing",
+      "title": "Test-First for a Bugfix",
+      "wann": "When you're fixing a specific bug and want to make sure it can't silently come back.",
+      "prompt": "Bug: <DESCRIPTION/ERROR MESSAGE> in <FILE/MODULE>\n1. First write a test that currently fails and reproduces exactly this bug\n2. Show me the failing test\n3. Only then implement the fix\n4. The new test must pass, and all existing tests must stay passing\nExample cases the test should cover: <TEST CASES, e.g. input X gives Y>",
+      "hinweis": "The test stays in the repo after the fix — it's what stops this exact bug from silently coming back as a regression.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "codebase-overview-three-levels",
+      "category": "verstehen",
+      "title": "Codebase Overview in 3 Levels",
+      "wann": "When getting started in a new/unfamiliar codebase or module.",
+      "prompt": "Give me an overview of <SCOPE, e.g. this repo / the src/payments folder> on 3 levels:\n1. Big picture: what does the system do, what are the main building blocks (1 paragraph + list)\n2. Structure: the most important folders/modules and their responsibility\n3. Details: for <SPECIFIC PART, e.g. the request flow of one call>: step by step, which files/functions are involved\nOnly use what's actually in the code, no guessing — where something is unclear, say so explicitly.",
+      "hinweis": "Follow up with targeted questions afterward instead of asking for everything at once — it keeps context small.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "trace-data-flow",
+      "category": "verstehen",
+      "title": "Trace a Function's Data Flow",
+      "wann": "When you want to understand where data comes from and where it flows in a specific path.",
+      "prompt": "Trace the data flow starting from <STARTING POINT, e.g. function/endpoint X>.\n- Where does the input data come from (caller, request, DB, etc.)?\n- Which functions/modules process the data, in what order?\n- Where does state get mutated (state, DB writes, side effects)?\n- Where does the flow end (response, storage, hand-off)?\nPresent this as a numbered step-by-step list with file:line references. If a step is unclear/ambiguous, flag it instead of guessing.",
+      "hinweis": "For more complex flows, also ask for a short Mermaid diagram alongside the list.",
+      "sources": [
+        {
+          "title": "Claude Code: Best practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ export function isLang(x: string): x is Lang {
 }
 
 type Dict = {
-  nav: { lexikon: string; lernpfade: string; feed: string; vergleiche: string; befehle: string; addons: string };
+  nav: { lexikon: string; lernpfade: string; feed: string; vergleiche: string; befehle: string; addons: string; prompts: string };
   addonsTitle: string;
   addonsSub: string;
   addonsOfficial: string;
@@ -91,7 +91,7 @@ type Dict = {
 
 export const ui: Record<Lang, Dict> = {
   de: {
-    nav: { lexikon: 'Lexikon', lernpfade: 'Lernpfade', feed: 'Feed', vergleiche: 'Vergleiche', befehle: 'Befehle', addons: 'Addons' },
+    nav: { lexikon: 'Lexikon', lernpfade: 'Lernpfade', feed: 'Feed', vergleiche: 'Vergleiche', befehle: 'Befehle', addons: 'Addons', prompts: 'Prompts' },
     addonsTitle: 'Addons & Integrationen',
     addonsSub: 'Die wichtigsten Werkzeuge rund um KI-Coding-Agenten: MCP-Server, Plugins, Editor- und Wissens-Integrationen — geprüft, mit Quelle.',
     addonsOfficial: 'Offiziell',
@@ -187,7 +187,7 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} Tag${n === 1 ? '' : 'e'}`,
   },
   en: {
-    nav: { lexikon: 'Glossary', lernpfade: 'Learning paths', feed: 'Feed', vergleiche: 'Compare', befehle: 'Commands', addons: 'Add-ons' },
+    nav: { lexikon: 'Glossary', lernpfade: 'Learning paths', feed: 'Feed', vergleiche: 'Compare', befehle: 'Commands', addons: 'Add-ons', prompts: 'Prompts' },
     addonsTitle: 'Add-ons & integrations',
     addonsSub: 'The most important tools around AI coding agents: MCP servers, plugins, editor and knowledge integrations — vetted, with sources.',
     addonsOfficial: 'Official',
@@ -283,7 +283,7 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} day${n === 1 ? '' : 's'}`,
   },
   es: {
-    nav: { lexikon: 'Glosario', lernpfade: 'Rutas de aprendizaje', feed: 'Feed', vergleiche: 'Comparar', befehle: 'Comandos', addons: 'Add-ons' },
+    nav: { lexikon: 'Glosario', lernpfade: 'Rutas de aprendizaje', feed: 'Feed', vergleiche: 'Comparar', befehle: 'Comandos', addons: 'Add-ons', prompts: 'Prompts' },
     addonsTitle: 'Add-ons e integraciones',
     addonsSub: 'Las herramientas más importantes alrededor de los agentes de programación con IA: servidores MCP, plugins, integraciones de editor y de conocimiento — verificadas, con fuentes.',
     addonsOfficial: 'Oficial',
@@ -379,7 +379,7 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} día${n === 1 ? '' : 's'}`,
   },
   fr: {
-    nav: { lexikon: 'Lexique', lernpfade: "Parcours d'apprentissage", feed: 'Feed', vergleiche: 'Comparer', befehle: 'Commandes', addons: 'Add-ons' },
+    nav: { lexikon: 'Lexique', lernpfade: "Parcours d'apprentissage", feed: 'Feed', vergleiche: 'Comparer', befehle: 'Commandes', addons: 'Add-ons', prompts: 'Prompts' },
     addonsTitle: 'Add-ons & intégrations',
     addonsSub: 'Les outils les plus importants autour des agents de codage IA : serveurs MCP, plugins, intégrations éditeur et connaissances — vérifiés, avec sources.',
     addonsOfficial: 'Officiel',
@@ -475,7 +475,7 @@ export const ui: Record<Lang, Dict> = {
     streakDays: (n) => `${n} jour${n === 1 ? '' : 's'}`,
   },
   zh: {
-    nav: { lexikon: '词典', lernpfade: '学习路径', feed: '资讯', vergleiche: '对比', befehle: '命令', addons: '扩展' },
+    nav: { lexikon: '词典', lernpfade: '学习路径', feed: '资讯', vergleiche: '对比', befehle: '命令', addons: '扩展', prompts: '提示词' },
     addonsTitle: '扩展与集成',
     addonsSub: 'AI 编程智能体周边最重要的工具：MCP 服务器、插件、编辑器与知识库集成——经过核实，附来源。',
     addonsOfficial: '官方',
