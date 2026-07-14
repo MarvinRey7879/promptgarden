@@ -60,7 +60,9 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 96, 14.07.26 abends, Commit-Stand siehe HISTORY)
+## Aktueller Stand (It. 99, 14.07.26 spätabends, Commit-Stand siehe HISTORY)
+NEU seit It. 96: Vergleiche v2 ×5 (Szenario-Picker, Quadrant, 13 Modell-Karten, 4 Duelle mit „wann lohnt NICHT", Im-Tool, 5 Tool-Karten), Favicon, AdSense DSGVO-gated (ads.txt+Meta-Tag+Consent-Banner, Script nur nach Opt-in; Review läuft), 🔍 Volltext-Suche (Header+Ctrl K, 376 Docs/Sprache, lazy MiniSearch), Bing-Sitemap ✓, Sponsors angemeldet. Direktive 13 aktiv, Runde 1: alle 4 gewählt (Suche ✅ → Preisrechner → Prompt-Bibliothek → Landkarte).
+## Alter Stand (It. 96)
 1962 Seiten live auf promptgarten.com: 71 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity CLI 57/Aider 48/Codex 16), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=14, W3=18), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 55 Remotion-Clips (8 Befehls-Demos auf 4 Plattformen + 42s-Flaggschiff-Explainer prominent auf Landing), Forum (leer, bereit), freie API, Admin V2 mit Unique-Besuchern (Tages-Hash) + Internal-Filter (Marvin/Loop/Bots raus, ?ich=1-Opt-out), Landing komplett, Wizard mit 4 Fragen + Tool-Empfehlung. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~256, besucher_7d zählt ab 14.07. Gemini CLI: Free-Aus 18.06.26 → Antigravity (Feed-Item 15.07 fällig).
 
 ## Rotation (nächste Arbeit)
