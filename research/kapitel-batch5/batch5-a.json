@@ -1,0 +1,554 @@
+{
+  "de": [
+    {
+      "slug": "eigene-agenten-bauen-sdk",
+      "title": "Eigene Agenten mit dem Claude Agent SDK bauen",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 7,
+      "xp": 65,
+      "teaser": "Das Claude Agent SDK gibt dir Claude Codes Agent-Loop als Bibliothek – für eigene Programme statt der fertigen CLI.",
+      "body": "## Was das SDK ist\nDas Claude Agent SDK ist eine Bibliothek für Python und TypeScript. Sie gibt dir denselben Agent-Loop, dieselben eingebauten Tools und dasselbe Kontext-Management, die auch Claude Code antreiben – aber programmierbar in deinem eigenen Code statt im Terminal.\n\n## Der Agent-Loop ist geschenkt\nNormalerweise musst du bei einem LLM selbst eine Schleife bauen: Anfrage schicken, prüfen ob das Modell ein Tool nutzen will, das Tool ausführen, Ergebnis zurückschicken, wiederholen. Mit dem SDK übernimmt Claude das: Du rufst `query()` mit einem Prompt auf, und die Antwort kommt als Strom von Nachrichten – Gedanken, Tool-Aufrufe, Tool-Ergebnisse – bis die Aufgabe fertig ist.\n\n## Tools definieren\nEingebaute Tools wie Read, Write, Edit, Bash, Glob, Grep und WebSearch funktionieren sofort, ohne dass du sie selbst implementierst. Über `allowed_tools` legst du fest, was der Agent nutzen darf; über `permission_mode` steuerst du, wie viel Freigabe nötig ist. Zusätzlich lassen sich eigene MCP-Server anbinden, wenn der Agent externe Systeme braucht.\n\n## SDK oder fertiges CLI?\nFür interaktive Entwicklung und einmalige Aufgaben reicht die Claude-Code-CLI. Für CI/CD-Pipelines, eigene Anwendungen und Produktions-Automatisierung ist das SDK gedacht – dieselben Fähigkeiten, aber eingebettet in dein eigenes Programm statt im Terminal.",
+      "bodyDetail": "## Ein minimaler Agent in echtem Code\n```\nimport asyncio\nfrom claude_agent_sdk import query, ClaudeAgentOptions\n\nasync def main():\n    async for message in query(\n        prompt=\"Find and fix the bug in auth.py\",\n        options=ClaudeAgentOptions(allowed_tools=[\"Read\", \"Edit\", \"Bash\"]),\n    ):\n        print(message)\n\nasyncio.run(main())\n```\nDrei Zeilen genügen für einen funktionierenden Agenten: `query()` startet die Schleife, `prompt` beschreibt das Ziel, `options` legt Werkzeuge und Freigabe-Modus fest. Das SDK übernimmt Orchestrierung, Kontext-Management und Wiederholungen im Hintergrund.\n\n## Freigabe-Modi als Stellschraube\nWie viel der Agent ohne Rückfrage tun darf, steuerst du über sechs Modi: `default` verlangt einen eigenen Freigabe-Callback, `acceptEdits` erlaubt Dateiänderungen automatisch, `plan` führt nur lesende Tools aus, `dontAsk` verweigert alles außerhalb der erlaubten Liste, `auto` lässt ein Modell-Klassifikator entscheiden, und `bypassPermissions` führt alles ohne Nachfrage aus – gedacht für Sandboxes. (Stand: Juli 2026)\n\n## Was zusätzlich eingebaut ist\nNeben Tools bringt das SDK Hooks mit (Code an festen Punkten im Lebenszyklus, z. B. nach jedem Tool-Aufruf), Subagents (spezialisierte Unter-Agenten für Teilaufgaben, aufgerufen über das Agent-Tool) und Sessions (Konversationen über eine Session-ID fortsetzen oder verzweigen).\n\n## SDK vs. Client-SDK vs. Managed Agents\nDas normale Anthropic-Client-SDK gibt dir nur die rohe API – die Tool-Schleife musst du selbst schreiben. Das Agent SDK übernimmt diese Schleife. Managed Agents gehen noch weiter: Anthropic betreibt Agent und Sandbox als gehosteten REST-Dienst, während das Agent SDK in deinem eigenen Prozess läuft, mit Sessions als JSONL-Dateien auf deinem Dateisystem.\n\n## Voraussetzungen\nNode.js 18+ oder Python 3.10+, ein Anthropic-API-Key (`ANTHROPIC_API_KEY`), Installation per `npm install @anthropic-ai/claude-agent-sdk` oder `pip install claude-agent-sdk`. Die Nutzung unterliegt Anthropics kommerziellen Nutzungsbedingungen. Wichtig für Windows: Falls PowerShell das Aktivieren der virtuellen Python-Umgebung mit einem Ausführungsrichtlinien-Fehler blockiert, hilft `Set-ExecutionPolicy -Scope Process RemoteSigned` vor dem Aktivierungsbefehl.",
+      "example": "Prompt in eigenem Code: `query(prompt=\"Lies README.md und fasse die drei wichtigsten Punkte zusammen\", options=ClaudeAgentOptions(allowed_tools=[\"Read\"]))` – der Agent liest die Datei selbst und antwortet als Stream von Nachrichten.",
+      "related": [
+        "agent-loop",
+        "tool-use",
+        "mcp",
+        "claude-code"
+      ],
+      "quiz": {
+        "question": "Was übernimmt das Claude Agent SDK automatisch, das du bei einer selbstgebauten Lösung über die reine API sonst selbst programmieren müsstest?",
+        "options": [
+          "Die Wahl des Preismodells für die Nutzung",
+          "Die Erstellung eines eigenen LLM-Modells",
+          "Die Tool-Ausführungsschleife: Anfrage senden, Tool-Aufruf erkennen, Tool ausführen, Ergebnis zurückschicken",
+          "Das Schreiben des gesamten Anwendungscodes deines Produkts"
+        ],
+        "correct": 2,
+        "explain": "Das SDK gibt dir denselben Agent-Loop wie Claude Code fertig mit: Es erkennt Tool-Aufrufe, führt eingebaute Tools aus und schickt Ergebnisse zurück – du rufst nur query() mit einem Prompt auf."
+      },
+      "sources": [
+        {
+          "title": "Claude Agent SDK: Overview",
+          "url": "https://code.claude.com/docs/en/agent-sdk/overview"
+        },
+        {
+          "title": "Claude Agent SDK: Quickstart",
+          "url": "https://code.claude.com/docs/en/agent-sdk/quickstart"
+        },
+        {
+          "title": "GitHub: claude-agent-sdk-python",
+          "url": "https://github.com/anthropics/claude-agent-sdk-python"
+        }
+      ],
+      "exercise": {
+        "task": "Baue mit dem Claude Agent SDK (Python oder TypeScript) einen kleinen Agenten, der eine Datei mit absichtlichen Bugs liest und repariert.",
+        "steps": [
+          "Installiere das SDK (pip install claude-agent-sdk oder npm install @anthropic-ai/claude-agent-sdk) und setze deinen ANTHROPIC_API_KEY.",
+          "Schreibe eine kleine Datei mit einem offensichtlichen Bug (z. B. Division durch Null) und rufe query() mit allowed_tools=[\"Read\",\"Edit\"] auf.",
+          "Lies den Nachrichten-Stream mit und beobachte, wie der Agent liest, denkt und die Datei ändert – ohne dass du die Tool-Schleife selbst programmiert hast."
+        ],
+        "selfCheck": [
+          "Hast du irgendwo selbst eine Schleife für Tool-Aufrufe geschrieben – oder hat das SDK das übernommen?",
+          "Was passiert, wenn du permission_mode auf \"plan\" statt \"acceptEdits\" setzt?",
+          "Wann würdest du für dieselbe Aufgabe die Claude-Code-CLI statt des SDK nehmen?"
+        ]
+      }
+    },
+    {
+      "slug": "mcp-server-selbst-schreiben",
+      "title": "Einen eigenen MCP-Server schreiben",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 7,
+      "xp": 65,
+      "teaser": "Ein MCP-Server macht Tools, Daten oder Vorlagen für jeden MCP-fähigen Client verfügbar – von Claude Code bis Antigravity.",
+      "body": "## Drei Bausteine\nEin MCP-Server bietet einem Client wie Claude Code oder Antigravity drei Arten von Fähigkeiten an: Tools (Funktionen, die das Modell aktiv aufruft, z. B. eine Datenbank-Abfrage), Resources (passive Daten wie Dateien oder API-Antworten, die die Anwendung bereitstellt) und Prompts (fertige Vorlagen, die Nutzer:innen gezielt auswählen).\n\n## Minimaler Ablauf\nEin Server läuft als eigener Prozess und spricht mit dem Client über ein festgelegtes Protokoll (typischerweise Standard-I/O oder HTTP). Der Client fragt beim Start `tools/list` ab, bekommt eine Liste von Tool-Definitionen mit JSON-Schema für die Parameter zurück und ruft bei Bedarf `tools/call` mit den passenden Argumenten auf. Dein Server muss also nur: Tools mit Namen, Beschreibung und Eingabe-Schema registrieren, und bei einem Aufruf das Ergebnis zurückgeben.\n\n## Offizielle SDKs\nDie Organisation modelcontextprotocol pflegt offizielle SDKs für Python, TypeScript, Java, Kotlin, C#, Go, PHP, Ruby, Rust und Swift – du musst das Protokoll nicht von Hand implementieren.\n\n## Anbindung an einen Client\nEin fertiger Server wird in der Konfiguration des Clients eingetragen (z. B. `mcpServers` in Claude Code oder `mcp_config.json` in Antigravity), meist mit Befehl und Argumenten zum Starten des Serverprozesses. Danach taucht er im MCP-Manager des Clients auf, und seine Tools stehen dem Modell zur Verfügung.",
+      "bodyDetail": "## Ein Tool konkret definiert\nEin Tool ist ein JSON-Objekt mit Name, Beschreibung und `inputSchema` nach JSON-Schema-Standard:\n```\n{\n  \"name\": \"searchFlights\",\n  \"description\": \"Search for available flights\",\n  \"inputSchema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"origin\": {\"type\": \"string\"},\n      \"destination\": {\"type\": \"string\"},\n      \"date\": {\"type\": \"string\", \"format\": \"date\"}\n    },\n    \"required\": [\"origin\", \"destination\", \"date\"]\n  }\n}\n```\nDas Modell entscheidet selbst, wann es dieses Tool aufruft – der Client kann zusätzlich eine Nutzerfreigabe verlangen, bevor die Ausführung tatsächlich passiert.\n\n## Wer Tools, Resources und Prompts kontrolliert\nDie drei Bausteine unterscheiden sich nicht nur inhaltlich, sondern auch darin, wer die Kontrolle hat: Tools werden vom Modell gesteuert (es entscheidet, wann es sie ruft), Resources von der Anwendung (sie entscheidet, was sie dem Modell zeigt), Prompts von den Nutzer:innen (sie wählen eine Vorlage bewusst aus, z. B. per Slash-Command). Resources haben eine eindeutige URI wie `file:///pfad/datei.md` und einen MIME-Type; Resource-Templates wie `travel://activities/{city}` erlauben parametrisierte Abfragen.\n\n## Eine wichtige Regel für STDIO-Server\nBei Servern, die über Standard-I/O laufen, darf niemals etwas auf stdout geschrieben werden, das nicht Teil des JSON-RPC-Protokolls ist – jede zusätzliche Ausgabe zerstört die Kommunikation mit dem Client. Logging muss auf stderr oder in eine Datei gehen.\n\n## Mehrere Server kombinieren\nDer eigentliche Nutzen entsteht, wenn mehrere Server zusammenarbeiten: ein Reise-Server für Flüge, ein Wetter-Server für Vorhersagen, ein Kalender-Server für Termine. Der Client liest zuerst Resources als Kontext, ruft dann passende Tools über mehrere Server hinweg auf – eine Aufgabe, die sonst Stunden manueller Arbeit wäre, läuft so in wenigen Schritten ab. Genau dieser Baukasten-Effekt macht selbstgeschriebene Server wertvoll: Ein einziger, gut dokumentierter Server lässt sich in jeden MCP-fähigen Client einhängen, ohne für jede Anwendung eine eigene Integration zu bauen.",
+      "example": "Minimaler Python-Server-Kern (mit dem offiziellen SDK): Ein `@mcp.tool()`-Dekorator registriert eine Funktion `get_forecast(latitude, longitude)` als Tool – der Client entdeckt sie automatisch über `tools/list` und ruft sie bei Bedarf auf.",
+      "related": [
+        "mcp",
+        "tool-use",
+        "claude-code",
+        "plugins"
+      ],
+      "quiz": {
+        "question": "Was unterscheidet ein MCP-„Tool\" von einer MCP-„Resource\"?",
+        "options": [
+          "Tools laufen nur lokal, Resources nur über das Internet",
+          "Resources können nur von Nutzer:innen manuell aufgerufen werden, nie vom Modell",
+          "Tools und Resources sind technisch identisch, nur der Name unterscheidet sich",
+          "Ein Tool wird vom Modell aktiv aufgerufen (z. B. um etwas auszuführen), eine Resource liefert passive Daten, die die Anwendung als Kontext bereitstellt"
+        ],
+        "correct": 3,
+        "explain": "Tools sind modellgesteuerte Funktionen mit Seiteneffekten (z. B. eine Buchung auslösen), Resources sind anwendungsgesteuerte, passive Datenquellen wie Dateien oder API-Antworten."
+      },
+      "sources": [
+        {
+          "title": "MCP-Doku: Build an MCP server",
+          "url": "https://modelcontextprotocol.io/docs/develop/build-server"
+        },
+        {
+          "title": "MCP-Doku: Understanding MCP servers (Tools/Resources/Prompts)",
+          "url": "https://modelcontextprotocol.io/docs/learn/server-concepts"
+        },
+        {
+          "title": "GitHub: modelcontextprotocol-Organisation (offizielle SDKs)",
+          "url": "https://github.com/modelcontextprotocol"
+        }
+      ],
+      "exercise": {
+        "task": "Baue mit einem offiziellen MCP-SDK (z. B. Python) einen minimalen Server mit genau einem Tool und verbinde ihn mit einem MCP-fähigen Client.",
+        "steps": [
+          "Installiere das offizielle SDK für deine Sprache und lege einen Server mit einem einzigen Tool an (z. B. eine Funktion, die das aktuelle Datum zurückgibt).",
+          "Trage den Server in die MCP-Konfiguration deines Clients ein (z. B. Claude Code oder Antigravity) mit Startbefehl und Argumenten.",
+          "Öffne den MCP-Manager im Client (z. B. /mcp), prüfe ob der Server verbunden ist, und lass das Modell dein Tool aufrufen."
+        ],
+        "selfCheck": [
+          "Hat der Client dein Tool über tools/list automatisch erkannt, ohne dass du es manuell eingetragen hast?",
+          "Was passiert, wenn dein Server-Prozess (bei STDIO-Transport) versehentlich auf stdout statt stderr loggt?",
+          "Könntest du denselben Server jetzt auch in einem anderen MCP-Client anbinden, ohne ihn neu zu schreiben?"
+        ]
+      }
+    },
+    {
+      "slug": "was-ist-antigravity",
+      "title": "Was ist Google Antigravity?",
+      "category": "begriff",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 30,
+      "teaser": "Antigravity ist Googles Agent-Plattform aus Desktop-IDE und Terminal-CLI (agy) – seit 18.06.2026 der Nachfolger der Gemini CLI für Privatnutzer:innen.",
+      "body": "## IDE und CLI, eine Engine\nGoogle Antigravity besteht aus zwei Teilen, die dieselbe „Shared Agent Engine\" nutzen: Antigravity 2.0 ist eine volle Desktop-IDE mit visueller Multi-Panel-Oberfläche, Antigravity CLI (Kommando `agy`) ist ein leichtgewichtiges Terminal-Programm für SSH und tastaturzentriertes Arbeiten. Einstellungen und Freigaben synchronisieren sich zwischen beiden, und Konversationen lassen sich zwischen CLI und IDE hin- und herschieben.\n\n## Nachfolger der Gemini CLI\nAm 19.05.2026 kündigte Google an, die Gemini CLI für Privat- und kostenlose Nutzer:innen einzustellen. Seit dem Stichtag 18.06.2026 läuft der kostenlose Google-Account-Zugang nicht mehr über die Gemini CLI, sondern über Antigravity – Enterprise- und zahlende API-Kund:innen bleiben von der Umstellung ausgenommen.\n\n## Plan-Stufen und G1-Credits\nAntigravity hat drei Stufen: eine kostenlose Basis-Stufe mit wöchentlich aufgefülltem Kontingent, Google AI Pro mit großzügigerem, alle fünf Stunden aufgefülltem Kontingent, und Google AI Ultra mit dem höchsten Kontingent. G1-Credits sind ein separates Guthaben, das automatisch einspringt, wenn das Plan-Kontingent aufgebraucht ist (an- oder abschaltbar in den Einstellungen).\n\n## Sogar Claude auf Ultra\nAuf allen Stufen laufen Googles eigene Gemini-Modelle. Nur auf der Ultra-Stufe kommen zusätzlich Drittanbieter-Modelle dazu – darunter Claude Sonnet und Claude Opus sowie ein offenes GPT-OSS-Modell.",
+      "bodyDetail": "## Warum die Umstellung passiert ist\nGoogle begründet den Wechsel damit, dass Antigravity eine neue, für Multi-Agent-Workflows gebaute Plattform ist, die „die kritischsten Features\" der Gemini CLI übernimmt – Agent Skills, Hooks, Subagents und Extensions (dort „Plugins\" genannt) –, aber ausdrücklich ohne vollständige 1:1-Parität. Wer von der Gemini CLI kommt, bekommt beim ersten Start von `agy` in einem Projekt mit vorhandener Gemini-Konfiguration automatisch eine Migrations-Checkliste angeboten; Kontextdateien wie `GEMINI.md` und `AGENTS.md` bleiben dabei unverändert gültig.\n\n## Was G1-Credits konkret sind\nG1-Credits sind persönliche Zusatz-Credits, die als Fallback-Abrechnung greifen, sobald das reguläre Plan-Kontingent für einen Zeitraum aufgebraucht ist. Über die Einstellung „Use G1 Credits\" (`useG1Credits`) legst du fest, ob die CLI bei erschöpftem Kontingent automatisch auf dieses Guthaben zurückgreifen darf oder stoppt. Ein eigenes Panel (`/credits`) zeigt den verbleibenden Stand.\n\n## Modelle nach Plan-Stufe\nLaut Antigravity-Doku (Stand: Juli 2026) laufen Gemini 3.1 Pro und Gemini 3.5 Flash auf allen Stufen. Erst auf Google AI Ultra kommen Claude Sonnet 4.6 (Thinking), Claude Opus 4.6 (Thinking) und GPT-OSS-120b dazu – ausgewählt über ein Dropdown, das während einer laufenden Konversation an das gewählte Modell gebunden bleibt. Fest verdrahtete Zusatzmodelle wie ein Bildgenerator sind nicht wählbar, sondern automatisch aktiv.\n\n## Konkrete Kontingent-Zahlen fehlen\nAnders als die alte Gemini-CLI-Doku, die früher klare Zahlen wie „1.000 Anfragen pro Tag\" nannte, beschreibt Antigravity seine Kontingente nur qualitativ: „meaningful quota\" (Basis), „high, generous quota\" (Pro), „highest, most generous quota\" (Ultra) – jeweils ohne genaue Anfrage-Obergrenze. Wie viel Kontingent eine Aufgabe verbraucht, hängt laut Doku vom Arbeitsaufwand des Agenten ab, nicht von der Anzahl der Nachrichten.",
+      "example": "Frage einen Kollegen mit Google-AI-Ultra-Abo, ob er in Antigravity zwischen Gemini- und Claude-Modellen wechseln kann – das Dropdown zur Modellwahl zeigt genau, welche Modelle auf seiner Plan-Stufe freigeschaltet sind.",
+      "related": [
+        "ki-agent",
+        "modell-und-plan-wahl",
+        "claude-code",
+        "kosten-kontrolle-agenten"
+      ],
+      "quiz": {
+        "question": "Seit wann ist Antigravity für Google-Privatnutzer:innen der offizielle Nachfolger der Gemini CLI?",
+        "options": [
+          "Seit dem 18.06.2026, als der kostenlose Gemini-CLI-Zugang für Individual-Nutzer:innen eingestellt wurde",
+          "Seit der Gründung von Google im Jahr 1998",
+          "Erst ab 2027, aktuell laufen beide Tools noch parallel ohne Einschränkung",
+          "Nie – Gemini CLI und Antigravity sind zwei komplett unabhängige Produkte ohne Zusammenhang"
+        ],
+        "correct": 0,
+        "explain": "Google kündigte die Umstellung am 19.05.2026 an; seit dem Stichtag 18.06.2026 läuft der kostenlose Individual-Zugang über Antigravity statt über die Gemini CLI."
+      },
+      "sources": [
+        {
+          "title": "Google-Ankündigung: Transitioning Gemini CLI to Antigravity CLI",
+          "url": "https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/"
+        },
+        {
+          "title": "Antigravity-Doku: CLI Overview",
+          "url": "https://antigravity.google/docs/cli-overview"
+        },
+        {
+          "title": "Antigravity-Doku: Plans",
+          "url": "https://antigravity.google/docs/plans"
+        },
+        {
+          "title": "Antigravity-Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        },
+        {
+          "title": "Antigravity CLI Doku: Credits",
+          "url": "https://antigravity.google/docs/cli/credits"
+        },
+        {
+          "title": "Antigravity CLI Doku: Migration von Gemini CLI",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "slug": "agenten-observability",
+      "title": "Agenten-Observability: sehen, was dein Agent wirklich tut",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 50,
+      "teaser": "Logs, Kosten-Tracking und OpenTelemetry-Support machen aus einer Blackbox-Session nachvollziehbare Daten – wichtig, sobald Agenten automatisiert oder im Team laufen.",
+      "body": "## Warum Beobachten wichtig wird\nSolange du allein und interaktiv mit einem Agenten arbeitest, siehst du direkt, was passiert. Sobald Agenten automatisiert, im Team oder in CI/CD laufen, brauchst du dafür echte Daten: Was hat der Agent gemacht, wie viel hat es gekostet, welche Tools wurden aufgerufen.\n\n## Session-Logs als Grundpuffer\nClaude Code schreibt jede Session als JSONL-Datei auf die Festplatte (unter `~/.claude/projects/`). Das Format ist intern und ändert sich zwischen Versionen – parse diese Dateien nicht direkt, sondern nutze `/export` oder die dokumentierten Schnittstellen. Auch bei Abo-Plänen zeigt `/usage` eine Kosten- und Nutzungsaufschlüsselung direkt im Terminal.\n\n## Kosten-Tracking im Terminal\nDer Befehl `/usage` zeigt geschätzte Kosten und Token-Nutzung der aktuellen Session direkt im Terminal, aufgeschlüsselt nach Skills, Subagents, Plugins und einzelnen MCP-Servern. Die Zahl ist eine lokale Schätzung aus Token-Zählungen, keine autoritative Rechnung.\n\n## OpenTelemetry für den großen Überblick\nFür Team- oder Organisationsebene bietet Claude Code nativen OpenTelemetry-Support: Mit `CLAUDE_CODE_ENABLE_TELEMETRY=1` exportierst du Metriken, Events und optional Traces an ein eigenes Observability-Backend (Prometheus, Grafana, Datadog & Co.). So bekommst du Kosten, Tool-Nutzung und Sicherheitsereignisse zentral über alle Nutzer:innen hinweg – statt Logs von jeder Maschine einzeln einzusammeln.",
+      "bodyDetail": "## Was OpenTelemetry überhaupt ist\nOpenTelemetry ist ein herstellerneutrales Open-Source-Framework, das drei Signal-Typen standardisiert: Traces (Anfrage-Verläufe durch ein System), Metriken (quantitative Messwerte) und Logs (Ereignis-Texte). Werkzeuge integrieren OpenTelemetry, weil es ein einheitliches Protokoll (OTLP) bietet, statt für jedes Backend eine eigene Anbindung zu bauen.\n\n## Was Claude Code konkret exportiert\nNach Aktivierung exportiert Claude Code unter anderem die Metriken `claude_code.session.count`, `claude_code.cost.usage` und `claude_code.token.usage`, dazu Events wie `user_prompt`, `tool_result`, `tool_decision` und `mcp_server_connection`. Jede Metrik trägt Attribute wie Session-ID, Nutzer-ID und Modellname – so lassen sich Kosten nach Team, Modell oder Nutzer:in aufschlüsseln. Traces (Beta) verknüpfen zusätzlich Prompts mit den API-Aufrufen und Tool-Ausführungen, die daraus folgen.\n\n## Feinsteuerung: was wirklich geloggt wird\nStandardmäßig enthalten Metriken und Events keine rohen Dateiinhalte oder Prompt-Texte. Über einzelne Umgebungsvariablen lässt sich das gezielt öffnen: `OTEL_LOG_USER_PROMPTS=1` für Prompt-Texte, `OTEL_LOG_TOOL_DETAILS=1` für Tool-Parameter und Dateipfade, `OTEL_LOG_RAW_API_BODIES=1` für komplette API-Anfragen. Das ist ein bewusster Trade-off zwischen Audit-Tiefe und Datenschutz.\n\n## Kosten in Zahlen (Stand: Juli 2026)\nLaut Claude-Code-Doku liegen die durchschnittlichen Kosten in Unternehmens-Deployments bei rund 13 USD pro aktivem Entwickler-Tag beziehungsweise 150–250 USD pro Monat, wobei 90 % der Nutzer:innen unter 30 USD pro aktivem Tag bleiben. Diese Zahl schwankt stark mit Modellwahl, Codebase-Größe und ob mehrere Agent-Instanzen parallel laufen (Agent Teams verbrauchen laut Doku etwa siebenmal mehr Tokens als eine Standard-Session, wenn die Teammitglieder im Plan-Modus laufen).\n\n## Grenzen der Beobachtung\nMetriken und Traces zeigen, was der Agent getan hat – nicht automatisch, ob es richtig war. Für Sicherheits-Audits bleiben die vollständigen Session-Logs (JSONL unter `~/.claude/projects/`) und aktivierte Detail-Flags nötig, weil aggregierte Metriken einzelne verdächtige Tool-Aufrufe verschleiern können. Das JSONL-Format ist intern und ändert sich zwischen Versionen – für den Zugriff eignen sich `/export` oder die dokumentierten Schnittstellen besser als eigenes Parsen.",
+      "example": "`export CLAUDE_CODE_ENABLE_TELEMETRY=1`, `export OTEL_METRICS_EXPORTER=otlp` und `export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317` vor dem Start von `claude` reichen, um Metriken an ein lokales OpenTelemetry-Collector-Setup zu schicken.",
+      "related": [
+        "kosten-kontrolle-agenten",
+        "hooks",
+        "claude-code-befehle",
+        "guardrails-fuer-agenten"
+      ],
+      "quiz": {
+        "question": "Wie aktivierst du OpenTelemetry-Export in Claude Code am einfachsten?",
+        "options": [
+          "Automatisch, es ist standardmäßig immer aktiv und lässt sich nicht abschalten",
+          "Nur über ein kostenpflichtiges Zusatz-Abo bei Anthropic",
+          "Mit der Umgebungsvariable CLAUDE_CODE_ENABLE_TELEMETRY=1 plus Konfiguration von Exportern und OTLP-Endpoint",
+          "Indem du /doctor ausführst"
+        ],
+        "correct": 2,
+        "explain": "OpenTelemetry-Export ist opt-in: CLAUDE_CODE_ENABLE_TELEMETRY=1 aktiviert es, weitere Variablen wie OTEL_METRICS_EXPORTER und OTEL_EXPORTER_OTLP_ENDPOINT bestimmen, wohin die Daten gehen."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Doku: Monitoring & Observability (OpenTelemetry)",
+          "url": "https://code.claude.com/docs/en/monitoring-usage"
+        },
+        {
+          "title": "Claude Code Doku: Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        },
+        {
+          "title": "OpenTelemetry: Was ist OpenTelemetry?",
+          "url": "https://opentelemetry.io/docs/what-is-opentelemetry/"
+        },
+        {
+          "title": "Claude Code Doku: Sessions",
+          "url": "https://code.claude.com/docs/en/sessions"
+        }
+      ],
+      "exercise": {
+        "task": "Aktiviere lokal die Kosten- und Session-Transparenz in Claude Code, ohne einen externen Observability-Stack aufzusetzen.",
+        "steps": [
+          "Führe in einer laufenden Claude-Code-Session /usage aus und lies die Aufschlüsselung nach Skills, Subagents und MCP-Servern.",
+          "Öffne /usage und sieh dir die Kosten-/Nutzungsaufschlüsselung an.",
+          "Setze testweise CLAUDE_CODE_ENABLE_TELEMETRY=1 und OTEL_METRICS_EXPORTER=console, starte claude neu und beobachte, welche Metriken in der Konsole erscheinen."
+        ],
+        "selfCheck": [
+          "Konntest du anhand von /usage sagen, welcher Teil der Session (z. B. ein bestimmter MCP-Server) am meisten Kontext verbraucht hat?",
+          "Was stand in der JSONL-Zeile – reichte dir das für eine Kosten-Nachvollziehung?",
+          "Welche der OTEL_LOG_*-Variablen würdest du in einem echten Team-Setup NICHT aktivieren, weil sie zu sensible Daten exportiert?"
+        ]
+      }
+    },
+    {
+      "slug": "open-source-modelle-lokal",
+      "title": "Offene Modelle lokal laufen lassen (Ollama & Co.)",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "Mit Ollama läuft ein offenes Sprachmodell auf deinem eigenen Rechner – ohne Cloud, ohne API-Key, mit klaren Grenzen gegenüber großen Cloud-Modellen.",
+      "body": "## Was Ollama macht\nOllama ist ein Open-Source-Programm, das offene Sprachmodelle wie Gemma, Qwen, DeepSeek oder gpt-oss lokal auf deinem Rechner lädt und ausführt. Ein Befehl wie `ollama run gemma4` lädt das Modell beim ersten Mal herunter und startet danach einen Chat direkt im Terminal – keine Cloud, kein API-Key, keine laufenden Kosten pro Anfrage.\n\n## Was realistisch geht\nKleine Modelle (wenige Milliarden Parameter) laufen auch auf normaler Laptop-Hardware allein mit CPU, wenn auch langsamer als in der Cloud. Für größere Modelle nutzt Ollama automatisch eine GPU, falls vorhanden – unterstützt werden NVIDIA-Karten, AMD Radeon über ROCm, Apple Silicon über Metal und zusätzlich Intel- und weitere AMD-Karten über Vulkan. Passt ein Modell nicht komplett in den Grafikspeicher, verteilt Ollama es automatisch zwischen GPU und CPU.\n\n## Grenzen gegenüber Cloud-Modellen\nLokale offene Modelle sind kleiner als die größten Cloud-Modelle und schneiden bei komplexem Denken, langen Kontexten oder Spezialwissen meist schwächer ab. Der Speicherbedarf wächst mit Modellgröße und Kontextlänge; ein zu großes Modell lädt gar nicht erst oder läuft quälend langsam auf CPU.\n\n## Wann es sich lohnt\nLokale Modelle passen für datenschutz-sensible Aufgaben, Offline-Arbeit, Experimentieren ohne Kosten und einfache, wiederkehrende Aufgaben. Für komplexes Programmieren oder anspruchsvolles Schlussfolgern bleiben Cloud-Modelle wie Claude meist überlegen.",
+      "bodyDetail": "## Der Befehlssatz in der Praxis\n`ollama run <modell>` lädt (falls nötig) und startet einen Chat; im Chat beendet `/bye` die Sitzung. Ollama stellt zusätzlich eine REST-API auf `localhost:11434` bereit (`curl http://localhost:11434/api/chat -d '{...}'`), sodass sich lokale Modelle wie jede andere API in eigene Programme einbinden lassen – inklusive offizieller Python- und JavaScript-Bibliotheken. Die vollständige Modell-Liste mit Größen und Varianten steht unter ollama.com/library.\n\n## Was Hardware wirklich begrenzt\nOllama selbst gibt keine pauschale RAM-Tabelle vor – der Speicherbedarf hängt laut offizieller Doku direkt von der Parameterzahl des Modells sowie von `OLLAMA_NUM_PARALLEL` (parallele Anfragen) und `OLLAMA_CONTEXT_LENGTH` (Kontextfenster, Standard 4.096 Token) ab: größerer Kontext heißt proportional mehr Speicherbedarf. Ollama hält standardmäßig 3 × Anzahl der GPUs (bzw. 3 bei CPU-Inferenz) Modelle gleichzeitig geladen (konfigurierbar über `OLLAMA_MAX_LOADED_MODELS`); reicht der Speicher für ein neues Modell nicht, werden Anfragen in eine Warteschlange gestellt statt sofort ausgeführt.\n\n## Cloud als Mittelweg\nWer ein größeres Modell braucht, ohne es lokal zu laden, kann inzwischen auch über Ollama selbst „Cloud\"-Varianten einzelner Modelle aufrufen (z. B. `ollama run gemma4:cloud`) – dieselbe gewohnte Befehlszeile, aber Ausführung auf Ollamas Servern statt auf dem eigenen Rechner. Das verwischt die Grenze zwischen „lokal\" und „Cloud\" zunehmend, ändert aber nichts daran, dass ein wirklich lokal geladenes Modell offline und ohne Datenabfluss läuft.\n\n## Ehrliche Einordnung\nFür Prototyping, Datenschutz und Kostenkontrolle sind lokale offene Modelle ein echtes Werkzeug. Wer aber verlässliche Ergebnisse bei komplexen Coding- oder Rechercheaufgaben braucht, kommt an großen Cloud-Modellen mit mehr Trainingsdaten und mehr Rechenleistung pro Anfrage meist nicht vorbei – lokal und Cloud schließen sich nicht aus, sie ergänzen sich je nach Aufgabe.",
+      "example": "`ollama run gemma4` im Terminal startet einen Chat mit einem offenen Modell komplett offline – probier direkt danach `curl http://localhost:11434/api/chat -d '{\"model\":\"gemma4\",\"messages\":[{\"role\":\"user\",\"content\":\"Hallo\"}]}'` für denselben Zugriff per API.",
+      "related": [
+        "was-ist-ein-llm",
+        "kosten-kontrolle-agenten",
+        "api",
+        "model-routing"
+      ],
+      "quiz": {
+        "question": "Was begrenzt laut offizieller Ollama-Doku vor allem, wie groß ein Modell sein kann, das du lokal sinnvoll laufen lassen kannst?",
+        "options": [
+          "Ausschließlich die Internetgeschwindigkeit beim ersten Download",
+          "Die Farbe deines Terminals",
+          "Ollama funktioniert nur mit einem einzigen festen Modell, das nicht wechselbar ist",
+          "Verfügbarer Speicher (RAM/VRAM), der mit Parameterzahl und Kontextlänge des Modells wächst"
+        ],
+        "correct": 3,
+        "explain": "Der Speicherbedarf skaliert laut Ollama-Doku mit der Modellgröße sowie mit OLLAMA_NUM_PARALLEL und OLLAMA_CONTEXT_LENGTH – reicht RAM/VRAM nicht, läuft das Modell nicht oder nur sehr langsam auf der CPU."
+      },
+      "sources": [
+        {
+          "title": "Ollama-Doku: Quickstart",
+          "url": "https://docs.ollama.com/quickstart"
+        },
+        {
+          "title": "GitHub: ollama/ollama README",
+          "url": "https://github.com/ollama/ollama/blob/main/README.md"
+        },
+        {
+          "title": "GitHub: ollama/ollama – GPU-Support-Doku",
+          "url": "https://github.com/ollama/ollama/blob/main/docs/gpu.mdx"
+        },
+        {
+          "title": "Ollama Doku: FAQ",
+          "url": "https://docs.ollama.com/faq"
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "slug": "eigene-agenten-bauen-sdk",
+      "title": "Building Your Own Agents with the Claude Agent SDK",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 7,
+      "xp": 65,
+      "teaser": "The Claude Agent SDK gives you Claude Code's agent loop as a library – for your own programs, not just the ready-made CLI.",
+      "body": "## What the SDK is\nThe Claude Agent SDK is a library for Python and TypeScript. It gives you the same agent loop, the same built-in tools, and the same context management that power Claude Code – but programmable inside your own code instead of the terminal.\n\n## The agent loop comes for free\nNormally, working with an LLM means building a loop yourself: send a request, check whether the model wants to use a tool, run the tool, send the result back, repeat. The SDK handles this for you: you call `query()` with a prompt, and the response arrives as a stream of messages – reasoning, tool calls, tool results – until the task is done.\n\n## Defining tools\nBuilt-in tools like Read, Write, Edit, Bash, Glob, Grep, and WebSearch work immediately, with nothing to implement yourself. `allowed_tools` sets what the agent may use; `permission_mode` controls how much approval it needs. You can also connect custom MCP servers whenever the agent needs to reach an external system.\n\n## SDK or the ready-made CLI?\nFor interactive development and one-off tasks, the Claude Code CLI is enough. The SDK is built for CI/CD pipelines, custom applications, and production automation – the same capabilities, embedded in your own program instead of the terminal.",
+      "bodyDetail": "## A minimal agent, in real code\n```\nimport asyncio\nfrom claude_agent_sdk import query, ClaudeAgentOptions\n\nasync def main():\n    async for message in query(\n        prompt=\"Find and fix the bug in auth.py\",\n        options=ClaudeAgentOptions(allowed_tools=[\"Read\", \"Edit\", \"Bash\"]),\n    ):\n        print(message)\n\nasyncio.run(main())\n```\nThree lines are enough for a working agent: `query()` starts the loop, `prompt` describes the goal, `options` sets the tools and permission mode. The SDK handles orchestration, context management, and retries behind the scenes.\n\n## Permission modes as a control knob\nHow much the agent can do without asking is controlled by six modes: `default` requires your own approval callback, `acceptEdits` auto-approves file changes, `plan` runs only read-only tools, `dontAsk` denies anything outside the allowed list, `auto` lets a model classifier decide, and `bypassPermissions` runs everything without asking – meant for sandboxes. (as of July 2026)\n\n## What else is built in\nBesides tools, the SDK ships hooks (code that runs at fixed points in the lifecycle, e.g. after every tool call), subagents (specialized sub-agents for focused subtasks, invoked through the Agent tool), and sessions (resume or fork a conversation via a session ID).\n\n## SDK vs. Client SDK vs. Managed Agents\nThe plain Anthropic Client SDK only gives you the raw API – you write the tool loop yourself. The Agent SDK takes over that loop. Managed Agents go further still: Anthropic runs the agent and the sandbox as a hosted REST service, while the Agent SDK runs in your own process, with sessions stored as JSONL files on your own filesystem.\n\n## Prerequisites\nNode.js 18+ or Python 3.10+, an Anthropic API key (`ANTHROPIC_API_KEY`), installed via `npm install @anthropic-ai/claude-agent-sdk` or `pip install claude-agent-sdk`. Use is governed by Anthropic's commercial terms of service. On Windows: if PowerShell blocks venv activation with an execution policy error, run Set-ExecutionPolicy -Scope Process RemoteSigned first.",
+      "example": "In your own code: `query(prompt=\"Read README.md and summarize the three most important points\", options=ClaudeAgentOptions(allowed_tools=[\"Read\"]))` – the agent reads the file itself and replies as a stream of messages.",
+      "related": [
+        "agent-loop",
+        "tool-use",
+        "mcp",
+        "claude-code"
+      ],
+      "quiz": {
+        "question": "What does the Claude Agent SDK handle automatically that you'd otherwise have to build yourself against the raw API?",
+        "options": [
+          "Choosing the pricing plan for usage",
+          "Training your own LLM model",
+          "The tool-execution loop: sending a request, detecting a tool call, running the tool, sending the result back",
+          "Writing your entire product's application code"
+        ],
+        "correct": 2,
+        "explain": "The SDK gives you the same agent loop as Claude Code out of the box: it detects tool calls, runs built-in tools, and sends results back – you just call query() with a prompt."
+      },
+      "sources": [
+        {
+          "title": "Claude Agent SDK: Overview",
+          "url": "https://code.claude.com/docs/en/agent-sdk/overview"
+        },
+        {
+          "title": "Claude Agent SDK: Quickstart",
+          "url": "https://code.claude.com/docs/en/agent-sdk/quickstart"
+        },
+        {
+          "title": "GitHub: claude-agent-sdk-python",
+          "url": "https://github.com/anthropics/claude-agent-sdk-python"
+        }
+      ],
+      "exercise": {
+        "task": "Use the Claude Agent SDK (Python or TypeScript) to build a small agent that reads a file with an intentional bug and fixes it.",
+        "steps": [
+          "Install the SDK (pip install claude-agent-sdk or npm install @anthropic-ai/claude-agent-sdk) and set your ANTHROPIC_API_KEY.",
+          "Write a small file with an obvious bug (e.g. division by zero) and call query() with allowed_tools=[\"Read\",\"Edit\"].",
+          "Follow the message stream and watch the agent read, reason, and edit the file – without you having written the tool loop yourself."
+        ],
+        "selfCheck": [
+          "Did you write a tool-call loop yourself anywhere – or did the SDK handle it?",
+          "What happens if you set permission_mode to \"plan\" instead of \"acceptEdits\"?",
+          "When would you use the Claude Code CLI instead of the SDK for the same task?"
+        ]
+      }
+    },
+    {
+      "slug": "mcp-server-selbst-schreiben",
+      "title": "Writing Your Own MCP Server",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 7,
+      "xp": 65,
+      "teaser": "An MCP server exposes tools, data, or templates to any MCP-capable client – from Claude Code to Antigravity.",
+      "body": "## Three building blocks\nAn MCP server offers a client like Claude Code or Antigravity three kinds of capability: Tools (functions the model actively calls, e.g. a database query), Resources (passive data like files or API responses that the application supplies), and Prompts (ready-made templates that users deliberately pick).\n\n## The minimal flow\nA server runs as its own process and talks to the client over a fixed protocol (typically standard I/O or HTTP). On startup, the client calls `tools/list`, gets back a list of tool definitions with a JSON schema for the parameters, and calls `tools/call` with the right arguments when needed. So your server only has to: register tools with a name, description, and input schema, and return a result when called.\n\n## Official SDKs\nThe modelcontextprotocol organization maintains official SDKs for Python, TypeScript, Java, Kotlin, C#, Go, PHP, Ruby, Rust, and Swift – you don't have to implement the protocol by hand.\n\n## Connecting to a client\nA finished server gets registered in the client's configuration (e.g. `mcpServers` in Claude Code or `mcp_config.json` in Antigravity), usually with a command and arguments to start the server process. After that it shows up in the client's MCP manager, and its tools become available to the model.",
+      "bodyDetail": "## A tool defined concretely\nA tool is a JSON object with a name, description, and `inputSchema` following the JSON Schema standard:\n```\n{\n  \"name\": \"searchFlights\",\n  \"description\": \"Search for available flights\",\n  \"inputSchema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"origin\": {\"type\": \"string\"},\n      \"destination\": {\"type\": \"string\"},\n      \"date\": {\"type\": \"string\", \"format\": \"date\"}\n    },\n    \"required\": [\"origin\", \"destination\", \"date\"]\n  }\n}\n```\nThe model decides for itself when to call this tool – the client can additionally require user approval before execution actually happens.\n\n## Who controls tools, resources, and prompts\nThe three building blocks differ not just in content but in who's in control: tools are model-controlled (the model decides when to call them), resources are application-controlled (the application decides what to show the model), prompts are user-controlled (users deliberately pick a template, e.g. via a slash command). Resources have a unique URI like `file:///path/file.md` and a MIME type; resource templates like `travel://activities/{city}` allow parameterized queries.\n\n## One crucial rule for STDIO servers\nFor servers running over standard I/O, never write anything to stdout that isn't part of the JSON-RPC protocol – any extra output corrupts communication with the client. Logging has to go to stderr or a file instead.\n\n## Combining multiple servers\nThe real payoff appears once several servers work together: a travel server for flights, a weather server for forecasts, a calendar server for appointments. The client reads resources as context first, then calls tools across multiple servers as needed – a task that would otherwise take hours of manual work happens in a few steps. This exact building-block effect is what makes hand-written servers valuable: a single, well-documented server can be plugged into any MCP-capable client, without building a separate integration for every application.",
+      "example": "A minimal Python server core (using the official SDK): an `@mcp.tool()` decorator registers a function `get_forecast(latitude, longitude)` as a tool – the client discovers it automatically via `tools/list` and calls it when needed.",
+      "related": [
+        "mcp",
+        "tool-use",
+        "claude-code",
+        "plugins"
+      ],
+      "quiz": {
+        "question": "What's the difference between an MCP \"Tool\" and an MCP \"Resource\"?",
+        "options": [
+          "Tools only run locally, Resources only work over the internet",
+          "Resources can only ever be invoked manually by users, never by the model",
+          "Tools and Resources are technically identical, only the name differs",
+          "A Tool is actively called by the model (e.g. to perform an action), a Resource supplies passive data that the application provides as context"
+        ],
+        "correct": 3,
+        "explain": "Tools are model-controlled functions with side effects (e.g. triggering a booking), Resources are application-controlled, passive data sources like files or API responses."
+      },
+      "sources": [
+        {
+          "title": "MCP Docs: Build an MCP server",
+          "url": "https://modelcontextprotocol.io/docs/develop/build-server"
+        },
+        {
+          "title": "MCP Docs: Understanding MCP servers (Tools/Resources/Prompts)",
+          "url": "https://modelcontextprotocol.io/docs/learn/server-concepts"
+        },
+        {
+          "title": "GitHub: modelcontextprotocol organization (official SDKs)",
+          "url": "https://github.com/modelcontextprotocol"
+        }
+      ],
+      "exercise": {
+        "task": "Use an official MCP SDK (e.g. Python) to build a minimal server with exactly one tool, and connect it to an MCP-capable client.",
+        "steps": [
+          "Install the official SDK for your language and create a server with a single tool (e.g. a function that returns the current date).",
+          "Register the server in your client's MCP configuration (e.g. Claude Code or Antigravity) with a start command and arguments.",
+          "Open your client's MCP manager (e.g. /mcp), check that the server is connected, and let the model call your tool."
+        ],
+        "selfCheck": [
+          "Did the client discover your tool automatically via tools/list, without you registering it manually anywhere else?",
+          "What happens if your server process (on STDIO transport) accidentally logs to stdout instead of stderr?",
+          "Could you now connect the same server to a different MCP client without rewriting it?"
+        ]
+      }
+    },
+    {
+      "slug": "was-ist-antigravity",
+      "title": "What Is Google Antigravity?",
+      "category": "begriff",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 30,
+      "teaser": "Antigravity is Google's agent platform of a desktop IDE and a terminal CLI (agy) – since 18 June 2026 the successor to the Gemini CLI for individual users.",
+      "body": "## One engine, two interfaces\nGoogle Antigravity has two parts sharing the same \"Shared Agent Engine\": Antigravity 2.0 is a full desktop IDE with a visual multi-panel interface, Antigravity CLI (the `agy` command) is a lightweight terminal program for SSH and keyboard-first work. Settings and permissions sync between both, and conversations can move back and forth between CLI and IDE.\n\n## Successor to the Gemini CLI\nOn 19 May 2026, Google announced it would retire the Gemini CLI for individual, free-tier users. Since the cutoff date of 18 June 2026, free Google-account access no longer runs through the Gemini CLI but through Antigravity – enterprise customers and paying API users are exempt from the change.\n\n## Plan tiers and G1 credits\nAntigravity has three tiers: a free baseline tier with a weekly-refreshed quota, Google AI Pro with a more generous quota refreshed every five hours, and Google AI Ultra with the highest quota. G1 credits are a separate balance that automatically kicks in once your plan quota runs out (can be switched on or off in settings).\n\n## Even Claude on Ultra\nAll tiers run Google's own Gemini models. Only the Ultra tier adds third-party models on top – including Claude Sonnet and Claude Opus, plus an open GPT-OSS model.",
+      "bodyDetail": "## Why the switch happened\nGoogle frames the move by saying Antigravity is a new platform built for multi-agent workflows that carries over \"the most critical features\" of the Gemini CLI – agent skills, hooks, subagents, and extensions (called \"plugins\" there) – but explicitly without full 1:1 parity. Anyone coming from the Gemini CLI gets an automatic migration checklist the first time they run `agy` in a project with an existing Gemini configuration; context files like `GEMINI.md` and `AGENTS.md` stay valid unchanged.\n\n## What G1 credits actually are\nG1 credits are a personal top-up balance that acts as fallback billing once your regular plan quota for a period runs out. The \"Use G1 Credits\" setting (`useG1Credits`) determines whether the CLI is allowed to automatically fall back on this balance when quota is exhausted, or stop instead. A dedicated panel (`/credits`) shows the remaining balance.\n\n## Models by plan tier\nPer the Antigravity docs (as of July 2026), Gemini 3.1 Pro and Gemini 3.5 Flash run on every tier. Only Google AI Ultra adds Claude Sonnet 4.6 (thinking), Claude Opus 4.6 (thinking), and GPT-OSS-120b – picked from a dropdown that stays locked to the chosen model for the rest of a running conversation. Fixed extra models, like an image generator, aren't selectable; they're simply active automatically.\n\n## No hard quota numbers\nUnlike the old Gemini CLI docs, which used to state clear numbers like \"1,000 requests per day,\" Antigravity describes its quotas only qualitatively: \"meaningful quota\" (baseline), \"high, generous quota\" (Pro), \"highest, most generous quota\" (Ultra) – none with an exact request ceiling. According to the docs, how much quota a task consumes depends on how much work the agent actually does, not on the number of messages.",
+      "example": "Ask a colleague with a Google AI Ultra subscription whether they can switch between Gemini and Claude models in Antigravity – the model-selection dropdown shows exactly which models are unlocked on their plan tier.",
+      "related": [
+        "ki-agent",
+        "modell-und-plan-wahl",
+        "claude-code",
+        "kosten-kontrolle-agenten"
+      ],
+      "quiz": {
+        "question": "Since when has Antigravity been the official successor to the Gemini CLI for individual Google users?",
+        "options": [
+          "Since 18 June 2026, when free Gemini CLI access for individual users was discontinued",
+          "Since Google was founded in 1998",
+          "Not until 2027 – both tools currently still run in parallel without restriction",
+          "Never – the Gemini CLI and Antigravity are two completely unrelated products"
+        ],
+        "correct": 0,
+        "explain": "Google announced the switch on 19 May 2026; since the 18 June 2026 cutoff, free individual access runs through Antigravity instead of the Gemini CLI."
+      },
+      "sources": [
+        {
+          "title": "Google announcement: Transitioning Gemini CLI to Antigravity CLI",
+          "url": "https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/"
+        },
+        {
+          "title": "Antigravity Docs: CLI Overview",
+          "url": "https://antigravity.google/docs/cli-overview"
+        },
+        {
+          "title": "Antigravity Docs: Plans",
+          "url": "https://antigravity.google/docs/plans"
+        },
+        {
+          "title": "Antigravity Docs: Models",
+          "url": "https://antigravity.google/docs/models"
+        },
+        {
+          "title": "Antigravity CLI Docs: Credits",
+          "url": "https://antigravity.google/docs/cli/credits"
+        },
+        {
+          "title": "Antigravity CLI Docs: Migrating from the Gemini CLI",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "slug": "agenten-observability",
+      "title": "Agent Observability: Seeing What Your Agent Actually Does",
+      "category": "guide",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 50,
+      "teaser": "Logs, cost tracking, and OpenTelemetry support turn a black-box session into traceable data – essential once agents run automated or in a team.",
+      "body": "## Why watching matters\nAs long as you work with an agent alone and interactively, you see directly what's happening. Once agents run automated, in a team, or in CI/CD, you need real data instead: what the agent did, what it cost, which tools it called.\n\n## Session logs as the base layer\nClaude Code writes every session to disk as a JSONL file (under `~/.claude/projects/`). The format is internal and changes between versions – don't parse these files directly; use `/export` or the documented interfaces instead. Even on subscription plans, `/usage` shows a cost and usage breakdown right in the terminal.\n\n## Cost tracking in the terminal\nThe `/usage` command shows estimated cost and token usage for the current session right in the terminal, broken down by skills, subagents, plugins, and individual MCP servers. The figure is a local estimate computed from token counts, not an authoritative bill.\n\n## OpenTelemetry for the bigger picture\nAt team or organization scale, Claude Code offers native OpenTelemetry support: setting `CLAUDE_CODE_ENABLE_TELEMETRY=1` exports metrics, events, and optionally traces to your own observability backend (Prometheus, Grafana, Datadog, and so on). That gives you cost, tool usage, and security events centrally across every user – instead of collecting logs from each machine by hand.",
+      "bodyDetail": "## What OpenTelemetry actually is\nOpenTelemetry is a vendor-neutral open source framework that standardizes three signal types: traces (request flows through a system), metrics (quantitative measurements), and logs (event text). Tools integrate with OpenTelemetry because it offers one unified protocol (OTLP) instead of a custom integration for every backend.\n\n## What Claude Code actually exports\nOnce enabled, Claude Code exports metrics including `claude_code.session.count`, `claude_code.cost.usage`, and `claude_code.token.usage`, plus events like `user_prompt`, `tool_result`, `tool_decision`, and `mcp_server_connection`. Every metric carries attributes like session ID, user ID, and model name – so you can break down cost by team, model, or user. Traces (beta) additionally link prompts to the API calls and tool executions that follow from them.\n\n## Fine control: what actually gets logged\nBy default, metrics and events don't contain raw file contents or prompt text. Specific environment variables open that up deliberately: `OTEL_LOG_USER_PROMPTS=1` for prompt text, `OTEL_LOG_TOOL_DETAILS=1` for tool parameters and file paths, `OTEL_LOG_RAW_API_BODIES=1` for full API request/response bodies. That's a deliberate trade-off between audit depth and privacy.\n\n## Cost in numbers (as of July 2026)\nPer the Claude Code docs, average cost across enterprise deployments runs around $13 per active developer-day, or $150–250 per month, with 90% of users staying under $30 per active day. That figure swings widely with model choice, codebase size, and whether multiple agent instances run in parallel (agent teams reportedly use about seven times more tokens than a standard session when teammates run in plan mode, per the docs).\n\n## The limits of observing\nMetrics and traces show what the agent did – not automatically whether it was right. For security audits, you still need full session logs (JSONL under `~/.claude/projects/`) and the detail flags turned on, because aggregated metrics can hide individual suspicious tool calls. The JSONL format is internal and changes between versions – `/export` or the documented interfaces are a better fit for access than parsing it yourself.",
+      "example": "`export CLAUDE_CODE_ENABLE_TELEMETRY=1`, `export OTEL_METRICS_EXPORTER=otlp`, and `export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317` before starting `claude` are enough to send metrics to a local OpenTelemetry collector setup.",
+      "related": [
+        "kosten-kontrolle-agenten",
+        "hooks",
+        "claude-code-befehle",
+        "guardrails-fuer-agenten"
+      ],
+      "quiz": {
+        "question": "What's the simplest way to enable OpenTelemetry export in Claude Code?",
+        "options": [
+          "It's on by default automatically and can't be turned off",
+          "Only through a separate paid add-on subscription with Anthropic",
+          "Set the environment variable CLAUDE_CODE_ENABLE_TELEMETRY=1 plus configure exporters and an OTLP endpoint",
+          "By running /doctor"
+        ],
+        "correct": 2,
+        "explain": "OpenTelemetry export is opt-in: CLAUDE_CODE_ENABLE_TELEMETRY=1 turns it on, and further variables like OTEL_METRICS_EXPORTER and OTEL_EXPORTER_OTLP_ENDPOINT determine where the data goes."
+      },
+      "sources": [
+        {
+          "title": "Claude Code Docs: Monitoring & Observability (OpenTelemetry)",
+          "url": "https://code.claude.com/docs/en/monitoring-usage"
+        },
+        {
+          "title": "Claude Code Docs: Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        },
+        {
+          "title": "OpenTelemetry: What is OpenTelemetry?",
+          "url": "https://opentelemetry.io/docs/what-is-opentelemetry/"
+        },
+        {
+          "title": "Claude Code Docs: Sessions",
+          "url": "https://code.claude.com/docs/en/sessions"
+        }
+      ],
+      "exercise": {
+        "task": "Turn on local cost and session transparency in Claude Code without setting up an external observability stack.",
+        "steps": [
+          "Run /usage in an active Claude Code session and read the breakdown by skills, subagents, and MCP servers.",
+          "Open /usage and look at the cost/usage breakdown.",
+          "Set CLAUDE_CODE_ENABLE_TELEMETRY=1 and OTEL_METRICS_EXPORTER=console as a test, restart claude, and watch which metrics show up in the console."
+        ],
+        "selfCheck": [
+          "Could /usage tell you which part of the session (e.g. a specific MCP server) consumed the most context?",
+          "What was in the JSONL line – was it enough for you to reconstruct the cost?",
+          "Which of the OTEL_LOG_* variables would you NOT enable in a real team setup because it exports data that's too sensitive?"
+        ]
+      }
+    },
+    {
+      "slug": "open-source-modelle-lokal",
+      "title": "Running Open Models Locally (Ollama & Co.)",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "Ollama runs an open language model on your own machine – no cloud, no API key, with clear limits compared to large cloud models.",
+      "body": "## What Ollama does\nOllama is an open source program that downloads and runs open language models like Gemma, Qwen, DeepSeek, or gpt-oss locally on your machine. A command like `ollama run gemma4` downloads the model the first time and then starts a chat right in your terminal – no cloud, no API key, no per-request running costs.\n\n## What's realistic\nSmall models (a few billion parameters) run fine on ordinary laptop hardware using just the CPU, though slower than in the cloud. For bigger models, Ollama automatically uses a GPU if one is available – supporting NVIDIA cards, AMD Radeon via ROCm, Apple Silicon via Metal, and additionally Intel and other AMD cards via Vulkan. If a model doesn't fit entirely in GPU memory, Ollama automatically splits it between GPU and CPU.\n\n## The limits versus cloud models\nLocal open models are smaller than the largest cloud models and usually fall short on complex reasoning, long context, or specialist knowledge. Memory needs grow with model size and context length; a model that's too big simply won't load, or crawls painfully slowly on CPU.\n\n## When it's worth it\nLocal models fit privacy-sensitive tasks, offline work, cost-free experimentation, and simple, repetitive jobs. For demanding coding or hard reasoning, cloud models like Claude usually stay ahead.",
+      "bodyDetail": "## The command set in practice\n`ollama run <model>` downloads (if needed) and starts a chat; `/bye` inside the chat ends the session. Ollama also exposes a REST API on `localhost:11434` (`curl http://localhost:11434/api/chat -d '{...}'`), so local models plug into your own programs like any other API – including official Python and JavaScript libraries. The full model list with sizes and variants lives at ollama.com/library.\n\n## What actually limits hardware\nOllama itself doesn't publish a blanket RAM table – per the official docs, memory needs scale directly with a model's parameter count as well as with `OLLAMA_NUM_PARALLEL` (parallel requests) and `OLLAMA_CONTEXT_LENGTH` (context window, default 4,096 tokens): a bigger context means proportionally more memory. Ollama keeps 3 × the number of GPUs (or 3 for CPU inference) models loaded at once by default (configurable via `OLLAMA_MAX_LOADED_MODELS`); if there isn't enough memory for a new model, requests queue instead of running immediately.\n\n## Cloud as a middle ground\nIf you need a bigger model without loading it locally, now Ollama itself also offers \"cloud\" variants of individual models (e.g. `ollama run gemma4:cloud`) – the same familiar command line, but execution happens on Ollama's servers instead of your own machine. That increasingly blurs the line between \"local\" and \"cloud,\" but doesn't change the fact that a model genuinely loaded locally runs offline with no data leaving your machine.\n\n## An honest take\nFor prototyping, privacy, and cost control, local open models are a real tool. But for reliable results on complex coding or research tasks, large cloud models with more training data and more compute per request usually still win – local and cloud aren't mutually exclusive, they complement each other depending on the task.",
+      "example": "`ollama run gemma4` in your terminal starts a chat with an open model completely offline – right after, try `curl http://localhost:11434/api/chat -d '{\"model\":\"gemma4\",\"messages\":[{\"role\":\"user\",\"content\":\"Hello\"}]}'` for the same thing over the API.",
+      "related": [
+        "was-ist-ein-llm",
+        "kosten-kontrolle-agenten",
+        "api",
+        "model-routing"
+      ],
+      "quiz": {
+        "question": "According to the official Ollama docs, what mainly limits how large a model you can realistically run locally?",
+        "options": [
+          "Only your internet speed during the first download",
+          "The color scheme of your terminal",
+          "Ollama only works with one fixed model that can't be changed",
+          "Available memory (RAM/VRAM), which scales with the model's parameter count and context length"
+        ],
+        "correct": 3,
+        "explain": "Per the Ollama docs, memory needs scale with model size as well as OLLAMA_NUM_PARALLEL and OLLAMA_CONTEXT_LENGTH – if RAM/VRAM isn't enough, the model either won't run or crawls on CPU."
+      },
+      "sources": [
+        {
+          "title": "Ollama Docs: Quickstart",
+          "url": "https://docs.ollama.com/quickstart"
+        },
+        {
+          "title": "GitHub: ollama/ollama README",
+          "url": "https://github.com/ollama/ollama/blob/main/README.md"
+        },
+        {
+          "title": "GitHub: ollama/ollama – GPU support docs",
+          "url": "https://github.com/ollama/ollama/blob/main/docs/gpu.mdx"
+        },
+        {
+          "title": "Ollama Docs: FAQ",
+          "url": "https://docs.ollama.com/faq"
+        }
+      ]
+    }
+  ]
+}
