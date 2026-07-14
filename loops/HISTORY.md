@@ -534,3 +534,7 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Start-Wizard (Original-Spec »verschiedene Einstiegswege«): neue 4. Frage »Womit arbeitest du (hauptsächlich)?« (Claude Code/Cursor/Aider/Codex/noch gar nicht, unbewertet) — Ergebnis-Karte zeigt jetzt nummerierte nächste Schritte: ① Lernpfad (level-basiert) ② Befehls-Referenz des eigenen Tools bzw. Kapitel »Claude Code installieren« bei Neulingen. localStorage pg_wizard um tool erweitert. ×5 Sprachen (neue Dict-Keys wizardToolQ/wizardNext*), Intro 3→4 Fragen.
 - Lektionen: FR-Apostroph (l'instant) brach i18n-Build → bei automatisierten String-Inserts Apostroph-haltige Strings mit JSON.stringify quoten; Client-Komponenten-Strings im JS-Bundle prüfen, nicht im SSG-HTML (Wizard client-only — Frage-Texte via Bundle-grep + Live-Screenshot verifiziert).
 - 375px-Screenshot ✅ (1/4-Fortschritt sichtbar). Known-good Deploy: 2031d54c.promptgarden.pages.dev
+
+### It. 87 (14.07.26 abends) — 🎬 Remotion R4: /compact- + Cursor-/plan-Demos ✅
+- 2 neue Terminal-Demos ×5 (compact-demo: Kontext-freiräumen-Session mit Fokus-Anweisung; cursor-plan-demo: Plan-Modus mit Build-Locally/Cloud-Menü) — Fakten aus verifizierten commands-Einträgen. **40 Remotion-Clips, 6 Befehle mit Video auf 3 Plattformen** (goal, loop, compact, sandbox-run, plan, add).
+- Live verifiziert (Content-Type + Embeds DE/ZH). Known-good Deploy: 59ec3c97.promptgarden.pages.dev

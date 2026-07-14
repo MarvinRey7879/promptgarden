@@ -9,7 +9,9 @@ import { breadcrumbLd } from '@/lib/schema';
 const COMMAND_VIDEOS: Record<string, string> = {
   'claude-code/goal': 'goal-demo',
   'claude-code/loop': 'claude-loop-demo',
+  'claude-code/compact': 'compact-demo',
   'cursor-cli/sandbox-run': 'sandbox-demo',
+  'cursor-cli/plan': 'cursor-plan-demo',
   'aider/add': 'aider-add-demo',
 };
 

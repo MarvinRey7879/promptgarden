@@ -316,7 +316,117 @@ export const aiderAddScripts: Record<Lang, TermScript> = {
   },
 };
 
+// ---------- Demo 5: /compact (Claude Code) — Fakten aus commands.de.json claude-code/compact ----------
+export const compactScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Claude Code: /compact — Kontext freiräumen',
+    lines: [
+      { kind: 'note', text: 'Kontext fast voll — ältere Nachrichten belegen Platz.' },
+      { kind: 'cmd', text: '/compact behalte die Liste der geänderten Dateien' },
+      { kind: 'out', text: 'Bisherige Konversation wird zusammengefasst …' },
+      { kind: 'ok', text: 'Kontext freigeräumt — Zusammenfassung ersetzt den Verlauf.' },
+      { kind: 'note', text: 'Die Fokus-Anweisung steuert, was die Zusammenfassung behält.' },
+    ],
+  },
+  en: {
+    title: 'Claude Code: /compact — free up context',
+    lines: [
+      { kind: 'note', text: 'Context almost full — older messages take up space.' },
+      { kind: 'cmd', text: '/compact keep the list of modified files' },
+      { kind: 'out', text: 'Summarizing the conversation so far …' },
+      { kind: 'ok', text: 'Context freed — a summary replaces the history.' },
+      { kind: 'note', text: 'The focus instruction controls what the summary keeps.' },
+    ],
+  },
+  es: {
+    title: 'Claude Code: /compact — liberar contexto',
+    lines: [
+      { kind: 'note', text: 'Contexto casi lleno — los mensajes antiguos ocupan espacio.' },
+      { kind: 'cmd', text: '/compact keep the list of modified files' },
+      { kind: 'out', text: 'Resumiendo la conversación hasta ahora …' },
+      { kind: 'ok', text: 'Contexto liberado — un resumen sustituye al historial.' },
+      { kind: 'note', text: 'La instrucción de enfoque controla qué conserva el resumen.' },
+    ],
+  },
+  fr: {
+    title: 'Claude Code : /compact — libérer du contexte',
+    lines: [
+      { kind: 'note', text: 'Contexte presque plein — les anciens messages prennent de la place.' },
+      { kind: 'cmd', text: '/compact keep the list of modified files' },
+      { kind: 'out', text: 'Résumé de la conversation en cours …' },
+      { kind: 'ok', text: "Contexte libéré — un résumé remplace l'historique." },
+      { kind: 'note', text: "L'instruction de focus contrôle ce que le résumé conserve." },
+    ],
+  },
+  zh: {
+    title: 'Claude Code：/compact——腾出上下文',
+    lines: [
+      { kind: 'note', text: '上下文快满了——旧消息占用空间。' },
+      { kind: 'cmd', text: '/compact keep the list of modified files' },
+      { kind: 'out', text: '正在总结到目前为止的对话 …' },
+      { kind: 'ok', text: '上下文已释放——摘要取代了历史记录。' },
+      { kind: 'note', text: '聚焦指令决定摘要保留什么。' },
+    ],
+  },
+};
+
+// ---------- Demo 6: /plan (Cursor CLI) — Fakten aus commands.de.json cursor-cli/plan ----------
+export const cursorPlanScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Cursor CLI: /plan — erst planen, dann bauen',
+    lines: [
+      { kind: 'cmd', text: '/plan Login-Formular mit Validierung bauen' },
+      { kind: 'out', text: 'Plan-Modus: Schritte werden entworfen, noch kein Code geändert.' },
+      { kind: 'out', text: '1. Formular-Komponente  2. Validierung  3. Tests' },
+      { kind: 'ok', text: 'Plan gespeichert — Menü: Build Locally / Build in Cloud.' },
+      { kind: 'note', text: 'Pläne liegen auf Platte und lassen sich in Cloud-Agents übertragen.' },
+    ],
+  },
+  en: {
+    title: 'Cursor CLI: /plan — plan first, then build',
+    lines: [
+      { kind: 'cmd', text: '/plan build a login form with validation' },
+      { kind: 'out', text: 'Plan mode: steps are drafted, no code changed yet.' },
+      { kind: 'out', text: '1. Form component  2. Validation  3. Tests' },
+      { kind: 'ok', text: 'Plan saved — menu: Build Locally / Build in Cloud.' },
+      { kind: 'note', text: 'Plans are stored on disk and can be handed to cloud agents.' },
+    ],
+  },
+  es: {
+    title: 'Cursor CLI: /plan — primero planear, luego construir',
+    lines: [
+      { kind: 'cmd', text: '/plan build a login form with validation' },
+      { kind: 'out', text: 'Modo plan: se redactan los pasos, aún sin cambiar código.' },
+      { kind: 'out', text: '1. Componente del formulario  2. Validación  3. Tests' },
+      { kind: 'ok', text: 'Plan guardado — menú: Build Locally / Build in Cloud.' },
+      { kind: 'note', text: 'Los planes se guardan en disco y pueden pasarse a agentes en la nube.' },
+    ],
+  },
+  fr: {
+    title: 'Cursor CLI : /plan — planifier avant de construire',
+    lines: [
+      { kind: 'cmd', text: '/plan build a login form with validation' },
+      { kind: 'out', text: "Mode plan : les étapes sont rédigées, aucun code n'est modifié." },
+      { kind: 'out', text: '1. Composant du formulaire  2. Validation  3. Tests' },
+      { kind: 'ok', text: 'Plan enregistré — menu : Build Locally / Build in Cloud.' },
+      { kind: 'note', text: 'Les plans sont stockés sur disque et transférables aux agents cloud.' },
+    ],
+  },
+  zh: {
+    title: 'Cursor CLI：/plan——先规划，再动手',
+    lines: [
+      { kind: 'cmd', text: '/plan build a login form with validation' },
+      { kind: 'out', text: '规划模式：先起草步骤，代码暂不改动。' },
+      { kind: 'out', text: '1. 表单组件  2. 校验  3. 测试' },
+      { kind: 'ok', text: '计划已保存——菜单：Build Locally / Build in Cloud。' },
+      { kind: 'note', text: '计划保存在磁盘上，可交给云端智能体执行。' },
+    ],
+  },
+};
+
 export const GoalDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={goalScripts[lang]} />;
 export const SandboxDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={sandboxScripts[lang]} />;
 export const LoopDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={loopScripts[lang]} />;
 export const AiderAddDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={aiderAddScripts[lang]} />;
+export const CompactDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={compactScripts[lang]} />;
+export const CursorPlanDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={cursorPlanScripts[lang]} />;
