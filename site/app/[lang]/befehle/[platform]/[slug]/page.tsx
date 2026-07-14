@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCommand, getCommands, getPlatform } from '@/lib/commands';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 import ExampleVideo from '@/components/ExampleVideo';
+import { breadcrumbLd } from '@/lib/schema';
 
 // Remotion-Terminal-Demos (Direktive 12) für ausgewählte Befehle: platform/slug → Video-Basename
 const COMMAND_VIDEOS: Record<string, string> = {
@@ -46,8 +47,15 @@ export default async function CommandPage({
   if (!c || !p) notFound();
   const t = ui[lang];
 
+  const crumbs = breadcrumbLd(lang, [
+    { name: t.cmdTitle, path: 'befehle/' },
+    { name: p.name, path: `befehle/${platform}/` },
+    { name: c.name, path: `befehle/${platform}/${slug}/` },
+  ]);
+
   return (
     <article style={{ maxWidth: 720, margin: '0 auto', padding: '30px 0' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
       <p className="kicker" style={{ margin: '0 0 4px' }}>
         <Link href={`/${lang}/befehle/`} style={{ textDecoration: 'underline' }}>{t.cmdTitle}</Link>
         {' · '}

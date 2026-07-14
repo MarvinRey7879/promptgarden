@@ -524,3 +524,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Playwright-Zugriff: Paket nirgends installiert, npx-CLI (playwright screenshot) mit gecachten Browsern funktioniert — Merker für künftige Passes.
 - Kapitel-Batch-4-Ideenliste finalisiert (in Rotation): monorepo-mit-agenten, refactoring-mit-ki, legacy-code-modernisieren, memory-systeme-fuer-agenten, kosten-optimierung-praxis, sicherheits-audits-mit-ki, datenbanken-mit-agenten, code-verstehen-mit-ki, frontend-mit-ki, pair-programming-muster.
 - Known-good Deploy: 06e73464.promptgarden.pages.dev
+
+### It. 85 (14.07.26 abends) — 🧭 SEO-Phase 3: BreadcrumbList-Schema auf allen Detail-Seiten ✅
+- lib/schema.ts (breadcrumbLd-Helper) + JSON-LD auf 3 Templates: Befehls-Detail (Home→Befehle→Plattform→Befehl), Lexikon-Detail (Home→Lexikon→Kapitel, zusätzlich zum bestehenden Article-Schema), Addon-Detail (Home→Addons→Addon) — deckt ~1470 Detail-Seiten ×5 Sprachen ab, Labels aus ui.nav (lokalisiert).
+- Live verifiziert auf /de/lexikon/mcp/, /zh/befehle/aider/add/, /fr/addons/graphify/.
+- Known-good Deploy: 2f772433.promptgarden.pages.dev

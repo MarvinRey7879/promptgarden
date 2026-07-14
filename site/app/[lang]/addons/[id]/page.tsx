@@ -7,6 +7,7 @@ import en from '@/content/addons.en.json';
 import es from '@/content/addons.es.json';
 import fr from '@/content/addons.fr.json';
 import zh from '@/content/addons.zh.json';
+import { breadcrumbLd } from '@/lib/schema';
 
 type Addon = {
   id: string;
@@ -70,9 +71,14 @@ export default async function AddonDetailPage({
   if (!a || !a.detail) notFound();
   const t = ui[lang];
   const howHtml = marked.parse(a.detail.how) as string;
+  const crumbs = breadcrumbLd(lang, [
+    { name: t.nav.addons, path: 'addons/' },
+    { name: a.name, path: `addons/${a.id}/` },
+  ]);
 
   return (
     <article style={{ maxWidth: 720, margin: '0 auto', padding: '30px 0' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
       <p className="kicker" style={{ margin: '0 0 4px' }}>
         <Link href={`/${lang}/addons/`} style={{ textDecoration: 'underline' }}>{t.addonsTitle}</Link>
         {' · '}{a.category}

@@ -7,6 +7,7 @@ import CompleteButton from '@/components/CompleteButton';
 import TokenPlayground from '@/components/TokenPlayground';
 import ContextWindowDiagram from '@/components/ContextWindowDiagram';
 import ExampleVideo from '@/components/ExampleVideo';
+import { breadcrumbLd } from '@/lib/schema';
 import Comments from '@/components/Comments';
 import { getEntries, getEntry, difficultyDots } from '@/lib/content';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
@@ -58,6 +59,10 @@ export default async function EntryPage({
     author: { '@type': 'Organization', name: 'promptgarden' },
     citation: (entry.sources ?? []).map((s) => s.url),
   };
+  const crumbs = breadcrumbLd(lang, [
+    { name: t.nav.lexikon, path: 'lexikon/' },
+    { name: entry.title, path: `lexikon/${entry.slug}/` },
+  ]);
 
   return (
     <article style={{ maxWidth: 720, margin: '0 auto', padding: '30px 0' }}>
@@ -65,6 +70,7 @@ export default async function EntryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <span className="chip" style={{ fontSize: 11.5 }}>
           {t.categories[entry.category]}
