@@ -89,6 +89,7 @@ export default function ContextWindowDiagram({ lang }: { lang: Lang }) {
   return (
     <div className="card" style={{ padding: '18px 22px', marginTop: 26, boxShadow: '4px 4px 0 var(--ink)', background: '#fff' }}>
       <p className="kicker" style={{ color: 'var(--ink)' }}>📐 {t.title}</p>
+      <p className="mono swipe-hint" aria-hidden="true">→</p>
       <div style={{ overflowX: 'auto' }}>
         <svg
           viewBox="0 0 640 190"

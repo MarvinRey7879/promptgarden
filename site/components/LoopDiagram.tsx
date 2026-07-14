@@ -44,6 +44,7 @@ export function LoopCycleDiagram({ t }: { t: LoopDiagramLabels }) {
       <div style={{ padding: '16px 18px 6px' }}>
         <p className="kicker" style={{ margin: 0 }}>🔄 {t.cycleTitle.toUpperCase()}</p>
       </div>
+      <p className="mono swipe-hint" aria-hidden="true">→</p>
       <div style={{ overflowX: 'auto' }}>
         <svg viewBox="0 0 640 250" style={{ display: 'block', width: '100%', minWidth: 520, height: 'auto' }} fontFamily="inherit">
           <defs>
@@ -95,6 +96,7 @@ export function GoodBadLoopDiagram({ t }: { t: LoopDiagramLabels }) {
       <div style={{ padding: '16px 18px 6px' }}>
         <p className="kicker" style={{ margin: 0 }}>⚖️ {t.vsTitle.toUpperCase()}</p>
       </div>
+      <p className="mono swipe-hint" aria-hidden="true">→</p>
       <div style={{ overflowX: 'auto' }}>
         <svg viewBox="0 0 640 240" style={{ display: 'block', width: '100%', minWidth: 520, height: 'auto' }} fontFamily="inherit">
           {/* Gute Loop */}

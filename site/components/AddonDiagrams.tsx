@@ -44,6 +44,7 @@ export function GraphifyDiagram({ t }: { t: AddonDiagramLabels }) {
       <div style={{ padding: '16px 18px 4px' }}>
         <p className="kicker" style={{ margin: 0 }}>🕸️ {t.graphifyTitle.toUpperCase()}</p>
       </div>
+      <p className="mono swipe-hint" aria-hidden="true">→</p>
       <div style={{ overflowX: 'auto' }}>
         <svg viewBox="0 0 720 170" style={{ display: 'block', width: '100%', minWidth: 600, height: 'auto' }} fontFamily="inherit">
           <defs>
@@ -75,6 +76,7 @@ export function ObsidianClaudeDiagram({ t }: { t: AddonDiagramLabels }) {
       <div style={{ padding: '16px 18px 4px' }}>
         <p className="kicker" style={{ margin: 0 }}>🔮 {t.obsTitle.toUpperCase()}</p>
       </div>
+      <p className="mono swipe-hint" aria-hidden="true">→</p>
       <div style={{ overflowX: 'auto' }}>
         <svg viewBox="0 0 720 150" style={{ display: 'block', width: '100%', minWidth: 600, height: 'auto' }} fontFamily="inherit">
           <Box x={30} y={35} w={175} h={62} fill="#e0d4f7" title={`🗂️ ${t.oVault}`} sub={t.oVaultSub} />

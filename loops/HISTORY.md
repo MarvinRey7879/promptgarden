@@ -517,3 +517,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - 2 neue Terminal-Demos ×5 Sprachen (claude-loop-demo: /loop 5m Deploy-Check-Session mit Selbst-Pacing-Hinweis; aider-add-demo: /add payment.py → Edit → /drop) — Fakten aus verifizierten commands-Einträgen. 30 Remotion-Clips total, 4 Befehle mit Video (goal, loop, sandbox-run, add).
 - COMMAND_VIDEOS-Mapping erweitert; je ~0,7MB, live verifiziert (Content-Type video/mp4 + Embeds DE/ZH).
 - Known-good Deploy: 3815bbd6.promptgarden.pages.dev
+
+### It. 84 (14.07.26 nachmittags) — 📱 Mobile-Polish-Pass 2 ✅
+- 375px-Audit per Playwright (5 Seiten: Befehls-Hub 4 Plattformen, Aider-Liste, goal-Seite mit Video, context-window mit SVG+Video+Playground, Landing): Hub/Landing/Video-Karten/Befehlsseiten ALLE sauber — kein Overflow, Touch-Targets ok.
+- 1 Fund gefixt: horizontal scrollbare SVG-Diagramme (Context-Window, Loop×2, Addons×2) hatten auf Mobile keinen sichtbaren Scroll-Hinweis → neue .swipe-hint-Klasse (nur <600px sichtbar, dezenter →) auf allen 5 Diagramm-Containern. Live verifiziert.
+- Playwright-Zugriff: Paket nirgends installiert, npx-CLI (playwright screenshot) mit gecachten Browsern funktioniert — Merker für künftige Passes.
+- Kapitel-Batch-4-Ideenliste finalisiert (in Rotation): monorepo-mit-agenten, refactoring-mit-ki, legacy-code-modernisieren, memory-systeme-fuer-agenten, kosten-optimierung-praxis, sicherheits-audits-mit-ki, datenbanken-mit-agenten, code-verstehen-mit-ki, frontend-mit-ki, pair-programming-muster.
+- Known-good Deploy: 06e73464.promptgarden.pages.dev
