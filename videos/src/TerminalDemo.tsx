@@ -198,5 +198,125 @@ export const sandboxScripts: Record<Lang, TermScript> = {
   },
 };
 
+// ---------- Demo 3: /loop (Claude Code) — Fakten aus commands.de.json claude-code/loop ----------
+export const loopScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Claude Code: /loop — wiederholt ausführen',
+    lines: [
+      { kind: 'cmd', text: '/loop 5m check if the deploy finished' },
+      { kind: 'out', text: 'Loop geplant: alle 5 Minuten, solange die Session offen ist.' },
+      { kind: 'out', text: '10:00 Deploy läuft noch … nächster Check in 5 Min.' },
+      { kind: 'out', text: '10:05 Deploy läuft noch … nächster Check in 5 Min.' },
+      { kind: 'ok', text: '10:10 Deploy fertig — Ergebnis gemeldet.' },
+      { kind: 'note', text: 'Ohne Intervall bestimmt Claude das Tempo selbst.' },
+    ],
+  },
+  en: {
+    title: 'Claude Code: /loop — run repeatedly',
+    lines: [
+      { kind: 'cmd', text: '/loop 5m check if the deploy finished' },
+      { kind: 'out', text: 'Loop scheduled: every 5 minutes while the session stays open.' },
+      { kind: 'out', text: '10:00 Deploy still running … next check in 5 min.' },
+      { kind: 'out', text: '10:05 Deploy still running … next check in 5 min.' },
+      { kind: 'ok', text: '10:10 Deploy finished — result reported.' },
+      { kind: 'note', text: 'Without an interval, Claude paces itself.' },
+    ],
+  },
+  es: {
+    title: 'Claude Code: /loop — ejecutar repetidamente',
+    lines: [
+      { kind: 'cmd', text: '/loop 5m check if the deploy finished' },
+      { kind: 'out', text: 'Loop programado: cada 5 minutos mientras la sesión siga abierta.' },
+      { kind: 'out', text: '10:00 El deploy sigue en marcha … próximo check en 5 min.' },
+      { kind: 'out', text: '10:05 El deploy sigue en marcha … próximo check en 5 min.' },
+      { kind: 'ok', text: '10:10 Deploy terminado — resultado informado.' },
+      { kind: 'note', text: 'Sin intervalo, Claude decide el ritmo por sí mismo.' },
+    ],
+  },
+  fr: {
+    title: 'Claude Code : /loop — exécuter en boucle',
+    lines: [
+      { kind: 'cmd', text: '/loop 5m check if the deploy finished' },
+      { kind: 'out', text: 'Boucle planifiée : toutes les 5 minutes tant que la session reste ouverte.' },
+      { kind: 'out', text: '10:00 Le deploy tourne encore … prochain check dans 5 min.' },
+      { kind: 'out', text: '10:05 Le deploy tourne encore … prochain check dans 5 min.' },
+      { kind: 'ok', text: '10:10 Deploy terminé — résultat signalé.' },
+      { kind: 'note', text: 'Sans intervalle, Claude choisit lui-même le rythme.' },
+    ],
+  },
+  zh: {
+    title: 'Claude Code：/loop——循环执行',
+    lines: [
+      { kind: 'cmd', text: '/loop 5m check if the deploy finished' },
+      { kind: 'out', text: '循环已计划：只要会话开着，每 5 分钟执行一次。' },
+      { kind: 'out', text: '10:00 部署仍在进行 … 5 分钟后再查。' },
+      { kind: 'out', text: '10:05 部署仍在进行 … 5 分钟后再查。' },
+      { kind: 'ok', text: '10:10 部署完成——结果已上报。' },
+      { kind: 'note', text: '不给间隔时，Claude 会自己决定节奏。' },
+    ],
+  },
+};
+
+// ---------- Demo 4: /add (Aider) — Fakten aus commands.de.json aider/add ----------
+export const aiderAddScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Aider: /add — Datei zum Chat holen',
+    lines: [
+      { kind: 'cmd', text: '/add payment.py' },
+      { kind: 'ok', text: 'payment.py ist jetzt im Chat — Aider darf sie bearbeiten.' },
+      { kind: 'note', text: 'Nur Dateien im Chat kann Aider ändern; den Rest sieht es über die Repo-Map.' },
+      { kind: 'cmd', text: 'Füge eine Validierung für negative Beträge hinzu' },
+      { kind: 'out', text: 'Aider bearbeitet payment.py und committet die Änderung.' },
+      { kind: 'note', text: 'Wieder entfernen: /drop payment.py' },
+    ],
+  },
+  en: {
+    title: 'Aider: /add — bring a file into the chat',
+    lines: [
+      { kind: 'cmd', text: '/add payment.py' },
+      { kind: 'ok', text: 'payment.py is now in the chat — Aider may edit it.' },
+      { kind: 'note', text: 'Aider can only change files in the chat; it sees the rest via the repo map.' },
+      { kind: 'cmd', text: 'Add validation for negative amounts' },
+      { kind: 'out', text: 'Aider edits payment.py and commits the change.' },
+      { kind: 'note', text: 'Remove again: /drop payment.py' },
+    ],
+  },
+  es: {
+    title: 'Aider: /add — traer un archivo al chat',
+    lines: [
+      { kind: 'cmd', text: '/add payment.py' },
+      { kind: 'ok', text: 'payment.py ya está en el chat — Aider puede editarlo.' },
+      { kind: 'note', text: 'Aider solo cambia archivos del chat; el resto lo ve por el repo map.' },
+      { kind: 'cmd', text: 'Añade validación para importes negativos' },
+      { kind: 'out', text: 'Aider edita payment.py y hace commit del cambio.' },
+      { kind: 'note', text: 'Quitar de nuevo: /drop payment.py' },
+    ],
+  },
+  fr: {
+    title: 'Aider : /add — amener un fichier dans le chat',
+    lines: [
+      { kind: 'cmd', text: '/add payment.py' },
+      { kind: 'ok', text: 'payment.py est maintenant dans le chat — Aider peut le modifier.' },
+      { kind: 'note', text: "Aider ne modifie que les fichiers du chat ; il voit le reste via la repo map." },
+      { kind: 'cmd', text: 'Ajoute une validation pour les montants négatifs' },
+      { kind: 'out', text: 'Aider modifie payment.py et committe le changement.' },
+      { kind: 'note', text: 'Retirer : /drop payment.py' },
+    ],
+  },
+  zh: {
+    title: 'Aider：/add——把文件放进对话',
+    lines: [
+      { kind: 'cmd', text: '/add payment.py' },
+      { kind: 'ok', text: 'payment.py 已进入对话——Aider 可以编辑它了。' },
+      { kind: 'note', text: 'Aider 只能修改对话中的文件；其余文件通过 repo map 感知。' },
+      { kind: 'cmd', text: '为负数金额添加校验' },
+      { kind: 'out', text: 'Aider 编辑 payment.py 并提交改动。' },
+      { kind: 'note', text: '移除：/drop payment.py' },
+    ],
+  },
+};
+
 export const GoalDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={goalScripts[lang]} />;
 export const SandboxDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={sandboxScripts[lang]} />;
+export const LoopDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={loopScripts[lang]} />;
+export const AiderAddDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={aiderAddScripts[lang]} />;

@@ -7,7 +7,9 @@ import ExampleVideo from '@/components/ExampleVideo';
 // Remotion-Terminal-Demos (Direktive 12) für ausgewählte Befehle: platform/slug → Video-Basename
 const COMMAND_VIDEOS: Record<string, string> = {
   'claude-code/goal': 'goal-demo',
+  'claude-code/loop': 'claude-loop-demo',
   'cursor-cli/sandbox-run': 'sandbox-demo',
+  'aider/add': 'aider-add-demo',
 };
 
 export function generateStaticParams() {

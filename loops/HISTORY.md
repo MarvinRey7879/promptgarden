@@ -512,3 +512,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - 🛡️ Adversarial-Review 4. Erfolg — diesmal bis auf QUELLCODE-Ebene: 1 BLOCK (chat-mode behauptete, /help ohne Prompt wechsle sticky den Modus — commands.py beweist: cmd_help ruft nur basic_help(), kein Mode-Switch) + 1 FIX (global-options EN-Name unübersetzt). Beide vor Übersetzung gefixt.
 - 2. transienter API-Abbruch (ZH-Übersetzer) per SendMessage-Resume ohne Fortschrittsverlust überbrückt — Muster ist jetzt Routine.
 - Live verifiziert Hub + /de/befehle/aider/add/ + /zh/befehle/aider/mode-architect/. Known-good Deploy: 89fb21a5.promptgarden.pages.dev
+
+### It. 83 (14.07.26 nachmittags) — 🎬 Remotion R3: /loop- + Aider-/add-Demos ✅
+- 2 neue Terminal-Demos ×5 Sprachen (claude-loop-demo: /loop 5m Deploy-Check-Session mit Selbst-Pacing-Hinweis; aider-add-demo: /add payment.py → Edit → /drop) — Fakten aus verifizierten commands-Einträgen. 30 Remotion-Clips total, 4 Befehle mit Video (goal, loop, sandbox-run, add).
+- COMMAND_VIDEOS-Mapping erweitert; je ~0,7MB, live verifiziert (Content-Type video/mp4 + Embeds DE/ZH).
+- Known-good Deploy: 3815bbd6.promptgarden.pages.dev
