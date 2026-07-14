@@ -499,3 +499,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - WORLD-Ausbau: W1=9 (+prompt-strukturen), W2=13 (+agent-teams, debugging-mit-agenten), W3=16 (+eigene-befehle-schreiben, testing-mit-agenten).
 - Lektionen: (1) API-Abbruch bei Hintergrund-Agents → SendMessage an Agent-ID resumed mit vollem Kontext, kein Neustart nötig; (2) node -e-String-Patches auf JSON mit \n-Literalen scheitern am Escaping → immer über geparste Objekte patchen; (3) generisches Satzende (»postet.«) als Replace-Anker riskant → nach Patch Kontext gegenprüfen.
 - Known-good Deploy: 471f3975.promptgarden.pages.dev
+
+### It. 81 (14.07.26 vormittags) — 🔍 Link-Audit #3 + URL-Migration + LOOP.md-Pruning ✅
+- 212 sources-URLs frisch aus allen Content-Typen ×5 Sprachen generiert (dedupet), parallel geprüft: **211/212 = HTTP 200**.
+- 1 tote Quelle (digiterialabs.com, Domain komplett offline) aus benchmarks-lesen ×5 entfernt — kein Claim hing daran (3 gesunde Quellen bleiben).
+- Bekannter 308-Redirect migriert: anthropic.com/engineering/claude-code-best-practices → code.claude.com/docs/en/best-practices (15 Vorkommen ×5 Sprachen, keine Reste).
+- LOOP.md gepruned: Stand-Absatz auf It. 81 (61 Kapitel/1382 Seiten/20 Clips), Rotation gestrafft (nur Offenes; NEU: Aider als 4. Plattform aufgenommen).
+- Live verifiziert: migrierte URL im HTML, tote Quelle weg. Known-good Deploy: 78321166.promptgarden.pages.dev

@@ -58,11 +58,11 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 78, 14.07.26, Commit-Stand siehe HISTORY)
-1332+ Seiten live auf promptgarten.com: 51 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 188 Befehle ×5 auf 3 Plattformen (Claude Code/Codex/Cursor CLI), 12 Addons ×5 mit Detailseiten, 4 Welten (W2=11, W3=14), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 10 Remotion-Clips, Forum, freie API, Admin V2, Landing mit CTA/How-it-works/Trust/Course-Schema. Traffic: views_7d ~136, DE/US/FR/PL/IE.
+## Aktueller Stand (It. 81, 14.07.26, Commit-Stand siehe HISTORY)
+1382 Seiten live auf promptgarten.com: 61 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 188 Befehle ×5 auf 3 Plattformen (Claude Code/Codex/Cursor CLI), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=13, W3=16), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 20 Remotion-Clips (Terminal-Demos auf Befehlsseiten), Forum (leer, bereit), freie API, Admin V2, Landing komplett. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~146, DE/US/FR/PL/IE.
 
 ## Rotation (nächste Arbeit)
-① Remotion-Review (wiederkehrend: Terminal-Demo-Clips für Top-Befehle) ② Kapitel-Batch 3 (Ideen aus top_paths: Lernpfad-/Addons-Vertiefung) ③ Feed täglich ④ Link-Audit ~19.07 (188 Befehle!) ⑤ LOOP.md-Pruning wöchentlich ⑥ Statusboard. — ✅ erledigt: Kapitel-Batch 2 (74), Context-Window-SVG (75), Cursor CLI (76), Remotion-Pilot (77), Feed 14.07 + bodyDetail KOMPLETT (78).
+① Feed täglich (nächster 15.07 früh) ② Remotion R3 (weitere Befehls-Demos: /loop, /compact) ③ Kapitel-Batch 4 (Ideen aus top_paths sammeln) ④ Aider-Research (4. Befehls-Plattform, Marvin-Direktive 3) ⑤ Link-Audit wöchentlich (~21.07) ⑥ LOOP.md-Pruning wöchentlich ⑦ Statusboard bei Substanz.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - #2 GitHub Sponsors anmelden → Footer-Link
