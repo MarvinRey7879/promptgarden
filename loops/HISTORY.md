@@ -573,3 +573,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Codex war einzige Plattform ohne Demo-Video. 2 neue TerminalDemo-Scripts (Fakten aus commands.de.json): codex-exec-demo (non-interaktiv/CI, --json, stdin) + codex-review-demo (/review, codex review --base main). ×5 Sprachen, je ~0,7MB.
 - COMMAND_VIDEOS + codex-cli/exec + codex-cli/review; jetzt 8 Befehle auf ALLEN 4 Plattformen mit Video.
 - Still-Spot-Check ok, BUILD_EXIT=0, Deploy bd8de4e0, Live-Verify exec-Seite+mp4 200+ZH-review-Embed auf Deployment-URL.
+
+## It. 96 — 14.07. ~17:40 — ANTIGRAVITY CLI = 5. PLATTFORM (236 → 293 Befehle ×5, +285 Seiten)
+- Auslöser: Gemini-CLI-Research zeigte Google-Abschaltung des Free-Zugangs zum 18.06.26 → Antigravity CLI (Nachfolger, Binary agy) statt Gemini als Plattform 5; Transition selbst am Google-Blog verifiziert → Feed-Item 15.07.
+- Pipeline: Research-Agent (56 Befehle, 27 Quellen; antigravity.google = JS-SPA → Inhalte via r.jina.ai lesen, Original-URL zitieren, Status separat curlen) → 2 Autoren (26 CLI-Flags/Subcommands + 31 Slash-Commands, DE+EN) → Adversarial-Review (8. Fang in Folge): 1 BLOCK (erfundenes Modell-Format gemini-3.1-pro statt --model="Gemini 3.1 Pro") + 9 FIX (d=deny nicht approve, Zeile statt Hunk, Verbindungs- statt Auth-Status, unbelegte Checkpoint-/Keybindings-/Import-Claims) + 5 NOTEs übernommen → apply-antigravity-review-fixes.mjs → MD5 → 3 Übersetzer ES/FR/ZH (je 57, MD5-geprüft, at-path-Platzhalter lokalisiert — einzige erlaubte name-Abweichung) → merge-commands.mjs +57 ×5 → add-antigravity-platform-meta.mjs (platforms=5 ×5) → lint 0 Fehler → BUILD_EXIT=0 → Deploy a8617cc6 → Live-Verify (Index, Plattform-Liste, /planning Multi-Turn, ZH-credits-Summary geechot).
+- Direktive 3 jetzt: BEFEHLS-REFERENZ 5 Plattformen (Claude Code 92, Cursor 80, Antigravity 57, Aider 48, Codex 16).
+- Known-good: a8617cc6.

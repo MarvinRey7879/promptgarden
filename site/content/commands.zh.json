@@ -23,6 +23,12 @@
       "name": "Aider",
       "tagline": "开源终端结对编程工具（Python）——直接在你的 git 仓库中工作。",
       "docsUrl": "https://aider.chat/docs/"
+    },
+    {
+      "id": "antigravity-cli",
+      "name": "Antigravity CLI",
+      "tagline": "Google 的终端编程智能体（命令 “agy”）— Gemini CLI 的官方继任者，与 Antigravity 2.0 共用同一智能体引擎。产品较新，文档仍在完善。",
+      "docsUrl": "https://antigravity.google/docs/cli/reference"
     }
   ],
   "commands": [
@@ -7319,6 +7325,1672 @@
         {
           "title": "Aider 官方文档——选项参考(Options Reference)",
           "url": "https://aider.chat/docs/config/options.html"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "start-tui",
+      "name": "agy",
+      "summary": "在当前工作目录中启动 Antigravity CLI 的 TUI 界面。",
+      "what": "agy 不带任何参数时,会在当前目录打开交互式终端界面(TUI)。首次在已有 Gemini CLI 配置的目录中启动时,CLI 会自动识别并提供迁移清单。登录通过操作系统的密钥库(Keychain/Secret Service/Credential Manager)完成;如果没有已保存的会话,会自动打开默认浏览器。在没有本地浏览器的 SSH 环境下,CLI 会改为打印一个授权 URL,供你在本地浏览器中打开,并提供一个代码粘贴回终端。",
+      "whenGood": [
+        {
+          "title": "交互式启动新项目",
+          "example": "在项目文件夹中运行 agy,打开 TUI 并与 agent 对话协作"
+        },
+        {
+          "title": "从 Gemini CLI 迁移过来",
+          "example": "在已有 Gemini CLI 配置的文件夹中启动 agy,获取自动生成的迁移清单"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望单个命令在不打开 TUI 的情况下运行,例如在脚本中",
+          "why": "agy 不带任何标志时总是打开完整的交互界面,并会阻塞终端。",
+          "alternative": "使用 agy -p / --print 进行非交互式执行"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI README (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/README.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: Getting Started",
+          "url": "https://antigravity.google/docs/cli/getting-started"
+        },
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        },
+        {
+          "title": "Antigravity CLI Doku: Migration von Gemini CLI",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "print",
+      "name": "agy -p / --print",
+      "summary": "以非交互方式执行一次提示词,执行完后退出(打印/无头模式)。",
+      "what": "agy -p 或 --print \"<prompt>\" 会在不打开 TUI 的情况下执行单个提示词,适合用在 Git hook、脚本和 shell 管道中。自 1.1.1 版本起,该模式会将服务器错误写入 stderr 并返回非 0 的退出码,而不是静默地空退出;自 1.1.2 版本起,当 --model 无法解析时会直接以非 0 退出码中止,并列出可用模型,而不是静默切换到默认模型。可与 -c 或 --conversation <id> 组合使用,以继续已有对话。",
+      "whenGood": [
+        {
+          "title": "接入脚本或 Git hook",
+          "example": "agy -p \"查看这个 git diff 并起草一条符合规范的提交信息\" --cwd $(pwd)"
+        },
+        {
+          "title": "非交互式地继续之前的对话",
+          "example": "agy -c -p \"总结一下目前的进展\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望在执行过程中交互式地进行调整,或实时回答追问",
+          "why": "打印模式没有 TUI,也不会有交互式追问,会一路直接执行完。",
+          "alternative": "不带 -p 启动 agy,以进入正常的交互式 TUI"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "continue",
+      "name": "agy -c / --continue",
+      "summary": "立即恢复当前工作区最近一次活跃的对话。",
+      "what": "agy -c 或 --continue 会直接加载当前工作目录最近使用的对话,而不打开 /resume 选择对话框。CLI 会在缓存文件中按目录记录最近一次的对话 ID。可与 -p 组合使用,以非交互方式继续已有对话。",
+      "whenGood": [
+        {
+          "title": "在同一文件夹中快速继续同一项任务",
+          "example": "重启后在同一个项目文件夹中直接运行 agy -c"
+        },
+        {
+          "title": "非交互式地继续已有对话",
+          "example": "agy -c -p \"还差什么?\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望从多个已保存的对话中有针对性地挑选",
+          "why": "-c 总是只加载该目录最近一次活跃的对话,没有选择余地。",
+          "alternative": "在运行中的 agy 里使用 /resume,或用 agy --conversation <id> 指定具体 ID"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "conversation-id",
+      "name": "agy --conversation <id>",
+      "summary": "通过 ID 直接加载指定对话,不打开选择对话框。",
+      "what": "agy --conversation <id> 会根据唯一 ID 加载一个具体的已保存对话,跳过交互式的 /resume 选择对话框。可与 -p 组合使用,以非交互方式继续该对话;自 1.0.9 版本起,这种组合模式只会输出新生成的回复,而不再输出完整的历史记录。",
+      "whenGood": [
+        {
+          "title": "回到一个已知的具体对话 ID",
+          "example": "agy --conversation 7f3a2b1c"
+        },
+        {
+          "title": "非交互式地继续指定对话",
+          "example": "agy --conversation 7f3a2b1c -p \"总结一下\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "不知道确切的对话 ID",
+          "why": "--conversation 需要精确的 ID,该标志不支持模糊搜索。",
+          "alternative": "在运行中的 agy 里使用 /resume 来浏览并选择对话"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "model-flag",
+      "name": "agy --model <name>",
+      "summary": "在启动时指定要使用的模型。",
+      "what": "agy --model <name> 用于在启动 CLI 时设置推理模型。在交互式会话中,如果模型无法解析,会带警告回退到默认模型;而在打印模式(-p)下,自 1.1.2 版本起 CLI 会直接以非 0 退出码中止,并列出可用模型。可用的模型名称可通过子命令 agy models 查看。",
+      "whenGood": [
+        {
+          "title": "直接以指定模型启动",
+          "example": "agy --model=\"Gemini 3.1 Pro\""
+        },
+        {
+          "title": "在脚本中确保使用的是指定模型",
+          "example": "agy --model <name> -p \"<prompt>\" 在名称错误时会直接中止,而不会静默使用其他模型"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望模型选择对之后所有会话都长期生效",
+          "why": "--model 只对当前这次启动生效,不会持久保存。",
+          "alternative": "在运行中的 agy 里使用 /model,它会跨会话持久保存模型设置"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "list-models",
+      "name": "agy models",
+      "summary": "列出可用的模型。",
+      "what": "agy models(子命令)显示当前套餐可用的模型。据文档说明,Gemini 3.1 Pro 和 Gemini 3.5 Flash 在所有套餐中都可用;Claude Sonnet 4.6(thinking)、Claude Opus 4.6(thinking)和 GPT-OSS-120b 仅在 Google AI Ultra 套餐中可用。列出的模型名称可以直接传给 --model。",
+      "whenGood": [
+        {
+          "title": "在启动前查询可用的模型名称",
+          "example": "运行 agy models 来查找 --model 需要的确切名称"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望为正在运行的会话切换模型",
+          "why": "agy models 只是一个在会话之外运行的纯列表子命令。",
+          "alternative": "在运行中的 agy 里使用 /model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity Doku: Models",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "agent-flag",
+      "name": "agy --agent <name>",
+      "summary": "在启动时选择一个自定义 agent。",
+      "what": "agy --agent <name>(自 1.1.1 版本起)会在启动时选择一个自定义 agent,而不是默认 agent。可以先用子命令 agy agent 或 agy agents 列出所有自定义 agent。",
+      "whenGood": [
+        {
+          "title": "以专门的自定义 agent 而非默认 agent 启动",
+          "example": "agy --agent code-reviewer"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "不知道想要的自定义 agent 的名称",
+          "why": "--agent 需要一个确实存在且精确匹配的 agent 名称。",
+          "alternative": "先用 agy agents 列出所有 agent,再设置 --agent <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "list-agents",
+      "name": "agy agent / agy agents",
+      "summary": "列出可用的自定义 agent。",
+      "what": "agy agent 或 agy agents(子命令,自 1.1.1 版本起)显示可用的自定义 agent。查到的名称可以直接传给启动时的 --agent;在运行中的会话里,则由 /agents 面板负责选择 agent 以及监控正在运行的子 agent。",
+      "whenGood": [
+        {
+          "title": "在启动前查询可用的自定义 agent",
+          "example": "运行 agy agents 来查找 --agent 需要的确切名称"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "已经处于运行中的会话中,想要管理 agent 或监控子 agent",
+          "why": "该子命令只在 TUI 之外提供一次性的列表。",
+          "alternative": "在运行中的 agy 里使用 /agents"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "project-flag",
+      "name": "agy --project <name>",
+      "summary": "在启动时显式指定要使用的项目。",
+      "what": "agy --project <name>(自 1.0.12 版本起)会在启动时显式指定要使用哪个项目,而不是自动根据当前工作区推断项目。与 --new-project 互补,后者用于新建项目。",
+      "whenGood": [
+        {
+          "title": "不受当前目录限制,选择一个已存在的项目",
+          "example": "agy --project my-project"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望创建一个全新的项目",
+          "why": "--project 只能在已有项目中选择,并不会创建新项目。",
+          "alternative": "使用 agy --new-project <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "new-project",
+      "name": "agy --new-project <name>",
+      "summary": "在启动时创建一个新项目。",
+      "what": "agy --new-project <name>(自 1.0.12 版本起)会在启动时创建一个使用指定名称的新项目。如果不指定名称,自 1.1.1 版本起 CLI 会默认将新初始化的项目命名为“CLI Project”。",
+      "whenGood": [
+        {
+          "title": "为新任务创建一个全新的项目",
+          "example": "agy --new-project my-new-project"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望继续使用一个已存在的项目",
+          "why": "--new-project 总是会创建一个新项目,而不是加载已有项目。",
+          "alternative": "使用 agy --project <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "sandbox-flag",
+      "name": "agy --sandbox",
+      "summary": "强制对终端命令启用沙箱隔离,打印模式下也生效。",
+      "what": "agy --sandbox 会将 agent 发起的所有本地执行命令限制在操作系统级别的隔离机制内:nsjail(Linux,内核命名空间/cgroups)、sandbox-exec(macOS,策略配置文件)或 AppContainer(Windows)。自 1.0.6 版本起,该标志在非交互式打印模式(-p/--print)下也能正确生效,而不仅限于交互模式。同样的设置也可以通过 settings.json 中的 enableTerminalSandbox 长期设置(默认值:false)。",
+      "whenGood": [
+        {
+          "title": "让不受信任或由 AI 生成的代码在隔离环境中运行",
+          "example": "在一个新的/不熟悉的仓库中启动 agy --sandbox"
+        },
+        {
+          "title": "在脚本/CI 环境中也强制启用沙箱隔离",
+          "example": "agy --sandbox -p \"<prompt>\""
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "agent 需要完全访问工作区之外的系统资源",
+          "why": "沙箱会有意限制终端命令的文件系统可见范围和网络访问权限。",
+          "alternative": "不带 --sandbox 启动 agy,或者针对单条命令确认“不使用沙箱执行”选项"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        },
+        {
+          "title": "Antigravity CLI Doku: Sandbox",
+          "url": "https://antigravity.google/docs/cli/sandbox"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "mode-flag",
+      "name": "agy --mode <default|accept-edits|plan>",
+      "summary": "在启动时设置 agent 的执行模式。",
+      "what": "agy --mode(自 1.1.0 版本起)在启动时设置执行模式:default(即 request-review,在写入文件前暂停,展示逐行 diff 预览供确认/拒绝)、accept-edits 或 plan。不使用该标志时,也可以在 /settings 面板的“Agent Mode”中长期设置同一模式,或在会话中用 shift+tab 循环切换。",
+      "whenGood": [
+        {
+          "title": "直接以风险较低的审阅模式启动",
+          "example": "agy --mode default"
+        },
+        {
+          "title": "希望改动无需确认直接生效时,直接以自动接受模式启动",
+          "example": "agy --mode accept-edits"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望该模式对之后所有启动都长期生效,而不仅是这一次",
+          "why": "--mode 只对当前这次启动生效。",
+          "alternative": "在 /settings 面板中长期设置 Agent Mode"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "dangerously-skip-permissions",
+      "name": "agy --dangerously-skip-permissions",
+      "summary": "在启动时绕过权限限制(启动标志)。",
+      "what": "agy --dangerously-skip-permissions 在文档中被列为一个启动标志,可以绕过权限系统的某些安全限制;设置面板会显示该覆盖来自哪个来源。该标志仅在较旧的文档页面 docs/cli-using 中有记录,并未出现在当前的核心参考表中。",
+      "whenGood": [
+        {
+          "title": "在刻意隔离出的可信环境中,避免每次工具调用都被追问确认",
+          "example": "只在一次性/沙箱环境中使用 agy --dangerously-skip-permissions,绝不在生产系统上使用"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "正在处理包含敏感数据或具备生产环境访问权限的常规项目",
+          "why": "从命名和文档来看,该标志本身就是有意绕过权限系统的安全限制。",
+          "alternative": "使用常规的权限规则,并通过 /permissions 有针对性地放行单条规则"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-list",
+      "name": "agy plugin list",
+      "summary": "显示已安装的插件及其加载的组件。",
+      "what": "agy plugin list 显示当前激活的插件包及其加载的组件(例如 skill、agent、MCP 服务器)。插件遵循 plugin.json 结构,必须包含 name 字段(仅允许字母数字、连字符、下划线),description 字段为可选。",
+      "whenGood": [
+        {
+          "title": "了解当前已安装插件的整体情况",
+          "example": "在计划卸载或更新之前运行 agy plugin list"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想要停用/重新启用或移除某个插件",
+          "why": "list 只展示当前状态,不会做任何改动。",
+          "alternative": "使用 agy plugin enable/disable <name> 或 agy plugin uninstall <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-install",
+      "name": "agy plugin install <path>",
+      "summary": "安装一个本地或已下载的插件目录。",
+      "what": "agy plugin install /path/to/local/plugin 会将一个插件目录加载到本地配置中。安装外部插件时会自动解析并初始化其中的 Git 子模块;也支持直接从 GitHub 子路径安装(支持分支解析)。导入时会复制整个插件目录,包括 shared/ 这类非 skill 子文件夹。",
+      "whenGood": [
+        {
+          "title": "接入一个本地开发的插件目录",
+          "example": "agy plugin install ./my-plugin"
+        },
+        {
+          "title": "直接从 GitHub 仓库或子路径安装插件",
+          "example": "agy plugin install github.com/org/repo/path/to/plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只是想沿用旧版 Gemini CLI 的扩展",
+          "why": "plugin install 需要原生 plugin.json 格式的插件,不能直接使用 Gemini CLI 扩展。",
+          "alternative": "先用 agy plugin import gemini 转换扩展"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-enable",
+      "name": "agy plugin enable <name>",
+      "summary": "重新启用之前停用的插件,无需重新安装。",
+      "what": "agy plugin enable <plugin_name> 会重新启用一个之前通过 agy plugin disable 暂停的插件的工具,无需重新安装。",
+      "whenGood": [
+        {
+          "title": "让暂停中的插件重新可用",
+          "example": "agy plugin enable my-plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "该插件还没有安装",
+          "why": "enable 只能重新启用已安装但被停用的插件。",
+          "alternative": "先使用 agy plugin install <path>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-disable",
+      "name": "agy plugin disable <name>",
+      "summary": "暂停一个插件,但不卸载它。",
+      "what": "agy plugin disable <plugin_name> 会暂停一个插件的工具,但不会删除插件目录或其配置。随时可以用 agy plugin enable <name> 重新启用。",
+      "whenGood": [
+        {
+          "title": "临时关闭一个插件进行测试,同时不丢失它",
+          "example": "运行 agy plugin disable my-plugin,排查与另一个插件的冲突"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望彻底、永久地移除该插件",
+          "why": "disable 不会动插件目录和注册表条目。",
+          "alternative": "使用 agy plugin uninstall <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-uninstall",
+      "name": "agy plugin uninstall <name>",
+      "summary": "彻底移除插件目录及其所有注册表条目。",
+      "what": "agy plugin uninstall <plugin_name> 会完全删除插件目录,并清理相关的注册表条目。",
+      "whenGood": [
+        {
+          "title": "彻底移除一个不再需要的插件",
+          "example": "agy plugin uninstall my-plugin"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只是想暂时挂起该插件",
+          "why": "uninstall 会彻底删除目录和注册表条目;之后若想再次启用需要重新安装。",
+          "alternative": "使用 agy plugin disable <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "plugin-import-gemini",
+      "name": "agy plugin import gemini",
+      "summary": "自动将旧版 Gemini CLI 扩展转换为原生的 Antigravity CLI 插件。",
+      "what": "agy plugin import gemini 会扫描本地的 Gemini CLI 目录,读取扩展清单并将其转换为原生插件结构。转换过程中,旧版 command 会被转换为 skill,已有的 skill 会被直接保留,mcpServers 条目会被迁移到专门的 mcp_config.json 中;对于远程服务器,你需要之后手动把 schema 键名 url/httpUrl 改为 serverUrl。输出会逐个扩展列出具体转换了什么,例如 'commands: 4 legacy commands converted to skills'。",
+      "whenGood": [
+        {
+          "title": "从 Gemini CLI 迁移时自动沿用已有扩展",
+          "example": "在安装 Antigravity CLI 后立即运行 agy plugin import gemini"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想从零开始安装一个全新的插件",
+          "why": "import gemini 只会转换已有的旧版 Gemini CLI 扩展,不会安装新插件。",
+          "alternative": "使用 agy plugin install <path>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Gemini CLI Migration",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "install-skip-aliases",
+      "name": "install.sh --skip-aliases",
+      "summary": "安装时跳过对旧版 agy/antigravity shell 别名的清理。",
+      "what": "在运行安装脚本(install.sh/install.ps1/install.cmd)时传入 --skip-aliases 标志,可以阻止脚本清理或更新 shell 配置文件中已有的旧版 agy 或 antigravity shell 别名。",
+      "whenGood": [
+        {
+          "title": "保留自己手动维护的 agy/antigravity shell 别名",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-aliases"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "shell 配置文件中还留有旧的、损坏的或指向错误二进制文件的别名",
+          "why": "使用 --skip-aliases 时,安装脚本恰恰不会自动清理这些旧别名。",
+          "alternative": "不带 --skip-aliases 运行安装脚本,让旧别名被自动清理"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "install-skip-path",
+      "name": "install.sh --skip-path",
+      "summary": "安装时跳过在 shell 配置文件中自动添加 PATH 的步骤。",
+      "what": "在运行安装脚本时传入 --skip-path 标志,可以阻止脚本自动把二进制文件目录(~/.local/bin 或 %LOCALAPPDATA%\\agy\\bin)添加到 shell 配置文件的 PATH 环境变量中。",
+      "whenGood": [
+        {
+          "title": "自己手动管理 PATH 条目,例如已有一套 dotfiles 配置",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-path"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望安装完成后无需任何手动步骤,就能在任意终端直接调用 agy",
+          "why": "没有自动添加的 PATH 条目,shell 就无法找到 agy 的二进制文件,除非手动调整 PATH。",
+          "alternative": "不带 --skip-path 运行安装脚本"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Install",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "at-path",
+      "name": "@<路径>",
+      "summary": "在提示词输入框中直接打开一个交互式浮层,用于选择文件路径。",
+      "what": "在提示词输入框中输入 @,会打开交互式路径建议浮层:可以浏览工作区中的文件路径,选中后会以绝对路径的形式直接插入提示词,便于 agent 更精确地在代码中查找。自 1.0.6 版本起,@ 会无条件触发建议列表,即使紧跟在一个左括号后面也是如此。",
+      "whenGood": [
+        {
+          "title": "精确引用某个文件,而无需手动敲出路径",
+          "example": "输入 @src/auth/,在浮层中定位到对应文件"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望直接执行一条终端命令",
+          "why": "@ 只会把文件路径插入提示词,并不会执行任何操作。",
+          "alternative": "在行首使用 ! 来直接执行终端命令"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        },
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "shell-bang",
+      "name": "!<shell-command>",
+      "summary": "直接在提示词输入框中执行一条终端命令。",
+      "what": "在输入内容开头加上 !,后面的文本会作为 shell 命令直接执行,不会经过 agent。",
+      "whenGood": [
+        {
+          "title": "无需离开 TUI,快速执行一条终端命令",
+          "example": "!git status"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "希望由 agent 自己选择命令或解读结果",
+          "why": "! 会原样直接执行命令,agent 不参与其中。",
+          "alternative": "把需求以正常提示词的形式提出,让 agent 自己给出合适的命令"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "help-question-mark",
+      "name": "?",
+      "summary": "显示帮助信息以及所有斜杠命令的列表。",
+      "what": "在提示词输入框中输入 ?,会打开帮助信息,列出所有可用的斜杠命令。",
+      "whenGood": [
+        {
+          "title": "快速查看有哪些斜杠命令可用",
+          "example": "在提示词输入框中输入 ?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "已经知道命令,想直接执行",
+          "why": "? 只会打开概览,本身不会执行任何操作。",
+          "alternative": "直接输入已知的斜杠命令"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "clear-prompt-esc-esc",
+      "name": "esc esc",
+      "summary": "在没有正在进行的回复流时,清空提示词输入框。",
+      "what": "连续按两次 esc,会清空提示词输入框中当前的输入内容,前提是当前没有正在进行的回复流。",
+      "whenGood": [
+        {
+          "title": "快速丢弃输错或不再需要的输入内容",
+          "example": "按 esc esc 清空当前已输入的内容"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想要中止正在进行的 agent 回复流",
+          "why": "esc esc 只会清空提示词输入框;文档中说明中止正在进行的回复流应使用 ctrl+c。",
+          "alternative": "使用 ctrl+c 来中断正在执行的 agent"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Using the CLI",
+          "url": "https://antigravity.google/docs/cli-using"
+        },
+        {
+          "title": "Antigravity CLI CHANGELOG (GitHub)",
+          "url": "https://raw.githubusercontent.com/google-antigravity/antigravity-cli/main/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "skills-as-commands",
+      "name": ".agents/skills/*.md → /<skill-name>",
+      "summary": "本地或全局的 Markdown skill 会自动变成各自独立的 /<skill-name> 斜杠命令。",
+      "what": "在工作区根目录的 .agents/skills/ 下,一个带有 frontmatter(name、description)以及 agent 指令的 Markdown 文件,会在下次启动 agy 时被编译,之后就能以 /<skill-name> 的形式在提示词输入框中使用。全局层面同理:~/.gemini/antigravity-cli/skills/ 下的 Markdown 文件,会自动作为跨所有工作区的全局斜杠命令导入。从 Gemini CLI 迁移时路径会发生变化:工作区本地路径从 .gemini/skills/ 变为 .agents/skills/,全局路径从 ~/.gemini/skills/ 变为 ~/.gemini/antigravity-cli/skills/。",
+      "whenGood": [
+        {
+          "title": "把一个经常重复的工作流,做成项目里可用的独立命令",
+          "example": "在 .agents/skills/ 中创建带 frontmatter 的 format-tests.md,让 /format-tests 出现在提示词输入框中"
+        },
+        {
+          "title": "让一个 skill 跨项目使用",
+          "example": "把 skill 文件放到 ~/.gemini/antigravity-cli/skills/ 中"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "从 Gemini CLI 迁移过来的 skill 仍然放在旧路径(.gemini/skills/ 或 ~/.gemini/skills/)",
+          "why": "Antigravity CLI 只会识别新路径(.agents/skills/ 或 ~/.gemini/antigravity-cli/skills/)下的 skill——旧路径不再被识别。",
+          "alternative": "手动把 skill 文件移动到新路径(agy plugin import gemini 只转换扩展,不处理零散的 skill 文件)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        },
+        {
+          "title": "Antigravity CLI Doku: Gemini CLI Migration",
+          "url": "https://antigravity.google/docs/cli/gcli-migration"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "add-dir",
+      "name": "/add-dir",
+      "summary": "为当前活动工作区添加一个额外目录。",
+      "what": "/add-dir 属于 Antigravity CLI 斜杠命令总参考中的 Utilities 分类。该命令会为当前活动工作区添加一个额外目录,使 agent 也能访问启动目录之外的文件。它接受一个路径作为参数。",
+      "whenGood": [
+        {
+          "title": "引入第二个仓库或文件夹中的代码",
+          "example": "/add-dir ../shared-lib"
+        },
+        {
+          "title": "把 monorepo 中的一个子项目加入会话",
+          "example": "/add-dir packages/api"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只想引用一次文件",
+          "why": "/add-dir 会把整个目录长期纳入工作区,而一次性引用只需要在提示词中给出文件路径即可。",
+          "alternative": "直接在提示词中使用 @<路径>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "agents",
+      "name": "/agents",
+      "summary": "打开 agent 管理面板,用于选择自定义 agent 并监控正在运行的子 agent。",
+      "what": "/agents 属于 Tools & Tasks 分类。在面板中,用 ↑/↓ 在列表中导航,Enter 选择一个自定义 agent 或打开某个子 agent 的详情视图,k 用于终止一个活动中的子 agent,a 直接在列表中批准、d 拒绝内联工具请求,Esc 返回上一级。与启动标志 --agent 以及子命令 agy agents 相互配合。",
+      "whenGood": [
+        {
+          "title": "在多个自定义 agent 之间切换",
+          "example": "打开 /agents,用 ↑/↓ + Enter 为当前会话选择另一个 agent"
+        },
+        {
+          "title": "查看或中止正在运行的子 agent 任务",
+          "example": "打开 /agents,选中子 agent,用 k 终止它"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只是想快速看看有哪些自定义 agent",
+          "why": "/agents 会打开一个交互式面板;如果只需要一份列表而不需要面板交互,子命令就够了。",
+          "alternative": "在启动时运行 agy agents"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: /agents",
+          "url": "https://antigravity.google/docs/cli/commands/agents"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "artifact",
+      "name": "/artifact",
+      "summary": "打开 artifact 审阅面板。",
+      "what": "/artifact 属于斜杠命令参考中的 Tools & Tasks 分类,会打开一个专门的面板,用于查看 agent 在会话过程中生成的 artifact。",
+      "whenGood": [
+        {
+          "title": "查看 agent 生成的 artifact",
+          "example": "任务完成后打开 /artifact,检查生成的输出"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想查看的是纯代码 diff,而不是 artifact",
+          "why": "/artifact 显示的是 artifact,不是代码改动的逐行 diff。",
+          "alternative": "/diff"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "btw",
+      "name": "/btw",
+      "summary": "在后台提出一个附带问题,而不打断主对话。",
+      "what": "/btw 属于 Utilities 分类。该命令会把一个附加问题作为后台任务发出,而当前进行中的主对话不受干扰地继续——适合用于不希望占用主线程当前上下文的简短附带问题。",
+      "whenGood": [
+        {
+          "title": "在不打断主任务的情况下提出一个简短的附带问题",
+          "example": "/btw utils.py 里的这个函数是做什么的?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "这个问题其实是主任务的一部分",
+          "why": "/btw 在后台独立于主线程运行——如果问题会影响主任务后续的走向,就不适合用它。",
+          "alternative": "直接在主提示词中提出问题"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "clear",
+      "name": "/clear",
+      "summary": "清空终端和当前活动的对话上下文。别名:/new。",
+      "what": "/clear 属于 Utilities 分类,别名 /new。该命令会同时重置终端显示和当前活动的对话上下文——用于在同一会话内进行一次干净的重新开始。",
+      "whenGood": [
+        {
+          "title": "在同一会话中开始一个新话题",
+          "example": "完成一项任务后、开始全新话题之前执行 /clear"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想保留之前的对话,以便之后再次查看",
+          "why": "/clear 会清空当前活动的上下文——如果在任务进行中执行,会丢失该线程的工作进度。",
+          "alternative": "使用 /resume 在多个线程之间切换,而不是直接清空"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "config",
+      "name": "/config",
+      "summary": "打开交互式设置编辑器。别名:/settings。",
+      "what": "/config 属于 Configurations 分类,别名 /settings。该命令会打开一个交互式编辑器,用于编辑 CLI 的 settings.json 配置,包括渲染模式和终端行为等。",
+      "whenGood": [
+        {
+          "title": "无需手动编辑 settings.json 即可修改 CLI 设置",
+          "example": "打开 /config,直接在面板中调整某个设置值"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只是想切换推理模型",
+          "why": "/config 涵盖的是通用配置;模型选择有专门更精准的命令。",
+          "alternative": "/model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Settings",
+          "url": "https://antigravity.google/docs/cli/settings"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "context",
+      "name": "/context",
+      "summary": "打开上下文使用情况的可视化面板。",
+      "what": "/context 属于 Utilities 分类,以可视化方式显示可用上下文窗口已经被占用了多少。",
+      "whenGood": [
+        {
+          "title": "在开始一项长任务前检查剩余的上下文容量",
+          "example": "运行 /context,查看上下文窗口还剩多少空间"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想查看的是模型配额(单位时间内的请求数),而不是上下文窗口",
+          "why": "/context 显示的是上下文窗口的占用情况,不是模型的使用配额。",
+          "alternative": "/usage"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "copy",
+      "name": "/copy",
+      "summary": "把 agent 最近一次的回复复制到剪贴板。",
+      "what": "/copy 属于 Utilities 分类,会把 agent 最近一次回复的文本放入系统剪贴板。",
+      "whenGood": [
+        {
+          "title": "快速把回复粘贴到其他应用中",
+          "example": "在得到代码解释后执行 /copy,把它粘贴到笔记里"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想复制的是完整的代码 diff,而不是纯文本回复",
+          "why": "/copy 复制的是最近一次的文本回复,不是结构化的代码 diff。",
+          "alternative": "打开 /diff 查看具体改动"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "credits",
+      "name": "/credits",
+      "summary": "显示剩余的 G1 credits 以及购买链接。",
+      "what": "/credits 属于 Account 分类,显示当前 CLI 使用的 G1 credits 余额以及充值链接。它与 useG1Credits 设置配合,共同控制超出套餐额度部分请求的计费方式。",
+      "whenGood": [
+        {
+          "title": "在开始一项较大的任务前检查剩余额度",
+          "example": "在启动一个计算密集型会话之前运行 /credits"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想查看的是模型使用配额,而不是 credits 余额",
+          "why": "/credits 显示的是 G1 credits 余额,/usage 显示的是套餐的整体模型配额。",
+          "alternative": "/usage"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Credits",
+          "url": "https://antigravity.google/docs/cli/credits"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "diff",
+      "name": "/diff",
+      "summary": "打开带有三种模式(VCS/Turn/Commit)的交互式 diff 查看器。",
+      "what": "/diff 属于 Utilities 分类。用 Tab、← 或 → 可以在 VCS、Turn、Commit 三种模式之间循环切换,c 为当前行添加评论,d 删除评论,n/N 在各个 hunk 之间跳转,Shift+Y 会把已添加的评论发送给 agent,Shift+N 则丢弃它们。",
+      "whenGood": [
+        {
+          "title": "查看单个 turn 中的改动",
+          "example": "打开 /diff,用 Tab 切换到 Turn 模式,查看最新的改动"
+        },
+        {
+          "title": "针对单个 hunk 添加内联评论并反馈给 agent",
+          "example": "打开 /diff,用 c 给某一行添加评论,再用 Shift+Y 发送"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想要的是对改动内容的评估,而不是纯粹的 diff 文本",
+          "why": "/diff 只显示 diff 文本,不会对内容做出评估。",
+          "alternative": "直接在提示词中让 agent 总结或评估这些改动"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: /diff",
+          "url": "https://antigravity.google/docs/cli/commands/diff"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "exit",
+      "name": "/exit",
+      "summary": "结束 TUI 会话,恢复到宿主 shell。别名:/quit。",
+      "what": "/exit 属于 Core 分类,别名 /quit。该命令会结束正在运行的 Antigravity CLI TUI 会话,把控制权交还给原来的 shell。",
+      "whenGood": [
+        {
+          "title": "干净利落地结束会话",
+          "example": "任务完成后执行 /exit"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只想清空当前上下文,让会话继续运行",
+          "why": "/exit 会结束整个 TUI 会话,而不仅仅是对话上下文。",
+          "alternative": "/clear"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "fast",
+      "name": "/fast",
+      "summary": "开启快速模式,跳过针对快速操作的推理计划。",
+      "what": "根据斜杠命令总参考,/fast 属于 Configurations 分类,会开启一种加速模式,让 agent 在执行操作前跳过推理计划,从而更快地作出响应。",
+      "whenGood": [
+        {
+          "title": "执行简单、明确的操作,无需长时间规划",
+          "example": "在请求一次简单的文件重命名之前打开 /fast"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "涉及多个依赖关系的复杂任务",
+          "why": "没有推理计划时,复杂任务出现步骤遗漏或出错的风险会升高。",
+          "alternative": "保持 /fast 关闭,对多步骤任务使用 /planning"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "feedback",
+      "name": "/feedback",
+      "summary": "打开反馈面板。",
+      "what": "/feedback 属于 Utilities 分类,会打开一个面板,可以直接把关于 CLI 的反馈发送给 Antigravity 团队。",
+      "whenGood": [
+        {
+          "title": "直接在 CLI 中报告 bug 或提出改进建议",
+          "example": "打开 /feedback,填写观察到的问题"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "需要立即解决的技术问题",
+          "why": "/feedback 只是把反馈发送给团队,并不能解决当前会话中的紧急问题。",
+          "alternative": "查阅 /help 或故障排查文档"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "fork",
+      "name": "/fork",
+      "summary": "把当前对话线程复制出来,用于并行会话。别名:/branch。",
+      "what": "/fork 属于 Conversations 分类,别名 /branch。该命令会把目前为止的线程连同上下文一起复制到一个新的、并行运行的会话中,以便独立地尝试不同的解决方案。",
+      "whenGood": [
+        {
+          "title": "并行尝试两种解决方案",
+          "example": "执行 /fork 来测试另一种实现方式,同时不丢失主线程"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只是想回到同一线程中较早的某个节点",
+          "why": "/fork 会创建一个新的并行线程,不会改动已有线程。",
+          "alternative": "/rewind"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "help",
+      "name": "/help",
+      "summary": "打开显示命令和快捷键的帮助面板。",
+      "what": "/help 属于 Utilities 分类,会直接在终端中显示所有可用斜杠命令及键盘快捷键的总览。",
+      "whenGood": [
+        {
+          "title": "查询可用命令",
+          "example": "运行 /help 查看所有斜杠命令的列表"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想查询某个具体面板(如 /diff 或 /agents)的详细快捷键",
+          "why": "/help 只显示总体概览,不包含各个面板的详细快捷键。",
+          "alternative": "直接打开相应的面板,例如 /diff 或 /agents"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "hooks",
+      "name": "/hooks",
+      "summary": "浏览当前激活的 pre-/post-hook。",
+      "what": "/hooks 属于 Tools & Tasks 分类,会打开一个可搜索的列表,展示当前激活的 pre-hook 和 post-hook,例如通过插件安装的那些。",
+      "whenGood": [
+        {
+          "title": "查看当前有哪些 hook 处于激活状态",
+          "example": "打开 /hooks,查看是哪个插件注册了某个 hook"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想完整地启用/停用一个插件,而不只是查看 hook",
+          "why": "/hooks 只提供总览,并不能管理插件。",
+          "alternative": "agy plugin enable/disable <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "keybindings",
+      "name": "/keybindings",
+      "summary": "打开交互式快捷键编辑器。",
+      "what": "/keybindings 属于 Configurations 分类,会打开一个编辑器,用于自定义 CLI 的快捷键,这些快捷键保存在单独的 keybindings 文件中。",
+      "whenGood": [
+        {
+          "title": "把快捷键调整为符合个人习惯",
+          "example": "打开 /keybindings,修改一个常用命令的快捷键"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想修改的是通用设置,而不是快捷键",
+          "why": "/keybindings 只涉及快捷键,不涉及其余配置。",
+          "alternative": "/config"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Settings",
+          "url": "https://antigravity.google/docs/cli/settings"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "logout",
+      "name": "/logout",
+      "summary": "断开当前账号,并从密钥库中删除认证令牌。",
+      "what": "/logout 属于 Account 分类,会通过从操作系统密钥库(Keychain/Secret Service/Credential Manager)中移除已保存的认证令牌,来登出已连接的 Google 账号。下次启动时需要重新走一遍浏览器或“URL+代码”的认证流程。",
+      "whenGood": [
+        {
+          "title": "切换账号",
+          "example": "执行 /logout,然后重新启动 agy 并用另一个 Google 账号登录"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只想结束当前会话,账号仍保持连接",
+          "why": "/logout 会完全删除认证令牌;如果只是想结束会话,直接退出会话即可。",
+          "alternative": "/exit"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Installation",
+          "url": "https://antigravity.google/docs/cli/install"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "mcp",
+      "name": "/mcp",
+      "summary": "打开 MCP 服务器管理器。",
+      "what": "/mcp 属于 Tools & Tasks 分类,会打开一个面板,用于管理已连接的 MCP 服务器(stdio 以及通过 serverUrl 连接的远程服务器),并显示连接状态。配置分别保存在一个全局文件(~/.gemini/config/mcp_config.json)和一个工作区文件(.agents/mcp_config.json)中。",
+      "whenGood": [
+        {
+          "title": "查看已连接的 MCP 服务器及其状态",
+          "example": "打开 /mcp,查看某个服务器是否已连接"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想为单个 MCP 工具设置权限",
+          "why": "/mcp 管理的是服务器连接;精细化的 mcp(server/tool) 规则要通过权限管理来设置。",
+          "alternative": "/permissions"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity Doku: MCP",
+          "url": "https://antigravity.google/docs/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "model",
+      "name": "/model",
+      "summary": "选择推理模型,设置会跨会话持久保存。",
+      "what": "/model 属于 Configurations 分类。所做的选择会在当前会话结束后依然生效,直到再次被修改。与启动标志 --model 以及子命令 agy models 相互配合,后者会列出 Shared Agent Engine 中可用的模型(例如所有套餐都可用的 Gemini 3.1 Pro/3.5 Flash,以及仅 Google AI Ultra 可用的 Claude Sonnet/Opus 4.6 和 GPT-OSS-120b)。",
+      "whenGood": [
+        {
+          "title": "为更具挑战性的任务选择一个更强的推理模型",
+          "example": "打开 /model,切换到性能更强的模型"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只想为下一次启动设置模型,而不是长期生效",
+          "why": "/model 会跨会话持久保存所做的选择。",
+          "alternative": "在启动时使用 agy --model <name>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity Doku: Modelle",
+          "url": "https://antigravity.google/docs/models"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "open",
+      "name": "/open",
+      "summary": "用系统默认编辑器打开一个路径。",
+      "what": "/open 属于 Utilities 分类,会在 CLI 之外,用系统设置的默认编辑器打开指定的文件或路径。",
+      "whenGood": [
+        {
+          "title": "在 CLI 之外打开文件进行手动编辑",
+          "example": "/open src/index.ts"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只是想把文件路径插入提示词",
+          "why": "/open 会启动外部编辑器,而单纯在提示词中引用并不需要这样做。",
+          "alternative": "在提示词中使用 @<路径>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "permissions",
+      "name": "/permissions",
+      "summary": "打开交互式工具权限管理器。",
+      "what": "/permissions 属于 Configurations 分类。通过范围选择器可以在 Project、Shared、Global 之间选择,然后在 allow/deny/ask 这几个规则查看标签页之间切换;a 添加一条规则,e 或 Ctrl+G 编辑规则,d 或 Backspace 删除规则。规则遵循 action(target) 的格式,例如 command(git) 或 mcp(server/tool)。",
+      "whenGood": [
+        {
+          "title": "允许自动执行某些特定命令",
+          "example": "打开 /permissions,选择 Project 范围,把 command(git) 设为 allow"
+        },
+        {
+          "title": "有针对性地屏蔽某个 MCP 工具",
+          "example": "打开 /permissions,把 mcp(server/tool) 设为 deny"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想为单次启动完全绕过权限设置",
+          "why": "/permissions 管理的是长期规则,并不是针对单次启动的一次性跳过。",
+          "alternative": "启动时使用 agy --dangerously-skip-permissions(请谨慎使用)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: /permissions",
+          "url": "https://antigravity.google/docs/cli/commands/permissions"
+        },
+        {
+          "title": "Antigravity Doku: MCP",
+          "url": "https://antigravity.google/docs/mcp"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "planning",
+      "name": "/planning",
+      "summary": "开启多轮计划生成模式。",
+      "what": "根据斜杠命令总参考,/planning 属于 Configurations 分类,会开启一种模式:agent 在执行前会通过多轮交互先制定计划,而不是直接动手。",
+      "whenGood": [
+        {
+          "title": "为涉及多个依赖关系的复杂任务做出周密规划",
+          "example": "在开始一项较大的重构任务之前打开 /planning"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "简单、明确的单个操作",
+          "why": "对于琐碎的操作,规划模式只会带来不必要的开销。",
+          "alternative": "对快速、简单的操作使用 /fast"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "rename",
+      "name": "/rename",
+      "summary": "重命名当前会话线程。",
+      "what": "/rename 属于 Conversations 分类,会为当前对话线程赋予一个新名称,方便之后在对话选择器中重新找到它。",
+      "whenGood": [
+        {
+          "title": "在切换到其他话题前,给线程起一个清晰的名字",
+          "example": "/rename Migration-Auth-Refactor"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想重命名一个已保存的线程,但它当前并非活动状态",
+          "why": "/rename 作用于当前活动的线程;对于已保存的线程,resume 选择器中有单独的重命名选项。",
+          "alternative": "打开 /resume,在其中用 F2 重命名"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "resume",
+      "name": "/resume",
+      "summary": "打开对话选择器,加载之前的线程。别名:/switch、/conversation。",
+      "what": "/resume 属于 Conversations 分类,别名 /switch 和 /conversation。在选择器中,F2 可以重命名选中的线程,Ctrl+Delete 可以删除它,Tab 可以在 CLI 标签页和 Antigravity 2.0 标签页之间切换,用于从桌面 GUI 导入正在进行的对话。与启动标志 -c/--continue 和 --conversation <id> 相互配合。",
+      "whenGood": [
+        {
+          "title": "回到之前的某个线程",
+          "example": "打开 /resume,从列表中选择一个之前的线程"
+        },
+        {
+          "title": "把在 Antigravity 2.0(桌面 GUI)中开始的对话导入 CLI",
+          "example": "打开 /resume,用 Tab 切换到 Antigravity 标签页"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "只想在启动时直接继续最近一次对话,不需要选择器",
+          "why": "/resume 会打开一个交互式面板;如果不需要选择、直接重启即可,用启动标志就够了。",
+          "alternative": "启动时使用 agy -c / --continue"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: /resume",
+          "url": "https://antigravity.google/docs/cli/commands/resume"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "rewind",
+      "name": "/rewind",
+      "summary": "把对话历史回退到之前的某个检查点。别名:/undo。",
+      "what": "/rewind 属于 Conversations 分类,别名 /undo。该命令会把对话历史回退到同一线程内更早的一个状态,而不是新建一个线程。",
+      "whenGood": [
+        {
+          "title": "撤销一个失败的中间步骤",
+          "example": "执行 /rewind,回到某次错误改动之前的状态"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想在保留原有进展的同时并行尝试另一种方案",
+          "why": "/rewind 会从所选节点开始覆盖之前的历史,而不是并行保留它。",
+          "alternative": "/fork"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Best Practices",
+          "url": "https://antigravity.google/docs/cli/best-practices"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "skills",
+      "name": "/skills",
+      "summary": "浏览已加载的本地和全局 agent skill。",
+      "what": "/skills 属于 Tools & Tasks 分类,会显示当前从工作区(.agents/skills/*.md)和全局目录(~/.gemini/antigravity-cli/skills/)中加载的 skill。每个 Markdown skill 文件都会自动成为一个独立的 /<skill-name> 命令。",
+      "whenGood": [
+        {
+          "title": "查看当前有哪些 skill 可用",
+          "example": "打开 /skills,查看新放入的 skill 文件是否已被识别"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想完整地安装或卸载一个插件",
+          "why": "/skills 只显示已加载的 skill,并不能管理插件。",
+          "alternative": "agy plugin install/uninstall"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: Plugins",
+          "url": "https://antigravity.google/docs/cli/plugins"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "statusline",
+      "name": "/statusline",
+      "summary": "打开状态栏自定义设置。",
+      "what": "/statusline 属于 Configurations 分类。不带参数时,该命令会切换状态栏的开/关;on/enable 打开状态栏,off/disable 关闭状态栏,传入一个 shell 命令可以设置自定义渲染器,reset 会重置状态栏,help 显示所有可用选项。",
+      "whenGood": [
+        {
+          "title": "打开或关闭状态栏",
+          "example": "/statusline off"
+        },
+        {
+          "title": "通过 shell 命令设置自定义渲染器",
+          "example": "/statusline <shell-command> 用于自定义状态显示"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想修改的是终端窗口标题,而不是状态栏",
+          "why": "/statusline 影响的是 TUI 内部的状态栏,而不是终端的窗口标题。",
+          "alternative": "/title"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        },
+        {
+          "title": "Antigravity CLI Doku: /statusline",
+          "url": "https://antigravity.google/docs/cli/commands/statusline"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "tasks",
+      "name": "/tasks",
+      "summary": "打开任务管理面板,用于监控后台 shell 日志。",
+      "what": "/tasks 属于 Tools & Tasks 分类,会在一个独立面板中显示正在运行和已完成的后台任务及其 shell 日志。",
+      "whenGood": [
+        {
+          "title": "查看后台运行命令的日志",
+          "example": "打开 /tasks,查看一个耗时较长的后台 shell 任务的输出"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想监控的是子 agent 的状态,而不是后台 shell 任务",
+          "why": "/tasks 显示的是 shell 任务日志;子 agent 有专门的面板。",
+          "alternative": "/agents"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "title",
+      "name": "/title",
+      "summary": "切换终端窗口标题的自动更新。",
+      "what": "/title 属于 Configurations 分类,用于控制 CLI 是否自动更新终端模拟器的窗口标题。不带参数调用时会切换当前状态,on/off 可以显式设置。",
+      "whenGood": [
+        {
+          "title": "有针对性地关闭窗口标题更新",
+          "example": "/title off"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想调整的是 TUI 内部状态栏的内容",
+          "why": "/title 只影响终端模拟器的窗口标题,不影响 TUI 内部的状态栏。",
+          "alternative": "/statusline"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
+        }
+      ]
+    },
+    {
+      "platform": "antigravity-cli",
+      "slug": "usage",
+      "name": "/usage",
+      "summary": "显示模型配额使用情况。别名:/quota。",
+      "what": "/usage 属于 Utilities 分类,别名 /quota,会显示当前套餐(Standard/Pro/Ultra)的配额已经消耗了多少。",
+      "whenGood": [
+        {
+          "title": "查看当前时间窗口内剩余的可用请求数",
+          "example": "在发起大量请求之前运行 /usage"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "想查看的是 G1 credits 余额,而不是整体模型配额",
+          "why": "/usage 显示的是套餐配额;独立的 credits 余额有专门的命令查看。",
+          "alternative": "/credits"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Antigravity CLI Doku: Command-Referenz",
+          "url": "https://antigravity.google/docs/cli/reference"
         }
       ]
     }
