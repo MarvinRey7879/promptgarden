@@ -630,3 +630,7 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Fix-Agent wandte alle 15+10 Punkte an (PASS, MD5-gepinnt); Bestands-URL agent-sdk/permissions ×5 gefixt. 3 Übersetzer (alle MD5-verifiziert, 0 Drift). WORLD: rag-selbst-bauen→W3 (=19); was-ist-antigravity bewusst NICHT in W1 (Welt = LLM-Grundlagen, kein Tool-Intro).
 - lint 0 Fehler, Suchindex 402 Docs, BUILD_EXIT=0, Deploy 89e023c1, Live-Verify DE-Antigravity + ZH-RAG-Titel geechot + W3-Link.
 - Known-good: 89e023c1.
+
+## It. 104 — 14.07. ~21:45 — Quiz-Bias-Cleanup im Bestand (45→17 auf Index 1)
+- Befund aus Batch-5-Review: 45/71 Alt-Kapitel hatten quiz.correct=1. 28 deterministisch verschoben (13→Index 2, 15→Index 3, per Swap 1↔Ziel, IDENTISCH über alle 5 Sprachen; explain-Felder vorher auf Positions-Referenzen gescannt: 0 Treffer). Verteilung jetzt 0:23/1:17/2:21/3:20.
+- Validierung: correct-Options-Text pro Sprache unverändert (Text-Drift-Check), BUILD_EXIT=0, Deploy e581e802, Live-Stichprobe mcp-Quiz. Known-good: e581e802.
