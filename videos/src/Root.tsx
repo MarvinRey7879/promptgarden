@@ -2,7 +2,7 @@ import { Composition } from 'remotion';
 import { LoopZyklus } from './LoopZyklus';
 import { ContextWindow } from './ContextWindow';
 import { PromptgartenExplainer } from './PromptgartenExplainer';
-import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo } from './TerminalDemo';
+import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo, CodexExecDemo, CodexReviewDemo } from './TerminalDemo';
 import type { Lang } from './theme';
 
 export const RemotionRoot = () => {
@@ -65,6 +65,24 @@ export const RemotionRoot = () => {
       <Composition
         id="CursorPlanDemo"
         component={CursorPlanDemo}
+        durationInFrames={400}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{ lang: 'de' as Lang }}
+      />
+      <Composition
+        id="CodexExecDemo"
+        component={CodexExecDemo}
+        durationInFrames={420}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{ lang: 'de' as Lang }}
+      />
+      <Composition
+        id="CodexReviewDemo"
+        component={CodexReviewDemo}
         durationInFrames={400}
         fps={30}
         width={1280}

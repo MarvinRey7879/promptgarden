@@ -13,6 +13,8 @@ const COMMAND_VIDEOS: Record<string, string> = {
   'cursor-cli/sandbox-run': 'sandbox-demo',
   'cursor-cli/plan': 'cursor-plan-demo',
   'aider/add': 'aider-add-demo',
+  'codex-cli/exec': 'codex-exec-demo',
+  'codex-cli/review': 'codex-review-demo',
 };
 
 export function generateStaticParams() {

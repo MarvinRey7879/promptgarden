@@ -430,3 +430,119 @@ export const LoopDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={loop
 export const AiderAddDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={aiderAddScripts[lang]} />;
 export const CompactDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={compactScripts[lang]} />;
 export const CursorPlanDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={cursorPlanScripts[lang]} />;
+
+// ---------- Demo 7: codex exec (Codex CLI) — Fakten aus commands.de.json codex-cli/exec ----------
+export const codexExecScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Codex CLI: codex exec — ohne TUI, z. B. für CI',
+    lines: [
+      { kind: 'cmd', text: 'codex exec "fasse die Änderungen der letzten Commits zusammen" --json' },
+      { kind: 'out', text: '{"type":"turn.started"}' },
+      { kind: 'out', text: '{"type":"item.completed","item":{"text":"3 Commits: Login-Fix, …"}}' },
+      { kind: 'ok', text: 'Non-interaktiv fertig — Ausgabe als JSONL für Skripte.' },
+      { kind: 'note', text: 'Auch möglich: cat aufgabe.txt | codex exec -  (Prompt aus stdin)' },
+    ],
+  },
+  en: {
+    title: 'Codex CLI: codex exec — no TUI, e.g. for CI',
+    lines: [
+      { kind: 'cmd', text: 'codex exec "summarize the changes from the latest commits" --json' },
+      { kind: 'out', text: '{"type":"turn.started"}' },
+      { kind: 'out', text: '{"type":"item.completed","item":{"text":"3 commits: login fix, …"}}' },
+      { kind: 'ok', text: 'Non-interactive run done — JSONL output for scripts.' },
+      { kind: 'note', text: 'Also works: cat task.txt | codex exec -  (prompt from stdin)' },
+    ],
+  },
+  es: {
+    title: 'Codex CLI: codex exec — sin TUI, p. ej. para CI',
+    lines: [
+      { kind: 'cmd', text: 'codex exec "resume los cambios de los últimos commits" --json' },
+      { kind: 'out', text: '{"type":"turn.started"}' },
+      { kind: 'out', text: '{"type":"item.completed","item":{"text":"3 commits: arreglo de login, …"}}' },
+      { kind: 'ok', text: 'Ejecución no interactiva lista — salida JSONL para scripts.' },
+      { kind: 'note', text: 'También: cat tarea.txt | codex exec -  (prompt desde stdin)' },
+    ],
+  },
+  fr: {
+    title: 'Codex CLI : codex exec — sans TUI, p. ex. pour la CI',
+    lines: [
+      { kind: 'cmd', text: 'codex exec "résume les changements des derniers commits" --json' },
+      { kind: 'out', text: '{"type":"turn.started"}' },
+      { kind: 'out', text: '{"type":"item.completed","item":{"text":"3 commits : correctif login, …"}}' },
+      { kind: 'ok', text: 'Exécution non interactive terminée — sortie JSONL pour les scripts.' },
+      { kind: 'note', text: 'Aussi : cat tache.txt | codex exec -  (prompt depuis stdin)' },
+    ],
+  },
+  zh: {
+    title: 'Codex CLI：codex exec——无界面运行，适合 CI',
+    lines: [
+      { kind: 'cmd', text: 'codex exec "总结最近几次提交的改动" --json' },
+      { kind: 'out', text: '{"type":"turn.started"}' },
+      { kind: 'out', text: '{"type":"item.completed","item":{"text":"3 次提交：登录修复、…"}}' },
+      { kind: 'ok', text: '非交互运行完成——JSONL 输出，方便脚本处理。' },
+      { kind: 'note', text: '也可以：cat task.txt | codex exec -（从 stdin 读取提示词）' },
+    ],
+  },
+};
+
+// ---------- Demo 8: /review (Codex CLI) — Fakten aus commands.de.json codex-cli/review ----------
+export const codexReviewScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Codex CLI: /review — Änderungen prüfen lassen',
+    lines: [
+      { kind: 'cmd', text: '/review' },
+      { kind: 'out', text: 'Review der nicht committeten Änderungen (3 Dateien) …' },
+      { kind: 'out', text: 'auth.ts:42 — Token-Ablauf wird nicht geprüft (Vorschlag beigefügt)' },
+      { kind: 'out', text: 'api.ts:118 — fehlende Fehlerbehandlung bei Timeout' },
+      { kind: 'ok', text: '2 Findings — vor dem Merge beheben.' },
+      { kind: 'note', text: 'CLI-Variante: codex review --base main' },
+    ],
+  },
+  en: {
+    title: 'Codex CLI: /review — get your changes reviewed',
+    lines: [
+      { kind: 'cmd', text: '/review' },
+      { kind: 'out', text: 'Reviewing uncommitted changes (3 files) …' },
+      { kind: 'out', text: 'auth.ts:42 — token expiry never checked (suggestion attached)' },
+      { kind: 'out', text: 'api.ts:118 — missing error handling on timeout' },
+      { kind: 'ok', text: '2 findings — fix before merging.' },
+      { kind: 'note', text: 'CLI variant: codex review --base main' },
+    ],
+  },
+  es: {
+    title: 'Codex CLI: /review — revisar tus cambios',
+    lines: [
+      { kind: 'cmd', text: '/review' },
+      { kind: 'out', text: 'Revisando cambios sin commit (3 archivos) …' },
+      { kind: 'out', text: 'auth.ts:42 — no se comprueba la expiración del token (sugerencia adjunta)' },
+      { kind: 'out', text: 'api.ts:118 — falta manejo de errores en timeout' },
+      { kind: 'ok', text: '2 hallazgos — corrígelos antes del merge.' },
+      { kind: 'note', text: 'Variante CLI: codex review --base main' },
+    ],
+  },
+  fr: {
+    title: 'Codex CLI : /review — faire relire tes changements',
+    lines: [
+      { kind: 'cmd', text: '/review' },
+      { kind: 'out', text: 'Review des changements non commités (3 fichiers) …' },
+      { kind: 'out', text: "auth.ts:42 — l'expiration du token n'est jamais vérifiée (suggestion jointe)" },
+      { kind: 'out', text: 'api.ts:118 — gestion des erreurs manquante sur timeout' },
+      { kind: 'ok', text: '2 findings — à corriger avant le merge.' },
+      { kind: 'note', text: 'Variante CLI : codex review --base main' },
+    ],
+  },
+  zh: {
+    title: 'Codex CLI：/review——让 AI 审查你的改动',
+    lines: [
+      { kind: 'cmd', text: '/review' },
+      { kind: 'out', text: '正在审查未提交的改动（3 个文件）…' },
+      { kind: 'out', text: 'auth.ts:42——未检查 token 过期（附修改建议）' },
+      { kind: 'out', text: 'api.ts:118——超时缺少错误处理' },
+      { kind: 'ok', text: '2 个发现——合并前请修复。' },
+      { kind: 'note', text: 'CLI 形式：codex review --base main' },
+    ],
+  },
+};
+
+export const CodexExecDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={codexExecScripts[lang]} />;
+export const CodexReviewDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={codexReviewScripts[lang]} />;
