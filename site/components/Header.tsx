@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { type Lang, ui } from '@/lib/i18n';
 import { loadProgress, touchVisit, levelEmoji, PROGRESS_EVENT, type Progress } from '@/lib/progress';
 import { API_URL, apiPost } from '@/lib/api';
+import SearchModal from '@/components/SearchModal';
 
 export default function Header({ lang }: { lang: Lang }) {
   const t = ui[lang];
@@ -82,6 +83,7 @@ export default function Header({ lang }: { lang: Lang }) {
               <span>🔥 {t.streakDays(progress.streak)}</span>
             </span>
           )}
+          <SearchModal lang={lang} />
           <Link href={switchHref} className="pill" style={{ padding: '7px 10px' }}>
             🌍 {otherLang.toUpperCase()}
           </Link>

@@ -597,3 +597,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - ads.txt (google.com, pub-6850490267678365, DIRECT) + Verifikations-Meta-Tag google-adsense-account (requestlos) + AdsConsent.tsx: adsbygoogle.js lädt AUSSCHLIESSLICH nach Klick „Anzeigen erlauben" (localStorage pg_ads_consent, Banner ×5 Sprachen, 1d-Stil); ohne Consent bleibt Seite cookielos. Impressum-Datenschutz um Werbe-Absatz erweitert (Widerruf dokumentiert).
 - Verify: ads.txt live, Meta-Tag 1, adsbygoogle im Initial-HTML 0 (= korrekt gated), Banner im Bundle, Impressum-String live. Deploy 69b4a5fc. Todo #5 done → Folge-Todo „Site-Review abwarten + Auto Ads" mit exakten Schritten.
 - git status VOR add geprüft (Lesson It. 98) — nur eigene 5 Dateien.
+
+## It. 99 — 14.07. ~21:15 — 🔍 VOLLTEXT-SUCHE LIVE (Marvin-Ideen-Wahl #1)
+- Erste Suche der Seite (1962 Seiten waren unauffindbar): build-search-index.mjs im prebuild erzeugt public/search/index.<lang>.json (376 Docs/Sprache: 71 Kapitel + 293 Befehle + 12 Addons, 112-168 KB, gitignored da generiert).
+- SearchModal.tsx: 🔍-Button im Header + Cmd/Ctrl+K, lazy (MiniSearch+Index laden erst beim Öffnen), fuzzy+prefix, Boost title>summary, 12 Treffer gruppiert Kapitel/Befehle/Addons, ↑↓+Enter-Navigation, Labels ×5 im Komponenten-Dict.
+- Verify: BUILD_EXIT=0, Deploy df59ad91, index.de.json 200, ZH-Index-Inhalt geprüft, Modal-String im Bundle, Header-Screenshot (🔍 sichtbar, AdsConsent-Banner rendert korrekt daneben).
+- Addon-Schema-Falle: items nutzen what/why statt summary/body — beim ersten Index-Lauf leer, gefixt vor Deploy.
+- Known-good: df59ad91.
