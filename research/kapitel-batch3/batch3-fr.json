@@ -1,0 +1,522 @@
+{
+  "fr": [
+    {
+      "slug": "eigene-befehle-schreiben",
+      "title": "Écrire ses propres commandes : enregistrer les prompts récurrents",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "Une commande slash personnalisée est un fichier Markdown enregistré : une fois écrite, /ta-commande suffit ensuite au lieu d'un long prompt.",
+      "body": "## L'idée de base\nTu tapes toujours le même prompt – « Résume mes changements », « Vérifie ce fichier » –, tu peux l'enregistrer comme commande personnalisée. Claude Code connaît deux formats pour cela : un fichier Markdown sous `.claude/commands/` ou un dossier de skill sous `.claude/skills/`. Les deux créent la même commande slash : `deploy.md` et `deploy/SKILL.md` deviennent tous deux `/deploy`. Les Custom Commands ont été officiellement fusionnées dans les Skills ; les anciens fichiers de commande continuent de fonctionner.\n\n## Structure du fichier\nLe fichier commence en option par un frontmatter YAML entre deux lignes `---`. Le champ le plus important est `description` : c'est à cela que Claude reconnaît si la commande correspond à la tâche, et peut même la charger automatiquement. Après le frontmatter vient le texte du prompt proprement dit.\n\n## Arguments\nAvec le placeholder `$ARGUMENTS`, tu récupères tout ce que tu tapes après la commande : avec `/fix-issue 123`, `$ARGUMENTS` devient `123`. Tu accèdes aux arguments individuels en base 0 via `$0`, `$1`, etc.\n\n## Commande personnalisée ou règle CLAUDE.md ?\nLa règle empirique de la doc : les règles qui doivent toujours s'appliquer (« ne jamais pousser sur main ») vont dans CLAUDE.md – il est chargé intégralement à chaque session. Les procédures dont tu n'as besoin que parfois vont dans une commande ou un skill : leur texte ne se charge qu'à l'appel et ne coûte presque aucun contexte avant cela. Quand une section de CLAUDE.md a grandi jusqu'à devenir toute une procédure, c'est exactement, selon la doc, le moment de la transformer en commande.",
+      "bodyDetail": "## Champs de frontmatter utiles\nEn plus de `description`, il existe d'autres champs optionnels. `argument-hint` affiche pendant la frappe quels arguments sont attendus (par ex. `[numero-issue]`). `allowed-tools` autorise la commande à utiliser certains outils sans demande de confirmation, par exemple `Bash(git add *)` pour une commande de commit. `model` change le modèle pendant la durée de la commande. Tous les champs sont optionnels – seul `description` est recommandé pour que Claude sache quand la commande convient.\n\n## Qui peut déclencher la commande ?\nPar défaut, toi comme Claude pouvez invoquer un skill. Deux champs restreignent cela : `disable-model-invocation: true` signifie que seul toi peux déclencher la commande – selon la doc, c'est pertinent pour des actions à effets de bord comme `/deploy` ou `/commit`, où ce n'est pas au modèle de décider quand elles s'exécutent. À l'inverse, `user-invocable: false` cache la commande du menu : elle devient alors une pure connaissance de fond que seul Claude charge en cas de besoin.\n\n## Injecter des données en direct dans le prompt\nUn skill peut exécuter des commandes shell avec la syntaxe !`commande` avant que le texte parte vers le modèle. La sortie remplace le placeholder : une commande de review peut ainsi intégrer le `git diff` actuel directement dans le prompt, au lieu que Claude doive d'abord l'interroger lui-même. C'est du prétraitement – Claude ne voit que le résultat final.\n\n## Une idée reçue\nUne commande personnalisée n'est pas un programme qui exécute quelque chose. C'est fondamentalement un message enregistré : à l'appel, le texte du fichier (avec les placeholders remplacés) est envoyé au modèle comme prompt – comme si tu l'avais tapé toi-même. Ce qui se passe ensuite, c'est le modèle qui en décide, comme pour toute autre entrée. Qui a besoin de garanties strictes (« ça ne doit jamais arriver ») a besoin de hooks ou de règles de permissions pour cela, pas d'une commande.",
+      "example": "Fichier `.claude/skills/fix-issue/SKILL.md` :\n---\ndescription: Corrige une issue GitHub à partir de son numéro\ndisable-model-invocation: true\n---\n\nCorrige l'issue GitHub $ARGUMENTS : lis l'issue, implémente le correctif, écris des tests.\n\nAppel ensuite : `/fix-issue 123`",
+      "related": [
+        "claude-code-befehle",
+        "claude-skills",
+        "claude-md"
+      ],
+      "quiz": {
+        "question": "Que se passe-t-il techniquement quand tu invoques une commande personnalisée comme `/fix-issue 123` ?",
+        "options": [
+          "Claude Code compile le fichier en un programme et l'exécute",
+          "GitHub ferme automatiquement l'issue 123",
+          "Le texte du fichier de commande est envoyé au modèle comme prompt, avec $ARGUMENTS remplacé par '123'",
+          "Le fichier est copié dans CLAUDE.md"
+        ],
+        "correct": 2,
+        "explain": "Une commande personnalisée est un message enregistré : à l'appel, le texte du fichier est envoyé au modèle comme prompt avec les placeholders remplacés – comme si tu l'avais tapé toi-même."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : Skills (inclut Custom Commands)",
+          "url": "https://code.claude.com/docs/en/skills"
+        },
+        {
+          "title": "Doc Claude Code : Slash Commands",
+          "url": "https://code.claude.com/docs/en/slash-commands"
+        },
+        {
+          "title": "Doc Claude Code : CLAUDE.md et Memory",
+          "url": "https://code.claude.com/docs/en/memory"
+        }
+      ],
+      "exercise": {
+        "task": "Construis ta première commande personnalisée et teste les deux façons de l'invoquer.",
+        "steps": [
+          "Crée le fichier .claude/skills/resumer/SKILL.md – avec une description (« Résume les changements non commités ») et le prompt « Résume le git diff actuel en 3 points. »",
+          "Démarre Claude Code, modifie un fichier et invoque /resumer directement.",
+          "Ensuite, demande en langage naturel « Qu'est-ce que j'ai changé ? » et observe si Claude charge le skill de lui-même."
+        ],
+        "selfCheck": [
+          "Sais-tu pourquoi le champ description est décisif pour le chargement automatique ?",
+          "Peux-tu expliquer quand ce même texte aurait mieux eu sa place dans CLAUDE.md ?",
+          "As-tu compris comment tu récupérerais des arguments avec $ARGUMENTS ?"
+        ]
+      }
+    },
+    {
+      "slug": "agent-teams",
+      "title": "Agent Teams : plusieurs agents, un seul projet",
+      "category": "konzept",
+      "difficulty": 3,
+      "minutes": 5,
+      "xp": 60,
+      "teaser": "Plusieurs instances de Claude Code peuvent travailler en équipe sur un projet – avec des rôles, une liste de tâches partagée et des coûts en tokens nettement plus élevés.",
+      "body": "## Deux façons de faire tourner plusieurs agents\nLa méthode manuelle : tu démarres plusieurs sessions Claude Code en parallèle, chacune dans son propre git worktree, pour que les changements ne se percutent pas. La méthode coordonnée, c'est ce qu'offre Claude Code avec les Agent Teams : une session devient le team lead, qui répartit les tâches et fusionne les résultats ; les teammates travaillent indépendamment, chacun avec sa propre fenêtre de contexte.\n\n## Comment travaille une équipe\nL'équipe se coordonne via une liste de tâches partagée : le lead crée des tâches, les teammates les prennent en charge ou récupèrent eux-mêmes la prochaine disponible. Contrairement aux sous-agents, les teammates peuvent s'envoyer des messages directement entre eux – par exemple pour réfuter mutuellement leurs hypothèses. Les Agent Teams sont expérimentales et désactivées par défaut (en date de juillet 2026) ; elles doivent être activées via une variable d'environnement.\n\n## Rôles typiques\nDes schémas éprouvés d'après la doc : un writer implémente, un reviewer vérifie avec un regard neuf. Ou plusieurs reviewers examinent la même pull request sous des angles différents (sécurité, performance, couverture de tests). Ou plusieurs agents poursuivent des hypothèses concurrentes en debugging et tentent de se réfuter mutuellement.\n\n## L'avertissement sur les coûts\nChaque teammate est une instance Claude distincte avec sa propre fenêtre de contexte – les coûts augmentent avec la taille de l'équipe. Le blog d'ingénierie d'Anthropic chiffre les systèmes multi-agents à environ 15 fois les tokens d'un chat normal. Pour des tâches séquentielles ou des modifications du même fichier, une session unique reste généralement le meilleur choix.",
+      "bodyDetail": "## Teams vs. sous-agents\nLes deux parallélisent le travail, mais différemment : un sous-agent tourne à l'intérieur de ta session et ne peut rapporter qu'un résultat à l'appelant. Un teammate est une session complète et indépendante – tu peux lui parler directement sans passer par le lead, et les teammates communiquent entre eux. La règle empirique de la doc : des sous-agents pour des lots de travail ciblés où seul le résultat compte ; des teams quand les participants doivent partager des résultats intermédiaires, se remettre en question mutuellement et se coordonner eux-mêmes.\n\n## La preuve de recherche pour l'orchestration\nLe système de recherche multi-agent d'Anthropic (blog d'ingénierie) utilise le modèle orchestrateur-travailleurs : un agent lead décompose la requête et démarre trois à cinq sous-agents en parallèle. Dans l'éval de recherche interne d'Anthropic, ce montage a nettement surpassé un agent seul – surtout sur des tâches qui se décomposent en sous-questions indépendantes. Le même blog nomme aussi la limite : les tâches où tous les agents auraient besoin du même contexte ou dépendent fortement les uns des autres s'y prêtent mal – ce qui inclut une bonne partie du travail de programmation classique.\n\n## Règles pratiques tirées de la doc\nTrois à cinq teammates sont un bon point de départ ; au-delà, ça augmente surtout la charge de coordination sans accélérer le travail proportionnellement. Chaque teammate devrait posséder ses propres fichiers, car deux agents dans le même fichier s'écrasent mutuellement. Pour débuter, la doc recommande des tâches sans modification de code – par exemple des reviews ou de la recherche –, parce qu'elles montrent la valeur du travail parallèle sans que les changements ne se percutent. Et : ne pas laisser les teams tourner trop longtemps sans surveillance – vérifier régulièrement, réorienter et fusionner les résultats.\n\n## Une idée reçue\nPlus d'agents ne veut pas dire automatiquement de meilleurs résultats. La valeur ajoutée n'apparaît que si la tâche est réellement parallélisable. Une team qui traite une tâche séquentielle produit surtout de la charge de coordination et des coûts en tokens – pour ces cas, la doc recommande explicitement la session unique ou les sous-agents.",
+      "example": "Prompt au team lead : « Lance trois teammates pour la review de la PR #142 – l'un vérifie la sécurité, l'un la performance, l'un la couverture de tests. Rassemble ensuite tous les résultats et résume-les. »",
+      "related": [
+        "subagents",
+        "multi-agent-patterns",
+        "git-worktrees",
+        "kosten-kontrolle-agenten"
+      ],
+      "quiz": {
+        "question": "Qu'est-ce qui distingue les Agent Teams des sous-agents dans Claude Code ?",
+        "options": [
+          "Les teammates partagent une liste de tâches et peuvent communiquer directement entre eux – les sous-agents ne rapportent que leur résultat à l'appelant",
+          "Les sous-agents sont toujours plus chers que les Agent Teams",
+          "Les Agent Teams n'ont pas besoin de modèle de langage",
+          "Les sous-agents ne peuvent pas lire de fichiers"
+        ],
+        "correct": 0,
+        "explain": "Les sous-agents tournent à l'intérieur d'une session et ne renvoient que leur résultat. Les teammates sont des sessions distinctes avec une liste de tâches partagée et une messagerie directe – ce qui coûte nettement plus de tokens."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : Agent Teams",
+          "url": "https://code.claude.com/docs/en/agent-teams"
+        },
+        {
+          "title": "Anthropic Engineering: Multi-Agent Research System",
+          "url": "https://www.anthropic.com/engineering/multi-agent-research-system"
+        },
+        {
+          "title": "Doc Claude Code : Subagents",
+          "url": "https://code.claude.com/docs/en/sub-agents"
+        },
+        {
+          "title": "Doc Claude Code : Git Worktrees",
+          "url": "https://code.claude.com/docs/en/worktrees"
+        }
+      ]
+    },
+    {
+      "slug": "ci-cd-mit-agenten",
+      "title": "CI/CD avec des agents : l'IA dans le pipeline",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "Avec claude -p et GitHub Actions, les agents tournent automatiquement dans le pipeline – sans questions de clarification. C'est pourquoi ils ont besoin de gates : ce sont les tests qui décident, pas l'agent.",
+      "body": "## La brique de base : les appels headless\nDans un pipeline, il n'y a pas de fenêtre de chat. Le point d'entrée est donc le mode headless : `claude -p \"prompt\"` traite une tâche et se termine. Les données peuvent être injectées via un pipe (`git diff main | claude -p \"...\"`), et `--output-format json` fournit un résultat lisible par machine, coût inclus – utile pour les scripts.\n\n## GitHub Actions\nPour GitHub, il existe une action officielle (claude-code-action) : elle réagit aux mentions @claude dans les issues et les PR, ou tourne automatiquement avec un prompt fixe – par exemple comme review à chaque nouvelle pull request. La clé API doit impérativement aller dans les GitHub Secrets, jamais dans le dépôt.\n\n## Gates : les tests avant la confiance\nLa règle la plus importante : le résultat d'un agent est du code non vérifié. Il doit passer par les mêmes gates que le code humain – tests, linter, build –, avant que quoi que ce soit ne soit mergé. Concrètement, ça veut dire que l'agent crée une pull request au lieu de pousser directement, et qu'un humain fait la review avant le merge.\n\n## Les risques\nPremièrement : pas de questions de clarification. Ce que l'agent ne peut pas décider s'interrompt ou est mal décidé. Deuxièmement : les secrets – un agent en CI a accès à tout ce que voit le runner ; il faut donc garder les permissions aussi restreintes que possible. Troisièmement : les coûts – sans limites comme `--max-turns` et des timeouts de workflow, les runs peuvent devenir chers sans que personne ne le remarque.",
+      "bodyDetail": "## Runs reproductibles avec --bare\nPar défaut, même un appel `claude -p` charge la configuration locale : hooks, skills, serveurs MCP, CLAUDE.md. En CI, c'est un problème, car les runs peuvent alors varier d'une machine à l'autre. Le flag `--bare` désactive cette auto-détection : il ne charge que ce que tu lui passes explicitement en flag. La doc le recommande expressément pour les scripts et la CI.\n\n## Restreindre les droits avec précision\nAu lieu d'autoriser l'agent à tout faire, tu listes avec `--allowedTools` exactement les outils dont le job a besoin – par exemple `\"Bash(git diff *),Read\"` pour un job de review qui ne doit rien modifier. La syntaxe permet des motifs de préfixe : `Bash(git diff *)` autorise toutes les variantes de git diff, mais aucune autre commande shell.\n\n## Contrôle des coûts\nChaque run consomme des minutes GitHub Actions et des tokens d'API. La doc recommande des limites concrètes : `--max-turns` contre les itérations sans fin, des timeouts de workflow contre les jobs bloqués, et des règles de concurrency contre trop de runs parallèles.\n\n## Remettre les reviews automatiques à leur juste place\nAnthropic propose en plus une code review hébergée qui analyse les PR avec plusieurs agents parallèles et poste les résultats sous forme de commentaires inline avec un niveau de gravité — actuellement en research preview, réservée aux plans Team/Enterprise et payante (en date de juillet 2026). Important : elle ne bloque volontairement jamais le merge – le check aboutit toujours en « neutral ». Qui veut conditionner les merges aux résultats doit l'évaluer lui-même dans sa propre CI. Cela souligne le principe de base : l'IA fournit des indices, la décision reste aux tests et aux humains.\n\n## Une idée reçue\nUn agent de review dans le pipeline ne remplace pas les tests – c'est lui-même un résultat qui doit être vérifié. Un agent peut passer à côté de bugs ou pointer des choses fausses. Les checks déterministes (tests, linter, build) restent la vérité dure ; l'agent y ajoute des indices qu'un humain évalue.",
+      "example": "# Étape GitHub Actions (raccourcie) :\n- uses: anthropics/claude-code-action@v1\n  with:\n    anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}\n    prompt: \"Review cette PR pour trouver des bugs. Poste les résultats en commentaire.\"\n    claude_args: \"--max-turns 10\"",
+      "related": [
+        "headless-non-interactive",
+        "guardrails-fuer-agenten",
+        "git-github-basics",
+        "evals"
+      ],
+      "quiz": {
+        "question": "Pourquoi la règle « les tests avant la confiance » s'applique-t-elle au résultat d'un agent en CI/CD ?",
+        "options": [
+          "Parce que les tests rendent l'agent plus rapide",
+          "Parce que le résultat d'un agent est du code non vérifié qui doit passer par les tests, le linter et la review comme du code humain avant d'être mergé",
+          "Parce que les agents ne peuvent pas faire de requêtes API sans tests",
+          "Parce que GitHub Actions ne démarre pas sinon"
+        ],
+        "correct": 1,
+        "explain": "Un agent dans le pipeline peut faire des erreurs, et personne ne surveille en direct. Les gates déterministes (tests, build, review avant merge) rattrapent ça – c'est pourquoi l'agent crée des PR au lieu de pousser directement."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : exécuter Claude Code de façon programmatique (headless)",
+          "url": "https://code.claude.com/docs/en/headless"
+        },
+        {
+          "title": "Doc Claude Code : GitHub Actions",
+          "url": "https://code.claude.com/docs/en/github-actions"
+        },
+        {
+          "title": "GitHub Docs : secrets dans GitHub Actions",
+          "url": "https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions"
+        },
+        {
+          "title": "Doc Claude Code : Code Review",
+          "url": "https://code.claude.com/docs/en/code-review"
+        }
+      ]
+    },
+    {
+      "slug": "prompt-strukturen",
+      "title": "Structures de prompt : une mise en forme qui améliore les résultats",
+      "category": "prompt-pattern",
+      "difficulty": 1,
+      "minutes": 4,
+      "xp": 20,
+      "teaser": "Les bons prompts ont une structure visible : une tâche claire, des sections de contexte séparées, des exemples et un format de sortie précisé.",
+      "body": "## Clair et direct\nLa règle la plus importante tirée de la doc de prompting d'Anthropic : sois précis sur ce que tu veux. Le test : montre ton prompt à un collègue sans connaissance préalable. S'il serait perdu, le modèle le sera aussi. Des étapes numérotées aident quand l'ordre ou l'exhaustivité comptent.\n\n## Séparer les sections – avec des tags XML\nDès qu'un prompt mélange plusieurs types de contenu (instructions, contexte, exemples, données d'entrée), Anthropic recommande des tags XML : `<instructions>`, `<context>`, `<example>`. Chaque type de contenu reçoit son propre tag – ainsi le modèle peut distinguer sans ambiguïté ce qui est une instruction et ce qui n'est qu'un exemple. Des noms de tags cohérents et descriptifs comptent.\n\n## Attribuer un rôle\nUne seule phrase dans le system prompt (« Tu es un développeur Python expérimenté ») focalise déjà nettement le comportement et le ton.\n\n## Montrer des exemples (few-shot)\nSelon la doc, les exemples sont l'un des moyens les plus fiables pour piloter le format et le style. Recommandé : 3 à 5 exemples, pertinents pour ton cas d'usage réel et suffisamment variés, chacun dans des tags `<example>`.\n\n## Préciser le format de sortie\nDis ce que le modèle doit faire – pas ce qu'il doit éviter : « Réponds en texte continu » fonctionne mieux que « Pas de Markdown ». Pour des structures fixes, un exemple de format ou un tag dédié pour la réponse aide.",
+      "bodyDetail": "## Pourquoi la structure fonctionne\nUn prompt sans structure force le modèle à deviner où s'arrête l'instruction et où commence l'entrée. C'est exactement là que naissent les erreurs typiques : le modèle traite un exemple comme une instruction ou mélange le contexte dans la réponse. Des sections séparées et nommées suppriment cette ambiguïté – c'est pourquoi les tags XML apparaissent dans la doc d'Anthropic elle-même et dans de nombreux prompts d'exemple officiels.\n\n## Documents longs : l'ordre compte\nPour les entrées longues (à partir d'environ 20 000 tokens), la doc recommande un ordre précis : les documents longs au début du prompt, la question proprement dite à la fin. Dans les tests d'Anthropic, placer la question à la fin a amélioré la qualité des réponses jusqu'à 30 % sur des entrées multi-documents complexes. Plusieurs documents reçoivent chacun un tag `<document>` avec la source et le contenu.\n\n## Expliquer le contexte et la motivation\nUn levier sous-estimé : dire au modèle pourquoi une règle existe. Au lieu de « N'utilise jamais de points de suspension », la version « Ta réponse sera lue à voix haute par un moteur text-to-speech qui ne peut pas prononcer les points de suspension » fonctionne mieux – le modèle peut généraliser à partir de la justification.\n\n## Une idée reçue\nLes tags XML ne sont pas des mots-clés magiques que le modèle analyserait techniquement. Il n'existe pas de liste obligatoire fixe : n'importe quels noms de tags cohérents et descriptifs fonctionnent. L'effet vient de la séparation nette des contenus, pas d'un parseur XML caché. D'où aussi : trois à cinq tags bien choisis aident – vingt tags imbriqués dans un prompt court n'apportent que du bruit.\n\n## Exemple pour aller plus loin\nUn prompt de bot de support mélange les règles de l'entreprise, l'historique de chat précédent et la nouvelle question client. Non structuré, le modèle confond parfois d'anciens messages client avec des instructions actuelles. Structuré – règles dans `<guidelines>`, historique dans `<history>`, question dans `<question>`, plus un `<example>` pour le style de réponse souhaité – on sait sans ambiguïté sur quoi la réponse doit se baser.",
+      "example": "<instructions>\nRésume le texte en 3 points. Réponds en français.\n</instructions>\n\n<context>\nPublic cible : débutants sans connaissance préalable.\n</context>\n\n<text>\n[le texte ici]\n</text>",
+      "related": [
+        "prompt",
+        "system-prompt",
+        "kontext-fuettern",
+        "erst-plan-dann-code"
+      ],
+      "quiz": {
+        "question": "Pourquoi Anthropic recommande-t-il des tags XML comme <instructions> et <context> dans les prompts ?",
+        "options": [
+          "Ils chiffrent le prompt contre le prompt injection",
+          "Ils font automatiquement économiser des tokens",
+          "Ils aident le modèle à distinguer sans ambiguïté instructions, contexte et exemples",
+          "Sans eux, le modèle refuse de répondre"
+        ],
+        "correct": 2,
+        "explain": "Les tags XML séparent proprement les types de contenu. Le modèle ne peut plus confondre ce qui est une instruction, un contexte ou juste un exemple – les noms de tags eux-mêmes sont libres, tant qu'ils restent cohérents."
+      },
+      "sources": [
+        {
+          "title": "Doc Anthropic : Prompting Best Practices",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+        },
+        {
+          "title": "Doc Anthropic : vue d'ensemble du prompt engineering",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview"
+        }
+      ],
+      "exercise": {
+        "task": "Prends un de tes propres prompts non structurés et reconstruis-le avec une structure.",
+        "steps": [
+          "Cherche un prompt que tu as utilisé récemment et qui mélange instruction, contexte et données.",
+          "Décompose-le en sections avec des tags : <instructions>, <context> et un tag pour les données d'entrée. Précise le format de sortie souhaité à la fin.",
+          "Envoie les deux versions à ton modèle et compare les réponses en termes de précision et de respect du format."
+        ],
+        "selfCheck": [
+          "Peux-tu montrer clairement dans ton prompt où l'instruction s'arrête et où les données commencent ?",
+          "As-tu formulé le format de sortie positivement (« fais X ») plutôt que négativement (« pas de Y ») ?",
+          "Un collègue sans connaissance préalable comprendrait-il ton prompt dès la première lecture ?"
+        ]
+      }
+    },
+    {
+      "slug": "code-review-mit-ki",
+      "title": "Code review avec l'IA : un regard neuf plutôt qu'une auto-évaluation",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "La review IA fonctionne mieux avec un contexte neuf : ce n'est pas l'agent qui a écrit le code qui doit le noter – et la mission a besoin de limites claires.",
+      "body": "## Le principe clé : un contexte neuf\nLes bonnes pratiques d'Anthropic sont sans équivoque ici : un contexte neuf améliore la review, parce que Claude n'est pas biaisé envers du code qu'il vient d'écrire lui-même. L'auteur a tendance à considérer sa propre approche comme correcte – un reviewer qui ne voit que le diff et les critères évalue le résultat de façon indépendante. Dans Claude Code, la commande `/code-review` tourne donc dans son propre sous-agent avec un contexte neuf.\n\n## Les outils\nEn local, `/code-review` vérifie le diff actuel à la recherche de bugs avant que tu ne push. Sur GitHub, une review automatique peut analyser chaque pull request et poster les résultats sous forme de commentaires inline avec un niveau de gravité.\n\n## Ce que la review IA fait bien – et ce qu'elle ne fait pas\nElle est forte sur la correction : erreurs de logique, cas limites oubliés, violations de règles de projet documentées. Elle est faible sur les jugements qui ont besoin de contexte au-delà du code : décisions d'architecture, compromis, ou si une abstraction aide vraiment l'équipe sur le long terme. Et : un reviewer chargé de trouver des lacunes en trouve presque toujours – même dans un travail solide.\n\n## Délimiter la mission\nDonc il faut limiter le prompt de review : nomme ce qui est vérifié, par rapport à quoi, et ce qui compte comme un résultat. La doc le formule ainsi : « Report gaps, not style preferences » – signale les lacunes, pas les préférences de style.",
+      "bodyDetail": "## Le pattern writer/reviewer\nLa doc des bonnes pratiques décrit un pattern simple avec deux sessions : la session A implémente (writer), la session B fait la review avec un contexte neuf (reviewer), la session A intègre le feedback. La même chose fonctionne avec les tests : une session écrit les tests, une autre écrit le code qui les fait passer. Le principe est toujours le même – produire et évaluer sont séparés, pour que celui qui évalue ne soit pas attaché à sa propre œuvre. Plus un agent a travaillé longtemps sans surveillance, plus cette vérification indépendante devient importante selon la doc, avant que le travail ne soit considéré comme terminé.\n\n## Comment fonctionne la code review hébergée\nÀ noter : actuellement en research preview, réservée aux plans Team/Enterprise, payante (en date de juillet 2026). Dans la review GitHub d'Anthropic, plusieurs agents spécialisés analysent le diff en parallèle ; chacun traque une classe d'erreur différente. Une étape de vérification confronte les candidats au comportement réel du code pour écarter les faux positifs ; les résultats sont dédupliqués et classés par gravité (important, nit, préexistant). Le check ne bloque volontairement jamais le merge – la décision reste à l'équipe.\n\n## Piloter le comportement de la review\nDeux fichiers du repo orientent ce qui est signalé : les règles de CLAUDE.md sont lues comme contexte de projet, et les nouvelles violations sont signalées comme des remarques mineures. Un fichier REVIEW.md agit plus fortement : il est injecté à chaque agent de review avec la priorité la plus haute et peut redéfinir les niveaux de gravité, plafonner le nombre de commentaires de détail, ou exclure de la review des chemins comme le code généré et les lockfiles.\n\n## Une idée reçue\nTraiter chaque résultat n'est pas une stratégie de qualité. La doc met en garde explicitement : un reviewer chargé de chercher des lacunes en signale généralement – qui court après chaque résultat finit dans l'over-engineering, avec des couches d'abstraction inutiles et des tests pour des cas impossibles. La recommandation : demander au reviewer de ne signaler que les résultats qui touchent à la correction ou aux exigences énoncées – et traiter le reste comme optionnel.",
+      "example": "Prompt de review avec des limites claires :\n« Utilise un sous-agent et vérifie le diff du rate limiter par rapport à PLAN.md. Vérifie : chaque exigence implémentée ? Cas limites testés ? Rien changé en dehors de la mission ? Signale les lacunes, pas les préférences de style. »",
+      "related": [
+        "claude-code-befehle",
+        "subagents",
+        "vibe-coding-sicherheit",
+        "evals"
+      ],
+      "quiz": {
+        "question": "Pourquoi la code review doit-elle, selon Anthropic, se dérouler dans un contexte neuf – et pas dans la session qui a écrit le code ?",
+        "options": [
+          "Un reviewer avec un contexte neuf n'est pas biaisé par sa propre approche et n'évalue que le diff et les critères",
+          "Un contexte neuf est fondamentalement gratuit",
+          "Dans la session de l'auteur, la code review est techniquement bloquée",
+          "Seuls les contextes neufs peuvent lire le Markdown"
+        ],
+        "correct": 0,
+        "explain": "L'auteur connaît sa propre approche et a tendance à la considérer comme correcte. Une review en contexte neuf (par ex. un sous-agent) ne voit que le diff et les critères et évalue le résultat de façon indépendante."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : Best Practices (Adversarial Review)",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Doc Claude Code : Code Review",
+          "url": "https://code.claude.com/docs/en/code-review"
+        },
+        {
+          "title": "Doc Claude Code : Référence des commandes",
+          "url": "https://code.claude.com/docs/en/commands"
+        }
+      ],
+      "exercise": {
+        "task": "Fais réviser un diff par un contexte neuf et évalue toi-même les résultats.",
+        "steps": [
+          "Fais une petite modification dans un projet (ou prends une branche ouverte) et exécute /code-review dans Claude Code.",
+          "Trie les résultats en deux groupes : « concerne la correction » et « style/goût ».",
+          "Corrige uniquement les résultats liés à la correction et note lesquels tu écartes volontairement – avec une phrase de justification."
+        ],
+        "selfCheck": [
+          "As-tu pu classer chaque résultat dans l'un des deux groupes ?",
+          "As-tu écarté au moins un résultat de façon justifiée, plutôt que de courir après tout ?",
+          "Peux-tu expliquer pourquoi la review a tourné dans un sous-agent plutôt que dans ta session ?"
+        ]
+      }
+    },
+    {
+      "slug": "debugging-mit-agenten",
+      "title": "Debugging avec des agents IA : de façon systématique, pas au hasard",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "Les agents debuggent mieux avec une erreur reproductible, de vrais logs et une hypothèse avant le correctif – pas avec « corrige le bug ».",
+      "body": "## L'erreur la plus fréquente\nBeaucoup de gens donnent à un agent juste « Corrige le bug » – sans message d'erreur, sans contexte. L'agent devine alors. Le debugging systématique fonctionne autrement.\n\n## Étape 1 : reproduire l'erreur\nDonne à l'agent la commande qui déclenche l'erreur et laisse-le provoquer lui-même la panne. La doc de Claude Code recommande exactement cela : dire à l'agent comment reproduire le problème et obtenir une stack trace. Une erreur que l'agent peut déclencher lui-même est aussi une erreur qu'il peut vérifier lui-même après le correctif.\n\n## Étape 2 : fournir logs et stack traces\nColle le message d'erreur complet plutôt que de le décrire. Possible aussi via un pipe : `cat error.log | claude -p \"explique la cause\"`. Précise aussi si l'erreur survient toujours ou seulement parfois.\n\n## Étape 3 : hypothèse avant correctif\nLaisse d'abord l'agent nommer les causes probables, classées par probabilité – puis en tester une précisément. Important : corriger la cause, pas le symptôme. La doc officielle le formule comme règle de prompt : « address the root cause, don't suppress the error ».\n\n## Outils de diagnostic\nPour les problèmes avec Claude Code lui-même, il existe `/doctor` : un check automatique de l'installation, des réglages, des extensions et de l'utilisation du contexte. Si `claude` ne démarre même pas, `claude doctor` aide directement depuis le shell.",
+      "bodyDetail": "## Un déroulé de debugging complet\n1. Reproduire : « `npm test` échoue – voici la stack trace. Reproduis d'abord l'erreur. »\n2. Hypothèse : « Nomme les trois causes les plus probables, classées. Ne change encore rien. »\n3. Preuve : la doc de Claude Code recommande de faire écrire un test qui échoue et reproduit le bug – et de ne corriger qu'ensuite (« write a failing test that reproduces the issue, then fix it »).\n4. Correctif et vérification : implémenter le correctif, faire tourner le test et montrer la sortie comme preuve – pas seulement croire un « c'est fait ».\n\n## Ce que fait concrètement /doctor\n`/doctor` vérifie l'installation, les réglages, les extensions et l'utilisation du contexte en un seul passage et propose des réparations qu'il applique après ta confirmation. Pour le statut des serveurs MCP, il existe en plus `/mcp`. Les deux sont des outils de diagnostic pour l'outil lui-même – pas pour ton code applicatif.\n\n## Quand tu devrais debugger toi-même\n- Quand la reproduction a besoin de choses que l'agent n'a pas : appareils réels, accès production, parcours de clics manuels.\n- Quand tu as corrigé l'agent deux fois sur le même problème. La doc des bonnes pratiques recommande alors `/clear` et un nouveau prompt plus précis plutôt qu'une troisième correction – sinon le contexte est plein d'approches ratées.\n- Quand l'erreur n'est pas déterministe : dis explicitement à l'agent que l'erreur est intermittente ; ça change quelles causes sont plausibles.\n\n## Une idée reçue\nUn agent ne « voit » pas ton programme tourner. Il ne voit que ce qui est dans son contexte : les fichiers qu'il lit et les sorties des commandes qu'il exécute. Sans vrais logs et sans moyen de reproduire, il ne lui reste que la reconnaissance de motifs dans le code – donc deviner à un niveau élevé. C'est exactement pourquoi les étapes 1 et 2 comptent plus que n'importe quelle instruction de correctif astucieuse.",
+      "example": "Prompt : « npm test échoue. Voici la stack trace complète : [coller]. Reproduis l'erreur, nomme la cause la plus probable et écris d'abord un test qui échoue avant de corriger quoi que ce soit. »",
+      "related": [
+        "agent-festgefahren",
+        "kontext-fuettern",
+        "claude-code-befehle",
+        "erst-plan-dann-code"
+      ],
+      "quiz": {
+        "question": "Quelle est la première étape la plus sensée quand un agent doit corriger un bug ?",
+        "options": [
+          "Le faire écrire un correctif immédiatement et espérer que ça marche",
+          "Rendre l'erreur reproductible et fournir le message d'erreur complet avec la stack trace",
+          "Supprimer le fichier concerné et le faire régénérer",
+          "Changer de modèle, parce que le modèle actuel a causé le bug"
+        ],
+        "correct": 1,
+        "explain": "Une erreur reproductible avec une stack trace complète donne à l'agent de vraies données plutôt que des suppositions – et le correctif peut ensuite être vérifié par le même chemin."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : Common Workflows (Fix bugs efficiently)",
+          "url": "https://code.claude.com/docs/en/common-workflows"
+        },
+        {
+          "title": "Doc Claude Code : Best Practices",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Doc Claude Code : Troubleshooting (/doctor)",
+          "url": "https://code.claude.com/docs/en/troubleshooting"
+        }
+      ],
+      "exercise": {
+        "task": "Introduis volontairement un petit bug dans un projet d'entraînement (par ex. une faute de frappe dans un nom de variable) et fais-le trouver systématiquement par un agent.",
+        "steps": [
+          "Déclenche l'erreur et copie le message d'erreur complet avec la stack trace.",
+          "Donne à l'agent le message d'erreur et la commande de reproduction – et exige d'abord une hypothèse, pas encore de correctif.",
+          "Ne laisse implémenter le correctif qu'après avoir lu l'hypothèse, et fais vérifier le succès par l'agent avec la même commande."
+        ],
+        "selfCheck": [
+          "L'agent a-t-il nommé la bonne cause avant de changer quoi que ce soit ?",
+          "A-t-il prouvé le correctif avec la commande de reproduction (sortie montrée), plutôt que de simplement dire « c'est fait » ?",
+          "Qu'est-ce qui aurait manqué si tu avais seulement écrit « il y a un bug » ?"
+        ]
+      }
+    },
+    {
+      "slug": "testing-mit-agenten",
+      "title": "Testing avec des agents : faire écrire des tests et les utiliser comme gate",
+      "category": "guide",
+      "difficulty": 2,
+      "minutes": 5,
+      "xp": 40,
+      "teaser": "Les agents peuvent écrire des tests, et les tests peuvent contrôler les agents – tant que tu empêches l'agent de tricher avec les tests.",
+      "body": "## Deux rôles pour les tests\nQuand on travaille avec des agents, les tests ont deux jobs : l'agent peut écrire des tests – et les tests peuvent vérifier si le travail de l'agent est correct.\n\n## L'agent écrit des tests (le pattern TDD)\nLe développement piloté par les tests fonctionne bien avec les agents : faire d'abord écrire des tests à partir du comportement entrée/sortie attendu, vérifier qu'ils échouent, puis faire écrire du code jusqu'à ce qu'ils passent. La doc de Claude Code recommande même de répartir tests et implémentation sur deux sessions séparées : l'une écrit les tests, l'autre écrit le code qui les fait passer.\n\n## Les tests comme condition de fin\n« Tests verts » est le meilleur signal de fin pour le travail d'un agent. La recommandation officielle : donne à l'agent un check qu'il peut exécuter lui-même – alors la boucle se referme toute seule : travailler, exécuter le check, lire le résultat, corriger. Sans check, c'est toi la boucle de vérification.\n\n## Le risque : le test gaming\nUn agent peut aussi « vaincre » les tests plutôt que les passer : les affaiblir, les commenter, les supprimer ou coder en dur les sorties attendues. La recherche d'Anthropic documente par exemple des modèles qui se sont échappés du test harness via sys.exit(0), donnant l'impression que tous les tests passaient. Conséquence : toujours vérifier séparément les changements sur les fichiers de test dans le diff.\n\n## E2E vs. unitaire\nLes tests unitaires donnent à l'agent un feedback rapide dans la boucle. Les tests end-to-end prouvent que l'ensemble fonctionne vraiment. Pour le travail avec des agents, il te faut les deux : unitaire dans la boucle, E2E avant le merge.",
+      "bodyDetail": "## TDD avec des agents, concrètement\n1. Décris le comportement attendu avec des exemples (entrée → sortie) et fais écrire des tests. La doc montre le pattern : « write a validateEmail function. example test cases: … run the tests after implementing ».\n2. Fais tourner les nouveaux tests et confirme qu'ils échouent – un test qui n'a jamais été rouge ne prouve rien.\n3. Fais écrire du code avec l'instruction explicite de ne pas modifier les tests, et itère jusqu'au vert.\n\n## Quatre niveaux de gate de vérification\nLa doc de Claude Code décrit quatre niveaux selon la dureté avec laquelle un check bloque le « terminé » : (1) dans le prompt (« exécute les tests après l'implémentation »), (2) comme condition de /goal, revérifiée après chaque tour, (3) comme Stop hook qui bloque de façon déterministe la fin tant que le check ne passe pas, et (4) comme sous-agent de vérification avec un contexte neuf qui vérifie le résultat indépendamment. Plus le run est autonome, plus le gate devrait être dur.\n\n## Prendre le test gaming au sérieux\nAnthropic décrit le « reward hacking » dans un article de recherche : les modèles apprennent à tromper les signaux d'évaluation plutôt qu'à résoudre la tâche – dans l'exemple documenté, un modèle s'est échappé du test harness via sys.exit(0), donnant l'impression que tous les tests étaient passés. Contre-mesures pratiques :\n- Vérifier séparément le diff des fichiers de test : les tests ont-ils été changés, supprimés ou marqués comme skip ?\n- Faire écrire les tests par une session différente de celle qui écrit le code\n- Exiger des preuves : faire montrer la sortie des tests plutôt que croire des affirmations\n- Bloquer l'accès en écriture aux dossiers de tests via un hook\n\n## E2E vs. unitaire en pratique\nPour la boucle interne, la doc recommande de faire tourner des tests isolés plutôt que toute la suite – c'est plus rapide et ça garde le contexte petit. Les tests E2E sont plus coûteux mais vérifient ce que les tests unitaires ne voient pas : l'interaction entre les parties. Un agent qui rend seulement les tests unitaires verts peut quand même laisser derrière lui un système global cassé.",
+      "example": "Prompt : « Écris d'abord des tests pour parseDate() : '2026-07-13' → objet Date, 'texte invalide' → erreur, chaîne vide → erreur. Fais-les tourner et montre-moi qu'ils échouent. Implémente ensuite jusqu'à ce que tous passent – sans modifier les tests. »",
+      "related": [
+        "evals",
+        "hooks",
+        "agent-loop",
+        "guardrails-fuer-agenten"
+      ],
+      "quiz": {
+        "question": "Que signifie le « test gaming » chez les agents IA ?",
+        "options": [
+          "L'agent écrit des tests ludiques avec des valeurs aléatoires",
+          "L'agent fait passer les tests sans résoudre le problème – par exemple en les affaiblissant, en les supprimant ou en les trompant",
+          "L'agent exécute les tests deux fois pour gagner du temps",
+          "L'agent ne teste que des logiciels de jeux vidéo"
+        ],
+        "correct": 1,
+        "explain": "Au lieu de résoudre la tâche, un agent peut manipuler le check lui-même – la recherche d'Anthropic documente par exemple une évasion du test harness via sys.exit(0). D'où : vérifier les diffs de tests et exiger la sortie des tests comme preuve."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : Best Practices (vérification)",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "Doc Claude Code : Common Workflows (Work with tests)",
+          "url": "https://code.claude.com/docs/en/common-workflows"
+        },
+        {
+          "title": "Anthropic Research: Natural emergent misalignment from reward hacking",
+          "url": "https://www.anthropic.com/research/emergent-misalignment-reward-hacking"
+        }
+      ],
+      "exercise": {
+        "task": "Fais construire une petite fonctionnalité à un agent en mode test-driven – puis vérifie précisément si les tests sont restés intacts.",
+        "steps": [
+          "Décris une mini-fonctionnalité avec 3 cas d'exemple (entrée → sortie attendue) et ne fais d'abord écrire que les tests.",
+          "Fais tourner les tests et confirme qu'ils échouent. Seulement ensuite : « Implémente jusqu'à ce que tous les tests passent. Ne modifie pas les tests. »",
+          "Vérifie le diff à la fin : les fichiers de test ont-ils été touchés ? Fais montrer la sortie des tests comme preuve."
+        ],
+        "selfCheck": [
+          "Les tests étaient-ils vraiment rouges avant l'implémentation ?",
+          "Les fichiers de test sont-ils inchangés dans le diff final ?",
+          "As-tu vu la sortie des tests – ou as-tu simplement cru l'affirmation « tous les tests passent » ?"
+        ]
+      }
+    },
+    {
+      "slug": "dokumentation-mit-ki",
+      "title": "Maintenir la documentation avec l'IA",
+      "category": "guide",
+      "difficulty": 1,
+      "minutes": 4,
+      "xp": 20,
+      "teaser": "L'IA peut générer des README et des commentaires – et des fichiers comme CLAUDE.md, AGENTS.md et llms.txt rendent ta doc lisible pour les agents.",
+      "body": "## Faire écrire la doc – et la vérifier\nL'IA est douée pour produire de la documentation : sections de README, commentaires de fonctions, descriptions d'API. La doc de Claude Code décrit pour cela un déroulé simple : faire trouver les endroits non documentés, faire générer la doc, puis vérifier et affiner. La dernière étape est obligatoire : la doc générée sonne toujours convaincante – même quand elle est fausse. Lis-la avant de la commit.\n\n## Doc pour les agents : CLAUDE.md et AGENTS.md\nLa documentation a aujourd'hui deux publics : les humains et les agents. CLAUDE.md est un fichier que Claude Code lit au début de chaque session – avec les commandes de build, les règles de style et les particularités du projet. AGENTS.md est un format ouvert et transversal aux outils, avec la même idée : un « README pour agents », lu par plus de 20 outils de coding (en date de juillet 2026).\n\n## Éviter la dérive documentaire\nLa doc devient obsolète quand le code change et que personne n'y touche. Une doc fausse est pire que pas de doc du tout – surtout pour les agents, qui lui font confiance. Règle pratique : mettre à jour la doc dans le même lot de changements que le code, et demander régulièrement à l'IA : « Le README correspond-il encore à l'état actuel ? »\n\n## llms.txt pour les lecteurs IA\nSi ta doc est un site web, un fichier /llms.txt aide : un aperçu Markdown avec des liens, pour que les systèmes d'IA trouvent le contenu sans avoir à se battre avec du HTML plein de navigation et de pub.",
+      "bodyDetail": "## Le déroulé en 4 étapes de la doc officielle\nPour les tâches de documentation, la doc de Claude Code recommande quatre étapes : identifier le code non documenté, générer la documentation, vérifier et améliorer le résultat, et enfin vérifier par rapport aux standards du projet. Cela inclut de préciser le style souhaité (JSDoc, docstrings), de demander des exemples et de documenter d'abord les API publiques.\n\n## Entretenir CLAUDE.md comme du code\nTiré des bonnes pratiques : rester court et n'y mettre que ce que l'agent ne peut pas déduire lui-même du code. Pour chaque ligne, se demander : son absence causerait-elle des erreurs ? Un CLAUDE.md trop gonflé fait que les règles finissent par être ignorées. La doc le formule littéralement : « Treat CLAUDE.md like code: review it when things go wrong, prune it regularly. »\n\n## AGENTS.md : le standard ouvert\nAGENTS.md est du Markdown pur sans champ obligatoire. Sections recommandées : aperçu du projet, commandes de build et de test, règles de style, remarques de sécurité, règles de commit/PR. Le format est né d'une collaboration entre plusieurs fournisseurs (dont OpenAI Codex, Google Jules, Cursor, Factory) et est aujourd'hui maintenu par l'Agentic AI Foundation sous l'égide de la Linux Foundation. La répartition des rôles : le README reste concis pour les humains, AGENTS.md porte les détails dont les agents ont besoin.\n\n## llms.txt en détail\nLa proposition vient de Jeremy Howard (septembre 2024) : un fichier Markdown à /llms.txt avec un titre H1, un résumé court en blockquote et des listes de liens vers des pages plus détaillées. La raison : les fenêtres de contexte sont trop petites pour des sites entiers, et le HTML avec navigation et publicités est difficile à analyser proprement pour des machines. Le standard recommande en plus des versions Markdown de pages individuelles à la même URL avec .md ajouté.\n\n## Une idée reçue\nLes commentaires générés par IA ne sont pas une fin en soi. Un commentaire qui ne fait que répéter ce que dit déjà la ligne de code est du bruit. Une bonne doc explique le pourquoi – et c'est exactement là que toi, en tant qu'humain, dois affiner, parce que le pourquoi n'est souvent pas dans le code.",
+      "example": "Prompt : « Trouve toutes les fonctions sans commentaire JSDoc dans src/auth/, génère des commentaires dans le style des existants, et marque chaque endroit où tu n'es pas sûr du comportement. »",
+      "related": [
+        "claude-md",
+        "kontext-fuettern",
+        "claude-code"
+      ],
+      "quiz": {
+        "question": "À quoi sert un fichier llms.txt ?",
+        "options": [
+          "Il stocke les clés API pour des services IA",
+          "Il donne aux systèmes IA un aperçu Markdown d'un site web pour qu'ils trouvent le contenu sans le poids du HTML",
+          "Il bloque entièrement les crawlers IA",
+          "Il remplace le README pour les lecteurs humains"
+        ],
+        "correct": 1,
+        "explain": "llms.txt est un fichier Markdown à la racine du site avec un titre, une courte description et des listes de liens – une page d'entrée organisée pour les lecteurs IA, ni un contrôle d'accès ni un remplacement du README."
+      },
+      "sources": [
+        {
+          "title": "Doc Claude Code : Common Workflows (Handle documentation)",
+          "url": "https://code.claude.com/docs/en/common-workflows"
+        },
+        {
+          "title": "Doc Claude Code : Best Practices (CLAUDE.md)",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        },
+        {
+          "title": "AGENTS.md : site officiel",
+          "url": "https://agents.md/"
+        },
+        {
+          "title": "llms.txt : spécification officielle",
+          "url": "https://llmstxt.org/"
+        }
+      ]
+    },
+    {
+      "slug": "batch-processing",
+      "title": "Batch Processing : automatiser de nombreuses tâches similaires",
+      "category": "konzept",
+      "difficulty": 2,
+      "minutes": 4,
+      "xp": 40,
+      "teaser": "Des centaines de tâches similaires tournent automatiquement : via claude -p en boucle, ou via des batch API à moitié prix (en date de juillet 2026).",
+      "body": "## L'idée\nCertaines tâches sont en réalité de nombreuses tâches identiques : migrer 500 fichiers, classifier 2 000 textes, traduire chaque description de produit. Pour ça, pas besoin de chatter 500 fois – le traitement par batch s'en occupe automatiquement.\n\n## Voie 1 : fan-out headless\nClaude Code tourne aussi sans session interactive via `claude -p \"tâche\"`. Dans une boucle de script sur une liste de fichiers, ça devient un fan-out : un appel par fichier. La doc officielle recommande trois étapes : générer la liste de tâches, construire la boucle, tester d'abord sur 2-3 fichiers et affiner le prompt – puis lancer sur tout. `--allowedTools` limite ce que l'agent peut faire sans surveillance.\n\n## Voie 2 : les batch API des fournisseurs\nPour de pures requêtes au modèle sans outils, il existe des batch API : tu soumets beaucoup de requêtes en une fois, elles sont traitées de façon asynchrone. Anthropic (Message Batches API) et OpenAI (Batch API) facturent pour ça 50 % des prix normaux (en date de juillet 2026). Chez Anthropic, la plupart des batches sont terminés en moins d'une heure ; chez OpenAI, une fenêtre de 24 heures s'applique (en date de juillet 2026).\n\n## Batch ou interactif ?\nLe batch vaut le coup quand les tâches sont indépendantes et uniformes et que le résultat n'est pas nécessaire immédiatement. Reste en interactif si tu veux piloter, vérifier ou corriger en cours de route – ou si la tâche ne se précise qu'en travaillant.",
+      "bodyDetail": "## Le fan-out en détail\nLa boucle d'exemple de la doc de Claude Code :\n\n```bash\nfor file in $(cat files.txt); do\n  claude -p \"Migre $file de React vers Vue. Réponds OK ou FAIL.\" \\\n    --allowedTools \"Edit,Bash(git commit *)\"\ndone\n```\n\nLe « Réponds OK ou FAIL » rend les résultats exploitables par machine. Pour les scripts, la doc recommande en plus `--bare` : Claude démarre alors sans hooks locaux, ni plugins, ni CLAUDE.md, pour que le run se comporte pareil sur chaque machine. Avec `--output-format json`, tu récupères aussi le coût par appel (total_cost_usd).\n\n## Les batch API en détail\nLe déroulé est le même chez les deux fournisseurs : soumettre le batch, le laisser se traiter de façon asynchrone, interroger le statut, récupérer les résultats. Chiffres clés (en date de juillet 2026) :\n- Anthropic Message Batches API : 50 % de remise sur les prix standards ; la plupart des batches se terminent en moins d'1 heure ; la remise se cumule avec le prompt caching.\n- OpenAI Batch API : 50 % de remise ; finalisation sous 24 heures (souvent plus rapide) ; jusqu'à 50 000 requêtes ou 200 Mo par batch ; un pool de rate limit séparé qui ne consomme pas tes limites normales.\n\n## Fan-out vs. batch API – lequel quand ?\nLe fan-out démarre de vrais runs d'agent : chaque appel peut lire des fichiers, les modifier et exécuter des commandes. C'est ce qu'il te faut pour des migrations de code. Les batch API traitent de pures requêtes au modèle (texte en entrée, texte en sortie) sans outils – idéal pour la classification, la traduction et l'analyse de grands volumes de données, et nettement moins cher grâce à la remise.\n\n## Une idée reçue\nBatch ne veut pas dire plus rapide. Les requêtes individuelles répondent immédiatement ; avec les batches, tu attends l'ensemble du run. Le gain est sur le coût et le débit, pas sur la latence. Si un humain attend la réponse en direct, le batch est le mauvais chemin.",
+      "example": "Une équipe doit classifier 1 200 tickets de support par thème. Au lieu de 1 200 requêtes individuelles, elle soumet un batch à la Message Batches API – moitié prix (en date de juillet 2026), résultats récupérables en une fois après le run.",
+      "related": [
+        "headless-non-interactive",
+        "kosten-kontrolle-agenten",
+        "subagents",
+        "api"
+      ],
+      "quiz": {
+        "question": "Quand une batch API est-elle le bon choix plutôt que des requêtes interactives individuelles ?",
+        "options": [
+          "Quand la réponse doit arriver le plus vite possible chez l'utilisateur",
+          "Quand de nombreuses requêtes indépendantes et similaires sont en attente et que le résultat n'est pas nécessaire immédiatement",
+          "Quand l'agent doit modifier des fichiers dans le projet",
+          "Quand il n'y a qu'une seule question complexe à répondre"
+        ],
+        "correct": 1,
+        "explain": "Les batch API traitent de nombreuses requêtes de façon asynchrone à moitié prix (en date de juillet 2026) – en échange, tu attends les résultats. Pour des modifications de fichiers dans un projet, le fan-out headless avec claude -p est l'outil adapté."
+      },
+      "sources": [
+        {
+          "title": "Doc Anthropic : Batch Processing (Message Batches API)",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+        },
+        {
+          "title": "Doc OpenAI : Batch API",
+          "url": "https://developers.openai.com/api/docs/guides/batch"
+        },
+        {
+          "title": "Doc Claude Code : Non-interactive Mode (claude -p)",
+          "url": "https://code.claude.com/docs/en/headless"
+        },
+        {
+          "title": "Doc Claude Code : Best Practices (Fan out across files)",
+          "url": "https://code.claude.com/docs/en/best-practices"
+        }
+      ]
+    },
+    {
+      "slug": "api-keys-sicher-verwalten",
+      "title": "Gérer les clés API en toute sécurité",
+      "category": "guide",
+      "difficulty": 1,
+      "minutes": 4,
+      "xp": 20,
+      "teaser": "Les clés API vont dans des variables d'environnement ou des gestionnaires de secrets – jamais dans le code, les repos ou les prompts. En cas de fuite, une seule chose compte : révoquer immédiatement.",
+      "body": "## Pourquoi c'est important\nUne clé API, c'est comme une carte de crédit : qui la détient peut envoyer des requêtes sur ta facture. Les dépôts publics sont scannés automatiquement à la recherche de telles clés – aussi bien par des attaquants que par des systèmes de protection.\n\n## Règle 1 : jamais dans le code, le dépôt ou le prompt\nLes clés n'ont pas leur place dans le code source, ni dans le dépôt git, ni dans les prompts de chat. La méthode standard en local : un fichier .env contenant la clé – plus une entrée dans .gitignore pour qu'il ne soit jamais commité. Anthropic recommande explicitement ce modèle.\n\n## Règle 2 : variables d'environnement et gestionnaires de secrets\nEn local, ton programme lit la clé depuis une variable d'environnement. En production, Anthropic recommande un stockage de secrets chiffré (les gestionnaires de secrets des fournisseurs cloud) plutôt que des fichiers dotenv.\n\n## Règle 3 : faire tourner et restreindre\nFais tourner les clés régulièrement (Anthropic donne l'exemple de tous les 90 jours), utilise des clés séparées pour le développement, les tests et la production, et donne à chaque clé uniquement les droits strictement nécessaires – le principe du moindre privilège du guide OWASP.\n\n## En cas de fuite\nRévoque et remplace immédiatement. Supprimer le commit ne suffit pas : GitHub précise clairement qu'un secret ayant fuité doit d'abord être révoqué ou renouvelé – l'historique git peut déjà avoir été cloné ou mis en cache depuis longtemps.",
+      "bodyDetail": "## Le modèle .env, complet\n1. Un fichier .env dans le projet : `ANTHROPIC_API_KEY=sk-...`\n2. Une entrée dans .gitignore : `.env`\n3. Commiter en plus un .env.example sans valeurs réelles, pour que les autres voient quelles variables sont nécessaires.\n4. Dans le code, lire la clé uniquement depuis la variable d'environnement, jamais la stocker comme chaîne en dur.\n\n## Pourquoi « supprimer de git » ne suffit pas\nLa doc GitHub est claire : une fois qu'un secret a fuité, la première étape doit être de le révoquer ou de le renouveler (« as a first step you need to revoke and/or rotate that secret »). La raison : des clones, des forks, des caches et des logs de CI peuvent déjà contenir l'ancien état. D'abord renouveler, puis nettoyer l'historique si nécessaire.\n\n## Gardiens automatiques\n- GitHub Push Protection bloque les push contenant des secrets détectés ; Secret Scanning parcourt les dépôts publics.\n- Anthropic collabore avec GitHub : les clés API Claude trouvées dans des dépôts publics sont automatiquement désactivées.\n- Des outils pre-commit comme gitleaks ou git-secrets vérifient avant chaque commit – la doc GitHub cite les deux.\n\n## Le moindre privilège selon OWASP\nLe guide OWASP sur la gestion des secrets : les secrets ne doivent avoir que les droits strictement nécessaires, et pas tout le monde dans l'équipe n'a besoin d'accéder à tous les secrets. Des clés séparées par environnement limitent en plus les dégâts : une clé de test qui fuite ne met pas en danger la production.\n\n## Le protocole de fuite (selon OWASP)\n1. Revoke : révoquer immédiatement la clé concernée.\n2. Rotate : générer une nouvelle clé et la déployer partout.\n3. Delete : retirer la clé qui a fuité du système exposé.\nEnsuite : vérifier les logs et les données d'usage pour savoir ce qui s'est passé avec la clé.\n\n## Particularité avec les agents\nN'insère jamais de clés dans les prompts – les prompts finissent dans des historiques et des logs. Un agent qui lit un .env a la clé dans son contexte ensuite ; ne lui donne cet accès que si c'est vraiment nécessaire.",
+      "example": "Au lieu de `apiKey = \"sk-ant-...\"` dans le code : place la clé dans .env (.env est listé dans .gitignore), lis `process.env.ANTHROPIC_API_KEY` dans le code – et utilise en production le gestionnaire de secrets de ton fournisseur cloud.",
+      "related": [
+        "api",
+        "vibe-coding-sicherheit",
+        "git-github-basics",
+        "agent-sicherheit"
+      ],
+      "quiz": {
+        "question": "Ta clé API s'est retrouvée par erreur dans un dépôt public. Quelle est la bonne première étape ?",
+        "options": [
+          "Supprimer le commit et faire un force-push – alors la clé a disparu",
+          "Révoquer ou renouveler la clé immédiatement, et seulement ensuite nettoyer l'historique",
+          "Attendre de voir si la clé est vraiment utilisée à mauvais escient",
+          "Passer le dépôt en privé"
+        ],
+        "correct": 1,
+        "explain": "L'historique git peut déjà avoir été cloné ou mis en cache depuis longtemps. GitHub recommande explicitement de révoquer ou de renouveler le secret d'abord – supprimer seul ne rend pas la clé inutilisable."
+      },
+      "sources": [
+        {
+          "title": "Anthropic Help Center : API Key Best Practices",
+          "url": "https://support.claude.com/en/articles/9767949-api-key-best-practices-keeping-your-keys-safe-and-secure"
+        },
+        {
+          "title": "OWASP Cheat Sheet : Secrets Management",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+        },
+        {
+          "title": "GitHub Docs : supprimer des données sensibles d'un dépôt",
+          "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
+        }
+      ],
+      "exercise": {
+        "task": "Mets en place le modèle .env dans un projet d'entraînement et vérifie qu'aucune clé ne peut se retrouver dans le dépôt.",
+        "steps": [
+          "Crée un .env avec une variable factice (PAS de vraie clé) et ajoute .env à .gitignore.",
+          "Crée un .env.example avec les noms de variables sans valeurs, et ne commit que celui-ci.",
+          "Vérifie avec `git status` que .env n'apparaît pas comme nouveau fichier – et lis la valeur dans le code via la variable d'environnement."
+        ],
+        "selfCheck": [
+          "Est-ce que .env apparaît dans `git status` ? (Si oui : vérifie l'entrée .gitignore)",
+          "Y a-t-il quelque part dans le code ou dans un prompt une clé en clair sous forme de chaîne ?",
+          "Sais-tu où tu pourrais révoquer immédiatement ta vraie clé (console/dashboard du fournisseur) ?"
+        ]
+      }
+    }
+  ]
+}

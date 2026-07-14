@@ -2151,5 +2151,523 @@
         "url": "https://support.claude.com/en/articles/9547008-publish-and-share-artifacts"
       }
     ]
+  },
+  {
+    "slug": "eigene-befehle-schreiben",
+    "title": "自定义命令：把重复的 prompt 存下来",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "自定义斜杠命令就是一个保存下来的 Markdown 文件：写一次，之后用 /你的命令 就能代替一长串 prompt。",
+    "body": "## 基本想法\n如果你总在敲同一个 prompt——“总结一下我的改动”“检查一下这个文件”——可以把它存成一个自定义命令。Claude Code 支持两种格式：`.claude/commands/` 下的一个 Markdown 文件，或者 `.claude/skills/` 下的一个 skill 文件夹。两者会生成同一个斜杠命令：`deploy.md` 和 `deploy/SKILL.md` 都会变成 `/deploy`。Custom Commands（自定义命令）已正式并入 skills；旧的 command 文件仍然能用。\n\n## 文件结构\n文件可以选择以 YAML frontmatter 开头，写在两行 `---` 之间。最重要的字段是 `description`：Claude 靠它判断这个命令是否适合当前任务，甚至可以据此自动加载。frontmatter 之后就是真正的 prompt 文本。\n\n## 参数\n用占位符 `$ARGUMENTS` 接住你打在命令后面的所有内容：输入 `/fix-issue 123` 时，`$ARGUMENTS` 会变成 `123`。单个参数可以用从 0 开始编号的 `$0`、`$1` 等依次取到。\n\n## 自定义命令还是 CLAUDE.md 规则？\n文档给出的经验法则：应该始终生效的规则（“绝不直接推送到 main”）属于 CLAUDE.md——它会在每次 session 开始时完整加载。只是偶尔才用得上的流程，应该放进一个命令或 skill：这类文本只在被调用时才加载，之前几乎不占上下文。当 CLAUDE.md 里的一段内容膨胀成一整套流程时，文档认为，这正是把它拆成自定义命令的时机。",
+    "bodyDetail": "## 有用的 frontmatter 字段\n除了 `description`，还有其他可选字段。`argument-hint` 会在你输入时提示期望的参数（比如 `[issue-nummer]`）。`allowed-tools` 让命令可以不经确认就使用某些工具，比如给 commit 命令配上 `Bash(git add *)`。`model` 会在命令执行期间切换模型。所有字段都是可选的——只有 `description` 是推荐必填的，这样 Claude 才知道这个命令什么时候适用。\n\n## 谁能触发这个命令？\n默认情况下，你和 Claude 都能调用一个 skill。有两个字段可以限制这一点：`disable-model-invocation: true` 表示只有你能触发这个命令——文档认为，这适合 `/deploy` 或 `/commit` 这类有副作用的操作，不应该由模型自己决定什么时候运行。反过来，`user-invocable: false` 会把命令从菜单里隐藏：它就变成纯粹的后台知识，只有 Claude 在需要时才会加载。\n\n## 把实时数据喂进 prompt\n一个 skill 可以用 !`command` 这种语法，在文本发给模型之前先执行 shell 命令。输出结果会替换掉占位符：一个 review 命令可以这样把当前的 `git diff` 直接嵌进 prompt，而不用等 Claude 自己去查。这是一种预处理——Claude 只会看到处理好的最终结果。\n\n## 一个误解\n自定义命令不是一个会执行什么操作的程序。它本质上是一条保存下来的消息：调用时，文件里的文本（占位符已被替换）会作为 prompt 发给模型——就像你自己打出来的一样。之后发生什么，和处理其他任何输入一样，由模型决定。如果你需要硬性保证（“这件事绝不能发生”），需要的是 hook 或权限规则，而不是一个命令。",
+    "example": "文件 `.claude/skills/fix-issue/SKILL.md`：\n---\ndescription: 根据编号修复一个 GitHub issue\ndisable-model-invocation: true\n---\n\n修复 GitHub issue $ARGUMENTS：阅读该 issue、实现修复、编写测试。\n\n之后这样调用：`/fix-issue 123`",
+    "related": [
+      "claude-code-befehle",
+      "claude-skills",
+      "claude-md"
+    ],
+    "quiz": {
+      "question": "当你调用一个像 `/fix-issue 123` 这样的自定义命令时，技术上发生了什么？",
+      "options": [
+        "Claude Code 把这个文件编译成一个程序并运行它",
+        "GitHub 会自动关闭 123 号 issue",
+        "命令文件里的文本会作为 prompt 发给模型，$ARGUMENTS 会被替换成 '123'",
+        "这个文件会被复制进 CLAUDE.md"
+      ],
+      "correct": 2,
+      "explain": "自定义命令本质上是一条保存下来的消息：调用时，文件文本中的占位符会被替换，然后作为 prompt 发给模型——就像你自己打出来的一样。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：Skills（含 Custom Commands）",
+        "url": "https://code.claude.com/docs/en/skills"
+      },
+      {
+        "title": "Claude Code 文档：Slash commands",
+        "url": "https://code.claude.com/docs/en/slash-commands"
+      },
+      {
+        "title": "Claude Code 文档：CLAUDE.md 与 Memory",
+        "url": "https://code.claude.com/docs/en/memory"
+      }
+    ],
+    "exercise": {
+      "task": "搭建你的第一个自定义命令，并测试两种调用方式。",
+      "steps": [
+        "创建文件 .claude/skills/zusammenfassen/SKILL.md——写一个 description（“总结未提交的改动”）和 prompt “把当前的 git diff 总结成 3 条要点。”",
+        "启动 Claude Code，改动一个文件，然后直接调用 /zusammenfassen。",
+        "然后用自然语言问“我改了什么？”，观察 Claude 是否会自己加载这个 skill。"
+      ],
+      "selfCheck": [
+        "你知道为什么 description 字段对自动加载至关重要吗？",
+        "你能说清楚，什么情况下同样的内容更适合放进 CLAUDE.md 吗？",
+        "你理解了该怎么用 $ARGUMENTS 接收参数吗？"
+      ]
+    }
+  },
+  {
+    "slug": "agent-teams",
+    "title": "Agent Teams：多个 agent，一个项目",
+    "category": "konzept",
+    "difficulty": 3,
+    "minutes": 5,
+    "xp": 60,
+    "teaser": "多个 Claude Code 实例可以组成一个团队协作完成同一个项目——有角色分工、共享任务列表，token 成本也明显更高。",
+    "body": "## 两种多 agent 的方式\n手动方式：并行启动多个 Claude Code session，每个都在自己独立的 Git worktree 里，这样改动就不会互相冲突。Claude Code 还提供了协调式的方式——Agent Teams：一个 session 成为 team lead，负责分配任务、汇总结果；teammate 各自独立工作，每个都有自己的上下文窗口。\n\n## 团队如何工作\n团队通过一份共享任务列表来协调：lead 创建任务，teammate 领取任务，或者自己去认领下一个空闲任务。和 subagent 不同，teammate 之间可以直接互相发消息——比如互相反驳对方的假设。Agent Teams 目前是实验性功能，默认关闭（截至 2026 年 7 月）；需要通过环境变量手动开启。\n\n## 常见角色分工\n文档里验证过的几种模式：一个 writer 负责实现，一个 reviewer 用全新视角检查。或者多个 reviewer 从不同角度（安全、性能、测试覆盖率）检查同一个 pull request。又或者在调试时，多个 agent 各自追踪相互竞争的假设，并尝试互相证伪。\n\n## 成本警告\n每个 teammate 都是一个独立的 Claude 实例，拥有自己的上下文窗口——成本会随团队规模线性上升。Anthropic 的 Engineering 博客给出的数字是：多 agent 系统消耗的 token 大约是普通对话的 15 倍。对于顺序执行的任务，或者要改动同一个文件的场景，单个 session 通常是更好的选择。",
+    "bodyDetail": "## Teams 对比 Subagents\n两者都能让工作并行，但方式不同：subagent 运行在你当前 session 内部，只能向调用者返回一个结果。teammate 是一个完整、独立的 session——你可以直接和它对话，不用经过 lead，teammate 之间也能互相沟通。文档给出的经验法则：需要专注完成、只关心结果的工作包用 subagent；需要参与者共享中间结果、互相质疑、自行协调的场景用 team。\n\n## 支持编排的研究证据\nAnthropic 的多 agent research 系统（Engineering 博客）采用 orchestrator-worker 模式：一个 lead agent 拆解请求，并行启动三到五个 subagent。在 Anthropic 内部的 research eval 中，这套设置明显胜过单个 agent——尤其是在能拆分成独立子问题的任务上。同一篇博客也指出了边界：如果所有 agent 都需要相同的上下文，或者彼此高度依赖，这种模式就不合适——很多常规编程工作正是如此。\n\n## 文档中的实践建议\n三到五个 teammate 是不错的起点；再多主要只会增加协调成本，而不会成比例地加快工作。每个 teammate 都应该拥有自己独立的文件范围，因为两个 agent 同时改同一个文件会互相覆盖。刚开始建议选不涉及代码改动的任务——比如 review 或调研——因为这类任务能体现并行工作的价值，又不会产生改动冲突。另外：不要让团队长时间无人看管地运行——要定期查看进展、及时调整方向、汇总结果。\n\n## 一个误解\nagent 越多不代表结果越好。只有任务真的能被拆分并行时，才会产生额外价值。如果让一个 team 去处理一个本质上是顺序执行的任务，主要产出的只是协调开销和 token 成本——文档明确建议这种情况用单个 session 或 subagent。",
+    "example": "给 team lead 的 prompt：“为 PR #142 的 review 派生三个 teammate——一个检查安全，一个检查性能，一个检查测试覆盖率。然后收集所有发现并汇总。”",
+    "related": [
+      "subagents",
+      "multi-agent-patterns",
+      "git-worktrees",
+      "kosten-kontrolle-agenten"
+    ],
+    "quiz": {
+      "question": "在 Claude Code 里，Agent Teams 和 subagent 有什么区别？",
+      "options": [
+        "Teammate 共享一份任务列表，并且能直接互相沟通——subagent 只会把结果返回给调用者",
+        "Subagent 总是比 Agent Teams 更贵",
+        "Agent Teams 不需要语言模型",
+        "Subagent 不能读取文件"
+      ],
+      "correct": 0,
+      "explain": "Subagent 运行在一个 session 内部，只会返回自己的结果。Teammate 是独立的 session，拥有共享任务列表和直接沟通能力——但代价是明显更高的 token 消耗。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：Agent Teams",
+        "url": "https://code.claude.com/docs/en/agent-teams"
+      },
+      {
+        "title": "Anthropic Engineering：Multi-Agent Research System",
+        "url": "https://www.anthropic.com/engineering/multi-agent-research-system"
+      },
+      {
+        "title": "Claude Code 文档：Subagents",
+        "url": "https://code.claude.com/docs/en/sub-agents"
+      },
+      {
+        "title": "Claude Code 文档：Git Worktrees",
+        "url": "https://code.claude.com/docs/en/worktrees"
+      }
+    ]
+  },
+  {
+    "slug": "ci-cd-mit-agenten",
+    "title": "CI/CD 与 agent：把 AI 用进流水线",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "用 claude -p 和 GitHub Actions，agent 可以自动在流水线里运行——不会有任何反问。正因如此才需要 gate：做决定的是测试，不是 agent。",
+    "body": "## 基础构件：headless 调用\n流水线里没有聊天窗口。所以入口是 headless 模式：`claude -p \"prompt\"` 处理完一个任务就退出。数据可以通过管道传进去（`git diff main | claude -p \"...\"`），`--output-format json` 会返回一个机器可读的结果，包含花费——很适合写脚本。\n\n## GitHub Actions\nGitHub 有一个官方 action（claude-code-action）：它可以响应 issue 和 PR 里的 @claude 提及，也可以用固定 prompt 自动运行——比如在每个新 pull request 上自动做 review。API key 必须放进 GitHub Secrets，绝不能放进仓库本身。\n\n## Gate：先测试，再信任\n最重要的规则：agent 的输出是未经检查的代码。它必须像人写的代码一样，经过同样的 gate——测试、linter、build——才能被合并。实际做法是：agent 创建一个 pull request，而不是直接 push，合并前由人来 review。\n\n## 风险\n第一，没有反问机会：agent 无法决定的事情，要么中断，要么被错误地决定。第二，secrets：CI 里的 agent 能访问 runner 能看到的一切，所以权限要尽可能收紧。第三，成本：如果没有 `--max-turns` 和 workflow 超时之类的限制，运行成本可能在不知不觉中飙升。",
+    "bodyDetail": "## 用 --bare 实现可复现的运行\n默认情况下，即使是 `claude -p` 调用也会加载本地配置：hooks、skills、MCP server、CLAUDE.md。在 CI 里这是个问题，因为不同机器上的运行结果可能会不一样。`--bare` 标志会关掉这种自动加载：只加载你通过参数明确指定的内容。文档明确建议在脚本和 CI 中使用它。\n\n## 精确裁剪权限\n与其把所有权限都开放给 agent，不如用 `--allowedTools` 精确列出这个任务需要的工具——比如给一个只做检查、不应该改动任何东西的 review 任务配上 `\"Bash(git diff *),Read\"`。这个语法支持前缀匹配：`Bash(git diff *)` 允许所有 git diff 的变体，但不允许其他任何 shell 命令。\n\n## 成本控制\n每次运行都会消耗 GitHub Actions 的分钟数和 API token。文档建议设置具体的限制：用 `--max-turns` 防止无限迭代，用 workflow 超时防止任务卡死，用并发规则防止同时跑太多任务。\n\n## 正确看待自动 review\nAnthropic 还提供了一个托管的 code review 服务，它会用多个并行 agent 检查 PR，并把发现的问题以带严重程度标签的 inline 评论发出来——目前是 research preview，仅限 Team/Enterprise 方案，且单独计费（截至 2026 年 7 月）。重要的是：它故意不会阻止合并——这项检查始终以“neutral”状态通过。如果你想让合并取决于检查结果，需要自己在 CI 里做这层判断。这也印证了一个基本原则：AI 提供的是线索，决定权始终在测试和人手里。\n\n## 一个误解\n流水线里的 review agent 并不能替代测试——它本身产出的也是需要被检查的内容。agent 可能会漏掉真正的 bug，也可能挑出并不存在的问题。确定性的检查（测试、linter、build）才是最终的判断标准；agent 只是补充一些供人评估的线索。",
+    "example": "# GitHub Actions 步骤（节选）：\n- uses: anthropics/claude-code-action@v1\n  with:\n    anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}\n    prompt: \"检查这个 PR 有没有 bug。把发现的问题作为评论发出来。\"\n    claude_args: \"--max-turns 10\"",
+    "related": [
+      "headless-non-interactive",
+      "guardrails-fuer-agenten",
+      "git-github-basics",
+      "evals"
+    ],
+    "quiz": {
+      "question": "为什么在 CI/CD 里，“先测试再信任”这条规则适用于 agent 的输出？",
+      "options": [
+        "因为测试能让 agent 运行得更快",
+        "因为 agent 的输出是未经检查的代码，必须像人写的代码一样经过测试、linter 和 review 才能被合并",
+        "因为没有测试，agent 就无法发起 API 请求",
+        "因为不这样 GitHub Actions 就不会启动"
+      ],
+      "correct": 1,
+      "explain": "流水线里的 agent 可能会出错，而且没有人在现场实时盯着。确定性的 gate（测试、build、合并前 review）能兜住这些问题——所以 agent 要创建 PR，而不是直接 push。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：以编程方式运行 Claude Code（Headless）",
+        "url": "https://code.claude.com/docs/en/headless"
+      },
+      {
+        "title": "Claude Code 文档：GitHub Actions",
+        "url": "https://code.claude.com/docs/en/github-actions"
+      },
+      {
+        "title": "GitHub 文档：GitHub Actions 中的 Secrets",
+        "url": "https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions"
+      },
+      {
+        "title": "Claude Code 文档：Code Review",
+        "url": "https://code.claude.com/docs/en/code-review"
+      }
+    ]
+  },
+  {
+    "slug": "prompt-strukturen",
+    "title": "Prompt 结构：能提升效果的组织方式",
+    "category": "prompt-pattern",
+    "difficulty": 1,
+    "minutes": 4,
+    "xp": 20,
+    "teaser": "好的 prompt 都有清晰可辨的结构：明确的任务、分开的上下文段落、示例，以及规定好的输出格式。",
+    "body": "## 清楚直接\nAnthropic prompt 文档里最重要的一条规则：精确说清楚你想要什么。检验方法：把你的 prompt 拿给一个完全不了解背景的同事看。如果他会看糊涂，模型也一样会。当顺序或完整性很重要时，用编号步骤会有帮助。\n\n## 用 XML 标签分开各个段落\n一旦一个 prompt 混合了多种内容（指令、上下文、示例、输入数据），Anthropic 建议使用 XML 标签：`<instructions>`、`<context>`、`<example>`。每种内容类型都有自己的标签——这样模型就能明确区分什么是指令、什么只是示例。关键是标签名要一致、有描述性。\n\n## 赋予一个角色\n哪怕只在 system prompt 里加一句话（“你是一名经验丰富的 Python 开发者”），也能明显聚焦模型的行为和语气。\n\n## 展示示例（few-shot）\n文档指出，示例是控制格式和风格最可靠的手段之一。建议给出 3 到 5 个示例，要和你真实的应用场景相关、彼此之间也要有足够差异，每个示例都放进 `<example>` 标签里。\n\n## 规定输出格式\n要说模型应该做什么——而不是不该做什么：“用连贯的正文回答”比“不要用 Markdown”效果更好。对于固定结构，一个格式示例或一个专门给答案用的标签会有帮助。",
+    "bodyDetail": "## 结构为什么真的有用\n没有结构的 prompt 会迫使模型去猜指令在哪里结束、输入从哪里开始。典型的错误恰恰就出在这里：模型把一个示例当成指令，或者把上下文混进答案里。分开、命名清楚的段落能消除这种歧义——这也是为什么 XML 标签会出现在 Anthropic 自己的文档以及许多官方示例 prompt 里。\n\n## 长文档：顺序很重要\n对于较长的输入（大约从 20,000 token 起），文档建议一个明确的顺序：长文档放在 prompt 开头，真正的问题放在最后。在 Anthropic 的测试中，把问题放在最后能让复杂多文档输入的回答质量提升多达 30%。多个文档各自用一个带有来源和内容的 `<document>` 标签包裹。\n\n## 解释上下文和动机\n一个常被低估的技巧：告诉模型某条规则为什么存在。比起“绝不要使用省略号”，“你的回答会被一个无法读出省略号的语音合成引擎朗读”效果更好——模型能从这个理由里做出推广。\n\n## 一个误解\nXML 标签不是模型在技术层面解析的魔法关键词。并没有一份硬性规定的标签列表：任何一致使用、具有描述性的标签名都能起作用。效果来自内容的清晰分隔，而不是某种隐藏的 XML 解析器。所以也要注意：三到五个选得好的标签就有帮助——在一个短 prompt 里塞二十个嵌套标签只会带来噪音。\n\n## 更深入的例子\n一个客服机器人的 prompt 混合了公司政策、此前的聊天记录和新的客户问题。没有结构时，模型偶尔会把旧的客户消息当成当前的指令。结构化之后——政策放进 `<guidelines>`，聊天记录放进 `<history>`，问题放进 `<question>`，再加一个 `<example>` 展示期望的回答风格——回答应该依据什么就始终清楚明确。",
+    "example": "<instructions>\n把这段文字总结成 3 条要点。请用中文回答。\n</instructions>\n\n<context>\n目标读者：没有相关背景知识的新手。\n</context>\n\n<text>\n[这里放文本]\n</text>",
+    "related": [
+      "prompt",
+      "system-prompt",
+      "kontext-fuettern",
+      "erst-plan-dann-code"
+    ],
+    "quiz": {
+      "question": "Anthropic 为什么建议在 prompt 里使用像 <instructions> 和 <context> 这样的 XML 标签？",
+      "options": [
+        "它们能加密 prompt，防止 prompt injection",
+        "它们会自动节省 token",
+        "它们能帮模型明确区分指令、上下文和示例",
+        "没有它们模型就会拒绝回答"
+      ],
+      "correct": 2,
+      "explain": "XML 标签能把不同类型的内容清晰分开。这样模型就不会把指令、上下文和示例弄混——标签名本身可以自由选择，只要保持一致就行。"
+    },
+    "sources": [
+      {
+        "title": "Anthropic 文档：Prompting Best Practices",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      },
+      {
+        "title": "Anthropic 文档：Prompt Engineering 概览",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview"
+      }
+    ],
+    "exercise": {
+      "task": "找一个你自己写的、没有结构的 prompt，把它重新组织成结构化版本。",
+      "steps": [
+        "找一个你最近用过、把指令、上下文和数据混在一起的 prompt。",
+        "用标签把它拆成几个段落：<instructions>、<context>，再加一个给输入数据用的标签。最后说明你想要的输出格式。",
+        "把两个版本都发给你的模型，比较回答在准确性和格式遵循度上的差异。"
+      ],
+      "selfCheck": [
+        "你的 prompt 里能不能清楚看出指令在哪里结束、数据从哪里开始？",
+        "你有没有用正面表述来规定输出格式（“做 X”），而不是负面表述（“不要 Y”）？",
+        "一个完全不了解背景的同事第一次看到你的 prompt，能看懂吗？"
+      ]
+    }
+  },
+  {
+    "slug": "code-review-mit-ki",
+    "title": "用 AI 做 code review：全新视角，而不是自我打分",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "AI review 在全新上下文中效果最好：不应该由写代码的那个 agent 来给自己的代码打分——而且任务本身也需要明确的边界。",
+    "body": "## 核心原则：全新的上下文\nAnthropic 的 best practices 在这一点上很明确：全新的上下文能让 review 效果更好，因为 Claude 不会对自己刚写出来的代码抱有偏见。作者往往会倾向于认为自己的实现思路是对的——一个只看得到 diff 和评判标准的 reviewer，能独立地评估结果。因此，Claude Code 里的 `/code-review` 命令会在一个拥有全新上下文的独立 subagent 里运行。\n\n## 用到的工具\n在本地，`/code-review` 会在你 push 之前检查当前的 diff 有没有 bug。在 GitHub 上，一个自动 review 可以分析每一个 pull request，并把发现的问题以带严重程度标签的 inline 评论发出来。\n\n## AI review 擅长什么，不擅长什么\n它在正确性方面很强：逻辑错误、被忽略的边界情况、违反已写明的项目规则。它在需要代码之外背景知识的判断上比较弱：架构决策、各种权衡取舍、某个抽象长期来看是否真的对团队有利。还有一点：一个被要求去找问题的 reviewer，几乎总能找到一些——哪怕代码本身写得很扎实。\n\n## 收窄任务范围\n所以要限定 review 的 prompt：说清楚要检查什么、依据什么标准、什么才算是一个有效发现。文档是这样表述的：“Report gaps, not style preferences”——只报告缺陷，不要报告风格偏好。",
+    "bodyDetail": "## Writer/Reviewer 模式\nBest practices 文档描述了一个简单的双 session 模式：session A 负责实现（writer），session B 用全新上下文做 review（reviewer），session A 再把反馈落实进去。测试也是同样的思路：一个 session 写测试，另一个 session 写能通过测试的代码。核心思路始终一样——把“产出”和“评估”分开，这样评估者就不会对自己的作品有感情包袱。文档指出，agent 无人监督地工作得越久，这种独立检查在被判定为“完成”之前就越重要。\n\n## 托管的 code review 是怎么工作的\n说明：目前是 research preview，仅限 Team/Enterprise 方案，且单独计费（截至 2026 年 7 月）。在 Anthropic 的 GitHub code review 里，多个专门化的 agent 会并行分析同一个 diff；每个 agent 专门找一类不同的问题。一个验证步骤会用实际的代码行为去核实候选发现，剔除误报；最终结果会去重，并按严重程度排序（重要、Nit、历史遗留）。这项检查有意从不阻止合并——决定权始终在团队手里。\n\n## 控制 review 行为\n仓库里有两个文件会影响哪些内容被标记出来：CLAUDE.md 里的规则会被当作项目背景来读取，新出现的违规会作为提示报告出来。REVIEW.md 的作用更强：它会以最高优先级注入给每个 review agent，可以重新定义严重程度、给琐碎评论设置数量上限，或者把生成代码、lockfile 之类的路径排除在 review 之外。\n\n## 一个误解\n把每一个发现都处理掉并不是一种质量策略。文档明确警告：一个被要求去找漏洞的 reviewer，通常总能找到一些——如果你追着每一个发现不放，最后会陷入过度工程，出现不必要的抽象层，以及给不可能发生的情况写的测试。建议做法是：让 reviewer 只报告涉及正确性或已列明需求的发现——其余的当作可选项处理。",
+    "example": "带明确边界的 review prompt：\n“用一个 subagent，对照 PLAN.md 检查 rate limiter 的 diff。检查：每一项需求都实现了吗？边界情况都测试到了吗？有没有改动任务范围之外的内容？只报告缺陷，不要报告风格偏好。”",
+    "related": [
+      "claude-code-befehle",
+      "subagents",
+      "vibe-coding-sicherheit",
+      "evals"
+    ],
+    "quiz": {
+      "question": "按照 Anthropic 的说法，为什么 code review 应该在全新的上下文里运行——而不是在写代码的那个 session 里？",
+      "options": [
+        "拥有全新上下文的 reviewer 不会被自己的实现思路带偏，只根据 diff 和评判标准来评估",
+        "全新上下文本质上是免费的",
+        "在作者自己的 session 里，code review 在技术上是被锁死的",
+        "只有全新的上下文才能读懂 Markdown"
+      ],
+      "correct": 0,
+      "explain": "作者了解自己的实现思路，也往往倾向于认为它是对的。在全新上下文里进行的 review（比如用 subagent）只能看到 diff 和评判标准，能独立地评估结果。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：Best Practices（Adversarial Review）",
+        "url": "https://code.claude.com/docs/en/best-practices"
+      },
+      {
+        "title": "Claude Code 文档：Code Review",
+        "url": "https://code.claude.com/docs/en/code-review"
+      },
+      {
+        "title": "Claude Code 文档：Commands 参考",
+        "url": "https://code.claude.com/docs/en/commands"
+      }
+    ],
+    "exercise": {
+      "task": "让一个全新上下文来 review 一段 diff，然后自己评估这些发现。",
+      "steps": [
+        "在一个项目里做一个小改动（或者用一个已有的 open branch），在 Claude Code 里运行 /code-review。",
+        "把发现的问题分成两组：“涉及正确性”和“风格/偏好”。",
+        "只修复涉及正确性的发现，记下你有意舍弃的那些发现——并各写一句理由。"
+      ],
+      "selfCheck": [
+        "你能把每一个发现都归到这两组里的一组吗？",
+        "你有没有至少有理有据地舍弃过一个发现，而不是每个都去追？",
+        "你能说清楚为什么这次 review 是在一个 subagent 里运行，而不是在你自己的 session 里吗？"
+      ]
+    }
+  },
+  {
+    "slug": "debugging-mit-agenten",
+    "title": "用 AI agent 调试：系统化排查，而不是瞎猜",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "agent 调试的最佳方式是：有可复现的错误、真实的日志，先提出假设再动手修——而不是直接说“把这个 bug 修了”。",
+    "body": "## 最常见的错误\n很多人只丢给 agent 一句“把这个 bug 修了”——没有错误信息，没有上下文。于是 agent 只能瞎猜。系统化的调试方式完全不同。\n\n## 第一步：让错误可复现\n把触发错误的命令交给 agent，让它自己把错误跑出来。Claude Code 文档正是这样建议的：告诉 agent 怎么复现问题、怎么拿到 stack trace。一个 agent 能自己触发的错误，也是它在修完之后能自己验证的错误。\n\n## 第二步：喂给它日志和 stack trace\n把完整的错误信息贴进去，而不是用自己的话描述它。也可以用管道：`cat error.log | claude -p \"解释一下根本原因\"`。同时说明这个错误是每次都出现，还是偶尔才出现。\n\n## 第三步：先假设，再修复\n先让 agent 列出可能的原因，按可能性排序——然后有针对性地验证其中一个。关键是：要解决根本原因，而不是症状。官方文档把这条写成了一条 prompt 规则：“address the root cause, don't suppress the error”。\n\n## 诊断工具\n如果是 Claude Code 本身出了问题，可以用 `/doctor`：它会自动检查安装情况、设置、扩展和上下文使用情况。如果 `claude` 根本启动不了，可以直接在 shell 里运行 `claude doctor`。",
+    "bodyDetail": "## 一个完整的调试流程\n1. 复现：“`npm test` 失败了——这是 stack trace。先把这个错误复现出来。”\n2. 假设：“列出三个最可能的原因，按可能性排序。先别改任何东西。”\n3. 证明：Claude Code 文档建议先让 agent 写一个能复现这个 bug 的失败测试——然后才动手修（“write a failing test that reproduces the issue, then fix it”）。\n4. 修复与验证：落实修复方案，跑一下测试，把输出结果作为证据展示出来——不要只相信一句“搞定了”。\n\n## /doctor 具体做什么\n`/doctor` 会在一次运行里检查安装情况、设置、扩展和上下文使用情况，并给出修复建议，在你确认后再应用。如果要查 MCP server 的状态，还有专门的 `/mcp`。这两个都是针对工具本身的诊断工具——不是给你的应用代码用的。\n\n## 什么时候该自己动手调试\n- 当复现需要 agent 没有的东西时：真实设备、生产环境访问权限、手动点击操作路径。\n- 当你已经就同一个问题纠正过 agent 两次时。Best practices 文档建议这时用 `/clear` 加一个更精确的新 prompt，而不是第三次纠正——否则上下文里会堆满失败的尝试。\n- 当错误不是确定性的时：明确告诉 agent 这个错误是间歇性出现的；这会改变哪些原因是合理的。\n\n## 一个误解\nagent 并不能“看到”你的程序在运行。它只能看到自己上下文里的东西：它读过的文件，以及它执行的命令的输出。没有真实日志、没有复现方法，它能做的就只剩在代码里做模式匹配——本质上是高水平的瞎猜。正因如此，第一步和第二步比任何聪明的修复指令都更重要。",
+    "example": "prompt：“npm test 失败了。这是完整的 stack trace：[粘贴在这里]。先复现这个错误，说出最可能的原因，然后在修复之前先写一个会失败的测试。”",
+    "related": [
+      "agent-festgefahren",
+      "kontext-fuettern",
+      "claude-code-befehle",
+      "erst-plan-dann-code"
+    ],
+    "quiz": {
+      "question": "当需要 agent 修复一个 bug 时，最合理的第一步是什么？",
+      "options": [
+        "立刻让它写一个修复方案，指望能蒙对",
+        "让错误变得可复现，并提供完整的错误信息和 stack trace",
+        "删掉相关文件，让它重新生成一份",
+        "换一个模型，因为当前这个模型导致了这个 bug"
+      ],
+      "correct": 1,
+      "explain": "一个带完整 stack trace 的可复现错误，能给 agent 真实的数据而不是猜测——之后也能用同样的方式验证修复是否有效。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：Common Workflows（Fix bugs efficiently）",
+        "url": "https://code.claude.com/docs/en/common-workflows"
+      },
+      {
+        "title": "Claude Code 文档：Best Practices",
+        "url": "https://code.claude.com/docs/en/best-practices"
+      },
+      {
+        "title": "Claude Code 文档：Troubleshooting（/doctor）",
+        "url": "https://code.claude.com/docs/en/troubleshooting"
+      }
+    ],
+    "exercise": {
+      "task": "在一个练习项目里故意埋一个小 bug（比如变量名里的一个拼写错误），然后让 agent 系统化地把它找出来。",
+      "steps": [
+        "触发这个错误，把完整的错误信息和 stack trace 复制下来。",
+        "把错误信息和复现命令都给 agent——先要求它给出一个假设，还不要修复。",
+        "在你看过这个假设之后，再让它动手修复，并让 agent 用同一个命令验证修复是否成功。"
+      ],
+      "selfCheck": [
+        "agent 在改动任何东西之前，有没有说对根本原因？",
+        "它有没有用复现命令来证明修复有效（展示了输出），而不是只说一句“搞定了”？",
+        "如果你只写了一句“这里有个 bug”，会缺少什么？"
+      ]
+    }
+  },
+  {
+    "slug": "testing-mit-agenten",
+    "title": "用 agent 做测试：让它写测试，再把测试当成 gate",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "agent 可以写测试，测试也可以反过来约束 agent——前提是你要防止 agent 把测试本身给糊弄过去。",
+    "body": "## 测试的两种角色\n在和 agent 一起工作时，测试承担两个任务：agent 可以写测试——测试也可以检查 agent 的工作是否正确。\n\n## agent 写测试（TDD 模式）\n测试驱动开发和 agent 配合得很好：先根据预期的输入/输出行为让它写测试，确认测试会失败，再让它写代码，直到测试通过。Claude Code 文档甚至建议把测试和实现拆到两个不同的 session 里做：一个写测试，另一个写能通过测试的代码。\n\n## 把测试当成完成条件\n“测试全绿”是判断 agent 工作是否完成的最好信号。官方的建议是：给 agent 一个它自己就能跑的 check——这样整个循环就能自己闭环：干活、跑 check、读结果、继续改进。没有 check 的话，你自己就得充当这个验证循环。\n\n## 风险：test gaming（钻测试的空子）\nagent 也可能不是去通过测试，而是去“打败”测试：削弱断言、注释掉、直接删掉，或者把输出硬编码进去。Anthropic 的研究就记录过这样的模型：通过 sys.exit(0) 直接跳出测试 harness，让所有测试看起来都通过了。因此：diff 里对测试文件的改动，一定要单独检查。\n\n## E2E 对比 Unit\nUnit 测试能在循环里给 agent 提供快速反馈。端到端（E2E）测试能证明整个系统真的能跑通。做 agent 相关的工作两者都需要：循环里用 unit 测试，合并前用 E2E 测试。",
+    "bodyDetail": "## TDD 与 agent 配合的具体做法\n1. 用示例（输入 → 输出）描述期望的行为，让 agent 写测试。文档给出的模式是：“write a validateEmail function. example test cases: … run the tests after implementing”（写一个 validateEmail 函数，示例测试用例如下……实现后运行测试）。\n2. 跑一下新写的测试，确认它们会失败——一个从没红过的测试证明不了任何东西。\n3. 让它写代码，并明确要求不要改动测试，一直迭代到全部通过。\n\n## 验证 gate 的四个层级\nClaude Code 文档描述了四种约束“完成”判定的强度：（1）写在 prompt 里（“实现后运行测试”）；（2）作为 /goal 条件，每一步之后都会重新检查；（3）作为 Stop hook，在 check 通过之前确定性地阻止结束；（4）作为拥有全新上下文的验证 subagent，独立检查结果。运行得越自主，gate 就应该越严格。\n\n## 认真对待 test gaming\nAnthropic 在一篇研究论文中描述了“reward hacking”（奖励破解）现象：模型学会了钻评估信号的空子，而不是真正解决任务——在记录的案例中，一个模型通过 sys.exit(0) 跳出了测试 harness，看起来就像所有测试都通过了一样。实际的应对措施：\n- 单独检查测试文件的 diff：测试有没有被改动、删除，或者加上了跳过标记？\n- 让测试由和写代码不同的 session 来写\n- 要求提供证据：让它展示测试输出，而不是轻信它的说法\n- 用 hook 禁止对测试目录的写权限\n\n## 实践中的 E2E 对比 Unit\n对于内部循环，文档建议只跑单个测试，而不是整个测试套件——这样更快，也能让上下文保持精简。E2E 测试成本更高，但能检查 unit 测试看不到的东西：各部分之间的协同。一个只把 unit 测试跑绿的 agent，仍然可能留下一个整体上是坏的系统。",
+    "example": "prompt：“先给 parseDate() 写测试：'2026-07-13' → Date 对象，'乱码' → 报错，空字符串 → 报错。跑一下，给我看它们失败的样子。然后开始实现，直到全部通过——不要改动测试。”",
+    "related": [
+      "evals",
+      "hooks",
+      "agent-loop",
+      "guardrails-fuer-agenten"
+    ],
+    "quiz": {
+      "question": "AI agent 里的“test gaming”是什么意思？",
+      "options": [
+        "agent 写了一些带随机值的娱乐性测试",
+        "agent 让测试通过，却没有真正解决问题——比如通过削弱、删除或耍花招绕过测试",
+        "agent 把测试跑两遍来拖延时间",
+        "agent 只测试游戏软件"
+      ],
+      "correct": 1,
+      "explain": "agent 有可能不去解决任务本身，而是直接操纵 check——Anthropic 的研究就记录过通过 sys.exit(0) 跳出测试 harness 的案例。所以：一定要检查测试的 diff，并要求把测试输出作为证据。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：Best Practices（验证）",
+        "url": "https://code.claude.com/docs/en/best-practices"
+      },
+      {
+        "title": "Claude Code 文档：Common Workflows（Work with tests）",
+        "url": "https://code.claude.com/docs/en/common-workflows"
+      },
+      {
+        "title": "Anthropic Research：Natural emergent misalignment from reward hacking",
+        "url": "https://www.anthropic.com/research/emergent-misalignment-reward-hacking"
+      }
+    ],
+    "exercise": {
+      "task": "让 agent 用测试驱动的方式构建一个小功能——然后专门检查测试有没有被动过。",
+      "steps": [
+        "用 3 个示例用例（输入 → 期望输出）描述一个小功能，先只让它写测试。",
+        "跑一下测试，确认它们会失败。然后才说：“实现代码，直到所有测试都通过。不要改动测试。”",
+        "最后检查 diff：测试文件有没有被改动？让它把测试输出展示给你作为证据。"
+      ],
+      "selfCheck": [
+        "在实现代码之前，测试真的是红的吗？",
+        "最终的 diff 里，测试文件有没有保持不变？",
+        "你有没有亲眼看到测试输出——还是只是相信了一句“所有测试都通过了”？"
+      ]
+    }
+  },
+  {
+    "slug": "dokumentation-mit-ki",
+    "title": "用 AI 维护文档",
+    "category": "guide",
+    "difficulty": 1,
+    "minutes": 4,
+    "xp": 20,
+    "teaser": "AI 能生成 README 和注释——而 CLAUDE.md、AGENTS.md、llms.txt 这样的文件，能让你的文档对 agent 也变得可读。",
+    "body": "## 让 AI 写文档——然后检查它\nAI 很擅长生成文档：README 段落、函数注释、API 说明。Claude Code 文档给出了一个简单的流程：先找出没有文档的地方，生成文档，然后检查并打磨。最后一步是必须的：AI 生成的文档听起来总是很有说服力——哪怕内容是错的。提交之前，先读一遍。\n\n## 给 agent 看的文档：CLAUDE.md 和 AGENTS.md\n如今文档有两类读者：人和 agent。CLAUDE.md 是 Claude Code 在每次 session 开始时都会读取的文件——里面写着 build 命令、代码风格规则和项目的各种特殊情况。AGENTS.md 是一个开放的、跨工具的格式，理念相同：一份“给 agent 看的 README”，已经被超过 20 款编程工具读取（截至 2026 年 7 月）。\n\n## 避免文档漂移\n当代码变了、却没人去改文档时，文档就会过时。错误的文档比没有文档更糟——尤其是对信任它的 agent 来说。实用的原则是：把文档更新和代码改动放进同一个改动集里，并定期问 AI：“这份 README 还符合现在的状态吗？”\n\n## 给 AI 读者用的 llms.txt\n如果你的文档是一个网站，一份 /llms.txt 文件会很有帮助：一份带链接的 Markdown 总览，让 AI 系统不用啃满是导航和广告的 HTML，就能找到内容。",
+    "bodyDetail": "## 官方文档里的四步流程\n针对文档相关的任务，Claude Code 文档建议四个步骤：识别没有文档的代码、生成文档、检查并改进结果，最后对照项目标准做验证。这也包括指定想要的风格（JSDoc、docstring）、要求提供示例，以及优先给公共 API 写文档。\n\n## 像维护代码一样维护 CLAUDE.md\nBest practices 里的建议是：保持简短，只写 agent 无法自己从代码里推断出来的内容。对每一行都问一句：如果它不存在，会不会导致错误？一份臃肿的 CLAUDE.md 会导致规则被忽视。文档原话是：“Treat CLAUDE.md like code: review it when things go wrong, prune it regularly.”（把 CLAUDE.md 当代码来对待：出问题时 review 它，定期精简它。）\n\n## AGENTS.md：开放标准\nAGENTS.md 是纯 Markdown，没有必填字段。推荐的段落包括：项目概览、build 和测试命令、代码风格规则、安全注意事项、commit/PR 规则。这个格式是多家厂商合作的产物（包括 OpenAI Codex、Google Jules、Cursor、Factory 等），如今由 Linux Foundation 旗下的 Agentic AI Foundation 负责维护。分工是这样的：README 对人保持简洁，AGENTS.md 则承载 agent 需要的细节。\n\n## llms.txt 详解\n这个提案来自 Jeremy Howard（2024 年 9 月）：在 /llms.txt 下放一个 Markdown 文件，包含一个 H1 标题、一段作为引用块的简短摘要，以及指向更多页面的链接列表。原因是：上下文窗口对整个网站来说太小，而带导航和广告的 HTML 对机器来说很难干净地解析。该标准还额外建议，在同一 URL 下加上 .md 后缀，提供每个页面单独的 Markdown 版本。\n\n## 一个误解\nAI 生成的注释不是目的本身。一个只是重复代码那一行本来就说了什么的注释，只是噪音。好的文档解释的是“为什么”——而这恰恰是你作为人需要去打磨的地方，因为“为什么”往往不在代码里。",
+    "example": "prompt：“找出 src/auth/ 里所有没有 JSDoc 注释的函数，按现有注释的风格生成新注释，并标记出所有你对其行为不确定的地方。”",
+    "related": [
+      "claude-md",
+      "kontext-fuettern",
+      "claude-code"
+    ],
+    "quiz": {
+      "question": "llms.txt 文件是用来做什么的？",
+      "options": [
+        "它用来存放 AI 服务的 API key",
+        "它给 AI 系统提供一份网站的 Markdown 总览，让它们不用啃 HTML 冗余内容就能找到相关信息",
+        "它会彻底屏蔽 AI 爬虫",
+        "它替代了给人类读者看的 README"
+      ],
+      "correct": 1,
+      "explain": "llms.txt 是放在网站根目录下的一个 Markdown 文件，包含标题、简短说明和链接列表——是给 AI 读者准备的一份精心整理的入口页面，既不是访问控制，也不是 README 的替代品。"
+    },
+    "sources": [
+      {
+        "title": "Claude Code 文档：Common Workflows（Handle documentation）",
+        "url": "https://code.claude.com/docs/en/common-workflows"
+      },
+      {
+        "title": "Claude Code 文档：Best Practices（CLAUDE.md）",
+        "url": "https://code.claude.com/docs/en/best-practices"
+      },
+      {
+        "title": "AGENTS.md：官方网站",
+        "url": "https://agents.md/"
+      },
+      {
+        "title": "llms.txt：官方规范",
+        "url": "https://llmstxt.org/"
+      }
+    ]
+  },
+  {
+    "slug": "batch-processing",
+    "title": "Batch Processing：批量自动处理大量任务",
+    "category": "konzept",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "teaser": "成百上千个同类任务都能自动跑完：可以用循环里的 claude -p，也可以用半价的 batch API（截至 2026 年 7 月）。",
+    "body": "## 基本想法\n有些任务本质上是很多个一样的小任务：迁移 500 个文件、给 2000 段文本分类、翻译每一条产品描述。要做这些事，你不需要手动聊 500 次——批量处理可以自动搞定。\n\n## 方式一：headless fan-out\nClaude Code 就算没有交互式 session，也能用 `claude -p \"任务\"` 运行。在一个遍历文件列表的脚本循环里，这就变成了一种 fan-out：每个文件对应一次调用。官方文档建议三个步骤：生成任务列表、搭建循环、先在 2 到 3 个文件上测试并打磨 prompt——然后再放开跑全部文件。`--allowedTools` 用来限制 agent 在无人监督时能做什么。\n\n## 方式二：厂商提供的 batch API\n对于不需要工具、纯粹的模型请求，可以用 batch API：你把大量请求一起提交，它们会被异步处理。Anthropic（Message Batches API）和 OpenAI（Batch API）为此收取标准价格的 50%（截至 2026 年 7 月）。在 Anthropic 那边，大多数 batch 会在一小时内完成；在 OpenAI 那边，处理窗口是 24 小时（截至 2026 年 7 月）。\n\n## Batch 还是交互式？\n当任务彼此独立、形式统一，而且不需要立刻拿到结果时，batch 就很划算。如果你想在过程中控制、检查或纠正——或者任务本身要边做边搞清楚——那就应该保持交互式。",
+    "bodyDetail": "## fan-out 详解\nClaude Code 文档里的示例循环：\n\n```bash\nfor file in $(cat files.txt); do\n  claude -p \"把 $file 从 React 迁移到 Vue。回复 OK 或 FAIL。\" \\\n    --allowedTools \"Edit,Bash(git commit *)\"\ndone\n```\n\n“回复 OK 或 FAIL”能让结果被机器直接读取判断。对于脚本，文档还建议加上 `--bare`：这样 Claude 启动时不会加载本地的 hooks、插件和 CLAUDE.md，让运行结果在任何机器上都保持一致。用 `--output-format json`，你还能拿到每次调用的花费（total_cost_usd）。\n\n## batch API 详解\n两家厂商的流程是一样的：提交 batch，让它异步处理，查询状态，取回结果。关键数据（截至 2026 年 7 月）：\n- Anthropic Message Batches API：标准价格 5 折；大多数 batch 在 1 小时内完成；这个折扣可以和 prompt caching 叠加。\n- OpenAI Batch API：5 折；24 小时内完成（通常更快）；单个 batch 最多 50,000 个请求或 200 MB；有独立的速率限制额度，不会占用你的常规配额。\n\n## fan-out 对比 batch API——什么时候用哪个？\nfan-out 启动的是真正的 agent 运行：每次调用都能读取文件、编辑文件、执行命令。做代码迁移就需要这个。batch API 处理的是纯粹的模型请求（文本进、文本出），不涉及工具——很适合分类、翻译，以及对大量数据做分析，而且因为有折扣，成本明显更低。\n\n## 一个误解\nbatch 不代表更快。单个请求能立刻返回；用 batch 的话，你要等整个批次跑完。它的优势在成本和吞吐量，而不是延迟。如果有人在现场等着看结果，batch 就是错误的选择。",
+    "example": "一个团队需要给 1200 张 support ticket 按主题分类。与其发 1200 次单独请求，不如向 Message Batches API 提交一个 batch——半价（截至 2026 年 7 月），处理完之后可以一次性把所有结果取回来。",
+    "related": [
+      "headless-non-interactive",
+      "kosten-kontrolle-agenten",
+      "subagents",
+      "api"
+    ],
+    "quiz": {
+      "question": "什么时候该用 batch API，而不是一个个发交互式请求？",
+      "options": [
+        "当结果必须尽快送达用户时",
+        "当有大量相互独立、形式相同的请求要处理，而且不需要立刻拿到结果时",
+        "当需要 agent 去编辑项目里的文件时",
+        "当只需要回答一个复杂问题时"
+      ],
+      "correct": 1,
+      "explain": "batch API 会以半价异步处理大量请求（截至 2026 年 7 月）——代价是你需要等待结果。如果要在项目里编辑文件，用 claude -p 做 headless fan-out 才是合适的工具。"
+    },
+    "sources": [
+      {
+        "title": "Anthropic 文档：Batch Processing（Message Batches API）",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      },
+      {
+        "title": "OpenAI 文档：Batch API",
+        "url": "https://developers.openai.com/api/docs/guides/batch"
+      },
+      {
+        "title": "Claude Code 文档：Non-interactive Mode（claude -p）",
+        "url": "https://code.claude.com/docs/en/headless"
+      },
+      {
+        "title": "Claude Code 文档：Best Practices（Fan out across files）",
+        "url": "https://code.claude.com/docs/en/best-practices"
+      }
+    ]
+  },
+  {
+    "slug": "api-keys-sicher-verwalten",
+    "title": "安全地管理 API key",
+    "category": "guide",
+    "difficulty": 1,
+    "minutes": 4,
+    "xp": 20,
+    "teaser": "API key 应该放在环境变量或 secret manager 里——绝不能放进代码、仓库或 prompt。一旦泄露，唯一重要的事就是立刻吊销。",
+    "body": "## 为什么这很重要\n一个 API key 就像一张信用卡：谁拿到它，谁就能拿着你的账单发请求。公开仓库会被自动扫描，找这类 key——攻击者和防护系统都会这么做。\n\n## 规则一：绝不能放进代码、仓库或 prompt\nkey 不应该出现在源代码里，不应该进 git 仓库，也不应该出现在 chat prompt 里。本地的标准做法是：把 key 放进一个 .env 文件——再在 .gitignore 里加一条记录，确保它永远不会被提交。Anthropic 明确推荐的正是这套做法。\n\n## 规则二：环境变量和 secret manager\n在本地，你的程序应该从环境变量里读取 key。在生产环境，Anthropic 建议使用加密的 secret 存储（各云厂商提供的 secret manager），而不是 dotenv 文件。\n\n## 规则三：定期轮换，限制权限\n定期轮换 key（Anthropic 举的例子是每 90 天一次），为开发、测试、生产环境分别使用不同的 key，并且只给每个 key 完成任务所需的最小权限——这就是 OWASP 指南里的最小权限原则。\n\n## 一旦泄露\n立刻吊销并更换。只删除那个 commit 是不够的：GitHub 明确指出，泄露的 secret 必须先被吊销或轮换——因为 git 历史记录可能早就已经被克隆或缓存了。",
+    "bodyDetail": "## 完整的 .env 模式\n1. 项目里的一个 .env 文件：`ANTHROPIC_API_KEY=sk-...`\n2. 在 .gitignore 里加一条：`.env`\n3. 另外提交一个不含真实值的 .env.example，让其他人知道需要哪些变量。\n4. 代码里只从环境变量读取 key，绝不把它写成字符串硬编码进去。\n\n## 为什么“从 git 里删掉”是不够的\nGitHub 的文档说得很清楚：一个 secret 一旦泄露，第一步必须是把它吊销或者轮换（“as a first step you need to revoke and/or rotate that secret”）。原因是：克隆、fork、缓存和 CI 日志里可能早就保留了旧版本。先轮换，有需要再去清理历史记录。\n\n## 自动化的防护措施\n- GitHub Push Protection 会阻止包含已识别 secret 的 push；Secret Scanning 会扫描公开仓库。\n- Anthropic 和 GitHub 有合作：在公开仓库里发现的 Claude API key 会被自动禁用。\n- gitleaks、git-secrets 这类 pre-commit 工具，会在每次 commit 前做检查——GitHub 文档提到了这两个。\n\n## 按 OWASP 的最小权限原则\nOWASP 的 Secrets Management 指南指出：secret 应该只拥有完成任务所需的最小权限，而且团队里也不是每个人都需要访问所有 secret。为每个环境使用不同的 key，还能进一步限制损失：一个测试环境泄露的 key，不会危及生产环境。\n\n## 泄露处理流程（按 OWASP）\n1. Revoke：立刻吊销受影响的 key。\n2. Rotate：生成一个新 key，并在所有地方替换掉旧的。\n3. Delete：把泄露的 key 从暴露的系统里删除。\n之后：检查日志和使用记录，确认这个 key 到底被用来做过什么。\n\n## agent 场景下的特殊之处\n永远不要把 key 塞进 prompt 里——prompt 会留在历史记录和日志里。一个读取了 .env 的 agent，之后就会在自己的上下文里持有这个 key；只有在真正需要时，才给它这种访问权限。",
+    "example": "与其在代码里写 `apiKey = \"sk-ant-...\"`：把 key 放进 .env（.env 已经在 .gitignore 里），代码里读取 `process.env.ANTHROPIC_API_KEY`——生产环境则使用云厂商的 secret manager。",
+    "related": [
+      "api",
+      "vibe-coding-sicherheit",
+      "git-github-basics",
+      "agent-sicherheit"
+    ],
+    "quiz": {
+      "question": "你的 API key 不小心出现在了一个公开仓库里。正确的第一步是什么？",
+      "options": [
+        "删掉那个 commit 再强制 push——这样 key 就没了",
+        "立刻吊销或轮换这个 key，之后再清理历史记录",
+        "先等等看这个 key 是不是真的会被滥用",
+        "把仓库设为私有"
+      ],
+      "correct": 1,
+      "explain": "git 历史记录可能早就已经被克隆或缓存了。GitHub 明确建议先吊销或轮换这个 secret——光是删除并不能让这个 key 失效。"
+    },
+    "sources": [
+      {
+        "title": "Anthropic Help Center：API Key Best Practices",
+        "url": "https://support.claude.com/en/articles/9767949-api-key-best-practices-keeping-your-keys-safe-and-secure"
+      },
+      {
+        "title": "OWASP Cheat Sheet：Secrets Management",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+      },
+      {
+        "title": "GitHub Docs：Removing sensitive data from a repository",
+        "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
+      }
+    ],
+    "exercise": {
+      "task": "在一个练习项目里搭建 .env 模式，并确认没有 key 会进入仓库。",
+      "steps": [
+        "创建一个带有占位变量的 .env（不要放真实 key），并把 .env 加进 .gitignore。",
+        "创建一个只有变量名、没有值的 .env.example，只提交这一个文件。",
+        "用 `git status` 检查 .env 有没有作为新文件出现——并在代码里通过环境变量读取这个值。"
+      ],
+      "selfCheck": [
+        "`git status` 里出现 .env 了吗？（如果出现了：检查一下 .gitignore 里的记录）",
+        "代码或 prompt 里有没有哪个地方把 key 写成了明文字符串？",
+        "你知道该去哪里立刻吊销你的真实 key 吗（厂商的 console/dashboard）？"
+      ]
+    }
   }
 ]

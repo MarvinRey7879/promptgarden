@@ -85,6 +85,7 @@ export const WORLD_1: string[] = [
   'kontext-fuettern',
   'system-prompt',
   'halluzination',
+  'prompt-strukturen',
   'erst-plan-dann-code',
 ];
 
@@ -100,6 +101,8 @@ export const WORLD_2: string[] = [
   'agent-sicherheit',
   'loops-fuer-agenten',
   'multi-agent-patterns',
+  'agent-teams',
+  'debugging-mit-agenten',
   'kontext-strategien',
 ];
 
@@ -108,6 +111,7 @@ export const WORLD_3: string[] = [
   'claude-code-befehle',
   'permissions-modes',
   'claude-skills',
+  'eigene-befehle-schreiben',
   'plugins',
   'mcp',
   'hooks',
@@ -116,6 +120,7 @@ export const WORLD_3: string[] = [
   'kosten-kontrolle-agenten',
   'model-routing',
   'caching-strategien',
+  'testing-mit-agenten',
   'evals',
   'projekt-deployen',
   'benchmarks-lesen',

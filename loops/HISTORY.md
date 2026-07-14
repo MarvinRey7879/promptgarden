@@ -492,3 +492,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Forum-Cleanup (Marvin-Wunsch): Test-Post »Loop-Test« gelöscht, öffentliche Liste leer verifiziert; geblockte Spam-Testposts 2+3 bleiben unsichtbar als Filter-Beleg.
 - Live verifiziert: goal-demo.de.mp4 200+video/mp4, Embeds auf /de/…/goal/ + /zh/…/sandbox-run/.
 - Known-good Deploy: d59ad5e2.promptgarden.pages.dev
+
+### It. 80 (14.07.26 vormittags) — 📚 KAPITEL-BATCH 3 LIVE: 61 Kapitel ×5 ✅
+- 10 neue Kapitel ×5 (eigene-befehle-schreiben, agent-teams, ci-cd-mit-agenten, prompt-strukturen, code-review-mit-ki, debugging-mit-agenten, testing-mit-agenten, dokumentation-mit-ki, batch-processing, api-keys-sicher-verwalten) — alle mit bodyDetail, Quiz, 27 verifizierte URLs; 6 mit Übung. 1382 Seiten.
+- Adversarial-Review PASS (0 BLOCK, 5 FIX vor Übersetzung angewandt: Hosted-Review-Gating ×2, agent-teams-EN-Paritäts-Satz, Quellentitel »Natural…«, 25→20 Tools gelabelt). Review bestätigte wörtliche Belege für 15×-Tokens, 30%-Claim, $0-Index, »Report gaps«-Zitat, sys.exit(0).
+- WORLD-Ausbau: W1=9 (+prompt-strukturen), W2=13 (+agent-teams, debugging-mit-agenten), W3=16 (+eigene-befehle-schreiben, testing-mit-agenten).
+- Lektionen: (1) API-Abbruch bei Hintergrund-Agents → SendMessage an Agent-ID resumed mit vollem Kontext, kein Neustart nötig; (2) node -e-String-Patches auf JSON mit \n-Literalen scheitern am Escaping → immer über geparste Objekte patchen; (3) generisches Satzende (»postet.«) als Replace-Anker riskant → nach Patch Kontext gegenprüfen.
+- Known-good Deploy: 471f3975.promptgarden.pages.dev

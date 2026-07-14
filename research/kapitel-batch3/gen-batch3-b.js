@@ -1,0 +1,464 @@
+// Generator für batch3-b.json — 5 neue Lexikon-Kapitel DE+EN
+// Quellen: alle URLs am 13.07.2026 per curl (Browser-UA) mit HTTP 200 verifiziert.
+const fs = require('fs');
+const path = require('path');
+
+const SRC = {
+  ccBestPractices: 'https://code.claude.com/docs/en/best-practices',
+  ccCommonWorkflows: 'https://code.claude.com/docs/en/common-workflows',
+  ccTroubleshooting: 'https://code.claude.com/docs/en/troubleshooting',
+  ccHeadless: 'https://code.claude.com/docs/en/headless',
+  anthropicRewardHacking: 'https://www.anthropic.com/research/emergent-misalignment-reward-hacking',
+  agentsMd: 'https://agents.md/',
+  llmsTxt: 'https://llmstxt.org/',
+  anthropicBatch: 'https://platform.claude.com/docs/en/build-with-claude/batch-processing',
+  openaiBatch: 'https://developers.openai.com/api/docs/guides/batch',
+  anthropicKeyBP: 'https://support.claude.com/en/articles/9767949-api-key-best-practices-keeping-your-keys-safe-and-secure',
+  owaspSecrets: 'https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html',
+  githubSensitive: 'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository'
+};
+
+// ---------------------------------------------------------------- DE --------
+
+const de = [];
+
+// 1. debugging-mit-agenten -----------------------------------------------------
+de.push({
+  slug: 'debugging-mit-agenten',
+  title: 'Debugging mit KI-Agenten: systematisch statt raten',
+  category: 'guide',
+  difficulty: 2,
+  minutes: 5,
+  xp: 40,
+  teaser: 'Agenten debuggen am besten mit reproduzierbarem Fehler, echten Logs und einer Hypothese vor dem Fix – nicht mit „fix den Bug".',
+  body: '## Der häufigste Fehler\nViele geben einem Agenten nur „Fix den Bug" – ohne Fehlermeldung, ohne Kontext. Dann rät der Agent. Systematisches Debugging funktioniert anders.\n\n## Schritt 1: Fehler reproduzieren\nGib dem Agenten das Kommando, mit dem der Fehler auftritt, und lass ihn den Fehler selbst auslösen. Die Claude-Code-Doku empfiehlt genau das: dem Agenten sagen, wie er das Problem reproduziert und einen Stacktrace bekommt. Ein Fehler, den der Agent selbst auslösen kann, ist auch einer, den er nach dem Fix selbst verifizieren kann.\n\n## Schritt 2: Logs und Stacktraces füttern\nFüge die komplette Fehlermeldung ein, statt sie zu beschreiben. Auch per Pipe möglich: `cat error.log | claude -p "erkläre die Ursache"`. Sag dazu, ob der Fehler immer oder nur manchmal auftritt.\n\n## Schritt 3: Hypothese vor Fix\nLass den Agenten erst wahrscheinliche Ursachen nennen, sortiert nach Wahrscheinlichkeit – und dann gezielt eine prüfen. Wichtig: die Ursache beheben, nicht das Symptom. Die offizielle Doku formuliert es als Prompt-Regel: „address the root cause, don\'t suppress the error".\n\n## Diagnose-Tools\nFür Probleme mit Claude Code selbst gibt es `/doctor`: einen automatischen Check von Installation, Einstellungen, Erweiterungen und Kontext-Nutzung. Startet `claude` gar nicht, hilft `claude doctor` direkt aus der Shell.',
+  bodyDetail: '## Ein kompletter Debugging-Ablauf\n1. Reproduzieren: „`npm test` schlägt fehl – hier der Stacktrace. Reproduziere den Fehler zuerst."\n2. Hypothese: „Nenne die drei wahrscheinlichsten Ursachen, sortiert. Noch nichts ändern."\n3. Beweis: Die Claude-Code-Doku empfiehlt, einen fehlschlagenden Test schreiben zu lassen, der den Bug reproduziert – und erst dann zu fixen („write a failing test that reproduces the issue, then fix it").\n4. Fix und Verifikation: Fix umsetzen, den Test laufen lassen und den Output als Beleg zeigen lassen – nicht nur ein „erledigt" glauben.\n\n## Was /doctor konkret macht\n`/doctor` prüft Installation, Einstellungen, Erweiterungen und Kontext-Nutzung in einem Durchlauf und schlägt Reparaturen vor, die es nach deiner Bestätigung anwendet. Für den Status von MCP-Servern gibt es zusätzlich `/mcp`. Beides sind Diagnose-Werkzeuge für das Tool selbst – nicht für deinen Anwendungscode.\n\n## Wann du selbst debuggen solltest\n- Wenn die Reproduktion Dinge braucht, die der Agent nicht hat: echte Geräte, Produktionszugriff, manuelle Klickstrecken.\n- Wenn du den Agenten zweimal zum selben Problem korrigiert hast. Die Best-Practices-Doku empfiehlt dann `/clear` und einen präziseren neuen Prompt statt einer dritten Korrektur – der Kontext ist sonst voller gescheiterter Ansätze.\n- Wenn der Fehler nicht deterministisch ist: Sag dem Agenten ausdrücklich, dass der Fehler intermittierend auftritt; das ändert, welche Ursachen plausibel sind.\n\n## Ein Missverständnis\nEin Agent „sieht" dein Programm nicht laufen. Er sieht nur, was in seinem Kontext ist: Dateien, die er liest, und Ausgaben von Kommandos, die er ausführt. Ohne echte Logs und ohne Reproduktionsweg bleibt ihm nur Mustererkennung im Code – also raten auf hohem Niveau. Genau deshalb sind Schritt 1 und 2 wichtiger als jede clevere Fix-Anweisung.',
+  example: 'Prompt: „npm test schlägt fehl. Hier der komplette Stacktrace: [einfügen]. Reproduziere den Fehler, nenne die wahrscheinlichste Ursache und schreib erst einen fehlschlagenden Test, bevor du etwas fixst."',
+  related: ['agent-festgefahren', 'kontext-fuettern', 'claude-code-befehle', 'erst-plan-dann-code'],
+  quiz: {
+    question: 'Was ist der sinnvollste erste Schritt, wenn ein Agent einen Bug beheben soll?',
+    options: [
+      'Sofort einen Fix schreiben lassen und hoffen, dass er passt',
+      'Den Fehler reproduzierbar machen und die komplette Fehlermeldung samt Stacktrace mitgeben',
+      'Die betroffene Datei löschen und neu generieren lassen',
+      'Das Modell wechseln, weil das aktuelle den Bug verursacht hat'
+    ],
+    correct: 1,
+    explain: 'Ein reproduzierbarer Fehler mit vollständigem Stacktrace gibt dem Agenten echte Daten statt Vermutungen – und der Fix lässt sich danach über denselben Weg verifizieren.'
+  },
+  sources: [
+    { title: 'Claude Code Doku: Common Workflows (Fix bugs efficiently)', url: SRC.ccCommonWorkflows },
+    { title: 'Claude Code Doku: Best Practices', url: SRC.ccBestPractices },
+    { title: 'Claude Code Doku: Troubleshooting (/doctor)', url: SRC.ccTroubleshooting }
+  ],
+  exercise: {
+    task: 'Baue absichtlich einen kleinen Bug in ein Übungsprojekt ein (z. B. einen Tippfehler in einem Variablennamen) und lass einen Agenten ihn systematisch finden.',
+    steps: [
+      'Löse den Fehler aus und kopiere die komplette Fehlermeldung samt Stacktrace.',
+      'Gib dem Agenten Fehlermeldung und Reproduktions-Kommando – und verlange zuerst eine Hypothese, noch keinen Fix.',
+      'Lass den Fix erst umsetzen, nachdem du die Hypothese gelesen hast, und lass den Agenten den Erfolg mit demselben Kommando verifizieren.'
+    ],
+    selfCheck: [
+      'Hat der Agent die richtige Ursache genannt, bevor er etwas geändert hat?',
+      'Hat er den Fix mit dem Reproduktions-Kommando belegt (Ausgabe gezeigt), statt nur „erledigt" zu sagen?',
+      'Was hätte gefehlt, wenn du nur „da ist ein Bug" geschrieben hättest?'
+    ]
+  }
+});
+
+// 2. testing-mit-agenten -------------------------------------------------------
+de.push({
+  slug: 'testing-mit-agenten',
+  title: 'Testing mit Agenten: Tests schreiben lassen und als Gate nutzen',
+  category: 'guide',
+  difficulty: 2,
+  minutes: 5,
+  xp: 40,
+  teaser: 'Agenten können Tests schreiben, und Tests können Agenten kontrollieren – solange du verhinderst, dass der Agent die Tests austrickst.',
+  body: '## Zwei Rollen von Tests\nBei der Arbeit mit Agenten haben Tests zwei Jobs: Der Agent kann Tests schreiben – und Tests prüfen, ob die Arbeit des Agenten stimmt.\n\n## Agent schreibt Tests (TDD-Muster)\nTestgetriebenes Vorgehen funktioniert mit Agenten gut: erst Tests aus erwartetem Ein-/Ausgabeverhalten schreiben lassen, prüfen, dass sie fehlschlagen, dann Code schreiben lassen, bis sie grün sind. Die Claude-Code-Doku empfiehlt sogar, Tests und Implementierung von zwei getrennten Sessions machen zu lassen: eine schreibt die Tests, die andere den Code, der sie besteht.\n\n## Tests als Fertig-Bedingung\n„Tests grün" ist das beste Fertig-Signal für Agenten-Arbeit. Die offizielle Empfehlung: Gib dem Agenten einen Check, den er selbst ausführen kann – dann schließt sich die Schleife von allein: arbeiten, Check laufen lassen, Ergebnis lesen, nachbessern. Ohne Check bist du selbst die Verifikationsschleife.\n\n## Das Risiko: Test-Gaming\nEin Agent kann Tests auch „besiegen" statt bestehen: abschwächen, auskommentieren, löschen oder Ausgaben hardcoden. Anthropic-Forschung dokumentiert etwa Modelle, die per sys.exit(0) aus dem Test-Harness ausbrachen, sodass alle Tests bestanden aussahen. Konsequenz: Änderungen an Testdateien im Diff immer gesondert prüfen.\n\n## E2E vs. Unit\nUnit-Tests geben dem Agenten schnelles Feedback im Loop. End-to-End-Tests beweisen, dass das Ganze wirklich funktioniert. Für Agenten-Arbeit brauchst du beides: Unit im Loop, E2E vor dem Merge.',
+  bodyDetail: '## TDD mit Agenten, konkret\n1. Beschreibe das erwartete Verhalten mit Beispielen (Eingabe → Ausgabe) und lass Tests schreiben. Die Doku zeigt das Muster: „write a validateEmail function. example test cases: … run the tests after implementing".\n2. Lass die neuen Tests laufen und bestätige, dass sie fehlschlagen – ein Test, der nie rot war, beweist nichts.\n3. Lass Code schreiben mit der klaren Anweisung, die Tests nicht zu verändern, und iteriere bis grün.\n\n## Vier Stufen des Verifikations-Gates\nDie Claude-Code-Doku beschreibt vier Stufen, wie hart ein Check das „Fertig" blockiert: (1) im Prompt („führe die Tests nach der Implementierung aus"), (2) als /goal-Bedingung, die nach jedem Zug erneut geprüft wird, (3) als Stop-Hook, der das Beenden deterministisch blockiert, bis der Check besteht, und (4) als Verifikations-Subagent mit frischem Kontext, der das Ergebnis unabhängig prüft. Je autonomer der Lauf, desto härter sollte das Gate sein.\n\n## Test-Gaming ernst nehmen\nAnthropic beschreibt in einer Forschungsarbeit „Reward Hacking": Modelle lernen, Prüfsignale auszutricksen, statt die Aufgabe zu lösen – im dokumentierten Beispiel brach ein Modell per sys.exit(0) aus dem Test-Harness aus, sodass es aussah, als seien alle Tests bestanden. Praktische Gegenmittel:\n- Diff der Testdateien gesondert prüfen: Wurden Tests geändert, gelöscht oder mit Skips versehen?\n- Tests von einer anderen Session schreiben lassen als den Code\n- Beweise verlangen: Test-Output zeigen lassen statt Behauptungen zu glauben\n- Per Hook Schreibzugriff auf Test-Ordner blockieren\n\n## E2E vs. Unit in der Praxis\nFür die innere Schleife empfiehlt die Doku, einzelne Tests statt der ganzen Suite laufen zu lassen – das ist schneller und hält den Kontext klein. E2E-Tests sind teurer, prüfen aber das, was Unit-Tests nicht sehen: das Zusammenspiel. Ein Agent, der nur Unit-Tests grün macht, kann trotzdem ein kaputtes Gesamtsystem hinterlassen.',
+  example: 'Prompt: „Schreibe zuerst Tests für parseDate(): \'2026-07-13\' → Date-Objekt, \'quatsch\' → Fehler, leerer String → Fehler. Lass sie laufen und zeig mir, dass sie fehlschlagen. Dann implementiere, bis alle grün sind – ohne die Tests zu verändern."',
+  related: ['evals', 'hooks', 'agent-loop', 'guardrails-fuer-agenten'],
+  quiz: {
+    question: 'Was bedeutet „Test-Gaming" bei KI-Agenten?',
+    options: [
+      'Der Agent schreibt spielerische Tests mit Zufallswerten',
+      'Der Agent bringt Tests zum Bestehen, ohne das Problem zu lösen – etwa durch Abschwächen, Löschen oder Austricksen der Tests',
+      'Der Agent führt Tests doppelt aus, um Zeit zu gewinnen',
+      'Der Agent testet ausschließlich Spiele-Software'
+    ],
+    correct: 1,
+    explain: 'Statt die Aufgabe zu lösen, kann ein Agent den Check selbst manipulieren – Anthropic-Forschung dokumentiert etwa den Ausbruch aus dem Test-Harness per sys.exit(0). Darum: Test-Diffs prüfen und Test-Output als Beweis verlangen.'
+  },
+  sources: [
+    { title: 'Claude Code Doku: Best Practices (Verifikation)', url: SRC.ccBestPractices },
+    { title: 'Claude Code Doku: Common Workflows (Work with tests)', url: SRC.ccCommonWorkflows },
+    { title: 'Anthropic Research: Emergent Misalignment from Reward Hacking', url: SRC.anthropicRewardHacking }
+  ],
+  exercise: {
+    task: 'Lass einen Agenten ein kleines Feature testgetrieben bauen – und prüfe danach gezielt, ob die Tests unangetastet geblieben sind.',
+    steps: [
+      'Beschreibe ein Mini-Feature mit 3 Beispiel-Fällen (Eingabe → erwartete Ausgabe) und lass zuerst nur die Tests schreiben.',
+      'Lass die Tests laufen und bestätige, dass sie fehlschlagen. Erst dann: „Implementiere, bis alle Tests grün sind. Verändere die Tests nicht."',
+      'Prüfe am Ende den Diff: Wurden Testdateien angefasst? Lass dir den Test-Output als Beweis zeigen.'
+    ],
+    selfCheck: [
+      'Waren die Tests vor der Implementierung wirklich rot?',
+      'Sind die Testdateien im finalen Diff unverändert?',
+      'Hast du den Test-Output gesehen – oder nur der Aussage „alle Tests bestehen" geglaubt?'
+    ]
+  }
+});
+
+// 3. dokumentation-mit-ki ------------------------------------------------------
+de.push({
+  slug: 'dokumentation-mit-ki',
+  title: 'Dokumentation mit KI pflegen',
+  category: 'guide',
+  difficulty: 1,
+  minutes: 4,
+  xp: 20,
+  teaser: 'KI kann READMEs und Kommentare erzeugen – und Dateien wie CLAUDE.md, AGENTS.md und llms.txt machen deine Doku für Agenten lesbar.',
+  body: '## Doku schreiben lassen – und prüfen\nKI ist gut darin, Dokumentation zu erzeugen: README-Abschnitte, Funktions-Kommentare, API-Beschreibungen. Die Claude-Code-Doku beschreibt dafür einen einfachen Ablauf: undokumentierte Stellen finden lassen, Doku generieren lassen, dann prüfen und nachschärfen. Der letzte Schritt ist Pflicht: Generierte Doku klingt immer überzeugend – auch wenn sie falsch ist. Lies sie, bevor du sie eincheckst.\n\n## Doku für Agenten: CLAUDE.md und AGENTS.md\nDoku hat heute zwei Zielgruppen: Menschen und Agenten. CLAUDE.md ist eine Datei, die Claude Code zu Beginn jeder Session liest – mit Build-Kommandos, Stilregeln und Projekt-Eigenheiten. AGENTS.md ist ein offenes, tool-übergreifendes Format mit derselben Idee: eine „README für Agenten", die von über 25 Coding-Tools gelesen wird.\n\n## Doku-Drift vermeiden\nDoku veraltet, wenn der Code sich ändert und niemand die Doku anfasst. Falsche Doku ist schlimmer als keine – besonders für Agenten, die ihr vertrauen. Praktische Regel: Doku im selben Änderungspaket aktualisieren wie den Code, und die KI regelmäßig fragen: „Stimmt das README noch zum aktuellen Stand?"\n\n## llms.txt für KI-Leser\nWenn deine Doku eine Website ist, hilft eine /llms.txt-Datei: eine Markdown-Übersicht mit Links, damit KI-Systeme die Inhalte finden, ohne HTML mit Navigation und Werbung durchkämpfen zu müssen.',
+  bodyDetail: '## Der 4-Schritte-Ablauf aus der offiziellen Doku\nDie Claude-Code-Doku empfiehlt für Doku-Aufgaben vier Schritte: undokumentierten Code identifizieren, Doku generieren, das Ergebnis prüfen und verbessern, und am Ende gegen die Projekt-Standards verifizieren. Dazu gehört, den gewünschten Stil anzugeben (JSDoc, Docstrings), Beispiele zu verlangen und öffentliche APIs zuerst zu dokumentieren.\n\n## CLAUDE.md pflegen wie Code\nAus den Best Practices: kurz halten und nur aufnehmen, was der Agent nicht selbst aus dem Code ableiten kann. Für jede Zeile fragen: Würde ihr Fehlen zu Fehlern führen? Eine aufgeblähte CLAUDE.md führt dazu, dass Regeln ignoriert werden. Die Doku formuliert es wörtlich: „Treat CLAUDE.md like code: review it when things go wrong, prune it regularly."\n\n## AGENTS.md: der offene Standard\nAGENTS.md ist reines Markdown ohne Pflichtfelder. Empfohlene Abschnitte: Projekt-Überblick, Build- und Test-Kommandos, Stilregeln, Sicherheits-Hinweise, Commit-/PR-Regeln. Das Format entstand in Zusammenarbeit mehrerer Anbieter (u. a. OpenAI Codex, Google Jules, Cursor, Factory) und wird heute von der Agentic AI Foundation unter der Linux Foundation betreut. Die Arbeitsteilung: Die README bleibt knapp für Menschen, AGENTS.md trägt die Details, die Agenten brauchen.\n\n## llms.txt im Detail\nDer Vorschlag stammt von Jeremy Howard (September 2024): eine Markdown-Datei unter /llms.txt mit einem H1-Titel, einer kurzen Zusammenfassung als Blockquote und Linklisten zu weiterführenden Seiten. Der Grund: Kontextfenster sind zu klein für ganze Websites, und HTML mit Navigation und Anzeigen ist für Maschinen schwer sauber auszuwerten. Zusätzlich empfiehlt der Standard Markdown-Versionen einzelner Seiten unter derselben URL mit angehängtem .md.\n\n## Ein Missverständnis\nKI-generierte Kommentare sind kein Selbstzweck. Ein Kommentar, der nur wiederholt, was die Codezeile ohnehin sagt, ist Rauschen. Gute Doku erklärt das Warum – und genau da musst du als Mensch nachschärfen, denn das Warum steht oft nicht im Code.',
+  example: 'Prompt: „Finde alle Funktionen ohne JSDoc-Kommentar in src/auth/, generiere Kommentare im Stil der bestehenden, und markiere jede Stelle, bei der du dir über das Verhalten unsicher bist."',
+  related: ['claude-md', 'kontext-fuettern', 'claude-code'],
+  quiz: {
+    question: 'Wofür ist eine llms.txt-Datei gedacht?',
+    options: [
+      'Sie speichert API-Keys für KI-Dienste',
+      'Sie gibt KI-Systemen eine Markdown-Übersicht einer Website, damit sie Inhalte ohne HTML-Ballast finden',
+      'Sie blockiert KI-Crawler vollständig',
+      'Sie ersetzt die README für menschliche Leser'
+    ],
+    correct: 1,
+    explain: 'llms.txt ist eine Markdown-Datei im Website-Root mit Titel, Kurzbeschreibung und Linklisten – eine kuratierte Einstiegsseite für KI-Leser, kein Zugangsschutz und kein README-Ersatz.'
+  },
+  sources: [
+    { title: 'Claude Code Doku: Common Workflows (Handle documentation)', url: SRC.ccCommonWorkflows },
+    { title: 'Claude Code Doku: Best Practices (CLAUDE.md)', url: SRC.ccBestPractices },
+    { title: 'AGENTS.md: Offizielle Seite', url: SRC.agentsMd },
+    { title: 'llms.txt: Offizielle Spezifikation', url: SRC.llmsTxt }
+  ]
+});
+
+// 4. batch-processing ----------------------------------------------------------
+de.push({
+  slug: 'batch-processing',
+  title: 'Batch-Processing: Viele Aufgaben automatisiert abarbeiten',
+  category: 'konzept',
+  difficulty: 2,
+  minutes: 4,
+  xp: 40,
+  teaser: 'Hunderte gleichartige Aufgaben laufen automatisiert: per claude -p in der Schleife oder über Batch-APIs zum halben Preis (Stand: Juli 2026).',
+  body: '## Die Idee\nManche Aufgaben sind in Wahrheit viele gleiche Aufgaben: 500 Dateien migrieren, 2.000 Texte klassifizieren, jede Produktbeschreibung übersetzen. Dafür musst du nicht 500-mal chatten – Batch-Verarbeitung erledigt sie automatisiert.\n\n## Weg 1: Headless-Fan-out\nClaude Code läuft mit `claude -p "Aufgabe"` auch ohne interaktive Sitzung. In einer Skript-Schleife über eine Dateiliste wird daraus ein Fan-out: ein Aufruf pro Datei. Die offizielle Doku empfiehlt drei Schritte: Aufgabenliste generieren, Schleife bauen, erst an 2–3 Dateien testen und den Prompt schärfen – dann auf alles loslassen. `--allowedTools` begrenzt dabei, was der Agent ohne Aufsicht darf.\n\n## Weg 2: Batch-APIs der Anbieter\nFür reine Modell-Anfragen ohne Werkzeuge gibt es Batch-APIs: Du reichst viele Anfragen gesammelt ein, sie werden asynchron verarbeitet. Anthropic (Message Batches API) und OpenAI (Batch API) berechnen dafür 50 % der normalen Preise (Stand: Juli 2026). Bei Anthropic sind die meisten Batches in unter einer Stunde fertig, bei OpenAI gilt ein 24-Stunden-Fenster (Stand: Juli 2026).\n\n## Batch oder interaktiv?\nBatch lohnt sich, wenn die Aufgaben unabhängig und gleichförmig sind und das Ergebnis nicht sofort gebraucht wird. Interaktiv bleibst du, wenn du zwischendurch steuern, prüfen oder korrigieren willst – oder die Aufgabe erst beim Arbeiten klar wird.',
+  bodyDetail: '## Fan-out im Detail\nDie Beispiel-Schleife aus der Claude-Code-Doku:\n\n```bash\nfor file in $(cat files.txt); do\n  claude -p "Migriere $file von React zu Vue. Antworte OK oder FAIL." \\\n    --allowedTools "Edit,Bash(git commit *)"\ndone\n```\n\nDas „Antworte OK oder FAIL" macht die Ergebnisse maschinell auswertbar. Für Skripte empfiehlt die Doku zusätzlich `--bare`: Claude startet dann ohne lokale Hooks, Plugins und CLAUDE.md, damit der Lauf auf jeder Maschine gleich ausfällt. Mit `--output-format json` bekommst du pro Aufruf auch die Kosten (total_cost_usd) zurück.\n\n## Batch-APIs im Detail\nDer Ablauf ist bei beiden Anbietern gleich: Batch einreichen, asynchron verarbeiten lassen, Status abfragen, Ergebnisse abholen. Eckdaten (Stand: Juli 2026):\n- Anthropic Message Batches API: 50 % Rabatt auf die Standard-Preise; die meisten Batches sind in unter 1 Stunde fertig; der Rabatt ist mit Prompt Caching stapelbar.\n- OpenAI Batch API: 50 % Rabatt; Abschluss innerhalb von 24 Stunden (oft schneller); bis zu 50.000 Anfragen bzw. 200 MB pro Batch; eigener Rate-Limit-Pool, der die normalen Limits nicht belastet.\n\n## Fan-out vs. Batch-API – was wann?\nFan-out startet echte Agenten-Läufe: Jeder Aufruf kann Dateien lesen, editieren und Kommandos ausführen. Das brauchst du für Code-Migrationen. Batch-APIs verarbeiten reine Modell-Anfragen (Text rein, Text raus) ohne Werkzeuge – ideal für Klassifikation, Übersetzung und Auswertung großer Datenmengen, und dank Rabatt deutlich billiger.\n\n## Ein Missverständnis\nBatch heißt nicht schneller. Einzelanfragen liefern sofort; bei Batches wartest du auf den gesamten Durchlauf. Der Gewinn liegt bei Kosten und Durchsatz, nicht bei Latenz. Wenn ein Mensch live auf die Antwort wartet, ist Batch der falsche Weg.',
+  example: 'Ein Team muss 1.200 Support-Tickets nach Thema klassifizieren. Statt 1.200 Einzel-Anfragen reicht es einen Batch bei der Message Batches API ein – halber Preis (Stand: Juli 2026), Ergebnisse nach dem Durchlauf gesammelt abholbar.',
+  related: ['headless-non-interactive', 'kosten-kontrolle-agenten', 'subagents', 'api'],
+  quiz: {
+    question: 'Wann ist eine Batch-API die richtige Wahl statt einzelner interaktiver Anfragen?',
+    options: [
+      'Wenn die Antwort möglichst schnell beim Nutzer sein muss',
+      'Wenn viele unabhängige, gleichartige Anfragen anstehen und das Ergebnis nicht sofort gebraucht wird',
+      'Wenn der Agent Dateien im Projekt editieren soll',
+      'Wenn nur eine einzige komplexe Frage zu beantworten ist'
+    ],
+    correct: 1,
+    explain: 'Batch-APIs verarbeiten viele Anfragen asynchron zum halben Preis (Stand: Juli 2026) – dafür wartest du auf die Ergebnisse. Für Datei-Edits im Projekt ist der Headless-Fan-out mit claude -p das passende Werkzeug.'
+  },
+  sources: [
+    { title: 'Anthropic-Doku: Batch Processing (Message Batches API)', url: SRC.anthropicBatch },
+    { title: 'OpenAI-Doku: Batch API', url: SRC.openaiBatch },
+    { title: 'Claude Code Doku: Non-interactive Mode (claude -p)', url: SRC.ccHeadless },
+    { title: 'Claude Code Doku: Best Practices (Fan out across files)', url: SRC.ccBestPractices }
+  ]
+});
+
+// 5. api-keys-sicher-verwalten -------------------------------------------------
+de.push({
+  slug: 'api-keys-sicher-verwalten',
+  title: 'API-Keys sicher verwalten',
+  category: 'guide',
+  difficulty: 1,
+  minutes: 4,
+  xp: 20,
+  teaser: 'API-Keys gehören in Umgebungsvariablen oder Secret-Manager – nie in Code, Repos oder Prompts. Bei einem Leak zählt nur eins: sofort widerrufen.',
+  body: '## Warum das wichtig ist\nEin API-Key ist wie eine Kreditkarte: Wer ihn hat, kann auf deine Rechnung Anfragen schicken. Öffentliche Repos werden automatisiert nach solchen Keys durchsucht – von Angreifern wie von Schutzsystemen.\n\n## Regel 1: Nie in Code, Repo oder Prompt\nKeys gehören nicht in den Quellcode, nicht ins Git-Repo und nicht in Chat-Prompts. Der Standardweg lokal: eine .env-Datei mit dem Key – und ein .gitignore-Eintrag, damit sie nie eingecheckt wird. Anthropic empfiehlt genau dieses Muster ausdrücklich.\n\n## Regel 2: Umgebungsvariablen und Secret-Manager\nLokal liest dein Programm den Key aus einer Umgebungsvariablen. In Produktion empfiehlt Anthropic verschlüsselte Secret-Speicher (die Secret-Manager der Cloud-Anbieter) statt dotenv-Dateien.\n\n## Regel 3: Rotieren und begrenzen\nRotiere Keys regelmäßig (Anthropic nennt als Beispiel alle 90 Tage), nutze getrennte Keys für Entwicklung, Test und Produktion, und gib jedem Key nur die minimal nötigen Rechte – das Least-Privilege-Prinzip aus dem OWASP-Leitfaden.\n\n## Bei einem Leak\nSofort widerrufen und ersetzen. Den Commit zu löschen reicht nicht: GitHub stellt klar, dass ein geleaktes Secret zuerst widerrufen bzw. rotiert werden muss – die Git-Historie kann längst geklont oder gecacht sein.',
+  bodyDetail: '## Das .env-Muster, komplett\n1. .env-Datei im Projekt: `ANTHROPIC_API_KEY=sk-...`\n2. Eintrag in .gitignore: `.env`\n3. Zusätzlich eine .env.example ohne echte Werte einchecken, damit andere sehen, welche Variablen gebraucht werden.\n4. Im Code den Key nur aus der Umgebungsvariablen lesen, nie als String hinterlegen.\n\n## Warum „aus Git löschen" nicht reicht\nDie GitHub-Doku ist deutlich: Ist ein Secret einmal geleakt, muss es als erster Schritt widerrufen bzw. rotiert werden („as a first step you need to revoke and/or rotate that secret"). Der Grund: Klone, Forks, Caches und CI-Logs können den alten Stand längst enthalten. Erst rotieren, dann bei Bedarf die Historie säubern.\n\n## Automatische Wachen\n- GitHub Push Protection blockiert Pushes mit erkannten Secrets; Secret Scanning durchsucht öffentliche Repos.\n- Anthropic arbeitet mit GitHub zusammen: In öffentlichen Repos gefundene Claude-API-Keys werden automatisch deaktiviert.\n- Pre-Commit-Werkzeuge wie gitleaks oder git-secrets prüfen vor jedem Commit – die GitHub-Doku nennt beide.\n\n## Least Privilege nach OWASP\nDer OWASP-Leitfaden zu Secrets Management: Secrets sollen nur die minimal nötigen Rechte haben, und nicht jede Person im Team braucht Zugriff auf alle Secrets. Getrennte Keys pro Umgebung begrenzen zusätzlich den Schaden: Ein geleakter Test-Key gefährdet nicht die Produktion.\n\n## Das Leak-Protokoll (nach OWASP)\n1. Revoke: den betroffenen Key sofort widerrufen.\n2. Rotate: einen neuen Key erzeugen und überall einspielen.\n3. Delete: den geleakten Key aus dem exponierten System entfernen.\nDanach: Logs und Nutzungsdaten prüfen, was mit dem Key passiert ist.\n\n## Agenten-Besonderheit\nFüge Keys nie in Prompts ein – Prompts landen in Verläufen und Logs. Ein Agent, der eine .env liest, hat den Key danach im Kontext; gib ihm diesen Zugriff nur, wenn es wirklich nötig ist.',
+  example: 'Statt `apiKey = "sk-ant-..."` im Code: Key in .env legen (.env steht in .gitignore), im Code `process.env.ANTHROPIC_API_KEY` lesen – und in Produktion den Secret-Manager des Cloud-Anbieters nutzen.',
+  related: ['api', 'vibe-coding-sicherheit', 'git-github-basics', 'agent-sicherheit'],
+  quiz: {
+    question: 'Dein API-Key ist versehentlich in einem öffentlichen Repo gelandet. Was ist der richtige erste Schritt?',
+    options: [
+      'Den Commit löschen und force-pushen – dann ist der Key weg',
+      'Den Key sofort widerrufen bzw. rotieren, erst danach die Historie aufräumen',
+      'Abwarten, ob der Key wirklich missbraucht wird',
+      'Das Repo auf privat stellen'
+    ],
+    correct: 1,
+    explain: 'Die Git-Historie kann längst geklont oder gecacht sein. GitHub empfiehlt ausdrücklich, das Secret zuerst zu widerrufen bzw. zu rotieren – Löschen allein macht den Key nicht unbrauchbar.'
+  },
+  sources: [
+    { title: 'Anthropic Help Center: API Key Best Practices', url: SRC.anthropicKeyBP },
+    { title: 'OWASP Cheat Sheet: Secrets Management', url: SRC.owaspSecrets },
+    { title: 'GitHub Docs: Removing sensitive data from a repository', url: SRC.githubSensitive }
+  ],
+  exercise: {
+    task: 'Richte das .env-Muster in einem Übungsprojekt ein und prüfe, dass kein Key ins Repo gelangen kann.',
+    steps: [
+      'Lege eine .env mit einer Dummy-Variablen an (KEIN echter Key) und trage .env in .gitignore ein.',
+      'Erstelle eine .env.example mit den Variablennamen ohne Werte und checke nur diese ein.',
+      'Prüfe mit `git status`, dass .env nicht als neue Datei auftaucht – und lies den Wert im Code über die Umgebungsvariable ein.'
+    ],
+    selfCheck: [
+      'Taucht .env in `git status` auf? (Wenn ja: .gitignore-Eintrag prüfen)',
+      'Steht irgendwo im Code oder in einem Prompt ein Key als Klartext-String?',
+      'Weißt du, wo du deinen echten Key sofort widerrufen könntest (Console/Dashboard des Anbieters)?'
+    ]
+  }
+});
+
+// ---------------------------------------------------------------- EN --------
+
+const en = [];
+
+// 1. debugging-mit-agenten (EN) -----------------------------------------------
+en.push({
+  slug: 'debugging-mit-agenten',
+  title: 'Debugging with AI Agents: Systematic, Not Guesswork',
+  category: 'guide',
+  difficulty: 2,
+  minutes: 5,
+  xp: 40,
+  teaser: 'Agents debug best with a reproducible error, real logs, and a hypothesis before the fix – not with "fix the bug".',
+  body: '## The most common mistake\nMany people give an agent nothing but "fix the bug" – no error message, no context. Then the agent guesses. Systematic debugging works differently.\n\n## Step 1: Reproduce the error\nGive the agent the command that triggers the error and let it trigger the failure itself. The Claude Code docs recommend exactly this: tell the agent how to reproduce the issue and get a stack trace. An error the agent can trigger itself is also one it can verify itself after the fix.\n\n## Step 2: Feed logs and stack traces\nPaste the complete error message instead of describing it. Piping works too: `cat error.log | claude -p "explain the root cause"`. Also say whether the error happens every time or only sometimes.\n\n## Step 3: Hypothesis before fix\nHave the agent first name probable causes, ranked by likelihood – then test one deliberately. Important: fix the cause, not the symptom. The official docs phrase it as a prompt rule: "address the root cause, don\'t suppress the error".\n\n## Diagnostic tools\nFor problems with Claude Code itself there is `/doctor`: an automated check of your installation, settings, extensions, and context usage. If `claude` won\'t start at all, run `claude doctor` directly from your shell.',
+  bodyDetail: '## A complete debugging flow\n1. Reproduce: "`npm test` fails – here is the stack trace. Reproduce the error first."\n2. Hypothesis: "Name the three most likely causes, ranked. Don\'t change anything yet."\n3. Proof: the Claude Code docs recommend having the agent write a failing test that reproduces the bug – and only then fix it ("write a failing test that reproduces the issue, then fix it").\n4. Fix and verify: implement the fix, run the test, and have the agent show the output as evidence – don\'t just accept a "done".\n\n## What /doctor actually does\n`/doctor` checks installation, settings, extensions, and context usage in one pass and proposes fixes it can apply after you confirm. For MCP server status there is `/mcp`. Both are diagnostic tools for the tool itself – not for your application code.\n\n## When you should debug yourself\n- When reproduction needs things the agent doesn\'t have: real devices, production access, manual click paths.\n- When you have corrected the agent twice on the same problem. The best-practices docs then recommend `/clear` and a more precise new prompt instead of a third correction – otherwise the context is full of failed approaches.\n- When the error is not deterministic: tell the agent explicitly that the error is intermittent; that changes which causes are plausible.\n\n## A common misunderstanding\nAn agent does not "see" your program run. It only sees what is in its context: files it reads and output of commands it executes. Without real logs and without a way to reproduce, all it has left is pattern matching on code – educated guessing. That is exactly why steps 1 and 2 matter more than any clever fix instruction.',
+  example: 'Prompt: "npm test fails. Here is the complete stack trace: [paste]. Reproduce the error, name the most likely cause, and write a failing test before you fix anything."',
+  related: ['agent-festgefahren', 'kontext-fuettern', 'claude-code-befehle', 'erst-plan-dann-code'],
+  quiz: {
+    question: 'What is the most sensible first step when an agent is supposed to fix a bug?',
+    options: [
+      'Have it write a fix immediately and hope it works',
+      'Make the error reproducible and provide the complete error message including the stack trace',
+      'Delete the affected file and have it regenerated',
+      'Switch models, because the current one caused the bug'
+    ],
+    correct: 1,
+    explain: 'A reproducible error with a full stack trace gives the agent real data instead of guesses – and the fix can be verified afterwards along the same path.'
+  },
+  sources: [
+    { title: 'Claude Code Docs: Common Workflows (Fix bugs efficiently)', url: SRC.ccCommonWorkflows },
+    { title: 'Claude Code Docs: Best Practices', url: SRC.ccBestPractices },
+    { title: 'Claude Code Docs: Troubleshooting (/doctor)', url: SRC.ccTroubleshooting }
+  ],
+  exercise: {
+    task: 'Deliberately plant a small bug in a practice project (e.g. a typo in a variable name) and have an agent find it systematically.',
+    steps: [
+      'Trigger the error and copy the complete error message including the stack trace.',
+      'Give the agent the error message and the reproduction command – and demand a hypothesis first, no fix yet.',
+      'Only allow the fix after you have read the hypothesis, and have the agent verify success with the same command.'
+    ],
+    selfCheck: [
+      'Did the agent name the correct cause before changing anything?',
+      'Did it prove the fix with the reproduction command (showing output) instead of just saying "done"?',
+      'What would have been missing if you had only written "there is a bug"?'
+    ]
+  }
+});
+
+// 2. testing-mit-agenten (EN) --------------------------------------------------
+en.push({
+  slug: 'testing-mit-agenten',
+  title: 'Testing with Agents: Generate Tests and Use Them as a Gate',
+  category: 'guide',
+  difficulty: 2,
+  minutes: 5,
+  xp: 40,
+  teaser: 'Agents can write tests, and tests can control agents – as long as you prevent the agent from gaming the tests.',
+  body: '## Two roles for tests\nWhen working with agents, tests have two jobs: the agent can write tests – and tests can check whether the agent\'s work is correct.\n\n## Agent writes tests (the TDD pattern)\nTest-driven development works well with agents: first have tests written from expected input/output behavior, confirm they fail, then have code written until they pass. The Claude Code docs even recommend splitting tests and implementation across two separate sessions: one writes the tests, the other writes the code that passes them.\n\n## Tests as the done condition\n"Tests green" is the best done signal for agent work. The official recommendation: give the agent a check it can run itself – then the loop closes on its own: work, run the check, read the result, iterate. Without a check, you are the verification loop.\n\n## The risk: test gaming\nAn agent can also "defeat" tests instead of passing them: weakening, commenting out, deleting them, or hardcoding outputs. Anthropic research documents models that broke out of the test harness via sys.exit(0), making it look like all tests passed. The consequence: always review changes to test files in the diff separately.\n\n## E2E vs. unit\nUnit tests give the agent fast feedback inside the loop. End-to-end tests prove that the whole thing actually works. For agent work you need both: unit tests in the loop, E2E before the merge.',
+  bodyDetail: '## TDD with agents, concretely\n1. Describe the expected behavior with examples (input → output) and have tests written. The docs show the pattern: "write a validateEmail function. example test cases: … run the tests after implementing".\n2. Run the new tests and confirm they fail – a test that was never red proves nothing.\n3. Have code written with the explicit instruction not to modify the tests, and iterate until green.\n\n## Four levels of the verification gate\nThe Claude Code docs describe four levels of how hard a check blocks the "done": (1) in the prompt ("run the tests after implementing"), (2) as a /goal condition that is re-checked after every turn, (3) as a Stop hook that deterministically blocks finishing until the check passes, and (4) as a verification subagent with fresh context that checks the result independently. The more autonomous the run, the harder the gate should be.\n\n## Taking test gaming seriously\nAnthropic describes "reward hacking" in a research paper: models learn to trick evaluation signals instead of solving the task – in the documented example, a model broke out of the test harness via sys.exit(0), making it appear that all tests had passed. Practical countermeasures:\n- Review the diff of test files separately: were tests changed, deleted, or marked as skipped?\n- Have tests written by a different session than the code\n- Demand evidence: have the test output shown instead of trusting claims\n- Block write access to test folders via a hook\n\n## E2E vs. unit in practice\nFor the inner loop, the docs recommend running single tests instead of the whole suite – that is faster and keeps the context small. E2E tests are more expensive but check what unit tests cannot see: the interplay. An agent that only makes unit tests green can still leave a broken overall system behind.',
+  example: 'Prompt: "First write tests for parseDate(): \'2026-07-13\' → Date object, \'nonsense\' → error, empty string → error. Run them and show me that they fail. Then implement until all pass – without modifying the tests."',
+  related: ['evals', 'hooks', 'agent-loop', 'guardrails-fuer-agenten'],
+  quiz: {
+    question: 'What does "test gaming" mean with AI agents?',
+    options: [
+      'The agent writes playful tests with random values',
+      'The agent makes tests pass without solving the problem – for example by weakening, deleting, or tricking the tests',
+      'The agent runs tests twice to buy time',
+      'The agent only tests video game software'
+    ],
+    correct: 1,
+    explain: 'Instead of solving the task, an agent can manipulate the check itself – Anthropic research documents e.g. breaking out of the test harness via sys.exit(0). Therefore: review test diffs and demand test output as evidence.'
+  },
+  sources: [
+    { title: 'Claude Code Docs: Best Practices (verification)', url: SRC.ccBestPractices },
+    { title: 'Claude Code Docs: Common Workflows (Work with tests)', url: SRC.ccCommonWorkflows },
+    { title: 'Anthropic Research: Emergent Misalignment from Reward Hacking', url: SRC.anthropicRewardHacking }
+  ],
+  exercise: {
+    task: 'Have an agent build a small feature test-driven – and afterwards check specifically whether the tests were left untouched.',
+    steps: [
+      'Describe a mini feature with 3 example cases (input → expected output) and have only the tests written first.',
+      'Run the tests and confirm they fail. Only then: "Implement until all tests pass. Do not modify the tests."',
+      'Check the diff at the end: were test files touched? Have the test output shown as evidence.'
+    ],
+    selfCheck: [
+      'Were the tests actually red before the implementation?',
+      'Are the test files unchanged in the final diff?',
+      'Did you see the test output – or did you just believe the claim "all tests pass"?'
+    ]
+  }
+});
+
+// 3. dokumentation-mit-ki (EN) -------------------------------------------------
+en.push({
+  slug: 'dokumentation-mit-ki',
+  title: 'Maintaining Documentation with AI',
+  category: 'guide',
+  difficulty: 1,
+  minutes: 4,
+  xp: 20,
+  teaser: 'AI can generate READMEs and comments – and files like CLAUDE.md, AGENTS.md, and llms.txt make your docs readable for agents.',
+  body: '## Have docs written – and review them\nAI is good at producing documentation: README sections, function comments, API descriptions. The Claude Code docs describe a simple flow for this: have undocumented spots found, have docs generated, then review and refine. The last step is mandatory: generated docs always sound convincing – even when they are wrong. Read them before you commit them.\n\n## Docs for agents: CLAUDE.md and AGENTS.md\nDocumentation now has two audiences: humans and agents. CLAUDE.md is a file Claude Code reads at the start of every session – with build commands, style rules, and project quirks. AGENTS.md is an open, cross-tool format with the same idea: a "README for agents", read by more than 25 coding tools.\n\n## Avoiding documentation drift\nDocs go stale when the code changes and nobody touches the docs. Wrong docs are worse than none – especially for agents, which trust them. Practical rule: update docs in the same change set as the code, and regularly ask the AI: "Does the README still match the current state?"\n\n## llms.txt for AI readers\nIf your docs are a website, an /llms.txt file helps: a Markdown overview with links so AI systems can find the content without fighting through HTML full of navigation and ads.',
+  bodyDetail: '## The 4-step flow from the official docs\nFor documentation tasks, the Claude Code docs recommend four steps: identify undocumented code, generate documentation, review and improve the result, and finally verify it against project standards. This includes specifying the desired style (JSDoc, docstrings), asking for examples, and documenting public APIs first.\n\n## Maintain CLAUDE.md like code\nFrom the best practices: keep it short and only include what the agent cannot infer from the code itself. For every line, ask: would removing it cause mistakes? A bloated CLAUDE.md causes rules to be ignored. The docs put it literally: "Treat CLAUDE.md like code: review it when things go wrong, prune it regularly."\n\n## AGENTS.md: the open standard\nAGENTS.md is plain Markdown with no required fields. Recommended sections: project overview, build and test commands, code style guidelines, security considerations, commit/PR rules. The format emerged from a collaboration of several vendors (including OpenAI Codex, Google Jules, Cursor, Factory) and is now stewarded by the Agentic AI Foundation under the Linux Foundation. The division of labor: the README stays concise for humans, AGENTS.md carries the details agents need.\n\n## llms.txt in detail\nThe proposal comes from Jeremy Howard (September 2024): a Markdown file at /llms.txt with an H1 title, a short summary as a blockquote, and link lists to further pages. The reason: context windows are too small for entire websites, and HTML with navigation and ads is hard for machines to parse cleanly. The standard additionally recommends Markdown versions of individual pages at the same URL with .md appended.\n\n## A common misunderstanding\nAI-generated comments are not an end in themselves. A comment that only repeats what the line of code already says is noise. Good documentation explains the why – and that is exactly where you as a human need to refine, because the why is often not in the code.',
+  example: 'Prompt: "Find all functions without a JSDoc comment in src/auth/, generate comments in the style of the existing ones, and flag every spot where you are unsure about the behavior."',
+  related: ['claude-md', 'kontext-fuettern', 'claude-code'],
+  quiz: {
+    question: 'What is an llms.txt file for?',
+    options: [
+      'It stores API keys for AI services',
+      'It gives AI systems a Markdown overview of a website so they can find content without HTML clutter',
+      'It blocks AI crawlers entirely',
+      'It replaces the README for human readers'
+    ],
+    correct: 1,
+    explain: 'llms.txt is a Markdown file at the website root with a title, short description, and link lists – a curated entry page for AI readers, not an access control and not a README replacement.'
+  },
+  sources: [
+    { title: 'Claude Code Docs: Common Workflows (Handle documentation)', url: SRC.ccCommonWorkflows },
+    { title: 'Claude Code Docs: Best Practices (CLAUDE.md)', url: SRC.ccBestPractices },
+    { title: 'AGENTS.md: Official Site', url: SRC.agentsMd },
+    { title: 'llms.txt: Official Specification', url: SRC.llmsTxt }
+  ]
+});
+
+// 4. batch-processing (EN) -----------------------------------------------------
+en.push({
+  slug: 'batch-processing',
+  title: 'Batch Processing: Automating Many Similar Tasks',
+  category: 'konzept',
+  difficulty: 2,
+  minutes: 4,
+  xp: 40,
+  teaser: 'Hundreds of similar tasks run automatically: via claude -p in a loop, or through batch APIs at half price (as of July 2026).',
+  body: '## The idea\nSome tasks are really many identical tasks: migrate 500 files, classify 2,000 texts, translate every product description. You don\'t need to chat 500 times for that – batch processing handles them automatically.\n\n## Path 1: headless fan-out\nClaude Code also runs without an interactive session via `claude -p "task"`. Inside a script loop over a file list, this becomes a fan-out: one invocation per file. The official docs recommend three steps: generate a task list, build the loop, test on 2–3 files first and sharpen the prompt – then run it on everything. `--allowedTools` limits what the agent may do unattended.\n\n## Path 2: provider batch APIs\nFor pure model requests without tools there are batch APIs: you submit many requests together and they are processed asynchronously. Anthropic (Message Batches API) and OpenAI (Batch API) charge 50% of the standard prices for this (as of July 2026). At Anthropic, most batches finish in under an hour; at OpenAI a 24-hour window applies (as of July 2026).\n\n## Batch or interactive?\nBatch pays off when the tasks are independent and uniform and the result is not needed immediately. Stay interactive when you want to steer, review, or correct along the way – or when the task only becomes clear while working.',
+  bodyDetail: '## Fan-out in detail\nThe example loop from the Claude Code docs:\n\n```bash\nfor file in $(cat files.txt); do\n  claude -p "Migrate $file from React to Vue. Return OK or FAIL." \\\n    --allowedTools "Edit,Bash(git commit *)"\ndone\n```\n\nThe "Return OK or FAIL" makes the results machine-checkable. For scripts, the docs additionally recommend `--bare`: Claude then starts without local hooks, plugins, and CLAUDE.md, so the run behaves the same on every machine. With `--output-format json` you also get the cost per invocation (total_cost_usd).\n\n## Batch APIs in detail\nThe flow is the same at both providers: submit the batch, let it process asynchronously, poll the status, collect the results. Key figures (as of July 2026):\n- Anthropic Message Batches API: 50% discount on standard prices; most batches finish in under 1 hour; the discount stacks with prompt caching.\n- OpenAI Batch API: 50% discount; completion within 24 hours (often faster); up to 50,000 requests or 200 MB per batch; a separate rate-limit pool that does not consume your normal limits.\n\n## Fan-out vs. batch API – which when?\nFan-out starts real agent runs: every invocation can read files, edit them, and execute commands. You need that for code migrations. Batch APIs process pure model requests (text in, text out) without tools – ideal for classification, translation, and analyzing large datasets, and considerably cheaper thanks to the discount.\n\n## A common misunderstanding\nBatch does not mean faster. Single requests respond immediately; with batches you wait. The gain is in cost and throughput, not latency. If a human is waiting live for the answer, batch is the wrong path.',
+  example: 'A team needs to classify 1,200 support tickets by topic. Instead of 1,200 individual requests, it submits one batch to the Message Batches API – half price (as of July 2026), results collected together after the run.',
+  related: ['headless-non-interactive', 'kosten-kontrolle-agenten', 'subagents', 'api'],
+  quiz: {
+    question: 'When is a batch API the right choice instead of individual interactive requests?',
+    options: [
+      'When the answer must reach the user as fast as possible',
+      'When many independent, similar requests are pending and the result is not needed immediately',
+      'When the agent is supposed to edit files in the project',
+      'When only a single complex question needs answering'
+    ],
+    correct: 1,
+    explain: 'Batch APIs process many requests asynchronously at half price (as of July 2026) – in exchange, you wait for the results. For file edits in a project, headless fan-out with claude -p is the right tool.'
+  },
+  sources: [
+    { title: 'Anthropic Docs: Batch Processing (Message Batches API)', url: SRC.anthropicBatch },
+    { title: 'OpenAI Docs: Batch API', url: SRC.openaiBatch },
+    { title: 'Claude Code Docs: Non-interactive Mode (claude -p)', url: SRC.ccHeadless },
+    { title: 'Claude Code Docs: Best Practices (Fan out across files)', url: SRC.ccBestPractices }
+  ]
+});
+
+// 5. api-keys-sicher-verwalten (EN) ---------------------------------------------
+en.push({
+  slug: 'api-keys-sicher-verwalten',
+  title: 'Managing API Keys Securely',
+  category: 'guide',
+  difficulty: 1,
+  minutes: 4,
+  xp: 20,
+  teaser: 'API keys belong in environment variables or secret managers – never in code, repos, or prompts. If one leaks, only one thing matters: revoke immediately.',
+  body: '## Why this matters\nAn API key is like a credit card: whoever has it can send requests on your bill. Public repos are automatically scanned for such keys – by attackers and by protection systems alike.\n\n## Rule 1: never in code, repo, or prompt\nKeys do not belong in source code, in the git repo, or in chat prompts. The standard local approach: a .env file holding the key – plus a .gitignore entry so it is never committed. Anthropic explicitly recommends exactly this pattern.\n\n## Rule 2: environment variables and secret managers\nLocally, your program reads the key from an environment variable. In production, Anthropic recommends encrypted secret storage (the cloud providers\' secret managers) instead of dotenv files.\n\n## Rule 3: rotate and restrict\nRotate keys on a regular schedule (Anthropic gives every 90 days as an example), use separate keys for development, testing, and production, and give each key only the minimum rights it needs – the least-privilege principle from the OWASP guide.\n\n## If a key leaks\nRevoke and replace immediately. Deleting the commit is not enough: GitHub makes clear that a leaked secret must first be revoked or rotated – the git history may long since have been cloned or cached.',
+  bodyDetail: '## The .env pattern, complete\n1. A .env file in the project: `ANTHROPIC_API_KEY=sk-...`\n2. An entry in .gitignore: `.env`\n3. Additionally commit a .env.example without real values, so others can see which variables are needed.\n4. In code, read the key only from the environment variable – never store it as a string.\n\n## Why "deleting from git" is not enough\nThe GitHub docs are explicit: once a secret has leaked, the first step must be to revoke or rotate it ("as a first step you need to revoke and/or rotate that secret"). The reason: clones, forks, caches, and CI logs may already contain the old state. Rotate first, then clean the history if needed.\n\n## Automatic guards\n- GitHub push protection blocks pushes containing detected secrets; secret scanning searches public repos.\n- Anthropic partners with GitHub: Claude API keys found in public repos are deactivated automatically.\n- Pre-commit tools like gitleaks or git-secrets check before every commit – the GitHub docs name both.\n\n## Least privilege per OWASP\nThe OWASP Secrets Management guide: secrets should carry only the minimum privileges needed, and not every person on the team needs access to all secrets. Separate keys per environment additionally limit the damage: a leaked test key does not endanger production.\n\n## The leak protocol (per OWASP)\n1. Revoke: immediately revoke the affected key.\n2. Rotate: create a new key and roll it out everywhere.\n3. Delete: remove the leaked key from the exposed system.\nAfterwards: check logs and usage data for what happened with the key.\n\n## Agent-specific note\nNever paste keys into prompts – prompts end up in histories and logs. An agent that reads a .env has the key in its context afterwards; grant that access only when truly necessary.',
+  example: 'Instead of `apiKey = "sk-ant-..."` in code: put the key in .env (.env is listed in .gitignore), read `process.env.ANTHROPIC_API_KEY` in code – and use your cloud provider\'s secret manager in production.',
+  related: ['api', 'vibe-coding-sicherheit', 'git-github-basics', 'agent-sicherheit'],
+  quiz: {
+    question: 'Your API key accidentally ended up in a public repo. What is the correct first step?',
+    options: [
+      'Delete the commit and force-push – then the key is gone',
+      'Revoke or rotate the key immediately, and only then clean up the history',
+      'Wait and see whether the key is actually abused',
+      'Set the repo to private'
+    ],
+    correct: 1,
+    explain: 'The git history may long since have been cloned or cached. GitHub explicitly recommends revoking or rotating the secret first – deleting alone does not make the key unusable.'
+  },
+  sources: [
+    { title: 'Anthropic Help Center: API Key Best Practices', url: SRC.anthropicKeyBP },
+    { title: 'OWASP Cheat Sheet: Secrets Management', url: SRC.owaspSecrets },
+    { title: 'GitHub Docs: Removing sensitive data from a repository', url: SRC.githubSensitive }
+  ],
+  exercise: {
+    task: 'Set up the .env pattern in a practice project and verify that no key can end up in the repo.',
+    steps: [
+      'Create a .env with a dummy variable (NO real key) and add .env to .gitignore.',
+      'Create a .env.example with the variable names but no values, and commit only that.',
+      'Check with `git status` that .env does not appear as a new file – and read the value in code via the environment variable.'
+    ],
+    selfCheck: [
+      'Does .env show up in `git status`? (If yes: check the .gitignore entry)',
+      'Is there a key as a plaintext string anywhere in your code or in a prompt?',
+      'Do you know where you could revoke your real key immediately (the provider\'s console/dashboard)?'
+    ]
+  }
+});
+
+// ------------------------------------------------------------ validate ------
+
+function wc(s) { return s.trim().split(/\s+/).length; }
+
+const errors = [];
+const EXERCISE_SLUGS = new Set(['debugging-mit-agenten', 'testing-mit-agenten', 'api-keys-sicher-verwalten']);
+
+for (const [lang, arr] of [['de', de], ['en', en]]) {
+  for (const e of arr) {
+    const b = wc(e.body), bd = wc(e.bodyDetail);
+    console.log(`${lang} ${e.slug}: body=${b} bodyDetail=${bd} sources=${e.sources.length} related=${e.related.length} quizOpts=${e.quiz.options.length} exercise=${!!e.exercise}`);
+    if (b < 150 || b > 250) errors.push(`${lang}/${e.slug}: body ${b} words out of 150-250`);
+    if (bd < 250 || bd > 400) errors.push(`${lang}/${e.slug}: bodyDetail ${bd} words out of 250-400`);
+    if (e.sources.length < 2 || e.sources.length > 4) errors.push(`${lang}/${e.slug}: sources ${e.sources.length}`);
+    if (e.related.length < 2 || e.related.length > 4) errors.push(`${lang}/${e.slug}: related ${e.related.length}`);
+    if (e.quiz.options.length !== 4) errors.push(`${lang}/${e.slug}: quiz options ${e.quiz.options.length}`);
+    if (EXERCISE_SLUGS.has(e.slug) !== !!e.exercise) errors.push(`${lang}/${e.slug}: exercise presence wrong`);
+  }
+}
+
+// DE/EN parity: correct index + source URLs + structure
+for (let i = 0; i < de.length; i++) {
+  const d = de[i], e = en[i];
+  if (d.slug !== e.slug) errors.push(`index ${i}: slug mismatch`);
+  if (d.quiz.correct !== e.quiz.correct) errors.push(`${d.slug}: quiz.correct differs DE/EN`);
+  const du = d.sources.map(s => s.url).join('|'), eu = e.sources.map(s => s.url).join('|');
+  if (du !== eu) errors.push(`${d.slug}: source URLs differ DE/EN`);
+  if (d.category !== e.category || d.difficulty !== e.difficulty || d.minutes !== e.minutes || d.xp !== e.xp) errors.push(`${d.slug}: meta differs DE/EN`);
+  if (JSON.stringify(d.related) !== JSON.stringify(e.related)) errors.push(`${d.slug}: related differs DE/EN`);
+}
+
+// related slugs must exist in the live entries file
+const existing = new Set(JSON.parse(fs.readFileSync(path.join(__dirname, '../../site/content/entries.de.json'), 'utf8')).map(x => x.slug));
+for (const e of de) for (const r of e.related) if (!existing.has(r)) errors.push(`${e.slug}: related slug '${r}' does not exist`);
+
+if (errors.length) {
+  console.error('\nVALIDATION ERRORS:');
+  for (const err of errors) console.error(' - ' + err);
+  process.exit(1);
+}
+
+const out = path.join(__dirname, 'batch3-b.json');
+fs.writeFileSync(out, JSON.stringify({ de, en }, null, 2), 'utf8');
+console.log('\nOK written:', out, '| de:', de.length, 'en:', en.length);
