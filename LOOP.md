@@ -59,7 +59,7 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
 ## Aktueller Stand (It. 82, 14.07.26, Commit-Stand siehe HISTORY)
-1627 Seiten live auf promptgarten.com: 61 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 236 Befehle ×5 auf 4 Plattformen (Claude Code/Codex/Cursor/Aider), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=13, W3=16), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 20 Remotion-Clips (Terminal-Demos auf Befehlsseiten), Forum (leer, bereit), freie API, Admin V2, Landing komplett. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~146, DE/US/FR/PL/IE.
+1627 Seiten live auf promptgarten.com: 61 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 236 Befehle ×5 auf 4 Plattformen (Claude Code/Codex/Cursor/Aider), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=13, W3=16), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 40 Remotion-Clips (6 Befehls-Demos auf 3 Plattformen), Forum (leer, bereit), freie API, Admin V2, Landing komplett, Wizard mit 4 Fragen + Tool-Empfehlung. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~146, DE/US/FR/PL/IE.
 
 ## Rotation (nächste Arbeit)
 ① Feed täglich (nächster 15.07 früh) ② Remotion R3 (weitere Befehls-Demos: /loop, /compact) ③ Kapitel-Batch 4 (15.07, Ideen fix: monorepo-mit-agenten, refactoring-mit-ki, legacy-code-modernisieren, memory-systeme-fuer-agenten, kosten-optimierung-praxis, sicherheits-audits-mit-ki, datenbanken-mit-agenten, code-verstehen-mit-ki, frontend-mit-ki, pair-programming-muster) ⑤ Link-Audit wöchentlich (~21.07) ⑥ LOOP.md-Pruning wöchentlich ⑦ Statusboard bei Substanz.

@@ -538,3 +538,7 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ### It. 87 (14.07.26 abends) — 🎬 Remotion R4: /compact- + Cursor-/plan-Demos ✅
 - 2 neue Terminal-Demos ×5 (compact-demo: Kontext-freiräumen-Session mit Fokus-Anweisung; cursor-plan-demo: Plan-Modus mit Build-Locally/Cloud-Menü) — Fakten aus verifizierten commands-Einträgen. **40 Remotion-Clips, 6 Befehle mit Video auf 3 Plattformen** (goal, loop, compact, sandbox-run, plan, add).
 - Live verifiziert (Content-Type + Embeds DE/ZH). Known-good Deploy: 59ec3c97.promptgarden.pages.dev
+
+### It. 88 (14.07.26 ~21:45) — 📋 Statusboard-Refresh It. 86-88 ✅
+- Statusboard: ITERATION 88, Chip 🎬 40 Videos, neue Karte (Wizard-Vertiefung + R4-Demos); LOOP.md-Stand aktualisiert.
+- Nacht-Rhythmus: ab jetzt ruhigere Wakeups bis Feed 15.07 früh (~07:00) + Kapitel-Batch 4 (vormittags).
