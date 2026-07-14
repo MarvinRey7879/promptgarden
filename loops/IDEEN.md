@@ -13,6 +13,7 @@ Regeln: Abgelehnte Ideen NIE erneut pitchen. Gewählte → Rotation/Umsetzung. O
 - 14.07.2026, Runde 1: Marvin wählt ALLE 4 → Umsetzungs-Reihenfolge nach Wert/Aufwand:
   ① 🔍 Volltext-Suche (größte Lücke) ② 💶 Modell-Preisrechner (Daten liegen frisch verifiziert vor) ③ 🧩 Prompt-Bibliothek (Content-Pipeline wie Kapitel-Batches) ④ 🗺️ Lern-Landkarte (design-schwerste).
   Newsletter-Digest + Tages-Challenge bleiben offen für Runde 2.
+- 14.07. abends: ALLE 4 UMGESETZT ✅ (Suche It.99, Preisrechner It.100, Prompts It.101, Landkarte It.102).
 
 ## Abgelehnt (nie wieder pitchen)
 - (noch nichts)

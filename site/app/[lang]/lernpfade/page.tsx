@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PathBoard from '@/components/PathBoard';
+import LearnMap from '@/components/LearnMap';
 import { WORLD_0, WORLD_1, WORLD_2, WORLD_3, getEntry } from '@/lib/content';
 import { isLang, langAlternates, ui } from '@/lib/i18n';
 
@@ -68,6 +69,16 @@ export default async function LernpfadePage({ params }: { params: Promise<{ lang
           {t.pathSub}
         </p>
       </div>
+
+      <LearnMap
+        lang={lang}
+        worlds={[
+          { name: t.pathWorld0, chapters: world0.map((e) => ({ slug: e.slug, title: e.title, category: e.category })) },
+          { name: t.pathWorld, chapters: world1.map((e) => ({ slug: e.slug, title: e.title, category: e.category })) },
+          { name: t.pathWorld2, chapters: world2.map((e) => ({ slug: e.slug, title: e.title, category: e.category })) },
+          { name: t.pathWorld3, chapters: world3.map((e) => ({ slug: e.slug, title: e.title, category: e.category })) },
+        ]}
+      />
 
       {world0.length >= 4 && (
         <>

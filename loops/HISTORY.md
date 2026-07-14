@@ -616,3 +616,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - WERBUNG UMGESTELLT (Marvin: „wieso optional? Werbung an, nur nicht Landingpage"): eigenes Consent-Banner RAUS, adsbygoogle lädt jetzt überall AUSSER /{lang}/ (Landing); Einwilligung übernimmt Googles CMP — Marvin-Todo: AdSense → Datenschutz & Mitteilungen → DSGVO-Nachricht + Limited Ads aktivieren (sonst EU leer). Impressum-Text angepasst.
 - Verify: BUILD_EXIT=0, Deploy bd5e1841, 16 Copy-Buttons DE, ZH-Titel 提示词库, Nav-Link, search p-Docs, altes Banner 0 Treffer, 375px-Screenshot ok.
 - Known-good: bd5e1841.
+
+## It. 102 — 14.07. ~20:40 — 🗺️ LERN-LANDKARTE LIVE → Ideen-Runde 1 KOMPLETT (4/4)
+- LearnMap.tsx auf /lernpfade (oben): SVG-Karte, 4 Welt-Inseln (1d-Farben, abwechselnd), Kapitel als Knoten auf Sinus-Pfad (Kategorie-Emoji), erledigte (localStorage completed[]) → lime+✓, live via PROGRESS_EVENT, Fortschritts-Chip je Welt (n/total · %), Klick→Kapitel, Tooltip, overflow-x für breite Welten.
+- Verify: BUILD_EXIT=0, Deploy 8c625917, Desktop-Screenshot (alle 4 Inseln, Scroll greift bei W2/W3). Views 331.
+- Marvin-Ideen-Wahl Runde 1 vollständig ausgeliefert am selben Tag: 🔍 Suche, 💶 Preisrechner, 🧩 Prompt-Bibliothek, 🗺️ Landkarte.
+- Known-good: 8c625917.
