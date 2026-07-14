@@ -592,3 +592,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - BUILD_EXIT=0, Deploy 70f90f0f, Live-Verify: Duell-Titel DE, Picker-Kicker, ZH-Duell-String (geechot), icon.svg+apple-icon 200, 375px-Screenshot ok.
 - Direktive 13 NEU: wiederkehrende Ideen-Pitches; Runde 1: Marvin wählt alle 4 (Suche→Preisrechner→Prompt-Bibliothek→Landkarte), loops/IDEEN.md angelegt.
 - Known-good: 70f90f0f.
+
+## It. 99a — 14.07. ~20:40 — AdSense DSGVO-sauber eingebaut (Marvin lieferte pub-ID im Chat)
+- ads.txt (google.com, pub-6850490267678365, DIRECT) + Verifikations-Meta-Tag google-adsense-account (requestlos) + AdsConsent.tsx: adsbygoogle.js lädt AUSSCHLIESSLICH nach Klick „Anzeigen erlauben" (localStorage pg_ads_consent, Banner ×5 Sprachen, 1d-Stil); ohne Consent bleibt Seite cookielos. Impressum-Datenschutz um Werbe-Absatz erweitert (Widerruf dokumentiert).
+- Verify: ads.txt live, Meta-Tag 1, adsbygoogle im Initial-HTML 0 (= korrekt gated), Banner im Bundle, Impressum-String live. Deploy 69b4a5fc. Todo #5 done → Folge-Todo „Site-Review abwarten + Auto Ads" mit exakten Schritten.
+- git status VOR add geprüft (Lesson It. 98) — nur eigene 5 Dateien.

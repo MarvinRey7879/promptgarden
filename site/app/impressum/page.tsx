@@ -47,6 +47,18 @@ export default function Impressum() {
         Hosting und Datenspeicherung: Cloudflare (Pages, Workers, D1). Auskunft und Löschung
         jederzeit per E-Mail.
       </p>
+      <p style={{ lineHeight: 1.7 }}>
+        <b>Werbung (optional, nur mit Einwilligung):</b> Zur Finanzierung der kostenlosen Inhalte
+        kann Google AdSense (Google Ireland Ltd.) eingebunden werden. Das Werbe-Skript wird
+        ausschließlich geladen, wenn du im Hinweis-Banner ausdrücklich zustimmst — erst dann setzt
+        Google Cookies bzw. verarbeitet Daten gemäß den{' '}
+        <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+          Google-Richtlinien
+        </a>
+        . Ohne Zustimmung bleibt die Seite werbefrei und cookielos. Deine Entscheidung wird lokal
+        gespeichert (pg_ads_consent) und lässt sich durch Löschen der Website-Daten im Browser
+        jederzeit widerrufen.
+      </p>
     </div>
   );
 }

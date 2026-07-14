@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     siteName: 'promptgarten',
     images: [{ url: '/og.png', width: 1200, height: 630 }],
   },
+  // AdSense-Site-Verifikation: reines Meta-Tag, löst keinen Google-Request aus.
+  // Das eigentliche Ads-Script lädt erst nach Consent (components/AdsConsent.tsx).
+  other: { 'google-adsense-account': 'ca-pub-6850490267678365' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
