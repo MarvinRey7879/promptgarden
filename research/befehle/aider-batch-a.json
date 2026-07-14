@@ -1,0 +1,1514 @@
+{
+  "de": [
+    {
+      "platform": "aider",
+      "slug": "add",
+      "name": "/add",
+      "summary": "Fügt eine oder mehrere Dateien zum Chat hinzu, damit Aider sie bearbeiten oder im Detail betrachten kann.",
+      "what": "/add fügt Dateien zur aktuellen Chat-Session hinzu. Nur Dateien, die im Chat sind, kann Aider bearbeiten. Wird eine neue, noch nicht existierende Datei mit /add angegeben, merkt sich Aider den Dateinamen und schreibt später dort hinein, statt versehentlich eine bestehende Datei zu verändern. Zusätzlich zu den hinzugefügten Dateien nutzt Aider eine Map des gesamten Git-Repos, kennt also auch Code außerhalb des Chats.",
+      "whenGood": [
+        {
+          "title": "Datei zur Bearbeitung freigeben",
+          "example": "/add payment.py — Datei zum Chat hinzufügen, bevor Aider Änderungen daran vornehmen soll"
+        },
+        {
+          "title": "Neue Datei sicher anlegen lassen",
+          "example": "/add utils/newfile.py, bevor man Aider bittet, dort eine neue Hilfsfunktion zu schreiben — so landet die Änderung sicher in der neuen Datei statt in einer bestehenden"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Viele Dateien auf Verdacht hinzufügen",
+          "why": "Zu viel irrelevanter Code im Chat lenkt das LLM ab; laut Doku sollte man nur die tatsächlich benötigten Dateien hinzufügen.",
+          "alternative": "Nur die 1-2 wirklich relevanten Dateien hinzufügen, den Rest über die automatische Repo-Map abdecken lassen"
+        },
+        {
+          "title": "Datei nur zur Referenz zeigen, nicht bearbeiten lassen",
+          "why": "/add macht Dateien direkt bearbeitbar — unnötig, wenn die Datei nur als Kontext dienen soll.",
+          "alternative": "/read-only nutzen, um die Datei nur als Referenz hinzuzufügen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Tips",
+          "url": "https://aider.chat/docs/usage/tips.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "architect",
+      "name": "/architect",
+      "summary": "Wechselt in den Architect-Modus, in dem ein Modell die Lösung plant und ein zweites Modell sie als konkrete Datei-Änderungen umsetzt.",
+      "what": "Im Architect-Modus schickt Aider die Anfrage zuerst an das Hauptmodell (Architect), das einen Lösungsvorschlag macht. Anschließend schickt Aider diesen Vorschlag an ein separates Editor-Modell (einstellbar mit --editor-model), das daraus konkrete Datei-Edits erzeugt. Ohne angehängten Prompt wechselt /architect nur dauerhaft in diesen Modus, ohne eine Nachricht zu senden.",
+      "whenGood": [
+        {
+          "title": "Starkes Reasoning-Modell mit einem guten Editor-Modell kombinieren",
+          "example": "/architect Refactor the payment module to use the new API — z.B. mit einem starken Reasoning-Modell als Architect und Sonnet oder GPT-4o als Editor-Modell"
+        },
+        {
+          "title": "Demselben Modell zwei Durchgänge geben",
+          "example": "/architect (ohne Prompt, um dauerhaft in den Modus zu wechseln) — das Modell bekommt einmal Zeit zum Planen, einmal zum Umsetzen, was laut Doku manchmal bessere Ergebnisse liefert als der direkte Code-Modus"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Schnelle, einfache Änderung",
+          "why": "Architect-Modus braucht zwei LLM-Anfragen statt einer, das kostet laut Doku mehr Zeit und Geld.",
+          "alternative": "/code für direkte Änderungen ohne den Zwischenschritt nutzen"
+        },
+        {
+          "title": "Nur diskutieren, nichts ändern",
+          "why": "Architect-Modus ändert am Ende Dateien; wer nur Fragen klären will, braucht das nicht.",
+          "alternative": "/ask nutzen, um den Ansatz zu besprechen, bevor überhaupt Code geändert wird"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "ask",
+      "name": "/ask",
+      "summary": "Stellt Fragen zur Codebasis, ohne dass Aider dabei Dateien verändert.",
+      "what": "Im Ask-Modus antwortet Aider auf Fragen zum Code, ändert dabei aber nie Dateien. Laut Doku ist ein üblicher Workflow, zwischen /ask und /code hin- und herzuwechseln: erst mit /ask den Plan besprechen, dann mit /code die eigentliche Änderung anstoßen. Ohne angehängten Prompt wechselt /ask nur dauerhaft in den Modus.",
+      "whenGood": [
+        {
+          "title": "Plan besprechen, bevor Code geändert wird",
+          "example": "/ask What's the best way to add caching to this function? — bei Zustimmung anschließend einfach in den Code-Modus wechseln und \"go ahead\" sagen"
+        },
+        {
+          "title": "Codebasis verstehen, ohne versehentlich etwas zu ändern",
+          "example": "/ask What does the retry logic in api_client.py do?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Direkt eine Änderung umsetzen lassen",
+          "why": "Im Ask-Modus nimmt Aider laut Doku nie Änderungen an Dateien vor.",
+          "alternative": "/code für die eigentliche Umsetzung nutzen"
+        },
+        {
+          "title": "Fragen zu Aider selbst stellen (Nutzung/Konfiguration)",
+          "why": "/ask ist für Fragen zur Codebasis gedacht, nicht zu Aider als Tool.",
+          "alternative": "/help für Fragen zu Aider-Nutzung, Konfiguration oder Troubleshooting nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "chat-mode",
+      "name": "/chat-mode",
+      "summary": "Wechselt dauerhaft (sticky) in einen beliebigen Chat-Modus über den Modusnamen als Argument.",
+      "what": "/chat-mode <mode> wechselt den aktiven Modus für alle folgenden Nachrichten, z.B. /chat-mode code oder /chat-mode architect. Dasselbe erreichen die Befehle /code, /ask und /architect, wenn sie ohne Prompt aufgerufen werden; /help ohne Prompt zeigt dagegen nur die Basis-Hilfe an und wechselt den Modus nicht.",
+      "whenGood": [
+        {
+          "title": "Modus über eine geladene Befehlsdatei setzen",
+          "example": "/chat-mode ask in einer Datei, die per /load eingelesen wird, um den Modus vor weiteren Befehlen konsistent festzulegen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einen der bekannten Modi direkt ansteuern",
+          "why": "Für code/ask/architect gibt es eigene, kürzere Befehle mit derselben Wirkung, wenn sie ohne Prompt aufgerufen werden.",
+          "alternative": "Direkt /code, /ask oder /architect nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "clear",
+      "name": "/clear",
+      "summary": "Löscht den bisherigen Chat-Verlauf der aktuellen Session.",
+      "what": "/clear entfernt den bisherigen Gesprächsverlauf aus dem Chat-Kontext. Laut Doku hilft das, wenn Aider bei einer Aufgabe hängt und einen frischen Neustart braucht.",
+      "whenGood": [
+        {
+          "title": "Neustart, wenn Aider bei einer Aufgabe feststeckt",
+          "example": "/clear — danach die Aufgabe neu und präziser formulieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur einzelne Dateien aus dem Kontext entfernen",
+          "why": "/clear löscht den gesamten Gesprächsverlauf, lässt aber die im Chat hinzugefügten Dateien unangetastet.",
+          "alternative": "/drop nutzen, um gezielt einzelne Dateien zu entfernen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "code",
+      "name": "/code",
+      "summary": "Bittet Aider um konkrete Änderungen am Code (Standard-Modus).",
+      "what": "/code ist der Standardmodus von Aider: Anfragen führen zu direkten Änderungen an den Dateien im Chat. Ohne angehängten Prompt wechselt /code nur dauerhaft in diesen Modus, z.B. um aus dem Ask- oder Architect-Modus zurückzukehren.",
+      "whenGood": [
+        {
+          "title": "Nach einer Ask-Diskussion die Umsetzung anstoßen",
+          "example": "/code go ahead and implement what we discussed"
+        },
+        {
+          "title": "Direkte, klar umrissene Änderung anfragen",
+          "example": "/code Add input validation to the signup form"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Erst den Ansatz klären, bevor Code geändert wird",
+          "why": "/code setzt sofort um, ohne vorher Optionen zu diskutieren.",
+          "alternative": "/ask nutzen, um zunächst den Plan zu besprechen"
+        },
+        {
+          "title": "Planung und Umsetzung auf zwei Modelle verteilen",
+          "why": "/code nutzt nur ein Modell für die gesamte Anfrage.",
+          "alternative": "/architect für den Zwei-Modell-Workflow mit separatem Editor-Modell nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "commit",
+      "name": "/commit",
+      "summary": "Committet Änderungen am Repo, die außerhalb des Chats gemacht wurden.",
+      "what": "/commit erstellt einen Commit für alle dirty (uncommitteten) Änderungen im Repo mit einer von Aider generierten Commit-Message. Eine eigene Commit-Message ist optional als Argument möglich. Änderungen, die Aider selbst vornimmt, committet es laut Doku ohnehin automatisch bei jeder Bearbeitung.",
+      "whenGood": [
+        {
+          "title": "Manuelle Änderungen außerhalb von Aider sichern",
+          "example": "/commit — nachdem man selbst im Editor etwas geändert hat, bevor Aider im selben Repo weiterarbeitet"
+        },
+        {
+          "title": "Eigene Commit-Message vorgeben",
+          "example": "/commit fix: correct off-by-one error in pagination"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Aiders eigene Codeänderungen committen wollen",
+          "why": "Aider committet seine eigenen Edits laut Doku standardmäßig automatisch nach jeder Änderung, ein zusätzlicher /commit ist dafür nicht nötig.",
+          "alternative": "--no-auto-commits nur setzen, wenn man das automatische Committen bewusst abschalten will"
+        },
+        {
+          "title": "Einen fehlerhaften Commit rückgängig machen",
+          "why": "/commit erzeugt neue Commits, macht aber nichts rückgängig.",
+          "alternative": "/undo nutzen, um den letzten von Aider gemachten Commit zurückzunehmen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Git integration",
+          "url": "https://aider.chat/docs/git.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "context",
+      "name": "/context",
+      "summary": "Wechselt in den Context-Modus, um den Code-Kontext rund um eine Anfrage zu sehen.",
+      "what": "Im Context-Modus zeigt Aider den umgebenden Code-Kontext zu einer Anfrage. Ohne angehängten Prompt wechselt /context nur dauerhaft in diesen Modus.",
+      "whenGood": [
+        {
+          "title": "Umfeld einer bestimmten Funktion verstehen",
+          "example": "/context Where else is the retry logic from api_client.py used?"
+        },
+        {
+          "title": "Dauerhaft im Kontext-Modus weiterarbeiten",
+          "example": "/context (ohne Prompt), um folgende Nachrichten in diesem Modus zu senden"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Code tatsächlich ändern lassen",
+          "why": "Context-Modus dient laut Doku dem Anzeigen von Code-Kontext, nicht dem Editieren.",
+          "alternative": "/code oder /architect für tatsächliche Änderungen nutzen"
+        },
+        {
+          "title": "Überblick über das komplette Repo statt einer konkreten Stelle",
+          "why": "/context ist auf den Kontext um eine konkrete Anfrage fokussiert, nicht auf eine Gesamtübersicht.",
+          "alternative": "/map für die komplette Repository-Map nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Repository map",
+          "url": "https://aider.chat/docs/repomap.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "copy",
+      "name": "/copy",
+      "summary": "Kopiert die letzte Antwort von Aider in die Zwischenablage.",
+      "what": "/copy kopiert die zuletzt vom Assistenten gesendete Nachricht in die System-Zwischenablage.",
+      "whenGood": [
+        {
+          "title": "Eine Erklärung oder einen Codeschnipsel aus der letzten Antwort weiterverwenden",
+          "example": "/copy — danach z.B. in eine Doku, ein Issue oder eine andere App einfügen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Den ganzen Code-Kontext für ein Web-Chat-LLM kopieren wollen",
+          "why": "/copy kopiert nur die letzte Antwort von Aider, nicht die im Chat hinzugefügten Dateien und die Repo-Map.",
+          "alternative": "/copy-context nutzen, um den vollständigen Code-Kontext zu kopieren"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "copy-context",
+      "name": "/copy-context",
+      "summary": "Kopiert den aktuellen Code-Kontext (Dateien, Repo-Map, Anweisungen) als Markdown in die Zwischenablage, passend zum Einfügen in eine Web-Chat-Oberfläche.",
+      "what": "/copy-context <instructions> kopiert alle über /add hinzugefügten Dateien, alle über /read-only hinzugefügten Referenzdateien, dazu die Aider-Repository-Map sowie eine Anweisung an das LLM, Änderungen knapp auszugeben. Optional angehängte <instructions> werden mit kopiert. Laut Doku lässt sich damit ein Web-Chat-LLM als \"großes Hirn\" für die Planung nutzen, während Aider lokal mit einem günstigeren Modell die Datei-Edits übernimmt (per /paste der Antwort).",
+      "whenGood": [
+        {
+          "title": "Ein leistungsfähiges Web-Chat-LLM als Architekt nutzen, ohne API-Zugang",
+          "example": "/copy-context Suggest how to add rate limiting to this API — Ergebnis in eine LLM-Web-Chat-Oberfläche einfügen, wenn nur Web-Chat- statt API-Zugang besteht"
+        },
+        {
+          "title": "Kontext mit Kollegen oder in einem Ticket teilen",
+          "example": "/copy-context — das Markdown-Ergebnis danach in ein Issue oder eine Doku einfügen, um den aktuellen Code-Kontext nachvollziehbar zu machen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur die letzte Aider-Antwort kopieren wollen",
+          "why": "/copy-context kopiert Dateien und Repo-Map, nicht die letzte Chat-Antwort.",
+          "alternative": "/copy für die letzte Antwort nutzen"
+        },
+        {
+          "title": "Aider soll direkt selbst editieren",
+          "why": "/copy-context bereitet nur die Übergabe an ein externes Web-Chat-LLM vor und ändert selbst keine Dateien.",
+          "alternative": "/code oder /architect nutzen, wenn Aider direkt mit dem konfigurierten Modell arbeiten soll"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Copy/paste with web chat",
+          "url": "https://aider.chat/docs/usage/copypaste.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "diff",
+      "name": "/diff",
+      "summary": "Zeigt den Diff aller Datei-Änderungen seit der letzten Chat-Nachricht.",
+      "what": "/diff zeigt die Änderungen, die seit der letzten gesendeten Nachricht am Code vorgenommen wurden.",
+      "whenGood": [
+        {
+          "title": "Aiders letzte Änderung vor dem Weitermachen prüfen",
+          "example": "/diff — nach einer Code-Änderung kurz nachsehen, was genau geändert wurde"
+        },
+        {
+          "title": "Nachvollziehen, was ein automatischer Commit enthielt",
+          "example": "/diff direkt nach einer automatisch committeten Änderung, um den genauen Umfang zu sehen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine unerwünschte Änderung rückgängig machen",
+          "why": "/diff zeigt nur an, ändert aber nichts.",
+          "alternative": "/undo nutzen, um den letzten Aider-Commit zurückzunehmen"
+        },
+        {
+          "title": "Änderungen aus mehreren Nachrichten zurückliegend sehen",
+          "why": "/diff zeigt laut Doku die Änderungen seit der letzten Nachricht, nicht die gesamte Session-Historie.",
+          "alternative": "/git nutzen, um z.B. git log oder git diff direkt im Chat auszuführen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Git integration",
+          "url": "https://aider.chat/docs/git.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "drop",
+      "name": "/drop",
+      "summary": "Entfernt Dateien aus der Chat-Session, um Kontext-Platz freizugeben.",
+      "what": "/drop entfernt zuvor mit /add oder /read-only hinzugefügte Dateien wieder aus dem Chat. Laut Doku ist es üblich, Dateien, die keine weiteren Änderungen mehr brauchen, zu droppen und stattdessen die Dateien für den nächsten Schritt hinzuzufügen.",
+      "whenGood": [
+        {
+          "title": "Nach Abschluss eines Teilschritts aufräumen",
+          "example": "/drop payment.py — Datei entfernen, sobald sie fertig bearbeitet ist und für den nächsten Schritt nicht mehr gebraucht wird"
+        },
+        {
+          "title": "Aider steckt fest, zu viel Kontext im Chat",
+          "example": "/drop — laut Doku eine der ersten Maßnahmen, wenn Aider bei einer Aufgabe nicht weiterkommt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Den gesamten Gesprächsverlauf zurücksetzen wollen",
+          "why": "/drop entfernt nur Dateien aus dem Chat, der Gesprächsverlauf bleibt erhalten.",
+          "alternative": "/clear für den Chat-Verlauf nutzen, oder /reset um beides gleichzeitig zu entfernen"
+        },
+        {
+          "title": "Datei nur vorübergehend von bearbeitbar auf Referenz umschalten",
+          "why": "/drop entfernt die Datei komplett aus dem Chat, danach steht sie auch nicht mehr als Referenz zur Verfügung.",
+          "alternative": "/read-only auf die Datei anwenden, um sie auf nur-Referenz umzuschalten, statt sie komplett zu droppen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Tips",
+          "url": "https://aider.chat/docs/usage/tips.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "edit",
+      "name": "/edit",
+      "summary": "Alias für /editor: Öffnet einen externen Editor zum Schreiben eines Prompts.",
+      "what": "/edit ist laut Doku ein Alias für /editor und öffnet einen externen Texteditor, um dort die nächste Chat-Nachricht zu schreiben.",
+      "whenGood": [
+        {
+          "title": "Einen längeren, mehrzeiligen Prompt komfortabel schreiben",
+          "example": "/edit — öffnet den externen Editor, statt einen langen Prompt direkt im Terminal einzutippen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Eine kurze Ein-Satz-Nachricht schreiben",
+          "why": "Für eine einzeilige Nachricht ist der Umweg über einen externen Editor unnötig.",
+          "alternative": "Nachricht direkt im Terminal-Prompt eintippen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "editor",
+      "name": "/editor",
+      "summary": "Öffnet einen externen Texteditor, um dort die nächste Chat-Nachricht zu schreiben.",
+      "what": "/editor öffnet einen externen Editor zum Verfassen eines Prompts. Laut Doku ist dies alternativ auch über die Tastenkombination Ctrl-X Ctrl-E direkt im Terminal erreichbar. Welcher Editor sich öffnet, lässt sich über die Editor-Konfiguration einstellen.",
+      "whenGood": [
+        {
+          "title": "Mehrzeiligen Prompt mit genauer Formatierung schreiben",
+          "example": "/editor — z.B. um einen Prompt mit Codeblöcken oder Aufzählungen sauber zu formatieren, bevor er gesendet wird"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Kurze, spontane Nachricht senden",
+          "why": "Für eine kurze Nachricht lohnt sich der Wechsel in einen externen Editor nicht.",
+          "alternative": "Nachricht direkt im Chat-Prompt eintippen, oder /paste nutzen, wenn der Text schon in der Zwischenablage liegt"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "editor-model",
+      "name": "/editor-model",
+      "summary": "Wechselt das Editor-Modell, das im Architect-Modus die konkreten Datei-Edits schreibt, zu einem neuen LLM.",
+      "what": "/editor-model wechselt das Editor-Modell während der laufenden Session. Laut Doku ist das Editor-Modell für den zweiten Schritt im Architect-Modus zuständig: Es setzt den Vorschlag des Architect-Modells in konkrete Datei-Änderungen um. Ohne Angabe wählt Aider automatisch ein passendes Editor-Modell zum Hauptmodell; beim Start lässt es sich alternativ mit --editor-model setzen.",
+      "whenGood": [
+        {
+          "title": "Im Architect-Modus ein besser geeignetes Editor-Modell einsetzen",
+          "example": "/editor-model gpt-4o — nachdem /architect mit einem starken Reasoning-Modell als Planer gestartet wurde"
+        },
+        {
+          "title": "Editor-Modell mitten in der Session wechseln, ohne neu zu starten",
+          "example": "/editor-model claude-sonnet — z.B. wenn das automatisch gewählte Editor-Modell die Edits nicht sauber umsetzt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Hauptmodell wechseln wollen",
+          "why": "/editor-model betrifft laut Doku nur das Editor-Modell im Architect-Modus, nicht das Modell für die Anfrage insgesamt.",
+          "alternative": "/model nutzen, um das Hauptmodell zu wechseln"
+        },
+        {
+          "title": "Außerhalb des Architect-Modus arbeiten",
+          "why": "Das Editor-Modell kommt laut Doku nur im Architect-Modus zum Einsatz.",
+          "alternative": "Im Code-Modus reicht das Hauptmodell aus, dort ist kein separates Editor-Modell nötig"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "exit",
+      "name": "/exit",
+      "summary": "Beendet Aider.",
+      "what": "/exit beendet die laufende Aider-Anwendung.",
+      "whenGood": [
+        {
+          "title": "Session sauber beenden",
+          "example": "/exit — wenn die Arbeit mit Aider für diese Session abgeschlossen ist"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur den Chat-Verlauf zurücksetzen, mit Aider weiterarbeiten",
+          "why": "/exit beendet das ganze Programm, nicht nur den Verlauf.",
+          "alternative": "/clear nutzen, um nur den Chat-Verlauf zu löschen und in derselben Session weiterzumachen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "git",
+      "name": "/git",
+      "summary": "Führt einen beliebigen Git-Befehl aus; die Ausgabe fließt nicht in den Chat-Kontext ein.",
+      "what": "/git führt einen rohen Git-Befehl aus (z.B. /git log oder /git branch), ohne dass die Ausgabe Teil des Chat-Kontexts wird. Laut Doku ist das für komplexeres Management der Git-Historie gedacht, das über die eingebauten Befehle /diff, /undo und /commit hinausgeht.",
+      "whenGood": [
+        {
+          "title": "Git-Historie oder -Status direkt aus dem Chat prüfen",
+          "example": "/git log --oneline -5 — kurz die letzten Commits ansehen, ohne den Chat zu verlassen"
+        },
+        {
+          "title": "Komplexere Git-Operation ausführen, die die eingebauten Befehle nicht abdecken",
+          "example": "/git branch feature/checkout — einen neuen Branch anlegen, während man in Aider weiterarbeitet"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Die Ausgabe soll dem LLM als Kontext dienen",
+          "why": "/git schließt die Ausgabe laut Doku explizit vom Chat-Kontext aus.",
+          "alternative": "Stattdessen /run nutzen, das anbietet, die Ausgabe zum Chat hinzuzufügen"
+        },
+        {
+          "title": "Nur Aiders eigene Änderungen committen oder zurücknehmen",
+          "why": "Für diese Standardfälle gibt es dedizierte, einfachere Befehle.",
+          "alternative": "/commit zum Committen dirty Änderungen, /undo zum Zurücknehmen des letzten Aider-Commits"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Git integration",
+          "url": "https://aider.chat/docs/git.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "help",
+      "name": "/help",
+      "summary": "Beantwortet Fragen zur Nutzung, Konfiguration und Fehlerbehebung von Aider selbst.",
+      "what": "/help beantwortet Fragen über Aider als Tool, z.B. zu Nutzung, Konfiguration und Troubleshooting.",
+      "whenGood": [
+        {
+          "title": "Wissen, wie eine Aider-Funktion genutzt wird",
+          "example": "/help How do I use aider with ollama?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Fragen zum eigenen Code oder Projekt stellen",
+          "why": "/help beantwortet laut Doku Fragen zu Aider selbst, nicht zur eigenen Codebasis.",
+          "alternative": "/ask nutzen, um Fragen zum Code im Chat zu stellen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "lint",
+      "name": "/lint",
+      "summary": "Lintet und fixt die Dateien im Chat, oder falls keine im Chat sind, alle geänderten (dirty) Dateien.",
+      "what": "/lint prüft die aktuell im Chat befindlichen Dateien mit dem konfigurierten Linter (eingebaut je nach Sprache, oder per --lint-cmd festgelegt) und lässt gefundene Probleme von Aider fixen. Sind keine Dateien im Chat, werden stattdessen alle Dateien mit uncommitteten Änderungen (dirty files) gelintet. Aider lintet laut Doku standardmäßig ohnehin automatisch jede Datei, die es selbst bearbeitet hat.",
+      "whenGood": [
+        {
+          "title": "Manuell geänderte Dateien vor dem Weitermachen prüfen lassen",
+          "example": "/lint — nachdem man selbst außerhalb von Aider Code geändert hat, um die dirty files zu prüfen und fixen zu lassen"
+        },
+        {
+          "title": "Gezielt bestimmte Dateien im Chat linten",
+          "example": "/add payment.py gefolgt von /lint, um nur diese Datei zu prüfen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Tests statt Lint-Fehler prüfen",
+          "why": "/lint prüft nur mit dem Linter, keine Testsuite.",
+          "alternative": "/test <test-command> nutzen, um Tests laufen zu lassen und Fehler daraus fixen zu lassen"
+        },
+        {
+          "title": "Erwarten, dass Linten nach jeder Aider-Änderung erst manuell angestoßen werden muss",
+          "why": "Aider lintet laut Doku standardmäßig automatisch jede Datei, die es selbst bearbeitet; /lint ist für den zusätzlichen, manuellen Fall gedacht.",
+          "alternative": "--no-auto-lint nur setzen, wenn das automatische Linten explizit abgeschaltet werden soll"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Linting and testing",
+          "url": "https://aider.chat/docs/usage/lint-test.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "load",
+      "name": "/load",
+      "summary": "Lädt eine Datei mit /Befehlen und führt sie der Reihe nach aus.",
+      "what": "/load liest eine Datei ein, die Zeile für Zeile Aider-/Befehle enthält, und führt sie nacheinander aus.",
+      "whenGood": [
+        {
+          "title": "Eine wiederkehrende Abfolge von Befehlen automatisieren",
+          "example": "/load setup.txt — eine Datei mit z.B. /add-Befehlen für ein bestimmtes Set an Dateien einlesen und ausführen"
+        },
+        {
+          "title": "Eine mit /save gespeicherte Dateiauswahl wiederherstellen",
+          "example": "/load session.txt — eine zuvor mit /save gesicherte Chat-Session-Dateiauswahl rekonstruieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einen einzelnen Befehl direkt ausführen",
+          "why": "Für einen einzelnen Befehl ist der Umweg über eine Datei unnötig.",
+          "alternative": "Den Befehl direkt im Chat eintippen"
+        },
+        {
+          "title": "Die Befehlsdatei soll gleich beim Start von Aider geladen werden",
+          "why": "/load ist ein In-Chat-Befehl für eine bereits laufende Session.",
+          "alternative": "Den Flag --load LOAD_FILE beim Start von Aider verwenden, um die Datei automatisch beim Hochfahren einzulesen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "ls",
+      "name": "/ls",
+      "summary": "Listet alle bekannten Dateien auf und markiert, welche aktuell im Chat sind.",
+      "what": "/ls zeigt eine Liste aller bekannten Dateien und markiert, welche davon aktuell zur Chat-Session hinzugefügt sind.",
+      "whenGood": [
+        {
+          "title": "Überblick verschaffen, welche Dateien gerade im Chat sind",
+          "example": "/ls — vor dem nächsten /drop oder /add kurz prüfen, was aktuell aktiv ist"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Den Inhalt einer Datei sehen wollen",
+          "why": "/ls listet nur Dateinamen und ihren Chat-Status, keine Inhalte.",
+          "alternative": "/add oder /read-only nutzen, um eine Datei tatsächlich mit Inhalt in den Chat zu holen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "map",
+      "name": "/map",
+      "summary": "Gibt die aktuelle Repository-Map aus (Übersicht über die wichtigsten Klassen/Funktionen im Repo).",
+      "what": "/map druckt die aktuelle Repository-Map: eine kompakte Übersicht über die wichtigsten Klassen und Funktionen im Git-Repo samt Typinformationen und Signaturen, die Aider auch selbst als Kontext für das LLM nutzt. Die Größe der Map wird über --map-tokens gesteuert (Default 1k Tokens); mit /map-refresh lässt sie sich manuell neu aufbauen.",
+      "whenGood": [
+        {
+          "title": "Sich selbst einen schnellen Überblick über das Projekt verschaffen",
+          "example": "/map — bevor man entscheidet, welche Dateien man als nächstes mit /add hinzufügt"
+        },
+        {
+          "title": "Prüfen, was Aider aktuell als Kontext über das Repo \"sieht\"",
+          "example": "/map, um nachzuvollziehen, welche Symbole aus welchen Dateien in die Map aufgenommen wurden"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Den vollständigen Quellcode einer Datei sehen",
+          "why": "Die Repo-Map enthält laut Doku nur die wichtigsten Symbole mit Signaturen, nicht den vollständigen Code.",
+          "alternative": "Datei direkt öffnen oder mit /add zum Chat hinzufügen, um den vollen Inhalt zu sehen"
+        },
+        {
+          "title": "Eine veraltete Map sofort aktualisieren",
+          "why": "/map zeigt die aktuell vorhandene Map an, erzwingt aber keinen Rebuild.",
+          "alternative": "/map-refresh nutzen, um die Repository-Map sofort neu aufzubauen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Repository map",
+          "url": "https://aider.chat/docs/repomap.html"
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "platform": "aider",
+      "slug": "add",
+      "name": "/add",
+      "summary": "Adds one or more files to the chat so Aider can edit them or use them as detailed context.",
+      "what": "/add adds files to the current chat session. Aider can only edit files that are in the chat. If a new file that doesn't exist yet is given to /add, Aider remembers the filename and writes to it later instead of accidentally changing an existing file. Besides the added files, Aider also uses a map of the whole git repo, so it's aware of code outside the chat too.",
+      "whenGood": [
+        {
+          "title": "Make a file editable",
+          "example": "/add payment.py — add the file to the chat before asking Aider to change it"
+        },
+        {
+          "title": "Safely create a new file",
+          "example": "/add utils/newfile.py before asking Aider to write a new helper function there — this way the change lands in the new file instead of an existing one"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Adding many files just in case",
+          "why": "Too much irrelevant code in the chat distracts the LLM; the docs recommend adding only the files actually needed.",
+          "alternative": "Add only the 1-2 truly relevant files and let the automatic repo map cover the rest"
+        },
+        {
+          "title": "Only wanting to show a file as reference, not edit it",
+          "why": "/add makes files directly editable — unnecessary if the file should only serve as context.",
+          "alternative": "Use /read-only to add the file for reference only"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Tips",
+          "url": "https://aider.chat/docs/usage/tips.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "architect",
+      "name": "/architect",
+      "summary": "Switches to architect mode, where one model plans the solution and a second model turns it into concrete file edits.",
+      "what": "In architect mode, Aider first sends the request to the main model (the architect), which proposes a solution. Aider then sends that proposal to a separate editor model (configurable with --editor-model), which turns it into concrete file edits. Without an attached prompt, /architect only switches to this mode persistently, without sending a message.",
+      "whenGood": [
+        {
+          "title": "Pair a strong reasoning model with a good editor model",
+          "example": "/architect Refactor the payment module to use the new API — e.g. with a strong reasoning model as architect and Sonnet or GPT-4o as the editor model"
+        },
+        {
+          "title": "Give the same model two passes at the problem",
+          "example": "/architect (no prompt, to switch persistently) — the model gets one pass to plan and one to implement, which the docs say can produce better results than plain code mode"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "A quick, simple change",
+          "why": "Architect mode needs two LLM requests instead of one, which the docs note costs more time and money.",
+          "alternative": "Use /code for direct changes without the extra step"
+        },
+        {
+          "title": "Just discussing, not changing anything",
+          "why": "Architect mode ends up changing files; that's unnecessary if you only want to clarify questions.",
+          "alternative": "Use /ask to discuss the approach before any code gets changed"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "ask",
+      "name": "/ask",
+      "summary": "Asks questions about the codebase without Aider changing any files.",
+      "what": "In ask mode, Aider answers questions about the code but never changes files. The docs describe a common workflow of bouncing between /ask and /code: discuss the plan with /ask first, then trigger the actual change with /code. Without an attached prompt, /ask only switches to the mode persistently.",
+      "whenGood": [
+        {
+          "title": "Discuss a plan before changing code",
+          "example": "/ask What's the best way to add caching to this function? — once you agree, switch to code mode and just say \"go ahead\""
+        },
+        {
+          "title": "Understand the codebase without accidentally changing it",
+          "example": "/ask What does the retry logic in api_client.py do?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting an immediate code change",
+          "why": "The docs say ask mode never makes changes to files.",
+          "alternative": "Use /code for the actual implementation"
+        },
+        {
+          "title": "Asking about Aider itself (usage/configuration)",
+          "why": "/ask is meant for questions about the codebase, not about Aider as a tool.",
+          "alternative": "Use /help for questions about Aider's usage, configuration, or troubleshooting"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "chat-mode",
+      "name": "/chat-mode",
+      "summary": "Switches persistently (sticky) to any chat mode, given as an argument by name.",
+      "what": "/chat-mode <mode> switches the active mode for all following messages, e.g. /chat-mode code or /chat-mode architect. The commands /code, /ask and /architect do the same when called without a prompt; /help without a prompt only shows the basic help and does not switch the mode.",
+      "whenGood": [
+        {
+          "title": "Set the mode from a loaded command file",
+          "example": "/chat-mode ask inside a file that gets read with /load, to set the mode consistently before further commands run"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Directly targeting one of the known modes",
+          "why": "code/ask/architect have their own shorter commands with the same effect when called without a prompt.",
+          "alternative": "Use /code, /ask, or /architect directly"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "clear",
+      "name": "/clear",
+      "summary": "Clears the chat history of the current session.",
+      "what": "/clear removes the previous conversation history from the chat context. The docs suggest this when Aider is stuck on a task and needs a fresh start.",
+      "whenGood": [
+        {
+          "title": "Fresh start when Aider is stuck on a task",
+          "example": "/clear — then rephrase the task more precisely"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to remove only individual files from context",
+          "why": "/clear wipes the whole conversation history but leaves files added to the chat untouched.",
+          "alternative": "Use /drop to remove specific files instead"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "code",
+      "name": "/code",
+      "summary": "Asks Aider to make concrete changes to the code (the default mode).",
+      "what": "/code is Aider's default mode: requests result in direct changes to the files in the chat. Without an attached prompt, /code only switches to this mode persistently, e.g. to return from ask or architect mode.",
+      "whenGood": [
+        {
+          "title": "Trigger implementation after an ask discussion",
+          "example": "/code go ahead and implement what we discussed"
+        },
+        {
+          "title": "Request a direct, clearly scoped change",
+          "example": "/code Add input validation to the signup form"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to clarify the approach before changing code",
+          "why": "/code implements immediately without discussing options first.",
+          "alternative": "Use /ask to discuss the plan first"
+        },
+        {
+          "title": "Wanting planning and implementation split across two models",
+          "why": "/code uses only one model for the whole request.",
+          "alternative": "Use /architect for the two-model workflow with a separate editor model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "commit",
+      "name": "/commit",
+      "summary": "Commits changes to the repo that were made outside the chat.",
+      "what": "/commit creates a commit for all dirty (uncommitted) changes in the repo, with a commit message generated by Aider. A custom commit message can optionally be given as an argument. Changes Aider makes itself are already committed automatically after every edit, per the docs.",
+      "whenGood": [
+        {
+          "title": "Save manual changes made outside Aider",
+          "example": "/commit — after editing something yourself outside Aider, before letting it keep working in the same repo"
+        },
+        {
+          "title": "Supply your own commit message",
+          "example": "/commit fix: correct off-by-one error in pagination"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to commit Aider's own code changes",
+          "why": "Aider already auto-commits its own edits after every change by default, so an extra /commit isn't needed for that.",
+          "alternative": "Only set --no-auto-commits if you deliberately want to turn off automatic committing"
+        },
+        {
+          "title": "Wanting to undo a bad commit",
+          "why": "/commit creates new commits, it doesn't undo anything.",
+          "alternative": "Use /undo to revert the last commit Aider made"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Git integration",
+          "url": "https://aider.chat/docs/git.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "context",
+      "name": "/context",
+      "summary": "Switches to context mode to see the surrounding code context for a request.",
+      "what": "In context mode, Aider shows the surrounding code context for a request. Without an attached prompt, /context only switches to this mode persistently.",
+      "whenGood": [
+        {
+          "title": "Understand the surroundings of a specific function",
+          "example": "/context Where else is the retry logic from api_client.py used?"
+        },
+        {
+          "title": "Keep working in context mode persistently",
+          "example": "/context (no prompt), so following messages are sent in this mode"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting code actually changed",
+          "why": "The docs describe context mode as showing code context, not editing.",
+          "alternative": "Use /code or /architect for actual changes"
+        },
+        {
+          "title": "Wanting an overview of the whole repo instead of one spot",
+          "why": "/context is focused on the context around one specific request, not a full overview.",
+          "alternative": "Use /map for the complete repository map"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Repository map",
+          "url": "https://aider.chat/docs/repomap.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "copy",
+      "name": "/copy",
+      "summary": "Copies Aider's last reply to the clipboard.",
+      "what": "/copy copies the most recently sent assistant message to the system clipboard.",
+      "whenGood": [
+        {
+          "title": "Reuse an explanation or code snippet from the last reply",
+          "example": "/copy — then paste it into e.g. docs, an issue, or another app"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to copy the whole code context for a web-chat LLM",
+          "why": "/copy only copies Aider's last reply, not the files added to the chat and the repo map.",
+          "alternative": "Use /copy-context to copy the full code context"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "copy-context",
+      "name": "/copy-context",
+      "summary": "Copies the current code context (files, repo map, instructions) as markdown to the clipboard, suitable for pasting into a web chat UI.",
+      "what": "/copy-context <instructions> copies all files added via /add, all reference files added via /read-only, plus Aider's repository map and an instruction telling the LLM to output changes concisely. Any <instructions> appended are copied too. The docs describe this as a way to use a web-chat LLM as the \"big brain\" for planning, while Aider locally applies the edits with a cheaper model (via /paste of the reply).",
+      "whenGood": [
+        {
+          "title": "Use a capable web-chat LLM as architect without API access",
+          "example": "/copy-context Suggest how to add rate limiting to this API — paste the result into an LLM web chat UI when only web-chat, not API, access is available"
+        },
+        {
+          "title": "Share context with colleagues or in a ticket",
+          "example": "/copy-context — paste the resulting markdown into an issue or doc so others can follow the current code context"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to copy just the last Aider reply",
+          "why": "/copy-context copies files and the repo map, not the last chat reply.",
+          "alternative": "Use /copy for the last reply"
+        },
+        {
+          "title": "Wanting Aider to edit directly itself",
+          "why": "/copy-context only prepares a handoff to an external web-chat LLM; it doesn't change any files itself.",
+          "alternative": "Use /code or /architect if Aider should work directly with its configured model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Copy/paste with web chat",
+          "url": "https://aider.chat/docs/usage/copypaste.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "diff",
+      "name": "/diff",
+      "summary": "Shows the diff of all file changes since the last chat message.",
+      "what": "/diff shows the changes made to the code since the last message sent.",
+      "whenGood": [
+        {
+          "title": "Check Aider's last change before continuing",
+          "example": "/diff — after a code change, quickly review exactly what was changed"
+        },
+        {
+          "title": "Understand what an auto-commit contained",
+          "example": "/diff right after an automatically committed change, to see its exact scope"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to undo an unwanted change",
+          "why": "/diff only displays changes, it doesn't change anything.",
+          "alternative": "Use /undo to revert the last Aider commit"
+        },
+        {
+          "title": "Wanting to see changes from several messages back",
+          "why": "The docs say /diff shows changes since the last message, not the whole session history.",
+          "alternative": "Use /git to run e.g. git log or git diff directly in the chat"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Git integration",
+          "url": "https://aider.chat/docs/git.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "drop",
+      "name": "/drop",
+      "summary": "Removes files from the chat session to free up context space.",
+      "what": "/drop removes files previously added via /add or /read-only from the chat again. The docs describe it as normal to drop files that don't need further changes and add the files needed for the next step instead.",
+      "whenGood": [
+        {
+          "title": "Clean up after finishing a sub-step",
+          "example": "/drop payment.py — remove the file once it's done and no longer needed for the next step"
+        },
+        {
+          "title": "Aider is stuck, too much context in the chat",
+          "example": "/drop — the docs list this as one of the first things to try when Aider gets stuck on a task"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to reset the whole conversation history",
+          "why": "/drop only removes files from the chat, the conversation history stays intact.",
+          "alternative": "Use /clear for the chat history, or /reset to remove both at once"
+        },
+        {
+          "title": "Wanting to temporarily switch a file from editable to reference-only",
+          "why": "/drop removes the file from the chat entirely, so it's no longer available even as a reference afterward.",
+          "alternative": "Apply /read-only to the file to switch it to reference-only instead of dropping it completely"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Tips",
+          "url": "https://aider.chat/docs/usage/tips.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "edit",
+      "name": "/edit",
+      "summary": "Alias for /editor: opens an external editor to write a prompt.",
+      "what": "The docs list /edit as an alias for /editor, opening an external text editor to write the next chat message in.",
+      "whenGood": [
+        {
+          "title": "Comfortably write a longer, multi-line prompt",
+          "example": "/edit — opens the external editor instead of typing a long prompt directly into the terminal"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Writing a short one-line message",
+          "why": "For a single-line message, switching to an external editor is an unnecessary detour.",
+          "alternative": "Type the message directly into the terminal prompt"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "editor",
+      "name": "/editor",
+      "summary": "Opens an external text editor to write the next chat message in.",
+      "what": "/editor opens an external editor for composing a prompt. The docs note this is also reachable via the Ctrl-X Ctrl-E keybinding directly in the terminal. Which editor opens can be set via the editor configuration.",
+      "whenGood": [
+        {
+          "title": "Write a multi-line prompt with precise formatting",
+          "example": "/editor — e.g. to cleanly format a prompt with code blocks or lists before sending it"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Sending a short, spontaneous message",
+          "why": "Switching to an external editor isn't worth it for a short message.",
+          "alternative": "Type the message directly into the chat prompt, or use /paste if the text is already on the clipboard"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "editor-model",
+      "name": "/editor-model",
+      "summary": "Switches the editor model — responsible for writing concrete file edits in architect mode — to a new LLM.",
+      "what": "/editor-model changes the editor model during the running session. The docs describe the editor model as handling the second step in architect mode: turning the architect model's proposal into concrete file edits. Without a value, Aider automatically picks a suitable editor model for the main model; it can alternatively be set at startup with --editor-model.",
+      "whenGood": [
+        {
+          "title": "Use a better-suited editor model in architect mode",
+          "example": "/editor-model gpt-4o — after starting /architect with a strong reasoning model as the planner"
+        },
+        {
+          "title": "Swap the editor model mid-session without restarting",
+          "example": "/editor-model claude-sonnet — e.g. when the automatically chosen editor model isn't applying edits cleanly"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to change the main model",
+          "why": "The docs say /editor-model only affects the editor model in architect mode, not the model handling the request overall.",
+          "alternative": "Use /model to switch the main model"
+        },
+        {
+          "title": "Working outside architect mode",
+          "why": "The docs state the editor model is only used in architect mode.",
+          "alternative": "In code mode the main model is enough, no separate editor model is needed"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Chat modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "exit",
+      "name": "/exit",
+      "summary": "Exits Aider.",
+      "what": "/exit ends the running Aider application.",
+      "whenGood": [
+        {
+          "title": "Cleanly end a session",
+          "example": "/exit — when the work with Aider for this session is done"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to reset only the chat history and keep working",
+          "why": "/exit ends the whole program, not just the history.",
+          "alternative": "Use /clear to only clear the chat history and continue in the same session"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "git",
+      "name": "/git",
+      "summary": "Runs any git command; the output is excluded from the chat context.",
+      "what": "/git runs a raw git command (e.g. /git log or /git branch) without its output becoming part of the chat context. The docs describe this as being for more complex git history management beyond the built-in /diff, /undo, and /commit commands.",
+      "whenGood": [
+        {
+          "title": "Check git history or status directly from the chat",
+          "example": "/git log --oneline -5 — quickly review the last commits without leaving the chat"
+        },
+        {
+          "title": "Run a more complex git operation not covered by the built-in commands",
+          "example": "/git branch feature/checkout — create a new branch while continuing to work in Aider"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting the output to become context for the LLM",
+          "why": "The docs say /git explicitly excludes its output from the chat context.",
+          "alternative": "Use /run instead, which offers to add its output to the chat"
+        },
+        {
+          "title": "Just wanting to commit or undo Aider's own changes",
+          "why": "There are dedicated, simpler commands for these standard cases.",
+          "alternative": "/commit to commit dirty changes, /undo to revert the last Aider commit"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Git integration",
+          "url": "https://aider.chat/docs/git.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "help",
+      "name": "/help",
+      "summary": "Answers questions about using, configuring, and troubleshooting Aider itself.",
+      "what": "/help answers questions about Aider as a tool, e.g. usage, configuration, and troubleshooting.",
+      "whenGood": [
+        {
+          "title": "Find out how to use an Aider feature",
+          "example": "/help How do I use aider with ollama?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Asking questions about your own code or project",
+          "why": "The docs describe /help as answering questions about Aider itself, not about your codebase.",
+          "alternative": "Use /ask to ask questions about the code in the chat"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "lint",
+      "name": "/lint",
+      "summary": "Lints and fixes the files in the chat, or all dirty files if none are in the chat.",
+      "what": "/lint checks the files currently in the chat with the configured linter (built in per language, or set via --lint-cmd) and has Aider fix any issues found. If no files are in the chat, all files with uncommitted changes (dirty files) get linted instead. The docs note Aider already auto-lints every file it edits itself by default.",
+      "whenGood": [
+        {
+          "title": "Check manually changed files before continuing",
+          "example": "/lint — after changing code yourself outside Aider, to check and fix the dirty files"
+        },
+        {
+          "title": "Lint specific files in the chat on demand",
+          "example": "/add payment.py followed by /lint, to check just that file"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to check tests instead of lint errors",
+          "why": "/lint only checks with the linter, not a test suite.",
+          "alternative": "Use /test <test-command> to run tests and have failures fixed"
+        },
+        {
+          "title": "Expecting to have to manually trigger linting after every Aider change",
+          "why": "The docs say Aider already auto-lints every file it edits by default; /lint is for the extra, manual case.",
+          "alternative": "Only set --no-auto-lint if automatic linting should be explicitly turned off"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Linting and testing",
+          "url": "https://aider.chat/docs/usage/lint-test.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "load",
+      "name": "/load",
+      "summary": "Loads a file of /commands and runs them one after another.",
+      "what": "/load reads in a file containing Aider /commands, one per line, and runs them in sequence.",
+      "whenGood": [
+        {
+          "title": "Automate a recurring sequence of commands",
+          "example": "/load setup.txt — read in and run a file with e.g. /add commands for a specific set of files"
+        },
+        {
+          "title": "Restore a file selection saved with /save",
+          "example": "/load session.txt — reconstruct a chat session's file selection that was previously saved with /save"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Running a single command directly",
+          "why": "The detour through a file is unnecessary for a single command.",
+          "alternative": "Type the command directly into the chat"
+        },
+        {
+          "title": "Wanting the command file loaded right at Aider's startup",
+          "why": "/load is an in-chat command for an already-running session.",
+          "alternative": "Use the --load LOAD_FILE flag at startup to have the file read in automatically"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "ls",
+      "name": "/ls",
+      "summary": "Lists all known files and marks which ones are currently in the chat.",
+      "what": "/ls shows a list of all known files and marks which of them are currently added to the chat session.",
+      "whenGood": [
+        {
+          "title": "Get an overview of which files are currently in the chat",
+          "example": "/ls — quickly check what's currently active before the next /drop or /add"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to see a file's contents",
+          "why": "/ls only lists filenames and their chat status, not contents.",
+          "alternative": "Use /add or /read-only to actually bring a file's content into the chat"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "map",
+      "name": "/map",
+      "summary": "Prints the current repository map (an overview of the most important classes/functions in the repo).",
+      "what": "/map prints the current repository map: a compact overview of the most important classes and functions in the git repo, including type info and signatures, which Aider also uses itself as context for the LLM. The map's size is controlled by --map-tokens (default 1k tokens); /map-refresh can rebuild it manually.",
+      "whenGood": [
+        {
+          "title": "Get a quick overview of the project yourself",
+          "example": "/map — before deciding which files to add next with /add"
+        },
+        {
+          "title": "Check what Aider currently \"sees\" as context about the repo",
+          "example": "/map, to see which symbols from which files were included in the map"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Wanting to see a file's full source code",
+          "why": "The docs describe the repo map as containing only the most important symbols with signatures, not the full code.",
+          "alternative": "Open the file directly or add it to the chat with /add to see the full content"
+        },
+        {
+          "title": "Wanting an outdated map refreshed immediately",
+          "why": "/map shows the currently existing map but doesn't force a rebuild.",
+          "alternative": "Use /map-refresh to rebuild the repository map immediately"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        },
+        {
+          "title": "Aider Docs — Repository map",
+          "url": "https://aider.chat/docs/repomap.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1754 @@
+{
+  "de": [
+    {
+      "platform": "aider",
+      "slug": "map-refresh",
+      "name": "/map-refresh",
+      "summary": "Erzwingt sofort eine Neuberechnung der Repository-Map.",
+      "what": "/map-refresh baut die Repository-Map (die Kurz-Übersicht über Symbole und Strukturen im Projekt, die Aider dem Modell als Kontext mitgibt) sofort neu auf, statt auf die automatische Aktualisierung zu warten. Wie oft die Map sonst automatisch aktualisiert wird, steuert das Flag --map-refresh (auto/always/files/manual, Default auto). Die Map-Größe selbst wird über --map-tokens gesteuert (0 deaktiviert sie komplett).",
+      "whenGood": [
+        {
+          "title": "Nach großen manuellen Änderungen außerhalb des Chats",
+          "example": "/map-refresh, nachdem mehrere neue Dateien per Git-Branch-Wechsel oder Merge dazugekommen sind, damit Aider sie in der Map berücksichtigt"
+        },
+        {
+          "title": "Map wirkt veraltet, obwohl --map-refresh auf manual steht",
+          "example": "/map-refresh direkt vor einer komplexen Anfrage, um sicherzugehen, dass die Symbol-Übersicht aktuell ist"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Repo hat keine relevanten Änderungen",
+          "why": "Der Neuaufbau kostet Zeit und, je nach Projektgröße, spürbar CPU, ohne dass sich am Ergebnis etwas ändert.",
+          "alternative": "Auf die automatische Aktualisierung (--map-refresh auto, Standard) vertrauen"
+        },
+        {
+          "title": "Repository-Map ist ohnehin deaktiviert",
+          "why": "Mit --map-tokens 0 existiert keine Map, die aktualisiert werden könnte.",
+          "alternative": "--map-tokens auf einen Wert größer 0 setzen, um die Map überhaupt zu nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "model",
+      "name": "/model",
+      "summary": "Wechselt das Hauptmodell (Main Model) der laufenden Aider-Sitzung zu einem neuen LLM.",
+      "what": "/model <name> wechselt in der laufenden Sitzung das Hauptmodell, das Aiders Vorschläge und Code-Änderungen erzeugt. Ohne Argument zeigt Aider eine Liste passender Modelle. Das Hauptmodell lässt sich beim Start auch direkt mit --model setzen (Env-Var AIDER_MODEL); im Architect-Modus ist es das planende Modell, während --editor-model separat die Datei-Edits schreibt.",
+      "whenGood": [
+        {
+          "title": "Modell mitten in der Sitzung für eine schwierigere Teilaufgabe hochstufen",
+          "example": "/model anthropic/claude-opus-4 — bevor ein komplexer Multi-File-Refactor ansteht"
+        },
+        {
+          "title": "Anbieter wechseln, ohne die Sitzung neu zu starten",
+          "example": "/model gemini/gemini-2.5-pro — wenn ein anderer API-Key gerade günstiger oder verfügbar ist"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das Modell soll für die ganze Sitzung von Anfang an feststehen",
+          "why": "Ein späterer Wechsel per /model bricht den Modell-Kontext nicht automatisch zurück; wer das Modell schon kennt, muss nicht erst starten und dann umschalten.",
+          "alternative": "--model gleich beim Start setzen, z.B. aider --model anthropic/claude-sonnet-4-5"
+        },
+        {
+          "title": "Nur kurz ein anderes Modell testen wollen, ohne den Session-Zustand zu behalten",
+          "why": "/model wechselt dauerhaft für den Rest der Sitzung und ändert damit auch Folgeantworten.",
+          "alternative": "Neue Aider-Instanz mit --model in einem zweiten Terminal starten, um parallel zu vergleichen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "models",
+      "name": "/models",
+      "summary": "Durchsucht die Liste der von Aider unterstützten Modelle nach einem (Teil-)Namen.",
+      "what": "/models <Suchbegriff> listet alle bekannten Modellnamen auf, die zum eingegebenen Text passen, inklusive Provider-Präfix (z.B. anthropic/, gemini/, openrouter/). Das hilft, den exakten Modell-String für /model oder --model zu finden. Ohne Suchbegriff zeigt der Befehl Hinweise zur Nutzung. Analog gibt es --list-models MODEL (Alias --models) für die Kommandozeile.",
+      "whenGood": [
+        {
+          "title": "Exakten Modell-String finden, bevor man /model aufruft",
+          "example": "/models sonnet — findet u.a. anthropic/claude-sonnet-4-5"
+        },
+        {
+          "title": "Prüfen, ob ein neues Modell schon in Aider hinterlegt ist",
+          "example": "/models gemini-3 — zeigt, ob und unter welchem Namen ein neues Gemini-Modell verfügbar ist"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der exakte Modellname ist schon bekannt",
+          "why": "Eine Suche ist unnötiger Zwischenschritt, wenn der Provider/Modell-String bereits feststeht.",
+          "alternative": "Direkt /model <bekannter-name> bzw. --model <bekannter-name> nutzen"
+        },
+        {
+          "title": "Man will nur das aktuell aktive Modell sehen, nicht alle verfügbaren",
+          "why": "/models durchsucht die gesamte Modell-Liste, zeigt aber nicht, welches Modell gerade aktiv ist.",
+          "alternative": "/settings nutzen, um die aktuell wirksame Konfiguration inklusive aktivem Modell zu sehen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "multiline-mode",
+      "name": "/multiline-mode",
+      "summary": "Schaltet den Mehrzeilen-Eingabemodus um, der die Funktion von Enter und Meta+Enter vertauscht.",
+      "what": "Im normalen Modus sendet Enter die Nachricht und Meta+Enter (bzw. Esc+Enter) fügt eine neue Zeile ein. /multiline-mode vertauscht das: Enter fügt dann eine neue Zeile ein, Meta+Enter sendet die Nachricht. Nützlich beim Einfügen oder Schreiben längerer, mehrzeiliger Prompts. Der gleiche Modus lässt sich beim Start auch dauerhaft mit dem Flag --multiline aktivieren.",
+      "whenGood": [
+        {
+          "title": "Längere Code-Schnipsel oder Fehlermeldungen direkt eintippen",
+          "example": "/multiline-mode, dann mehrzeiligen Stacktrace ohne Sonderzeichen wie {..} einfügen und mit Meta+Enter absenden"
+        },
+        {
+          "title": "Dauerhaft mehrzeilig arbeiten wollen",
+          "example": "aider --multiline beim Start, statt jedes Mal /multiline-mode manuell zu toggeln"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur eine einzelne kurze Nachricht schreiben",
+          "why": "Im Multiline-Modus sendet Enter nicht mehr ab, man muss zusätzlich an Meta+Enter denken — unnötige Umgewöhnung für kurze Prompts.",
+          "alternative": "Im Standardmodus bleiben und für den einen mehrzeiligen Fall stattdessen {tag}-Tags oder /editor nutzen"
+        },
+        {
+          "title": "Unsicher, ob Enter gerade sendet oder eine Zeile einfügt",
+          "why": "Nach dem Umschalten verhält sich Enter anders als gewohnt, das führt leicht zu versehentlich abgeschickten oder hängenden Eingaben.",
+          "alternative": "Vor wichtigen Eingaben mit /settings prüfen bzw. am Prompt-Verhalten erkennen, welcher Modus aktiv ist"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "ok",
+      "name": "/ok",
+      "summary": "Kurzform, um vorgeschlagene Änderungen im Code-Modus zu bestätigen.",
+      "what": "/ok ist die Kurzform für '/code Ok, please go ahead and make those changes.'. Zusätzlich eingegebener Text wird an diesen Prompt angehängt.",
+      "whenGood": [
+        {
+          "title": "Vorschlag aus einem Ask/Architect-Gespräch schnell freigeben",
+          "example": "/ok — statt den ganzen Zustimmungssatz selbst zu tippen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will noch Änderungswünsche mitgeben, nicht nur zustimmen",
+          "why": "/ok hängt eigenen Text nur an einen fixen Zustimmungssatz an, ersetzt aber keine präzise eigene Anweisung.",
+          "alternative": "/code <eigene, konkrete Anweisung> verwenden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "paste",
+      "name": "/paste",
+      "summary": "Fügt Bild oder Text aus der Zwischenablage in den Chat ein.",
+      "what": "/paste liest den aktuellen Inhalt der Zwischenablage (Bild oder Text) und fügt ihn als Nachricht in den Chat ein. Bei Bildern kann optional ein Name für das Bild angegeben werden.",
+      "whenGood": [
+        {
+          "title": "Screenshot eines Fehlers oder UI-Zustands einfügen",
+          "example": "Screenshot kopieren, dann /paste bug.png — Aider erhält das Bild als Kontext"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der Zwischenablage-Inhalt ist einfacher Text, der sich auch direkt eintippen bzw. einfügen lässt",
+          "why": "/paste ist vor allem für Bilder gedacht bzw. wenn direktes Einfügen in die Terminal-Eingabe nicht funktioniert.",
+          "alternative": "Text direkt per normalem Copy-Paste in die Chat-Eingabezeile einfügen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "quit",
+      "name": "/quit",
+      "summary": "Beendet Aider (gleichwertig zu /exit).",
+      "what": "/quit beendet die laufende Aider-Sitzung sofort, genau wie /exit. Es ist ein reiner Alias ohne zusätzliche Funktion.",
+      "whenGood": [
+        {
+          "title": "Sitzung sauber beenden, statt das Terminalfenster hart zu schließen",
+          "example": "/quit, nachdem alle gewünschten Änderungen committet sind"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will nur Dateien/Verlauf zurücksetzen, aber weiterarbeiten",
+          "why": "/quit beendet den gesamten Prozess, nicht nur die aktuelle Chat-Auswahl.",
+          "alternative": "/reset nutzen, um Dateien und Verlauf zu leeren, ohne Aider zu verlassen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "read-only",
+      "name": "/read-only",
+      "summary": "Fügt Dateien nur als Referenz zum Chat hinzu, ohne dass Aider sie bearbeiten darf.",
+      "what": "/read-only <Datei> fügt eine Datei read-only zum Chat hinzu, sodass Aider sie zum Verstehen des Kontexts lesen, aber nicht direkt bearbeiten kann. Bereits mit /add hinzugefügte Dateien lassen sich mit /read-only nachträglich auf read-only umschalten. Auf der Kommandozeile entspricht das dem Flag --read FILE (mehrfach nutzbar).",
+      "whenGood": [
+        {
+          "title": "Interface- oder Config-Datei als Kontext geben, ohne Risiko einer ungewollten Änderung",
+          "example": "/read-only src/types.ts, damit Aider die Typen kennt, aber niemals selbst editiert"
+        },
+        {
+          "title": "Große Referenzdatei (z.B. API-Doku als Markdown) für den Kontext bereitstellen",
+          "example": "/read-only docs/api-reference.md vor einer Frage zur korrekten Endpoint-Nutzung"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Die Datei soll tatsächlich geändert werden",
+          "why": "Read-only-Dateien werden von Aider explizit nicht editiert, auch wenn die Anfrage danach klingt.",
+          "alternative": "/add <Datei> verwenden, um sie editierbar zu machen"
+        },
+        {
+          "title": "Viele große Referenzdateien read-only hinzufügen, die kaum gebraucht werden",
+          "why": "Auch read-only-Dateien verbrauchen Kontextplatz (Tokens) in jeder Anfrage.",
+          "alternative": "Nur die tatsächlich benötigten Dateien hinzufügen und mit /drop wieder entfernen, wenn sie nicht mehr gebraucht werden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "reasoning-effort",
+      "name": "/reasoning-effort",
+      "summary": "Setzt das Reasoning-Effort-Level des aktuellen Modells (z.B. low/medium/high).",
+      "what": "/reasoning-effort <Wert> setzt den API-Parameter reasoning_effort für Modelle, die einstellbares Reasoning unterstützen (z.B. OpenAIs o-Serie/GPT-5-Serie). Je nach Modell wird eine Zahl oder eine Stufe wie low/medium/high erwartet. Auf der Kommandozeile entspricht das --reasoning-effort VALUE; per Default ist nichts gesetzt (Modell-Standard gilt).",
+      "whenGood": [
+        {
+          "title": "Bei einer schwierigen Debugging-Aufgabe mehr Denkzeit erzwingen",
+          "example": "/reasoning-effort high vor einer kniffligen Bugsuche in nebenläufigem Code"
+        },
+        {
+          "title": "Für einfache Routineaufgaben Kosten/Latenz senken",
+          "example": "/reasoning-effort low, bevor Aider nur noch Kommentare oder Formatierung anpassen soll"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das aktuelle Modell unterstützt gar kein einstellbares Reasoning",
+          "why": "Der Parameter wird von vielen Modellen schlicht ignoriert oder von der API abgelehnt.",
+          "alternative": "In der Modell-Dokumentation bzw. mit /models prüfen, ob reasoning_effort unterstützt wird, sonst stattdessen ein anderes Modell wählen"
+        },
+        {
+          "title": "Grundsätzlich immer mit maximalem Reasoning arbeiten wollen",
+          "why": "Hoher Reasoning-Effort erhöht Latenz und Tokenkosten auch bei Aufgaben, die das nicht brauchen.",
+          "alternative": "Effort projektweit über die Config setzen und nur fallweise per /reasoning-effort für einzelne schwere Aufgaben hochsetzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "report",
+      "name": "/report",
+      "summary": "Meldet ein Problem, indem automatisch ein GitHub-Issue im Aider-Repository vorbereitet wird.",
+      "what": "/report öffnet einen vorausgefüllten GitHub-Issue-Entwurf im Browser (Repo Aider-AI/aider), inklusive relevanter Kontextinformationen zum aufgetretenen Problem, damit Bugs einfacher gemeldet werden können.",
+      "whenGood": [
+        {
+          "title": "Reproduzierbarer Bug oder Absturz in Aider selbst",
+          "example": "/report nach einem Crash mitten in einer Session, um ihn den Aider-Maintainern zu melden"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Es geht um ein Problem im eigenen Projektcode, nicht in Aider",
+          "why": "/report legt ein Issue im Aider-Repository an, nicht im eigenen Projekt-Repo.",
+          "alternative": "Für eigene Code-Probleme normal mit Aider weiterarbeiten bzw. ein Issue im eigenen Projekt-Repo anlegen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "reset",
+      "name": "/reset",
+      "summary": "Entfernt alle Dateien aus dem Chat und löscht zusätzlich den gesamten Chat-Verlauf.",
+      "what": "/reset kombiniert /drop (alle Dateien aus der Chat-Session entfernen) und /clear (Chat-Verlauf löschen) in einem Befehl. Danach startet die Session inhaltlich bei null, bestehende Git-Commits und Dateien auf der Festplatte bleiben aber unangetastet.",
+      "whenGood": [
+        {
+          "title": "Komplett neues Thema im selben Aider-Fenster beginnen",
+          "example": "/reset, um nach Abschluss eines Features zu einem völlig unabhängigen Bugfix in einem anderen Modulteil zu wechseln"
+        },
+        {
+          "title": "Chat-Kontext ist durch viele Iterationen unübersichtlich/verwirrend geworden",
+          "example": "/reset, wenn widersprüchliche frühere Anweisungen die Antwortqualität sichtbar verschlechtern"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Nur ein paar nicht mehr benötigte Dateien sollen raus, der Gesprächsverlauf soll aber bleiben",
+          "why": "/reset löscht auch den kompletten Chat-Verlauf, nicht nur die Dateiliste.",
+          "alternative": "/drop <Datei> gezielt für einzelne Dateien nutzen"
+        },
+        {
+          "title": "Der bisherige Gesprächsverlauf enthält wichtigen, noch benötigten Kontext",
+          "why": "Nach /reset kennt Aider frühere Entscheidungen und Begründungen aus dem Chat nicht mehr.",
+          "alternative": "Vor dem Reset relevante Punkte mit /save sichern bzw. den Chat-Verlauf manuell in Notizen kopieren"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "run",
+      "name": "/run",
+      "summary": "Führt einen Shell-Befehl aus und bietet an, dessen Ausgabe zum Chat hinzuzufügen.",
+      "what": "/run <Befehl> (Alias: !) führt einen beliebigen Shell-Befehl im Projektverzeichnis aus und zeigt die Ausgabe an. Danach fragt Aider, ob die Ausgabe dem Chat-Kontext hinzugefügt werden soll, damit das Modell z.B. auf Fehler oder Testergebnisse reagieren kann.",
+      "whenGood": [
+        {
+          "title": "Kurz ein Build- oder Testkommando anstoßen und das Ergebnis direkt besprechen",
+          "example": "/run npm run build — Ausgabe bei Fehlern zum Chat hinzufügen, damit Aider den Fehler sofort fixt"
+        },
+        {
+          "title": "Projektzustand prüfen, ohne das Terminal zu wechseln",
+          "example": "/run git status — schnell sehen, was sich seit dem letzten Commit verändert hat"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der gleiche Testbefehl soll nach jeder Änderung automatisch laufen",
+          "why": "/run muss jedes Mal manuell erneut aufgerufen werden, es ist kein dauerhafter Hook.",
+          "alternative": "--test-cmd zusammen mit --auto-test bzw. /test für wiederkehrende Testläufe mit automatischer Fehlerausgabe im Chat nutzen"
+        },
+        {
+          "title": "Ein potenziell destruktiver Befehl (z.B. Datenbank-Migration, rm) soll ausgeführt werden",
+          "why": "/run führt den Befehl ungeprüft im echten Projektverzeichnis aus, ein Tippfehler kann echten Schaden anrichten.",
+          "alternative": "Riskante Befehle zuerst direkt im eigenen Terminal mit voller Kontrolle testen, bevor sie über /run laufen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "save",
+      "name": "/save",
+      "summary": "Speichert die aktuelle Datei-Auswahl der Chat-Session als Befehlsliste in einer Datei.",
+      "what": "/save <Dateiname> schreibt die nötigen /add- und /read-only-Befehle in eine Datei, mit der sich die aktuelle Datei-Zusammenstellung der Chat-Session später wiederherstellen lässt. Zum Wiederherstellen dient /load <Dateiname>, das die gespeicherten Befehle der Reihe nach ausführt.",
+      "whenGood": [
+        {
+          "title": "Wiederkehrendes Arbeitsset an Dateien für ein bestimmtes Feature sichern",
+          "example": "/save auth-feature.txt, nachdem die relevanten Auth-Dateien mit /add zusammengestellt wurden"
+        },
+        {
+          "title": "Setup mit einem Teammitglied teilen",
+          "example": "/save review-setup.txt und die Datei ins Repo committen, damit andere mit /load review-setup.txt denselben Dateikontext laden können"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der komplette Chat-Verlauf inklusive Antworten soll gesichert werden",
+          "why": "/save sichert nur die Datei-Auswahl (welche /add- bzw. /read-only-Befehle nötig sind), nicht den Gesprächsinhalt.",
+          "alternative": "Die Chat-History-Datei (Default .aider.chat.history.md, steuerbar per --chat-history-file) für den Gesprächsverlauf nutzen"
+        },
+        {
+          "title": "Die Dateiliste ändert sich ohnehin fast jede Session",
+          "why": "Der gespeicherte Snapshot veraltet dann schnell und muss ständig neu erzeugt werden.",
+          "alternative": "Dateien einfach direkt mit /add pro Session hinzufügen, ohne den Umweg über /save/load"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "settings",
+      "name": "/settings",
+      "summary": "Gibt die aktuell wirksamen Aider-Einstellungen aus.",
+      "what": "/settings zeigt eine Übersicht der aktuell aktiven Konfiguration der Sitzung: u.a. Haupt-, Weak- und Editor-Modell, Edit-Format, aktiver Chat-Modus und weitere wirksame Optionen aus Flags, Config-Datei und Umgebungsvariablen.",
+      "whenGood": [
+        {
+          "title": "Prüfen, welches Modell/Edit-Format gerade tatsächlich aktiv ist",
+          "example": "/settings nach mehreren /model- und /chat-mode-Wechseln, um den aktuellen Stand zu bestätigen"
+        },
+        {
+          "title": "Fehlerursache bei unerwartetem Verhalten eingrenzen",
+          "example": "/settings, um zu prüfen, ob eine Config-Datei oder Env-Variable eine Option überschrieben hat"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will die Einstellungen ändern, nicht nur ansehen",
+          "why": "/settings ist rein informativ und verändert nichts.",
+          "alternative": "Passende Befehle wie /model, /weak-model oder /chat-mode für die eigentliche Änderung nutzen"
+        },
+        {
+          "title": "Frage betrifft nur den Tokenverbrauch, nicht die generelle Konfiguration",
+          "why": "/settings zeigt Konfigurationswerte, keine Token-Zählung des aktuellen Kontexts.",
+          "alternative": "/tokens für einen Bericht über den aktuellen Tokenverbrauch nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "test",
+      "name": "/test",
+      "summary": "Führt ein Test-Kommando aus und fügt die Ausgabe bei Fehlern automatisch zum Chat hinzu.",
+      "what": "/test <Befehl> führt einen Shell-Befehl (typischerweise den Testlauf) aus. Anders als /run wird die Ausgabe nur bei einem Exit-Code ungleich 0 automatisch zum Chat hinzugefügt, sodass Aider bei einem Fehlschlag direkt mit den Testfehlern arbeiten kann. Wird kein Befehl angegeben, nutzt Aider das über --test-cmd konfigurierte Kommando; --test führt es beim Start einmalig aus und beendet Aider danach; --auto-test wiederholt es automatisch nach jeder Änderung.",
+      "whenGood": [
+        {
+          "title": "Nach einer Änderung direkt prüfen, ob die Tests noch grün sind",
+          "example": "/test pytest -q — bei einem Fehlschlag landet der Traceback automatisch im Chat, damit Aider ihn fixt"
+        },
+        {
+          "title": "Testlauf dauerhaft nach jeder Aider-Änderung automatisieren",
+          "example": "--test-cmd 'npm test' zusammen mit --auto-test beim Start setzen, statt /test ständig manuell aufzurufen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will die Ausgabe immer sehen, auch bei erfolgreichem Testlauf",
+          "why": "/test fügt die Ausgabe nur bei einem Fehlschlag (Exit-Code ungleich 0) automatisch zum Chat hinzu.",
+          "alternative": "/run <Testbefehl> nutzen und die Ausgabe manuell zum Chat hinzufügen, wenn sie auch bei Erfolg gebraucht wird"
+        },
+        {
+          "title": "Der Befehl ist kein Testkommando, sondern z.B. ein Build- oder Deploy-Skript",
+          "why": "/test ist semantisch für Testkommandos gedacht; ein Nicht-Null-Exit bei einem Deploy-Skript kann falsche Fehlerinterpretationen auslösen.",
+          "alternative": "/run für allgemeine Shell-Befehle verwenden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "think-tokens",
+      "name": "/think-tokens",
+      "summary": "Setzt das Thinking-Token-Budget des Modells für erweitertes Reasoning.",
+      "what": "/think-tokens <Wert> legt fest, wie viele Tokens ein Modell mit extended thinking (z.B. Claude-Modelle mit Thinking-Unterstützung) für seinen internen Denkprozess nutzen darf. Werte lassen sich kompakt angeben, z.B. 8096, 8k, 10.5k oder 0.5M; 0 deaktiviert Thinking. Auf der Kommandozeile entspricht das --thinking-tokens VALUE.",
+      "whenGood": [
+        {
+          "title": "Mehr Denkbudget für eine architektonisch komplexe Frage geben",
+          "example": "/think-tokens 16k vor einer Frage zum Neuentwurf der Datenmodell-Schicht"
+        },
+        {
+          "title": "Thinking gezielt abschalten, um Antworten schneller/günstiger zu bekommen",
+          "example": "/think-tokens 0 für einfache, sich wiederholende Änderungen an vielen kleinen Dateien"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Das aktive Modell unterstützt kein extended thinking",
+          "why": "Der Parameter greift nur bei Modellen mit entsprechender Thinking-Funktion, sonst hat er keine Wirkung.",
+          "alternative": "/reasoning-effort für Modelle nutzen, die stattdessen reasoning_effort-Stufen unterstützen (z.B. OpenAIs o-/GPT-5-Serie)"
+        },
+        {
+          "title": "Sehr hohes Thinking-Budget pauschal für jede Anfrage setzen",
+          "why": "Ein unnötig hohes Budget erhöht Latenz und Kosten, auch wenn die Aufgabe trivial ist.",
+          "alternative": "Budget nur gezielt vor wirklich anspruchsvollen Anfragen hochsetzen und danach wieder senken"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "tokens",
+      "name": "/tokens",
+      "summary": "Zeigt einen Bericht über die Anzahl der aktuell im Chat-Kontext verbrauchten Tokens.",
+      "what": "/tokens listet auf, wie viele Tokens die einzelnen Bestandteile des aktuellen Kontexts belegen (z.B. System-Prompt, Repository-Map, hinzugefügte Dateien, Chat-Verlauf), inklusive Gesamtsumme. Das hilft abzuschätzen, wie nah man an einem Kontextlimit ist.",
+      "whenGood": [
+        {
+          "title": "Prüfen, was den Kontext gerade am stärksten füllt",
+          "example": "/tokens, um zu sehen, ob eine große read-only-Datei unverhältnismäßig viel Platz belegt"
+        },
+        {
+          "title": "Vor einer besonders langen Anfrage Luft im Kontextfenster prüfen",
+          "example": "/tokens vor einer großen Multi-File-Änderung, um zu sehen, ob vorher Dateien mit /drop entfernt werden sollten"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will die Repository-Map-Größe aktiv ändern, nicht nur den Verbrauch sehen",
+          "why": "/tokens zeigt nur den aktuellen Stand an, verändert aber keine Einstellungen.",
+          "alternative": "--map-tokens setzen, um die Map-Größe tatsächlich zu ändern"
+        },
+        {
+          "title": "Kontext ist schon spürbar zu voll und antwortet fehlerhaft",
+          "why": "Nur den Bericht ansehen löst das Problem noch nicht.",
+          "alternative": "Direkt mit /drop nicht mehr benötigte Dateien entfernen oder /clear für den Verlauf nutzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "undo",
+      "name": "/undo",
+      "summary": "Macht den letzten Git-Commit rückgängig, sofern er von Aider erzeugt wurde.",
+      "what": "/undo führt ein git reset auf den letzten Commit aus, aber nur, wenn dieser Commit von Aider selbst erzeugt wurde (Aider erkennt seine eigenen Commits). Damit lassen sich unerwünschte automatische Änderungen gezielt zurücknehmen, ohne versehentlich manuelle, eigene Commits zu verlieren.",
+      "whenGood": [
+        {
+          "title": "Aiders letzte Änderung hat das Problem nicht gelöst oder etwas kaputtgemacht",
+          "example": "/undo direkt nach einem fehlgeschlagenen Fix, um zum Stand davor zurückzukehren und die Anfrage präziser zu stellen"
+        },
+        {
+          "title": "Zwei alternative Lösungsansätze vergleichen",
+          "example": "Vorschlag A umsetzen lassen, Ergebnis prüfen, /undo, dann Vorschlag B ausprobieren"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der letzte Commit stammt nicht von Aider (z.B. manuell gemacht)",
+          "why": "/undo verweigert das Zurücksetzen bewusst, wenn der letzte Commit nicht von Aider erzeugt wurde, um fremde Arbeit zu schützen.",
+          "alternative": "git reset manuell im eigenen Terminal ausführen, mit vollem Bewusstsein über die Konsequenzen"
+        },
+        {
+          "title": "Es sollen mehrere Aider-Commits zurückgenommen werden",
+          "why": "/undo macht jeweils nur den letzten einzelnen Commit rückgängig, nicht mehrere auf einmal.",
+          "alternative": "/undo mehrfach hintereinander aufrufen oder direkt mit git reset auf einen früheren Commit-Hash zurücksetzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "voice",
+      "name": "/voice",
+      "summary": "Nimmt gesprochene Eingabe auf und transkribiert sie als Nachricht in den Chat.",
+      "what": "/voice startet eine Audioaufnahme über das Mikrofon und transkribiert die Sprache anschließend in Text, der als Chat-Nachricht gesendet wird. Format (--voice-format, Default wav; webm/mp3 benötigen ffmpeg) und Sprache (--voice-language, ISO-639-1-Code, Default en) lassen sich konfigurieren.",
+      "whenGood": [
+        {
+          "title": "Längere Anfrage schneller diktieren als tippen",
+          "example": "/voice, um eine ausführliche Beschreibung eines gewünschten neuen Features frei zu formulieren"
+        },
+        {
+          "title": "Freihändig arbeiten, z.B. während man Code auf einem zweiten Bildschirm liest",
+          "example": "/voice nutzen, um Beobachtungen direkt einzusprechen, statt zwischen Lesen und Tippen zu wechseln"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Präzise Code-Bezeichner, Dateipfade oder Sonderzeichen müssen exakt stimmen",
+          "why": "Spracherkennung transkribiert Fachbegriffe, CamelCase-Namen oder Pfade oft fehlerhaft.",
+          "alternative": "Solche Details direkt eintippen oder per /paste einfügen statt einzusprechen"
+        },
+        {
+          "title": "Kein funktionierendes Mikrofon bzw. keine unterstützte Audio-Umgebung vorhanden",
+          "why": "/voice benötigt Mikrofonzugriff und ggf. ffmpeg für bestimmte Formate; ohne das schlägt die Aufnahme fehl.",
+          "alternative": "Text normal eintippen oder per /paste aus der Zwischenablage einfügen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "weak-model",
+      "name": "/weak-model",
+      "summary": "Wechselt das Weak-Model, das für Commit-Messages und die Zusammenfassung des Chat-Verlaufs zuständig ist.",
+      "what": "/weak-model <name> setzt das sogenannte Weak Model: ein günstigeres/schnelleres Zweitmodell, das Aider intern für Nebenaufgaben wie das Formulieren von Commit-Messages und das Zusammenfassen älterer Chat-Historie einsetzt, während das Hauptmodell (/model) die eigentlichen Code-Änderungen macht. Auf der Kommandozeile entspricht das --weak-model WEAK_MODEL.",
+      "whenGood": [
+        {
+          "title": "Kosten senken, ohne die Qualität der eigentlichen Code-Antworten zu beeinträchtigen",
+          "example": "/weak-model anthropic/claude-haiku-4-5, während das Hauptmodell weiterhin ein leistungsstärkeres Modell bleibt"
+        },
+        {
+          "title": "Ein anderes Modell nutzen, wenn der Standard keine guten Commit-Messages produziert",
+          "example": "/weak-model auf ein anderes Modell umstellen, wenn generierte Commit-Messages des aktuellen Weak-Models unpräzise sind"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Man will die Qualität der eigentlichen Code-Antworten verbessern",
+          "why": "Das Weak Model beeinflusst nur Nebenaufgaben (Commit-Messages, Verlaufs-Zusammenfassung), nicht die Code-Vorschläge selbst.",
+          "alternative": "/model nutzen, um das Hauptmodell zu wechseln"
+        },
+        {
+          "title": "Kein bewusster Grund für ein zweites, schwächeres Modell (z.B. Ein-Personen-Setup mit nur einem verfügbaren Modell)",
+          "why": "Ein unnötig schwaches Weak Model kann z.B. zu schlechteren Commit-Messages führen, ohne echten Kostenvorteil bei nur einem verfügbaren Modell.",
+          "alternative": "Weak Model auf dem von Aider gewählten sinnvollen Default belassen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "web",
+      "name": "/web",
+      "summary": "Scraped eine Webseite, wandelt sie in Markdown um und sendet sie als Nachricht in den Chat.",
+      "what": "/web <URL> ruft eine Webseite ab, konvertiert den Inhalt in Markdown und fügt ihn als Chat-Nachricht hinzu, damit das Modell z.B. externe Dokumentation oder Fehlermeldungen aus dem Web als Kontext nutzen kann. Bilder auf Webseiten können dabei ebenfalls übernommen werden, sofern das Modell Bild-Eingaben unterstützt.",
+      "whenGood": [
+        {
+          "title": "Externe API-Dokumentation als Kontext für eine Integration bereitstellen",
+          "example": "/web https://docs.example.com/api/v2 vor einer Anfrage zur korrekten Nutzung eines Endpunkts"
+        },
+        {
+          "title": "Eine im Web gefundene Fehlermeldung/Issue-Diskussion einbinden",
+          "example": "/web <GitHub-Issue-URL>, um eine bekannte Problemlösung als Kontext für den eigenen Bug einzubringen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Die Seite erfordert Login oder ist stark JavaScript-lastig/interaktiv",
+          "why": "/web scraped statischen Seiteninhalt; hinter Logins oder rein dynamisch nachgeladene Inhalte werden oft nicht korrekt erfasst.",
+          "alternative": "Relevanten Text manuell kopieren und per /paste bzw. direkt in die Chat-Eingabe einfügen"
+        },
+        {
+          "title": "Die Webseite ist sehr lang und nur ein kleiner Abschnitt ist relevant",
+          "why": "Die komplette Seite als Markdown belegt unnötig viel Kontext (Tokens).",
+          "alternative": "Nur den relevanten Ausschnitt manuell kopieren und einfügen statt der ganzen Seite per /web"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-code",
+      "name": "Code Mode",
+      "summary": "Standardmodus: Aider ändert direkt Dateien, um die Anfrage umzusetzen.",
+      "what": "Im Code-Modus (Default beim Start) macht Aider direkte Änderungen an den Projektdateien, um die gestellte Anfrage umzusetzen — der klassische 'mach das jetzt'-Modus. Wechsel dauerhaft mit /chat-mode code oder /code (ohne Prompt), oder für eine einzelne Nachricht mit /code <Anfrage> unabhängig vom aktuell aktiven Modus. Beim Start lässt sich der Modus mit --chat-mode code erzwingen (ist aber ohnehin Default).",
+      "whenGood": [
+        {
+          "title": "Der gewünschte Lösungsweg steht bereits fest",
+          "example": "/code Füge eine Ratelimit-Middleware zur Express-Route /api/login hinzu"
+        },
+        {
+          "title": "Kleine, klar umrissene Änderungen schnell umsetzen lassen",
+          "example": "Im Code-Modus bleiben für eine Serie kleiner Bugfixes, ohne jedes Mal zwischen Modi zu wechseln"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Erstmal nur Optionen und Trade-offs besprechen, bevor irgendetwas geändert wird",
+          "why": "Im Code-Modus nimmt Aider Anfragen als Auftrag zum sofortigen Ändern der Dateien, nicht als offene Diskussion.",
+          "alternative": "/ask nutzen, um zunächst zu besprechen, bevor mit /code umgesetzt wird"
+        },
+        {
+          "title": "Ein schwächeres Modell soll komplexe Änderungen in einem Schritt vorschlagen UND umsetzen",
+          "why": "Manche Modelle sind gut im Vorschlagen, aber schwächer im präzisen Editieren von Dateien in einem einzigen Request.",
+          "alternative": "architect-Modus nutzen, der Planung und Datei-Edits auf zwei Modelle aufteilt"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-ask",
+      "name": "Ask Mode",
+      "summary": "Diskussionsmodus: Aider bespricht den Code und beantwortet Fragen, ohne jemals Dateien zu ändern.",
+      "what": "Im Ask-Modus beantwortet Aider Fragen zur Codebasis und diskutiert Lösungsansätze, nimmt aber keine Datei-Änderungen vor. Empfohlener Workflow: erst in /ask Optionen besprechen und sich auf einen Plan einigen, dann mit /code (oft reicht ein kurzes 'go ahead') die eigentliche Umsetzung anstoßen. Wechsel dauerhaft mit /chat-mode ask oder /ask (ohne Prompt), für eine einzelne Nachricht mit /ask <Frage>. Start-Flag: --chat-mode ask.",
+      "whenGood": [
+        {
+          "title": "Erst verstehen, wie ein Teil der Codebasis funktioniert, bevor etwas geändert wird",
+          "example": "/ask Wie ist die Authentifizierung in diesem Projekt aufgebaut?"
+        },
+        {
+          "title": "Mehrere Lösungsoptionen abwägen, bevor Dateien angefasst werden",
+          "example": "/ask Was wären zwei sinnvolle Ansätze, um Rate-Limiting einzubauen? — danach mit /code den gewählten Ansatz umsetzen lassen"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Der Plan steht schon fest, es soll direkt umgesetzt werden",
+          "why": "Im Ask-Modus ändert Aider prinzipiell keine Dateien, selbst wenn die Anfrage wie ein Umsetzungsauftrag klingt.",
+          "alternative": "/code nutzen bzw. in den Code-Modus wechseln"
+        },
+        {
+          "title": "Aider soll den eigenen Quellcode/die eigene Nutzung erklären, nicht das Projekt",
+          "why": "/ask bezieht sich auf die geladene Projekt-Codebasis, nicht auf Aider selbst.",
+          "alternative": "/help für Fragen zu Aider-Nutzung, -Konfiguration und -Troubleshooting verwenden"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-architect",
+      "name": "Architect Mode",
+      "summary": "Zwei-Modell-Modus: ein Modell plant die Änderung, ein zweites Editor-Modell setzt sie als konkrete Datei-Edits um.",
+      "what": "Im Architect-Modus schickt Aider die Anfrage zuerst an das Hauptmodell (Architect), das eine Lösung vorschlägt; anschließend übersetzt ein separates Editor-Modell (--editor-model, sonst automatisch anhand des Hauptmodells gewählt) diesen Vorschlag in konkrete Datei-Edits. Standardmäßig werden die Edits automatisch übernommen (--auto-accept-architect, Default True). Besonders nützlich bei Modellen, die stark im Reasoning, aber schwächer im präzisen Datei-Editieren sind (laut Aider-Doku z.B. OpenAIs o1-Modelle, gepaart mit einem Editor-Modell wie GPT-4o oder Sonnet). Aktivieren via /chat-mode architect, /architect (ohne Prompt für dauerhaften Wechsel, mit Prompt für eine einzelne Nachricht), oder beim Start mit --architect bzw. --chat-mode architect.",
+      "whenGood": [
+        {
+          "title": "Ein starkes Reasoning-Modell als Architect mit einem separaten, edit-starken Modell kombinieren",
+          "example": "aider --architect --model o1 --editor-model anthropic/claude-sonnet-4-5 für eine komplexe Architekturentscheidung mit anschließender präziser Umsetzung"
+        },
+        {
+          "title": "Auch mit nur einem Modell von der Zwei-Schritte-Struktur profitieren",
+          "example": "/architect bei einer komplexen Änderung nutzen, bei der Planung und Datei-Edit als zwei getrennte LLM-Anfragen bessere Ergebnisse liefern als ein einzelner Schritt im Code-Modus"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Einfache, eindeutige Änderungen, bei denen Planung und Edit klar zusammenfallen",
+          "why": "Architect-Modus braucht zwei LLM-Anfragen statt einer, was Zeit und Kosten erhöht — bei trivialen Änderungen unnötig.",
+          "alternative": "Im Standard-Code-Modus bleiben"
+        },
+        {
+          "title": "Vorgeschlagene Änderungen sollen erst manuell geprüft werden, bevor sie in Dateien landen",
+          "why": "Mit dem Default --auto-accept-architect werden die vom Editor-Modell erzeugten Edits automatisch angewendet.",
+          "alternative": "--no-auto-accept-architect setzen, um jede Änderung erst manuell zu bestätigen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-help",
+      "name": "Help Mode",
+      "summary": "Hilfemodus: Aider beantwortet Fragen zu sich selbst — Nutzung, Konfiguration, Troubleshooting.",
+      "what": "Im Help-Modus beantwortet Aider Fragen zur eigenen Bedienung, Konfiguration und Fehlerbehebung, statt sich auf die geladene Projekt-Codebasis zu beziehen. Wechsel dauerhaft mit /chat-mode help, für eine einzelne Nachricht mit /help <Frage> unabhängig vom aktuell aktiven Modus. Start-Flag: --chat-mode help.",
+      "whenGood": [
+        {
+          "title": "Unklar, wie sich eine bestimmte Aider-Funktion nutzen lässt",
+          "example": "/help Wie richte ich einen eigenen Lint-Befehl für Python ein?"
+        },
+        {
+          "title": "Fehlermeldung oder unerwartetes Verhalten von Aider selbst einordnen",
+          "example": "/help Warum meldet Aider ein Token-Limit, obwohl das Modell mehr Kontext unterstützen sollte?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Die Frage betrifft den eigenen Projektcode, nicht Aider selbst",
+          "why": "/help bezieht sich auf Aiders eigene Doku/Konfiguration, nicht auf die geladene Codebasis.",
+          "alternative": "/ask für Fragen zum eigenen Projekt verwenden"
+        },
+        {
+          "title": "Eine konkrete Änderung soll direkt umgesetzt werden",
+          "why": "Der Help-Modus beantwortet nur Fragen, er nimmt keine Datei-Änderungen vor.",
+          "alternative": "/code nutzen, um die Änderung tatsächlich umzusetzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "global-options",
+      "name": "CLI-Optionen (Flags)",
+      "summary": "Sammelt die wichtigsten CLI-Flags von Aider, gruppiert nach Modell, Automatisierung, Kontext und Sonstigem.",
+      "what": "Aiders CLI-Flags lassen sich beim Start kombinieren (z.B. aider --model ... --test-cmd ... --yes-always) oder in einer Config-Datei/als Env-Variablen setzen. Die wichtigsten, gruppiert:\nModell: --model MODEL (Hauptmodell, Env AIDER_MODEL); --weak-model WEAK_MODEL (für Commit-Messages/Verlaufs-Zusammenfassung); --editor-model EDITOR_MODEL (schreibt im Architect-Modus die Datei-Edits); --architect (aktiviert direkt den Architect-Modus); --reasoning-effort VALUE und --thinking-tokens VALUE (Denktiefe/-budget steuern)\nAutomation/Scripting: --message/-m/--msg (einzelne Nachricht senden, Antwort verarbeiten, danach beenden - für Skripte/CI); --message-file/-f (Nachricht aus Datei lesen); --yes-always (bestätigt jede Rückfrage automatisch, ohne nachzufragen); --no-auto-commits (deaktiviert automatisches Committen von LLM-Änderungen, Default ist An); --test-cmd (Testkommando definieren) zusammen mit --auto-test bzw. einmalig --test; --lint-cmd (Lint-Kommandos pro Sprache) zusammen mit --auto-lint bzw. einmalig --lint; --watch-files (beobachtet Dateien auf spezielle KI-Kommentare, die Aider auslösen)\nKontext: --read FILE (Datei read-only hinzufügen, mehrfach nutzbar) bzw. --file FILE (editierbar hinzufügen); --map-tokens VALUE (Größe der Repository-Map, 0 deaktiviert sie); --map-refresh VALUE (auto/always/files/manual)\nInstall/Sonstiges: --upgrade/--update (Aider selbst aktualisieren); --just-check-update (nur prüfen, ob ein Update verfügbar ist); --config/-c (eigene Config-Datei); --env-file (eigene .env-Datei für API-Keys); --version; --help/-h",
+      "whenGood": [
+        {
+          "title": "-m in Skripten/CI-Pipelines für nicht-interaktive Einzel-Läufe nutzen",
+          "example": "aider --message 'Fix the failing test in test_auth.py' --yes-always --test-cmd 'pytest -q' in einem CI-Job"
+        },
+        {
+          "title": "Automatisierung gezielt einschränken statt alles zu erlauben",
+          "example": "aider --test-cmd 'pytest -q' --auto-test --no-auto-commits — Tests laufen automatisch, Commits aber erst nach manueller Prüfung"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "--yes-always pauschal in jedem interaktiven Lauf setzen, ohne die Vorschläge zu prüfen",
+          "why": "Damit werden auch riskante oder ungewollte Änderungen automatisch bestätigt, ohne dass jemand sie vorher sieht.",
+          "alternative": "--yes-always nur in kontrollierten Skript-/CI-Kontexten mit --message einsetzen, interaktiv Vorschläge manuell bestätigen"
+        },
+        {
+          "title": "API-Keys direkt als Klartext-Flag in der Shell-History landen lassen",
+          "why": "--openai-api-key/--anthropic-api-key als Kommandozeilen-Argument bleibt oft in der Shell-History und in Prozesslisten sichtbar.",
+          "alternative": "Keys stattdessen über --env-file/.env oder Umgebungsvariablen wie AIDER_ANTHROPIC_API_KEY setzen"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Options Reference",
+          "url": "https://aider.chat/docs/config/options.html"
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "platform": "aider",
+      "slug": "map-refresh",
+      "name": "/map-refresh",
+      "summary": "Forces an immediate rebuild of the repository map.",
+      "what": "/map-refresh immediately rebuilds the repository map (the compact overview of symbols and structure in the project that Aider gives the model as context), instead of waiting for the automatic refresh. How often the map otherwise refreshes automatically is controlled by --map-refresh (auto/always/files/manual, default auto). The map size itself is controlled with --map-tokens (0 disables it entirely).",
+      "whenGood": [
+        {
+          "title": "After large manual changes made outside the chat",
+          "example": "/map-refresh after several new files were added via a git branch switch or merge, so Aider picks them up in the map"
+        },
+        {
+          "title": "Map seems stale even though --map-refresh is set to manual",
+          "example": "/map-refresh right before a complex request, to make sure the symbol overview is current"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The repo has no relevant changes",
+          "why": "Rebuilding costs time and, depending on project size, noticeable CPU, without changing the result.",
+          "alternative": "Rely on the automatic refresh (--map-refresh auto, the default)"
+        },
+        {
+          "title": "The repository map is disabled anyway",
+          "why": "With --map-tokens 0 there is no map to refresh.",
+          "alternative": "Set --map-tokens to a value above 0 to actually use the map"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "model",
+      "name": "/model",
+      "summary": "Switches the Main Model of the running Aider session to a new LLM.",
+      "what": "/model <name> switches the main model that generates Aider's suggestions and code changes, for the running session. Without an argument, Aider shows a list of matching models. The main model can also be set directly at startup with --model (env var AIDER_MODEL); in architect mode it's the planning model, while --editor-model separately writes the file edits.",
+      "whenGood": [
+        {
+          "title": "Upgrade the model mid-session for a harder subtask",
+          "example": "/model anthropic/claude-opus-4 — before a complex multi-file refactor"
+        },
+        {
+          "title": "Switch provider without restarting the session",
+          "example": "/model gemini/gemini-2.5-pro — when a different API key is cheaper or available right now"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The model should already be fixed for the whole session",
+          "why": "Switching with /model later doesn't reset the model context automatically; if you already know the model, there's no need to start and then switch.",
+          "alternative": "Set --model directly at startup, e.g. aider --model anthropic/claude-sonnet-4-5"
+        },
+        {
+          "title": "Just want to briefly try a different model without losing session state",
+          "why": "/model switches permanently for the rest of the session and also changes subsequent answers.",
+          "alternative": "Start a second Aider instance with --model in another terminal to compare in parallel"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "models",
+      "name": "/models",
+      "summary": "Searches the list of models Aider supports for a name or partial name.",
+      "what": "/models <search term> lists all known model names matching the input text, including the provider prefix (e.g. anthropic/, gemini/, openrouter/). This helps find the exact model string for /model or --model. Without a search term, the command shows usage hints. On the command line, --list-models MODEL (alias --models) does the same.",
+      "whenGood": [
+        {
+          "title": "Find the exact model string before calling /model",
+          "example": "/models sonnet — finds anthropic/claude-sonnet-4-5 among others"
+        },
+        {
+          "title": "Check whether a new model is already known to Aider",
+          "example": "/models gemini-3 — shows whether and under which name a new Gemini model is available"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The exact model name is already known",
+          "why": "A search is an unnecessary extra step if the provider/model string is already fixed.",
+          "alternative": "Use /model <known-name> or --model <known-name> directly"
+        },
+        {
+          "title": "You only want to see the currently active model, not all available ones",
+          "why": "/models searches the whole model list but doesn't show which model is currently active.",
+          "alternative": "Use /settings to see the currently effective configuration, including the active model"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "multiline-mode",
+      "name": "/multiline-mode",
+      "summary": "Toggles multiline input mode, which swaps the behavior of Enter and Meta+Enter.",
+      "what": "Normally Enter sends the message and Meta+Enter (or Esc+Enter) inserts a new line. /multiline-mode swaps that: Enter then inserts a new line, and Meta+Enter sends the message. Useful when pasting or writing longer, multi-line prompts. The same mode can also be enabled permanently at startup with the --multiline switch.",
+      "whenGood": [
+        {
+          "title": "Type longer code snippets or error messages directly",
+          "example": "/multiline-mode, then paste a multi-line stack trace without special characters like {..} and send with Meta+Enter"
+        },
+        {
+          "title": "Want to work in multiline mode permanently",
+          "example": "aider --multiline at startup, instead of manually toggling /multiline-mode every time"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Just writing a single short message",
+          "why": "In multiline mode Enter no longer sends the message; you have to remember Meta+Enter too — unnecessary friction for short prompts.",
+          "alternative": "Stay in the default mode and use {tag} tags or /editor for the occasional multi-line case"
+        },
+        {
+          "title": "Unsure whether Enter currently sends or inserts a line",
+          "why": "After switching, Enter behaves differently than usual, which easily leads to accidentally sent or stuck input.",
+          "alternative": "Check the active mode via /settings or the prompt behavior before important input"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "ok",
+      "name": "/ok",
+      "summary": "Shorthand to confirm proposed changes in code mode.",
+      "what": "/ok is shorthand for '/code Ok, please go ahead and make those changes.'. Any extra text typed after it is appended to that prompt.",
+      "whenGood": [
+        {
+          "title": "Quickly approve a proposal from an ask/architect discussion",
+          "example": "/ok — instead of typing out the whole confirmation sentence yourself"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You still want to add change requests, not just agree",
+          "why": "/ok only appends your text to a fixed agreement sentence, it doesn't replace a precise instruction of your own.",
+          "alternative": "Use /code <your own, concrete instruction>"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "paste",
+      "name": "/paste",
+      "summary": "Pastes an image or text from the clipboard into the chat.",
+      "what": "/paste reads the current clipboard content (image or text) and adds it as a message to the chat. For images, an optional name can be given for the image.",
+      "whenGood": [
+        {
+          "title": "Insert a screenshot of a bug or UI state",
+          "example": "Copy a screenshot, then /paste bug.png — Aider receives the image as context"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The clipboard content is just plain text that could be typed or pasted directly",
+          "why": "/paste is mainly meant for images, or when direct pasting into the terminal input doesn't work.",
+          "alternative": "Paste text directly into the chat input line with normal copy-paste"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "quit",
+      "name": "/quit",
+      "summary": "Exits Aider (equivalent to /exit).",
+      "what": "/quit immediately ends the running Aider session, exactly like /exit. It's a pure alias with no extra behavior.",
+      "whenGood": [
+        {
+          "title": "Cleanly end the session instead of force-closing the terminal window",
+          "example": "/quit after all desired changes have been committed"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You only want to reset files/history but keep working",
+          "why": "/quit ends the whole process, not just the current chat selection.",
+          "alternative": "Use /reset to clear files and history without leaving Aider"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "read-only",
+      "name": "/read-only",
+      "summary": "Adds files to the chat for reference only, without letting Aider edit them.",
+      "what": "/read-only <file> adds a file to the chat as read-only, so Aider can read it for context but never edit it directly. Files already added with /add can be switched to read-only afterwards with /read-only. On the command line, this corresponds to the --read FILE flag (usable multiple times).",
+      "whenGood": [
+        {
+          "title": "Give an interface or config file as context without risking accidental edits",
+          "example": "/read-only src/types.ts, so Aider knows the types but never edits them itself"
+        },
+        {
+          "title": "Provide a large reference file (e.g. API docs as markdown) as context",
+          "example": "/read-only docs/api-reference.md before a question about correct endpoint usage"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The file actually needs to be changed",
+          "why": "Aider explicitly never edits read-only files, even if the request sounds like it should.",
+          "alternative": "Use /add <file> to make it editable"
+        },
+        {
+          "title": "Adding many large reference files read-only that are barely needed",
+          "why": "Even read-only files consume context space (tokens) on every request.",
+          "alternative": "Only add the files actually needed, and remove them with /drop once no longer needed"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "reasoning-effort",
+      "name": "/reasoning-effort",
+      "summary": "Sets the reasoning effort level of the current model (e.g. low/medium/high).",
+      "what": "/reasoning-effort <value> sets the reasoning_effort API parameter for models that support adjustable reasoning (e.g. OpenAI's o-series/GPT-5 series). Depending on the model, a number or a level like low/medium/high is expected. On the command line this corresponds to --reasoning-effort VALUE; by default nothing is set (the model's own default applies).",
+      "whenGood": [
+        {
+          "title": "Force more thinking time for a difficult debugging task",
+          "example": "/reasoning-effort high before a tricky bug hunt in concurrent code"
+        },
+        {
+          "title": "Lower cost/latency for simple routine tasks",
+          "example": "/reasoning-effort low before Aider only needs to adjust comments or formatting"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The current model doesn't support adjustable reasoning at all",
+          "why": "Many models simply ignore the parameter, or the API rejects it.",
+          "alternative": "Check the model docs or /models to see whether reasoning_effort is supported; otherwise pick a different model"
+        },
+        {
+          "title": "Wanting to always work with maximum reasoning by default",
+          "why": "High reasoning effort increases latency and token cost even for tasks that don't need it.",
+          "alternative": "Set effort project-wide via config and only raise it per /reasoning-effort for individual hard tasks"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "report",
+      "name": "/report",
+      "summary": "Reports a problem by automatically preparing a GitHub issue in the Aider repository.",
+      "what": "/report opens a pre-filled GitHub issue draft in the browser (repo Aider-AI/aider), including relevant context about the problem encountered, to make it easier to report bugs.",
+      "whenGood": [
+        {
+          "title": "A reproducible bug or crash in Aider itself",
+          "example": "/report after a crash in the middle of a session, to report it to the Aider maintainers"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The problem is in your own project code, not in Aider",
+          "why": "/report creates an issue in the Aider repository, not in your own project repo.",
+          "alternative": "For issues in your own code, keep working with Aider normally or open an issue in your own project repo"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "reset",
+      "name": "/reset",
+      "summary": "Removes all files from the chat and also clears the entire chat history.",
+      "what": "/reset combines /drop (remove all files from the chat session) and /clear (clear the chat history) into one command. Afterwards the session starts fresh content-wise, but existing git commits and files on disk are untouched.",
+      "whenGood": [
+        {
+          "title": "Start a completely new topic in the same Aider window",
+          "example": "/reset to switch to a fully unrelated bugfix in a different part of the codebase after finishing a feature"
+        },
+        {
+          "title": "The chat context has become cluttered/confusing after many iterations",
+          "example": "/reset when conflicting earlier instructions are visibly degrading answer quality"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Only a few no-longer-needed files should go, but the conversation should stay",
+          "why": "/reset also clears the entire chat history, not just the file list.",
+          "alternative": "Use /drop <file> for individual files"
+        },
+        {
+          "title": "The previous conversation contains important context still needed",
+          "why": "After /reset Aider no longer knows earlier decisions and rationale from the chat.",
+          "alternative": "Save relevant points with /save before resetting, or manually copy the chat history into notes"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "run",
+      "name": "/run",
+      "summary": "Runs a shell command and offers to add its output to the chat.",
+      "what": "/run <command> (alias: !) runs any shell command in the project directory and shows the output. Afterwards Aider asks whether the output should be added to the chat context, so the model can react to, e.g., errors or test results.",
+      "whenGood": [
+        {
+          "title": "Quickly kick off a build or test command and discuss the result right away",
+          "example": "/run npm run build — add the output to the chat on failure so Aider fixes the error immediately"
+        },
+        {
+          "title": "Check project state without switching to another terminal",
+          "example": "/run git status — quickly see what changed since the last commit"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The same test command should run automatically after every change",
+          "why": "/run has to be called manually each time; it's not a persistent hook.",
+          "alternative": "Use --test-cmd together with --auto-test, or /test, for recurring test runs with automatic error output in the chat"
+        },
+        {
+          "title": "A potentially destructive command (e.g. a database migration, rm) should run",
+          "why": "/run executes the command unchecked in the real project directory; a typo can cause real damage.",
+          "alternative": "Test risky commands directly in your own terminal with full control first, before running them via /run"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "save",
+      "name": "/save",
+      "summary": "Saves the current file selection of the chat session as a command list in a file.",
+      "what": "/save <filename> writes the necessary /add and /read-only commands into a file, which can later restore the chat session's current file setup. /load <filename> restores it by running the saved commands in order.",
+      "whenGood": [
+        {
+          "title": "Save a recurring working set of files for a specific feature",
+          "example": "/save auth-feature.txt after assembling the relevant auth files with /add"
+        },
+        {
+          "title": "Share the setup with a teammate",
+          "example": "/save review-setup.txt and commit the file to the repo, so others can load the same file context with /load review-setup.txt"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The entire chat history including answers should be saved",
+          "why": "/save only saves the file selection (which /add/--read-only commands are needed), not the conversation content.",
+          "alternative": "Use the chat history file (default .aider.chat.history.md, configurable via --chat-history-file) for the conversation"
+        },
+        {
+          "title": "The file list changes almost every session anyway",
+          "why": "The saved snapshot then goes stale quickly and needs constant regenerating.",
+          "alternative": "Just add files directly with /add each session instead of the save/load detour"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "settings",
+      "name": "/settings",
+      "summary": "Prints the currently effective Aider settings.",
+      "what": "/settings shows an overview of the session's currently active configuration: among other things the main, weak, and editor model, edit format, active chat mode, and other effective options from flags, config file, and environment variables.",
+      "whenGood": [
+        {
+          "title": "Check which model/edit format is actually active right now",
+          "example": "/settings after several /model and /chat-mode switches, to confirm the current state"
+        },
+        {
+          "title": "Narrow down the cause of unexpected behavior",
+          "example": "/settings to check whether a config file or env variable overrode an option"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to change settings, not just view them",
+          "why": "/settings is purely informational and changes nothing.",
+          "alternative": "Use the relevant commands like /model, /weak-model, or /chat-mode for the actual change"
+        },
+        {
+          "title": "The question is only about token usage, not general configuration",
+          "why": "/settings shows configuration values, not a token count of the current context.",
+          "alternative": "Use /tokens for a report on the current context's token usage"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "test",
+      "name": "/test",
+      "summary": "Runs a test command and automatically adds its output to the chat on failure.",
+      "what": "/test <command> runs a shell command (typically the test suite). Unlike /run, the output is only added to the chat automatically on a non-zero exit code, so Aider can work directly with the test failures. Without a command, Aider uses the one configured via --test-cmd; --test runs it once at startup and then exits; --auto-test repeats it automatically after every change.",
+      "whenGood": [
+        {
+          "title": "Check right after a change whether tests still pass",
+          "example": "/test pytest -q — on failure, the traceback lands in the chat automatically so Aider can fix it"
+        },
+        {
+          "title": "Automate the test run permanently after every Aider change",
+          "example": "Set --test-cmd 'npm test' together with --auto-test at startup instead of calling /test manually all the time"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to see the output every time, even on a successful run",
+          "why": "/test only adds the output to the chat automatically on failure (non-zero exit).",
+          "alternative": "Use /run <test command> and add the output to the chat manually when it's also needed on success"
+        },
+        {
+          "title": "The command isn't a test command but e.g. a build or deploy script",
+          "why": "/test is semantically meant for test commands; a non-zero exit from a deploy script can trigger the wrong error interpretation.",
+          "alternative": "Use /run for general shell commands"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "think-tokens",
+      "name": "/think-tokens",
+      "summary": "Sets the model's thinking-token budget for extended reasoning.",
+      "what": "/think-tokens <value> sets how many tokens a model with extended thinking (e.g. Claude models with thinking support) may use for its internal reasoning process. Values can be given compactly, e.g. 8096, 8k, 10.5k, or 0.5M; 0 disables thinking. On the command line this corresponds to --thinking-tokens VALUE.",
+      "whenGood": [
+        {
+          "title": "Give more thinking budget for an architecturally complex question",
+          "example": "/think-tokens 16k before a question about redesigning the data model layer"
+        },
+        {
+          "title": "Turn thinking off specifically to get faster/cheaper answers",
+          "example": "/think-tokens 0 for simple, repetitive changes across many small files"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The active model doesn't support extended thinking",
+          "why": "The parameter only has an effect on models with a matching thinking feature, otherwise it does nothing.",
+          "alternative": "Use /reasoning-effort for models that instead support reasoning_effort levels (e.g. OpenAI's o-/GPT-5 series)"
+        },
+        {
+          "title": "Setting a very high thinking budget by default for every request",
+          "why": "An unnecessarily high budget increases latency and cost even when the task is trivial.",
+          "alternative": "Only raise the budget for genuinely demanding requests, then lower it again"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "tokens",
+      "name": "/tokens",
+      "summary": "Shows a report on how many tokens the current chat context is using.",
+      "what": "/tokens lists how many tokens each part of the current context takes up (e.g. system prompt, repository map, added files, chat history), including a total. This helps estimate how close you are to a context limit.",
+      "whenGood": [
+        {
+          "title": "Check what's filling up the context the most right now",
+          "example": "/tokens to see whether a large read-only file is taking up a disproportionate amount of space"
+        },
+        {
+          "title": "Check headroom in the context window before an especially long request",
+          "example": "/tokens before a big multi-file change, to see whether files should be dropped first with /drop"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to actively change the repository map size, not just see usage",
+          "why": "/tokens only shows the current state, it doesn't change any settings.",
+          "alternative": "Set --map-tokens to actually change the map size"
+        },
+        {
+          "title": "The context is already noticeably too full and responses are breaking",
+          "why": "Just looking at the report doesn't fix the problem yet.",
+          "alternative": "Directly remove no-longer-needed files with /drop, or use /clear for the history"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "undo",
+      "name": "/undo",
+      "summary": "Undoes the last git commit, provided it was made by Aider.",
+      "what": "/undo runs a git reset on the last commit, but only if that commit was made by Aider itself (Aider recognizes its own commits). This lets you specifically revert unwanted automatic changes without accidentally losing your own manual commits.",
+      "whenGood": [
+        {
+          "title": "Aider's last change didn't solve the problem or broke something",
+          "example": "/undo right after a failed fix, to go back to the previous state and phrase the request more precisely"
+        },
+        {
+          "title": "Compare two alternative solution approaches",
+          "example": "Have proposal A implemented, check the result, /undo, then try proposal B"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The last commit wasn't made by Aider (e.g. made manually)",
+          "why": "/undo deliberately refuses to reset when the last commit wasn't made by Aider, to protect other people's work.",
+          "alternative": "Run git reset manually in your own terminal, fully aware of the consequences"
+        },
+        {
+          "title": "Multiple Aider commits need to be undone",
+          "why": "/undo only reverts the single most recent commit, not several at once.",
+          "alternative": "Call /undo repeatedly, or reset directly to an earlier commit hash with git reset"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "voice",
+      "name": "/voice",
+      "summary": "Records spoken input and transcribes it as a message in the chat.",
+      "what": "/voice starts an audio recording via the microphone and then transcribes the speech into text, which is sent as a chat message. Format (--voice-format, default wav; webm/mp3 need ffmpeg) and language (--voice-language, ISO-639-1 code, default en) are configurable.",
+      "whenGood": [
+        {
+          "title": "Dictate a longer request faster than typing it",
+          "example": "/voice to freely describe a detailed request for a new feature"
+        },
+        {
+          "title": "Work hands-free, e.g. while reading code on a second screen",
+          "example": "Use /voice to speak observations directly instead of switching between reading and typing"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Precise code identifiers, file paths, or special characters need to be exact",
+          "why": "Speech recognition often mis-transcribes technical terms, CamelCase names, or paths.",
+          "alternative": "Type such details directly, or insert them via /paste instead of speaking them"
+        },
+        {
+          "title": "No working microphone or supported audio environment is available",
+          "why": "/voice needs microphone access and, for some formats, ffmpeg; without that, recording fails.",
+          "alternative": "Type the text normally, or paste it from the clipboard with /paste"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "weak-model",
+      "name": "/weak-model",
+      "summary": "Switches the Weak Model responsible for commit messages and chat history summarization.",
+      "what": "/weak-model <name> sets the so-called weak model: a cheaper/faster secondary model that Aider uses internally for side tasks like writing commit messages and summarizing older chat history, while the main model (/model) handles the actual code changes. On the command line this corresponds to --weak-model WEAK_MODEL.",
+      "whenGood": [
+        {
+          "title": "Cut costs without hurting the quality of the actual code answers",
+          "example": "/weak-model anthropic/claude-haiku-4-5, while the main model stays a more capable model"
+        },
+        {
+          "title": "Use a different model when the default doesn't produce good commit messages",
+          "example": "Switch /weak-model to another model when the current weak model's generated commit messages are imprecise"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "You want to improve the quality of the actual code answers",
+          "why": "The weak model only affects side tasks (commit messages, history summarization), not the code suggestions themselves.",
+          "alternative": "Use /model to switch the main model"
+        },
+        {
+          "title": "No deliberate reason for a second, weaker model (e.g. a solo setup with only one model available anyway)",
+          "why": "An unnecessarily weak weak-model can, e.g., lead to worse commit messages without any real cost benefit if only one model is available anyway.",
+          "alternative": "Leave the weak model at Aider's sensible default"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "web",
+      "name": "/web",
+      "summary": "Scrapes a web page, converts it to markdown, and sends it as a message in the chat.",
+      "what": "/web <URL> fetches a web page, converts its content to markdown, and adds it as a chat message, so the model can use, e.g., external documentation or web-based error reports as context. Images on the page can also be picked up, provided the model supports image input.",
+      "whenGood": [
+        {
+          "title": "Provide external API documentation as context for an integration",
+          "example": "/web https://docs.example.com/api/v2 before a question about correct endpoint usage"
+        },
+        {
+          "title": "Bring in an error message/issue discussion found on the web",
+          "example": "/web <GitHub issue URL>, to bring a known solution in as context for your own bug"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The page requires login or is heavily JavaScript-driven/interactive",
+          "why": "/web scrapes static page content; content behind logins or loaded purely dynamically is often not captured correctly.",
+          "alternative": "Copy the relevant text manually and paste it via /paste or directly into the chat input"
+        },
+        {
+          "title": "The web page is very long and only a small section is relevant",
+          "why": "The full page as markdown takes up unnecessary context (tokens).",
+          "alternative": "Manually copy and paste only the relevant excerpt instead of the whole page via /web"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — In-chat Commands",
+          "url": "https://aider.chat/docs/usage/commands.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-code",
+      "name": "Code Mode",
+      "summary": "Default mode: Aider directly changes files to carry out the request.",
+      "what": "In code mode (the default at startup), Aider makes direct changes to project files to carry out the request — the classic 'just do it' mode. Switch permanently with /chat-mode code or /code (no prompt), or for a single message with /code <request> regardless of the currently active mode. At startup, the mode can be forced with --chat-mode code (though it's the default anyway).",
+      "whenGood": [
+        {
+          "title": "The desired solution approach is already clear",
+          "example": "/code Add rate-limit middleware to the Express route /api/login"
+        },
+        {
+          "title": "Quickly push through a series of small, clearly scoped changes",
+          "example": "Stay in code mode for a series of small bugfixes, without switching modes every time"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "First just discuss options and trade-offs before changing anything",
+          "why": "In code mode, Aider treats requests as an order to change files immediately, not as an open discussion.",
+          "alternative": "Use /ask to discuss first, then implement with /code"
+        },
+        {
+          "title": "A weaker model needs to both propose AND implement complex changes in one step",
+          "why": "Some models are good at proposing but weaker at precisely editing files in a single request.",
+          "alternative": "Use architect mode, which splits planning and file edits across two models"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-ask",
+      "name": "Ask Mode",
+      "summary": "Discussion mode: Aider discusses the code and answers questions, but never changes files.",
+      "what": "In ask mode, Aider answers questions about the codebase and discusses approaches, but makes no file changes. Recommended workflow: discuss options in /ask first and agree on a plan, then trigger the actual implementation with /code (often a short 'go ahead' is enough). Switch permanently with /chat-mode ask or /ask (no prompt), or for a single message with /ask <question>. Startup flag: --chat-mode ask.",
+      "whenGood": [
+        {
+          "title": "Understand how part of the codebase works before changing anything",
+          "example": "/ask How is authentication structured in this project?"
+        },
+        {
+          "title": "Weigh multiple solution options before touching files",
+          "example": "/ask What would be two sensible approaches to add rate limiting? — then have the chosen approach implemented with /code"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The plan is already set, it should be implemented directly",
+          "why": "In ask mode Aider never changes files as a matter of principle, even if the request sounds like an implementation order.",
+          "alternative": "Use /code, or switch to code mode"
+        },
+        {
+          "title": "You want Aider to explain its own usage/configuration, not the project",
+          "why": "/ask refers to the loaded project codebase, not to Aider itself.",
+          "alternative": "Use /help for questions about Aider's usage, configuration, and troubleshooting"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-architect",
+      "name": "Architect Mode",
+      "summary": "Two-model mode: one model plans the change, a second editor model turns it into concrete file edits.",
+      "what": "In architect mode, Aider first sends the request to the main model (the architect), which proposes a solution; a separate editor model (--editor-model, otherwise chosen automatically based on the main model) then translates that proposal into concrete file edits. By default the edits are applied automatically (--auto-accept-architect, default True). Especially useful with models that are strong at reasoning but weaker at precise file editing (per Aider's docs, e.g. OpenAI's o1 models, paired with an editor model like GPT-4o or Sonnet). Activate via /chat-mode architect, /architect (no prompt for a permanent switch, with a prompt for a single message), or at startup with --architect or --chat-mode architect.",
+      "whenGood": [
+        {
+          "title": "Pair a strong reasoning model as architect with a separate, edit-strong model",
+          "example": "aider --architect --model o1 --editor-model anthropic/claude-sonnet-4-5 for a complex architectural decision followed by precise implementation"
+        },
+        {
+          "title": "Get better results on a hard change even with just one model",
+          "example": "/architect for a complex change where two separate LLM requests (planning, then editing) yield better results than a single step in code mode"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Simple, unambiguous changes where planning and editing clearly coincide",
+          "why": "Architect mode needs two LLM requests instead of one, which costs time and money — unnecessary for trivial changes.",
+          "alternative": "Stay in default code mode"
+        },
+        {
+          "title": "Proposed changes should be reviewed manually before landing in files",
+          "why": "With the default --auto-accept-architect, the edits produced by the editor model are applied automatically.",
+          "alternative": "Set --no-auto-accept-architect to confirm every change manually"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "mode-help",
+      "name": "Help Mode",
+      "summary": "Help mode: Aider answers questions about itself — usage, configuration, troubleshooting.",
+      "what": "In help mode, Aider answers questions about its own usage, configuration, and troubleshooting, instead of referring to the loaded project codebase. Switch permanently with /chat-mode help, or for a single message with /help <question> regardless of the currently active mode. Startup flag: --chat-mode help.",
+      "whenGood": [
+        {
+          "title": "Unclear how to use a specific Aider feature",
+          "example": "/help How do I set up a custom lint command for Python?"
+        },
+        {
+          "title": "Make sense of an error message or unexpected behavior from Aider itself",
+          "example": "/help Why is Aider reporting a token limit even though the model should support more context?"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "The question is about your own project code, not Aider itself",
+          "why": "/help refers to Aider's own docs/configuration, not the loaded codebase.",
+          "alternative": "Use /ask for questions about your own project"
+        },
+        {
+          "title": "A concrete change should be implemented directly",
+          "why": "Help mode only answers questions, it makes no file changes.",
+          "alternative": "Use /code to actually implement the change"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Chat Modes",
+          "url": "https://aider.chat/docs/usage/modes.html"
+        }
+      ]
+    },
+    {
+      "platform": "aider",
+      "slug": "global-options",
+      "name": "CLI Options (Flags)",
+      "summary": "Collects the most important Aider CLI flags, grouped by model, automation, context, and other settings.",
+      "what": "Aider's CLI flags can be combined at startup (e.g. aider --model ... --test-cmd ... --yes-always) or set via a config file/environment variables. The most important ones, grouped:\nModel: --model MODEL (main model, env AIDER_MODEL); --weak-model WEAK_MODEL (for commit messages/history summarization); --editor-model EDITOR_MODEL (writes the file edits in architect mode); --architect (activates architect mode directly); --reasoning-effort VALUE and --thinking-tokens VALUE (control reasoning depth/budget)\nAutomation/Scripting: --message/-m/--msg (send a single message, process the reply, then exit - for scripts/CI); --message-file/-f (read the message from a file); --yes-always (auto-confirms every prompt without asking); --no-auto-commits (disables automatic committing of LLM changes, default is on); --test-cmd (define a test command) together with --auto-test or a one-off --test; --lint-cmd (lint commands per language) together with --auto-lint or a one-off --lint; --watch-files (watches files for special AI comments that trigger Aider)\nContext: --read FILE (add a file read-only, usable multiple times) or --file FILE (add it editable); --map-tokens VALUE (repository map size, 0 disables it); --map-refresh VALUE (auto/always/files/manual)\nInstall/Other: --upgrade/--update (update Aider itself); --just-check-update (only check whether an update is available); --config/-c (custom config file); --env-file (custom .env file for API keys); --version; --help/-h",
+      "whenGood": [
+        {
+          "title": "Use -m in scripts/CI pipelines for non-interactive single runs",
+          "example": "aider --message 'Fix the failing test in test_auth.py' --yes-always --test-cmd 'pytest -q' in a CI job"
+        },
+        {
+          "title": "Scope automation deliberately instead of allowing everything",
+          "example": "aider --test-cmd 'pytest -q' --auto-test --no-auto-commits — tests run automatically, but commits only after manual review"
+        }
+      ],
+      "whenBad": [
+        {
+          "title": "Setting --yes-always by default on every interactive run without reviewing the suggestions",
+          "why": "This also auto-confirms risky or unwanted changes without anyone seeing them first.",
+          "alternative": "Only use --yes-always in controlled script/CI contexts with --message; confirm suggestions manually when interactive"
+        },
+        {
+          "title": "Letting API keys end up as plaintext flags in shell history",
+          "why": "--openai-api-key/--anthropic-api-key as a command-line argument often stays visible in shell history and process lists.",
+          "alternative": "Set keys via --env-file/.env or environment variables like AIDER_ANTHROPIC_API_KEY instead"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Aider Docs — Options Reference",
+          "url": "https://aider.chat/docs/config/options.html"
+        }
+      ]
+    }
+  ]
+}

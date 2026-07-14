@@ -506,3 +506,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Bekannter 308-Redirect migriert: anthropic.com/engineering/claude-code-best-practices → code.claude.com/docs/en/best-practices (15 Vorkommen ×5 Sprachen, keine Reste).
 - LOOP.md gepruned: Stand-Absatz auf It. 81 (61 Kapitel/1382 Seiten/20 Clips), Rotation gestrafft (nur Offenes; NEU: Aider als 4. Plattform aufgenommen).
 - Live verifiziert: migrierte URL im HTML, tote Quelle weg. Known-good Deploy: 78321166.promptgarden.pages.dev
+
+### It. 82 (14.07.26 nachmittags) — 🐍 AIDER = 4. Plattform: BEFEHLS-REFERENZ-DIREKTIVE KOMPLETT ✅
+- **236 Befehle × 5 Sprachen auf 4 Plattformen** (92 Claude Code + 16 Codex + 80 Cursor + 48 Aider): 43 Slash + 4 Modi (mode-code/-ask/-architect/-help) + global-options. 1627 Seiten (+245). Aider lebt aktiv (47k Stars; GitHub-Release-Notes-Lücke seit v0.86.0 in gaps dokumentiert).
+- 🛡️ Adversarial-Review 4. Erfolg — diesmal bis auf QUELLCODE-Ebene: 1 BLOCK (chat-mode behauptete, /help ohne Prompt wechsle sticky den Modus — commands.py beweist: cmd_help ruft nur basic_help(), kein Mode-Switch) + 1 FIX (global-options EN-Name unübersetzt). Beide vor Übersetzung gefixt.
+- 2. transienter API-Abbruch (ZH-Übersetzer) per SendMessage-Resume ohne Fortschrittsverlust überbrückt — Muster ist jetzt Routine.
+- Live verifiziert Hub + /de/befehle/aider/add/ + /zh/befehle/aider/mode-architect/. Known-good Deploy: 89fb21a5.promptgarden.pages.dev

@@ -13,7 +13,7 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 ## Marvin-Direktiven (alle aktiv, bindend)
 1. **KEIN Nachtmodus** — 24/7 voller Takt, immer Substanz bauen.
 2. **Quellenpflicht** — jede Behauptung sichtbar belegt auf der Seite; URLs selbst verifizieren (curl -L -A Browser-UA → 200); nie Quellen erfinden.
-3. **Befehls-Referenz** — JEDER CLI-Befehl pro Plattform mit wann/wann-nicht (✅ 188: Claude Code 92 + Codex 16 + Cursor CLI 80; next: Aider).
+3. **Befehls-Referenz** — JEDER CLI-Befehl pro Plattform mit wann/wann-nicht ✅ KOMPLETT für alle 4 Zielplattformen (236: Claude Code 92 + Codex 16 + Cursor 80 + Aider 48; neue Plattformen bei Relevanz).
 4. **Addons mit eigenen Detailseiten** (✅ 12×5) — Setup aus offiziellen READMEs.
 5. **Visualisierungen** — verständlich aber hochwertig, Inline-SVG im 1d-Stil (✅ Loops+Addons+Context-Window) + Remotion-Videos (Direktive 12).
 6. **KEINE KI-Autorschaft** — Marvin ist der Macher; Seite kommuniziert „KI- & Scrape-freundlich, jeder soll lernen".
@@ -58,11 +58,11 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 81, 14.07.26, Commit-Stand siehe HISTORY)
-1382 Seiten live auf promptgarten.com: 61 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 188 Befehle ×5 auf 3 Plattformen (Claude Code/Codex/Cursor CLI), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=13, W3=16), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 20 Remotion-Clips (Terminal-Demos auf Befehlsseiten), Forum (leer, bereit), freie API, Admin V2, Landing komplett. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~146, DE/US/FR/PL/IE.
+## Aktueller Stand (It. 82, 14.07.26, Commit-Stand siehe HISTORY)
+1627 Seiten live auf promptgarten.com: 61 Kapitel ×5 (ALLE mit 🌱/🔬, Quiz, Übungen), 236 Befehle ×5 auf 4 Plattformen (Claude Code/Codex/Cursor/Aider), 12 Addons ×5 mit Detailseiten, 4 Welten (W1=9, W2=13, W3=16), Benchmarks, Vergleiche, Loop-Galerie mit Video, Feed (22 News), 20 Remotion-Clips (Terminal-Demos auf Befehlsseiten), Forum (leer, bereit), freie API, Admin V2, Landing komplett. Link-Audit #3: 212 URLs, 211 grün. Traffic: views_7d ~146, DE/US/FR/PL/IE.
 
 ## Rotation (nächste Arbeit)
-① Feed täglich (nächster 15.07 früh) ② Remotion R3 (weitere Befehls-Demos: /loop, /compact) ③ Kapitel-Batch 4 (Ideen aus top_paths sammeln) ④ Aider-Research (4. Befehls-Plattform, Marvin-Direktive 3) ⑤ Link-Audit wöchentlich (~21.07) ⑥ LOOP.md-Pruning wöchentlich ⑦ Statusboard bei Substanz.
+① Feed täglich (nächster 15.07 früh) ② Remotion R3 (weitere Befehls-Demos: /loop, /compact) ③ Kapitel-Batch 4 (Ideen aus top_paths sammeln) ⑤ Link-Audit wöchentlich (~21.07) ⑥ LOOP.md-Pruning wöchentlich ⑦ Statusboard bei Substanz.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - #2 GitHub Sponsors anmelden → Footer-Link
