@@ -663,3 +663,15 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Einbettung /challenge unter DailyChallenge via ExampleVideo (VIDEO_LABEL ×5). BUILD_EXIT=0, Deploy e8c26361, Live-Verify de+zh src + mp4 200, Screenshot ok. Commit fd8334a.
 - Lesson: cwd nach Build-Schritt war site/ — git add mit Repo-Pfaden schlug fehl; Regel bestätigt: Repo-Befehle IMMER mit cd im selben Call. ⚠️ Poll-URL: promptgarden-api.promptgarden.workers.dev (nicht marvin-mez).
 - Known-good: Deploy e8c26361, Commit fd8334a. Videos jetzt 65.
+
+## It. 116 — 15.07.2026 ~14:15 — KAPITEL-BATCH 6: 81→91 ✅
+- Themenwahl datengetrieben (top_paths: Claude-Code-Vertiefung, RAG/Embeddings zh, Agenten-Praxis): terminal-basics, ai-coding-ide-vs-cli, rate-limits-und-quotas, temperatur-und-sampling, vektordatenbanken, chunking-strategien, human-in-the-loop, datenschutz-und-ki-tools, mcp-sicherheit, swe-bench-agenten-benchmarks.
+- 2 Autoren (Sonnet) DE+EN, alle Quellen selbst verifiziert (1× 403-bot-protected via r.jina.ai). Adversarial-Review mit 5 Verifikations-Forks: 14 Findings (unbelegte Google-Cloud-Attribution, Apple-Quelle deckt Spotlight nicht, Git-lernen/installieren-Dreher EN, Cursor-Zitat ohne „building", Quiz 67%-Reranking additiv missverständlich, gdpr-info.eu als „offiziell" etikettiert, swe-bench-Dopplung mit benchmarks-lesen …) → 21 Fixes via apply-review-fixes.mjs (harte Anker). 3 Übersetzer MD5-gepinnt, Merge 81→91 ×5, WORLD W1 13/W2 16/W3 23.
+- ZWISCHENFÄLLE + Lessons:
+  (a) DE-Autor hielt parallelen EN-Autor für Rogue-Fork, benannte dessen Datei um → wiederhergestellt. Lesson: parallelen Agents die Existenz der Geschwister-Agents im Prompt MITTEILEN.
+  (b) Reviewer-Forks konnten Parent nicht per SendMessage erreichen → Reviewer wartete endlos; Orchestrator musste Fork-Reports manuell relayen. Lesson: Reviewer-Prompts anweisen, NICHT auf Fork-Messages zu warten, Forks liefern an Orchestrator.
+  (c) Lint verlangt DE=EN-Quellen-URL-Sets → Union beider verifizierter Sets auf alle 5 Sprachen.
+  (d) exercise.selfCheck fehlte teils → Prerender-Crash (Seite mappt ohne Guard). Fix: selfCheck-Agent + NEUE LINT-REGEL (exercise braucht steps+selfCheck). Lesson: Autoren-Schema künftig MIT selfCheck ausschreiben.
+  (e) 2× cwd-Fehler (site/ statt Root) — Regel „cd im SELBEN Call" erneut bestätigt.
+- BUILD_EXIT=0 (Lint 0 Fehler), Deploy f67a015a, Live-Verify 3 Titel de+zh 3/3, Smoke 6/6, Screenshot ok. Commit 250b0ed. Challenge-Pool automatisch 91 Fragen, Suchindex 412 Docs.
+- Known-good: Deploy f67a015a, Commit 250b0ed.
