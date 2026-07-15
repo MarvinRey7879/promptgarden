@@ -647,3 +647,12 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - BUILD_EXIT=0, Deploy b639d964, Live-Verify DE+ZH-Titel 3/3, Smoke 6/6. Commit b04203e.
 - Lesson: Wakeup-Plan-Mandate gegen Bestand prüfen bevor Agent-Prompt — Dublette im Plan gefunden. Validator zuerst am ECHTEN Bestandsschema ausrichten (sources[] nicht source{}).
 - Known-good: Deploy b639d964, Commit b04203e.
+
+## It. 114 — 15.07.2026 ~10:30 — IDEEN-RUNDE 2: RSS + Tages-Challenge + PWA ✅
+- Pitch via AskUserQuestion (multiSelect): Marvin wählt RSS + Tages-Challenge + PWA; Newsletter-Digest → späteres Todo (NICHT abgelehnt). IDEEN.md gepflegt.
+- 📡 RSS: scripts/build-rss.mjs im Prebuild → /feed.xml + /feed.<lang>.xml (RSS 2.0, atom:self, Anker-Links auf /feed/#id); langAlternates() liefert jetzt types application/rss+xml auf JEDER Seite; RSS-Badge auf Feed-Seite; generierte XMLs gitignored.
+- 🎯 Challenge: scripts/build-challenge.mjs → public/challenge/quiz.<lang>.json (81 Fragen, Reihenfolge über Sprachen identisch — Guard im Skript); DailyChallenge.tsx: mulberry32(datum-hash) wählt 5, XP=5/richtig via completeEntry('challenge:date'), Serie in pg_challenge_v1 (vor Spielstart ab gestern gezählt); Nav 🎯 + Sitemap.
+- 📱 PWA: manifest.webmanifest + icon-192/512 (sharp aus icon.svg), sw.js (navigate network-first, Assets SWR, Offline-HTML), SwRegister nur prod.
+- Verify: BUILD_EXIT=0, Deploy c26410df, Live: RSS de+zh ok, Challenge de+zh ok, quiz.fr 81, manifest/sw/icons 200, rel=alternate+manifest-Link im HTML; Playwright: Antwortflow Richtig→Weiter→Frage 2 ✅, SW registered:active, OFFLINE-Reload lesbar ✅. Commit 937bcfb.
+- Lessons: Playwright nicht im Repo — Install im Scratchpad nutzt ms-playwright-Browser-Cache; .btn-Locator traf Header-Newsletter → Locator immer auf Karte scopen.
+- Known-good: Deploy c26410df, Commit 937bcfb.
