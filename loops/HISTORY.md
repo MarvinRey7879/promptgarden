@@ -680,3 +680,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Poll grün (views 453, besucher 35, alles leer), Smoke 6/6.
 - LOOP.md: Stand auf It. 117/91 Kapitel, Rotation neu (Feed 16.07 → Ideen R3 → Batch 7 ~17./18. → Link-Audit/Pruning ~21. → Remotion R9), 3 neue Arbeitsregeln (Geschwister-Agents mitteilen; Reviewer-Forks→Orchestrator; Autoren-Schema komplett inkl. selfCheck). Commit 18c7c4d.
 - Bis Feed 16.07 früh: stündliche Grün-Checks.
+
+## It. 120 — 15.07.2026 ~17:40 — Remotion R9 Landkarte-Demo ✅ + LOOP PAUSIERT
+- Grün-Checks 15/16/17 Uhr ok (views 480, besucher 36). MapDemo.tsx (300 Frames, Welt-1-Insel, 13 Punkte füllen sich, Zähler, Badge, Serien-Chip) ×5 je ~0,6 MB; eingebettet auf /lernpfade unter LearnMap. BUILD_EXIT=0, Deploy 355e84eb, Live-Verify de+zh + mp4 200, Screenshot ok. Commit 366051b. Videos jetzt 70.
+- ⏸️ LOOP AUF MARVINS WUNSCH PAUSIERT (15.07. ~17:45, „kurz pausieren, in zwei Tagen weitermachen"). Wiederaufnahme: neue Session in C:\Users\marvi\promptgarden, „mach weiter mit loop promptgarden" → LOOP.md + diese HISTORY lesen → Rotation fortsetzen: ① Feed (Datum des Wiederaufnahme-Tags, 25 Bestands-ids vorher listen!) ② Ideen-Pitch R3 (Backlog: Newsletter-Digest + 3 neue) ③ Kapitel-Batch 7 (mit den 3 neuen Regeln) ④ Link-Audit ⑤ LOOP.md-Pruning.
+- Known-good: Deploy 355e84eb, Commit 366051b.
