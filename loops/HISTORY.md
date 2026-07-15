@@ -639,3 +639,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - SearchDemo-Composition (UI-Demo, kein Terminal): Modal tippt „mcp", Gruppen Kapitel/Befehle/Addons erscheinen gestaffelt (echte Treffer als Inhalt), Auswahl wandert, Enter → Kapitel-Karte MCP. ×5 Sprachen, ~11s, je <1MB. Eingebettet auf /start unter dem Wizard (Neulinge lernen 🔍/Strg+K).
 - ⚠️ cwd-Zwischenfall: ein Deploy lief versehentlich erneut aus site/ mit STALE out/ (Pfad-Verwechslung nach Background-Task — Deploy 0916b0a1 war altes valides Build, kein Schaden, prod durchgehend grün); Lesson: nach run_in_background-Rückkehr pwd nicht annehmen — erster Befehl prüft pwd.
 - BUILD_EXIT=0, Deploy c9b84390, Live-Verify Embed + ZH-mp4 200. Known-good: c9b84390.
+
+## It. 113 — 15.07.2026 ~07:20 — FEED 15.07 ✅
+- Research-Agent (Sonnet): 3 verifizierte Items, alle Quellen 200+Inhalt doppelt geprüft, Kandidaten außerhalb 7-Tage-Fenster verworfen. WICHTIG: geplantes Pflicht-Item Gemini→Antigravity war DUBLETTE (id gemini-cli-shutdown existierte) → korrekt weggelassen.
+- Items: openai-codex-8-million-nutzer (tools), github-copilot-security-review-app (tools), grok-build-cli-repo-upload-leak (security) — alle 14.07.
+- Übersetzung MD5-gepinnt (ed46d92c…), id/date/tag/sources byte-identisch validiert. Merge vorn 22→25 ×5 Sprachen mit Dubletten+Zukunfts-Check.
+- BUILD_EXIT=0, Deploy b639d964, Live-Verify DE+ZH-Titel 3/3, Smoke 6/6. Commit b04203e.
+- Lesson: Wakeup-Plan-Mandate gegen Bestand prüfen bevor Agent-Prompt — Dublette im Plan gefunden. Validator zuerst am ECHTEN Bestandsschema ausrichten (sources[] nicht source{}).
+- Known-good: Deploy b639d964, Commit b04203e.
