@@ -2,8 +2,18 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PathBoard from '@/components/PathBoard';
 import LearnMap from '@/components/LearnMap';
+import ExampleVideo from '@/components/ExampleVideo';
 import { WORLD_0, WORLD_1, WORLD_2, WORLD_3, getEntry } from '@/lib/content';
 import { isLang, langAlternates, ui } from '@/lib/i18n';
+
+// Landkarte-Demo unter der LearnMap (Remotion R9): zeigt Punkte-Füllen + Welt-Abschluss.
+const MAP_LABEL: Record<string, string> = {
+  de: 'So wächst deine Landkarte: Kapitel abschließen, Punkte färben sich, Welt geschafft — alles nur in deinem Browser gespeichert.',
+  en: 'How your map grows: finish chapters, dots light up, world complete — all stored only in your browser.',
+  es: 'Así crece tu mapa: termina capítulos, los puntos se iluminan, mundo completado — todo guardado solo en tu navegador.',
+  fr: "Ta carte grandit : termine des chapitres, les points s'allument, monde terminé — tout est stocké uniquement dans ton navigateur.",
+  zh: '地图这样成长：完成章节、圆点点亮、世界通关——数据只保存在你的浏览器里。',
+};
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -79,6 +89,8 @@ export default async function LernpfadePage({ params }: { params: Promise<{ lang
           { name: t.pathWorld3, chapters: world3.map((e) => ({ slug: e.slug, title: e.title, category: e.category })) },
         ]}
       />
+
+      <ExampleVideo lang={lang} name="map-demo" label={MAP_LABEL[lang]} />
 
       {world0.length >= 4 && (
         <>

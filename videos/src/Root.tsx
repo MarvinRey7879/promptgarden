@@ -4,6 +4,7 @@ import { ContextWindow } from './ContextWindow';
 import { PromptgartenExplainer } from './PromptgartenExplainer';
 import { SearchDemo } from './SearchDemo';
 import { ChallengeDemo } from './ChallengeDemo';
+import { MapDemo } from './MapDemo';
 import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo, CodexExecDemo, CodexReviewDemo, AgyPrintDemo } from './TerminalDemo';
 import type { Lang } from './theme';
 
@@ -86,6 +87,15 @@ export const RemotionRoot = () => {
         id="CodexReviewDemo"
         component={CodexReviewDemo}
         durationInFrames={400}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{ lang: 'de' as Lang }}
+      />
+      <Composition
+        id="MapDemo"
+        component={MapDemo}
+        durationInFrames={300}
         fps={30}
         width={1280}
         height={720}
