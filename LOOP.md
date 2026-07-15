@@ -34,6 +34,9 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 - **JSON nach Hand-Autoring immer mit node parsen**; Feed-date = Ereignisdatum, nie Zukunft (Guard in build-api.mjs + lint).
 - **Poll-Parser wirft hart** auf `j.error` UND undefined Keys — leere Antwort ≠ Fehler-Antwort.
 - **Uhrzeit IMMER per `date` prüfen**, nie aus Session-Verlauf/Wakeup-Labels ableiten (It. 89-93: „Nacht-Takt" gefahren, real war 09-15 Uhr — Marvin-Rüge 14.07). KEIN Nachtmodus heißt: identisches Substanz-Pensum rund um die Uhr; Checks-only nur wenn wirklich nichts ansteht, nie zeitgesteuert.
+- **Parallelen Agents die Geschwister MITTEILEN** („Agent X schreibt parallel Datei Y — nicht anfassen"): It. 116 hielt der DE-Autor den parallelen EN-Autor für einen Rogue-Fork und benannte dessen Output-Datei um.
+- **Reviewer-Sub-Forks liefern an den ORCHESTRATOR**, nie an den Reviewer zurück (SendMessage an „fork"/Typnamen schlägt fehl) — Reviewer-Prompts explizit anweisen, NICHT auf Fork-Antworten zu warten; Orchestrator relayed (It. 116: Reviewer hing wartend fest).
+- **Autoren-Schema komplett ausschreiben** (inkl. exercise.selfCheck!) — It. 116: fehlendes selfCheck crashte Prerender; Lint-Regel deckt es jetzt ab.
 
 ## ✅ Verify-Gate (Pflicht vor „fertig" — DR-Umsetzung It. 73)
 1. `node scripts/lint-content.mjs` (läuft auch als prebuild, blockt Build): Slug-Parität ×5, Quiz-Indizes, Quellenpflicht, Quellen-Konsistenz (Wiki lokalisiert ok), bodyDetail-Parität, Feed-Daten.
@@ -60,11 +63,11 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 114, 15.07.26 vormittags, Commit-Stand siehe HISTORY)
-~2017 Seiten live auf promptgarten.com: 81 Kapitel ×5 (ALLE 🌱/🔬, Quiz entzerrt, Übungen), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity 57/Aider 48/Codex 16), 🧩 Prompts (16), 12 Addons, 4 Welten (5/9/14/19), Vergleiche v2 (+💶 Preisrechner), 🔍 Suche (402 Docs/Sprache), 🗺️ Lern-Landkarte, Feed (25 News) + 📡 RSS (/feed.xml je Sprache, prebuild build-rss.mjs), 🎯 Tages-Challenge /challenge (5 datum-seeded Fragen aus 81, build-challenge.mjs, Serie pg_challenge_v1), 📱 PWA (manifest+sw.js network-first, SwRegister prod-only), 🎬 60 Remotion-Clips, Favicon, Forum (leer), freie API, Admin V2 (Unique-Besucher + Internal-Filter), WERBUNG AN außer Landing (Google-CMP nötig — Marvin-Todo). Traffic 15.07: views_7d 401, besucher_7d 27. Direktive 13: Runde 1+2 geliefert (R2: RSS+Challenge+PWA gewählt; Newsletter-Digest = späteres Todo, NICHT abgelehnt).
+## Aktueller Stand (It. 117, 15.07.26 nachmittags, Commit-Stand siehe HISTORY)
+~2067 Seiten live auf promptgarten.com: 91 Kapitel ×5 (ALLE 🌱/🔬 + Quiz + Übung mit selfCheck; Batch 6 It. 116: Review 14 Findings/21 Fixes), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity 57/Aider 48/Codex 16), 🧩 Prompts (16), 12 Addons, 4 Welten (W0 5/W1 13/W2 16/W3 23), Vergleiche v2 (+💶 Preisrechner), 🔍 Suche (412 Docs/Sprache), 🗺️ Lern-Landkarte, Feed (25 News) + 📡 RSS (/feed.xml je Sprache, build-rss.mjs), 🎯 Tages-Challenge /challenge (5 datum-seeded aus 91, build-challenge.mjs, Serie pg_challenge_v1, Demo-Clip), 📱 PWA (manifest+sw.js network-first, SwRegister prod-only), 🎬 65 Remotion-Clips, Favicon, Forum (leer), freie API, Admin V2 (Unique-Besucher + Internal-Filter), WERBUNG AN außer Landing (Google-CMP nötig — Marvin-Todo). Traffic 15.07 14:00: views_7d 453, besucher_7d 35. Direktive 13: Runde 1+2 geliefert (Newsletter-Digest = späteres Todo, NICHT abgelehnt → Kandidat R3).
 
 ## Rotation (nächste Arbeit)
-① Feed täglich (nächster 16.07 früh) ② Kapitel-Batch 6 (~16./17.07, Themen aus top_paths) ③ Remotion R8 (Kandidat: Challenge-Demo) ④ Ideen-Pitch Runde 3 (~17./18.07; Kandidat aus Backlog: Newsletter-Digest) ⑤ Link-Audit wöchentlich (~21.07, ~350 URLs) ⑥ LOOP.md-Pruning wöchentlich (zuletzt 14.07) ⑦ Statusboard bei Substanz.
+① Feed täglich (nächster 16.07 früh, VORHER 25 Bestands-ids listen) ② Ideen-Pitch Runde 3 (~17./18.07; Backlog: Newsletter-Digest + 3 neue Ideen) ③ Kapitel-Batch 7 (frühestens ~17./18.07 — Rate ≤ Verifikation, Batch 6 war 15.07) ④ Link-Audit wöchentlich (~21.07, ~380 URLs) ⑤ LOOP.md-Pruning wöchentlich (zuletzt 14.07) ⑥ Remotion R9 (Kandidat: Landkarte- oder PWA-Install-Demo) ⑦ Statusboard bei Substanz.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - Sponsors: angemeldet ✓ — Restschritte (Bio/Tier/Stripe/W-8BEN/2FA/Submit) in /admin, danach Footer-Link
