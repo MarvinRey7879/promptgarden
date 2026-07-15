@@ -43,6 +43,7 @@ export default function Header({ lang }: { lang: Lang }) {
     { label: t.nav.addons, href: `/${lang}/addons/` },
     { label: t.nav.feed, href: `/${lang}/feed/` },
     { label: t.nav.vergleiche, href: `/${lang}/vergleiche/` },
+    { label: `🎯 ${t.nav.challenge}`, href: `/${lang}/challenge/` },
     { label: 'Forum', href: `/${lang}/forum/` },
   ];
 
@@ -64,7 +65,7 @@ export default function Header({ lang }: { lang: Lang }) {
         >
           prompt<span style={{ color: 'var(--accent)' }}>garten</span> 🌱
         </Link>
-        <nav style={{ display: 'flex', gap: 6 }}>
+        <nav style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {navItems.map((n) => (
             <Link
               key={n.href}

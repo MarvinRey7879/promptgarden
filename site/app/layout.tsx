@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque, IBM_Plex_Mono } from 'next/font/google';
+import SwRegister from '@/components/SwRegister';
 import './globals.css';
 
 const bricolage = Bricolage_Grotesque({
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   description:
     'Kostenlose Lern-Plattform für Coden mit KI: Begriffe, Prompts, Agenten, Loops. Simpel erklärt, immer aktuell.',
   robots: { index: true, follow: true }, // Domain aktiv seit 13.07.2026 — indexierbar
+  manifest: '/manifest.webmanifest',
   openGraph: {
     siteName: 'promptgarten',
     images: [{ url: '/og.png', width: 1200, height: 630 }],
@@ -32,7 +34,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de" className={`${bricolage.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SwRegister />
+      </body>
     </html>
   );
 }

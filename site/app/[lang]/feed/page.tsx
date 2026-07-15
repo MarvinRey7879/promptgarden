@@ -27,12 +27,31 @@ export default async function FeedPage({ params }: { params: Promise<{ lang: str
       <h1 style={{ margin: '30px 0 6px', fontSize: 40, fontWeight: 800, letterSpacing: '-.03em' }}>
         {t.feedTitle}
       </h1>
-      <p style={{ margin: '0 0 28px', color: 'var(--muted)', fontSize: 15.5 }}>{t.feedSub}</p>
+      <p style={{ margin: '0 0 12px', color: 'var(--muted)', fontSize: 15.5 }}>{t.feedSub}</p>
+      <p style={{ margin: '0 0 28px' }}>
+        <a
+          href={`/feed.${lang}.xml`}
+          style={{
+            display: 'inline-block',
+            background: 'var(--yellow)',
+            border: '2.5px solid var(--ink)',
+            borderRadius: 99,
+            padding: '4px 14px',
+            fontSize: 13,
+            fontWeight: 800,
+            textDecoration: 'none',
+            boxShadow: '3px 3px 0 var(--ink)',
+          }}
+        >
+          📡 RSS
+        </a>
+      </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {items.map((item, i) => (
           <article
             key={item.id}
+            id={item.id}
             className="card"
             style={{
               padding: '20px 24px',
