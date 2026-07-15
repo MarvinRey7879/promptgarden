@@ -78,15 +78,19 @@ export const WORLD_0: string[] = [
 
 /** Welt 1 — Grundlagen: geordneter Lernpfad (Kapitel-Slugs) */
 export const WORLD_1: string[] = [
+  'terminal-basics',
   'was-ist-ein-llm',
   'token',
   'context-window',
   'prompt',
   'kontext-fuettern',
   'system-prompt',
+  'temperatur-und-sampling',
   'halluzination',
   'prompt-strukturen',
   'erst-plan-dann-code',
+  'ai-coding-ide-vs-cli',
+  'rate-limits-und-quotas',
 ];
 
 /** Welt 2 — Agenten: eigener Pfad, unabhängig von Welt 1 freischaltbar */
@@ -99,6 +103,8 @@ export const WORLD_2: string[] = [
   'guardrails-fuer-agenten',
   'sandboxing',
   'agent-sicherheit',
+  'human-in-the-loop',
+  'datenschutz-und-ki-tools',
   'loops-fuer-agenten',
   'multi-agent-patterns',
   'agent-teams',
@@ -126,8 +132,12 @@ export const WORLD_3: string[] = [
   'refactoring-mit-ki',
   'code-verstehen-mit-ki',
   'rag-selbst-bauen',
+  'vektordatenbanken',
+  'chunking-strategien',
+  'mcp-sicherheit',
   'projekt-deployen',
   'benchmarks-lesen',
+  'swe-bench-agenten-benchmarks',
 ];
 
 export function difficultyDots(d: 1 | 2 | 3): string {

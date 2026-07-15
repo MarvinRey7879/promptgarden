@@ -76,6 +76,9 @@ if (entries.de) {
         errors.push(`entries/${slug} [${l}]: quiz.correct=${e.quiz?.correct} ungültig`);
       if (!Array.isArray(e.sources) || e.sources.length === 0)
         errors.push(`entries/${slug} [${l}]: sources leer — Quellenpflicht!`);
+      // Die Kapitelseite rendert exercise.steps und exercise.selfCheck ohne Guard (It. 116)
+      if (e.exercise && (!Array.isArray(e.exercise.steps) || !e.exercise.steps.length || !Array.isArray(e.exercise.selfCheck) || !e.exercise.selfCheck.length))
+        errors.push(`entries/${slug} [${l}]: exercise ohne steps/selfCheck — Seite crasht beim Prerender`);
       if (Boolean(de.bodyDetail) !== Boolean(e.bodyDetail))
         errors.push(`entries/${slug} [${l}]: bodyDetail-Parität verletzt (de=${Boolean(de.bodyDetail)}, ${l}=${Boolean(e.bodyDetail)})`);
       if (de.sources && e.sources) {
