@@ -675,3 +675,8 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
   (e) 2× cwd-Fehler (site/ statt Root) — Regel „cd im SELBEN Call" erneut bestätigt.
 - BUILD_EXIT=0 (Lint 0 Fehler), Deploy f67a015a, Live-Verify 3 Titel de+zh 3/3, Smoke 6/6, Screenshot ok. Commit 250b0ed. Challenge-Pool automatisch 91 Fragen, Suchindex 412 Docs.
 - Known-good: Deploy f67a015a, Commit 250b0ed.
+
+## It. 117 — 15.07.2026 ~14:05 — LOOP.md-Update ✅
+- Poll grün (views 453, besucher 35, alles leer), Smoke 6/6.
+- LOOP.md: Stand auf It. 117/91 Kapitel, Rotation neu (Feed 16.07 → Ideen R3 → Batch 7 ~17./18. → Link-Audit/Pruning ~21. → Remotion R9), 3 neue Arbeitsregeln (Geschwister-Agents mitteilen; Reviewer-Forks→Orchestrator; Autoren-Schema komplett inkl. selfCheck). Commit 18c7c4d.
+- Bis Feed 16.07 früh: stündliche Grün-Checks.
