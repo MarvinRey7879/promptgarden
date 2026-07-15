@@ -656,3 +656,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Verify: BUILD_EXIT=0, Deploy c26410df, Live: RSS de+zh ok, Challenge de+zh ok, quiz.fr 81, manifest/sw/icons 200, rel=alternate+manifest-Link im HTML; Playwright: Antwortflow Richtig→Weiter→Frage 2 ✅, SW registered:active, OFFLINE-Reload lesbar ✅. Commit 937bcfb.
 - Lessons: Playwright nicht im Repo — Install im Scratchpad nutzt ms-playwright-Browser-Cache; .btn-Locator traf Header-Newsletter → Locator immer auf Karte scopen.
 - Known-good: Deploy c26410df, Commit 937bcfb.
+
+## It. 115 — 15.07.2026 ~11:20 — Remotion R8: Challenge-Demo ✅
+- Poll 11:03 grün: views 430 (+29), besucher 32 (+5), intern 58, notes/bugs/feedback leer. Smoke 6/6 (neu: /de/challenge/ + /feed.xml im Set).
+- ChallengeDemo.tsx (300 Frames/10s, 1d-Stil): MCP-Frage, Hover wandert, Prüfen, ✅+5 XP schwebt, Serien-Badge 🔥. Render ×5 je ~0,6 MB.
+- Einbettung /challenge unter DailyChallenge via ExampleVideo (VIDEO_LABEL ×5). BUILD_EXIT=0, Deploy e8c26361, Live-Verify de+zh src + mp4 200, Screenshot ok. Commit fd8334a.
+- Lesson: cwd nach Build-Schritt war site/ — git add mit Repo-Pfaden schlug fehl; Regel bestätigt: Repo-Befehle IMMER mit cd im selben Call. ⚠️ Poll-URL: promptgarden-api.promptgarden.workers.dev (nicht marvin-mez).
+- Known-good: Deploy e8c26361, Commit fd8334a. Videos jetzt 65.
