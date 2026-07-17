@@ -723,3 +723,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 ## It. 126 — 17.07.2026 ~14:35 — Remotion R10 Vergleiche-Demo ✅
 - CompareDemo.tsx (300 Frames): Mini-Scatter mit 7 echten Datenpunkten (Fable/Sol/K3/Grok/Sonnet/DeepSeek★/GLM), Zonen-Chips, Sweet-Spot-Ring; ×5 je ~0,55 MB; eingebettet auf /vergleiche unter dem Quadrant. BUILD_EXIT=0, Deploy 84252298, Live-Verify de+zh+mp4. Videos jetzt 75.
 - Known-good: Pages 84252298, Worker c52b92eb.
+
+## It. 127 — 17.07.2026 ~15:30 — NEWSLETTER AKTIVIERT ✅ (Task #8 KOMPLETT)
+- Marvin lieferte Sending-Key + Full-Access-Key im Chat. Ablauf: Worker-Secret RESEND_API_KEY gesetzt → Domain news.promptgarten.com per Full-Key-API angelegt (eu-west-1) → 3 DNS-Records (DKIM/MX/SPF) via CF_PG_ZONE_TOKEN in Zone eingetragen → Verify → VERIFIED in <15 min → Test-Mail an Marvin ✅ (Resend-ID 407ea856) → Marvin als Erst-Abonnent angemeldet, Opt-in-Mail automatisch raus (opt_in_sent=1 in D1 bestätigt).
+- Stolpersteine: Sending-Key ist restricted (kann keine Domains lesen) → Full-Key nachgefragt; autopilot.env hatte schon RESEND_API_KEY von ANDEREM Projekt (framefetch) → grep-Guard verhinderte Append still, env-Var blieb leer → promptgarten-Keys jetzt als PG_RESEND_KEY/PG_RESEND_FULL_KEY (Memory-Notiz aktualisiert). Lesson: vor Append in geteilte Secret-Dateien prüfen ob NAME schon (fremd-)belegt ist.
+- Damit R3 zu 100 % LIVE inkl. Versand. Wochen-Digest feuert automatisch Mo 08:00 UTC.
+- Known-good: Pages 84252298, Worker c52b92eb.
