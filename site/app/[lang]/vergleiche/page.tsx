@@ -6,7 +6,7 @@ import vglFr from '@/content/vergleiche.fr.json';
 import vglZh from '@/content/vergleiche.zh.json';
 import ScenarioPicker, { type Szenario } from '@/components/ScenarioPicker';
 import PriceCalculator from '@/components/PriceCalculator';
-import ModelQuadrant, { type QuadrantModel } from '@/components/ModelQuadrant';
+import ModelQuadrant, { type QuadrantModel, type QuadrantZone } from '@/components/ModelQuadrant';
 import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 
 type Source = { title: string; url: string };
@@ -27,7 +27,14 @@ type Vergleich = {
   title: string;
   intro: string;
   picker?: { kicker: string; toolLabel: string; modellLabel: string; szenarien: Szenario[] };
-  quadrant?: { title: string; xLow: string; xHigh: string; yLow: string; yHigh: string; hinweis: string; models: QuadrantModel[] };
+  quadrant?: { title: string; intro: string; xLabel: string; yLabel: string; hinweis: string; zones: QuadrantZone[]; openLabel: string; models: QuadrantModel[] };
+  ratio?: {
+    title: string;
+    intro: string;
+    spalten: { platz: string; modell: string; index: string; blended: string; ratio: string };
+    rows: { platz: number; name: string; anbieter: string; index: number; blended: string; ratio: number; open: boolean }[];
+    fussnoten: string[];
+  };
   modelle?: {
     title: string;
     intro: string;
@@ -122,19 +129,56 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
         />
       )}
 
-      {/* ② Modell-Quadrant */}
+      {/* ② Intelligenz-pro-Dollar-Scatter */}
       {data.quadrant && (
-        <>
-          <ModelQuadrant
-            title={data.quadrant.title}
-            xLow={data.quadrant.xLow}
-            xHigh={data.quadrant.xHigh}
-            yLow={data.quadrant.yLow}
-            yHigh={data.quadrant.yHigh}
-            models={data.quadrant.models}
-          />
-          <p style={{ margin: '-14px 0 30px', fontSize: 12.5, color: 'var(--muted)' }}>{data.quadrant.hinweis}</p>
-        </>
+        <ModelQuadrant
+          title={data.quadrant.title}
+          intro={data.quadrant.intro}
+          xLabel={data.quadrant.xLabel}
+          yLabel={data.quadrant.yLabel}
+          hinweis={data.quadrant.hinweis}
+          zones={data.quadrant.zones}
+          openLabel={data.quadrant.openLabel}
+          models={data.quadrant.models}
+        />
+      )}
+
+      {/* ②b Ratio-Ranking */}
+      {data.ratio && (
+        <div className="card" style={{ padding: '18px 22px', marginBottom: 34, background: '#fff', boxShadow: '4px 4px 0 var(--ink)' }}>
+          <h3 style={{ margin: '4px 0 6px', fontSize: 20, fontWeight: 800, letterSpacing: '-.02em' }}>{data.ratio.title}</h3>
+          <p style={{ margin: '0 0 14px', fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 }}>{data.ratio.intro}</p>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560, fontSize: 14 }}>
+              <thead>
+                <tr>
+                  {[data.ratio.spalten.platz, data.ratio.spalten.modell, data.ratio.spalten.index, data.ratio.spalten.blended, data.ratio.spalten.ratio].map((h) => (
+                    <th key={h} style={{ textAlign: 'left', borderBottom: '3px solid var(--ink)', padding: '6px 10px', fontSize: 12.5, letterSpacing: '.05em' }}>{h.toUpperCase()}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {data.ratio.rows.map((r, i) => (
+                  <tr key={r.name} style={{ background: i < 3 ? 'var(--lime)' : i % 2 ? 'var(--bg)' : '#fff' }}>
+                    <td style={{ padding: '7px 10px', fontWeight: 800 }}>{r.platz}</td>
+                    <td style={{ padding: '7px 10px', fontWeight: 700 }}>
+                      {r.name} {r.open && <span title="Open Weights">✳</span>}
+                      <span style={{ color: 'var(--muted)', fontWeight: 500 }}> · {r.anbieter}</span>
+                    </td>
+                    <td style={{ padding: '7px 10px', fontVariantNumeric: 'tabular-nums' }}>{r.index.toFixed(2)}</td>
+                    <td style={{ padding: '7px 10px', fontVariantNumeric: 'tabular-nums' }}>{r.blended}</td>
+                    <td style={{ padding: '7px 10px', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{r.ratio.toFixed(1)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul style={{ margin: '12px 0 0', paddingLeft: 18, fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
+            {data.ratio.fussnoten.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* ③ Modelle der großen Anbieter */}
