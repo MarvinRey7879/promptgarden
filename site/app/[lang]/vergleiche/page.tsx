@@ -115,6 +115,10 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
         Stand / as of: {data.updated} ·{' '}
         <a href={`/${lang}/benchmarks/`} style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}>
           {lang === 'de' ? 'Benchmarks-Übersicht →' : 'Benchmark overview →'}
+        </a>{' '}
+        ·{' '}
+        <a href={`/${lang}/timeline/`} style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}>
+          📊 {lang === 'de' ? 'Modell-Timeline →' : 'Model timeline →'}
         </a>
       </p>
 
