@@ -7,20 +7,27 @@ import { useState } from 'react';
  * verifizierten Preistabelle (research/vergleiche-modelle-research.md, Stand: Juli 2026).
  * Reine Client-Rechnung, keine Requests. Quellen unten verlinkt.
  */
-type PriceModel = { name: string; anbieter: string; inP: number; outP: number; note?: string };
+type PriceModel = { name: string; anbieter: string; inP: number; outP: number; note?: string; batch?: boolean };
 
 // Stand: Juli 2026 — Listenpreise laut Anbieter-Preisseiten (Quellen im Disclaimer)
 const MODELS: PriceModel[] = [
-  { name: 'Haiku 4.5', anbieter: 'Anthropic', inP: 1, outP: 5 },
-  { name: 'Sonnet 5', anbieter: 'Anthropic', inP: 3, outP: 15, note: 'intro' },
-  { name: 'Opus 4.8', anbieter: 'Anthropic', inP: 5, outP: 25 },
-  { name: 'Fable 5', anbieter: 'Anthropic', inP: 10, outP: 50 },
+  // Batch-Flag nur wo der −50-%-Rabatt vom Anbieter dokumentiert ist (Research 17.07.2026)
+  { name: 'Haiku 4.5', anbieter: 'Anthropic', inP: 1, outP: 5, batch: true },
+  { name: 'Sonnet 5', anbieter: 'Anthropic', inP: 3, outP: 15, note: 'intro', batch: true },
+  { name: 'Opus 4.8', anbieter: 'Anthropic', inP: 5, outP: 25, batch: true },
+  { name: 'Fable 5', anbieter: 'Anthropic', inP: 10, outP: 50, batch: true },
   { name: 'GPT-5.6 Luna', anbieter: 'OpenAI', inP: 1, outP: 6 },
   { name: 'GPT-5.6 Terra', anbieter: 'OpenAI', inP: 2.5, outP: 15 },
   { name: 'GPT-5.6 Sol', anbieter: 'OpenAI', inP: 5, outP: 30 },
-  { name: 'Gemini 3.5 Flash', anbieter: 'Google', inP: 1.5, outP: 9 },
-  { name: 'Gemini 3.1 Pro', anbieter: 'Google', inP: 2, outP: 12, note: 'tier' },
+  { name: 'Gemini 3.5 Flash', anbieter: 'Google', inP: 1.5, outP: 9, batch: true },
+  { name: 'Gemini 3.1 Pro', anbieter: 'Google', inP: 2, outP: 12, note: 'tier', batch: true },
   { name: 'Grok 4.5', anbieter: 'xAI', inP: 2, outP: 6 },
+  { name: 'Kimi K3', anbieter: 'Moonshot', inP: 3, outP: 15 },
+  { name: 'Kimi K2.5', anbieter: 'Moonshot', inP: 0.6, outP: 3 },
+  { name: 'DeepSeek-V4-Pro', anbieter: 'DeepSeek', inP: 0.435, outP: 0.87 },
+  { name: 'GLM-4.7', anbieter: 'Zhipu', inP: 0.6, outP: 2.2 },
+  { name: 'Muse Spark 1.1', anbieter: 'Meta', inP: 1.25, outP: 4.25 },
+  { name: 'Qwen3.7-Max', anbieter: 'Alibaba', inP: 2.5, outP: 7.5, batch: true },
 ];
 
 const PROVIDER_COLORS: Record<string, string> = {
@@ -28,6 +35,11 @@ const PROVIDER_COLORS: Record<string, string> = {
   OpenAI: 'var(--blue)',
   Google: 'var(--yellow)',
   xAI: 'var(--pink)',
+  Moonshot: '#e0d4f7',
+  DeepSeek: '#c9e8f0',
+  Zhipu: '#f0e0c9',
+  Meta: '#d4e8d4',
+  Alibaba: '#f7d4d4',
 };
 
 const TXT: Record<string, Record<string, string>> = {
@@ -36,7 +48,7 @@ const TXT: Record<string, Record<string, string>> = {
     inTok: 'Input pro Anfrage',
     outTok: 'Output pro Anfrage',
     reqs: 'Anfragen pro Tag',
-    batch: 'Batch-API (−50 %, belegt für Claude-Modelle)',
+    batch: 'Batch-API (−50 % — nur bei Modellen mit dokumentiertem Batch-Rabatt)',
     month: '≈ Monatskosten (30 Tage, Listenpreise)',
     noteIntro: 'Sonnet 5: Einführungspreis 2/10 $ bis 31.08.2026 — Rechner nutzt den regulären Preis 3/15 $.',
     noteTier: 'Gemini 3.1 Pro: Preis gilt bis 200k-Prompts; darüber 4/18 $.',
@@ -47,7 +59,7 @@ const TXT: Record<string, Record<string, string>> = {
     inTok: 'Input per request',
     outTok: 'Output per request',
     reqs: 'Requests per day',
-    batch: 'Batch API (−50%, documented for Claude models)',
+    batch: 'Batch API (−50% — only for models with a documented batch discount)',
     month: '≈ monthly cost (30 days, list prices)',
     noteIntro: 'Sonnet 5: intro pricing $2/$10 until Aug 31, 2026 — calculator uses the regular $3/$15.',
     noteTier: 'Gemini 3.1 Pro: price applies up to 200k prompts; above that $4/$18.',
@@ -58,7 +70,7 @@ const TXT: Record<string, Record<string, string>> = {
     inTok: 'Input por petición',
     outTok: 'Output por petición',
     reqs: 'Peticiones al día',
-    batch: 'Batch API (−50 %, documentado para modelos Claude)',
+    batch: 'Batch API (−50 % — solo para modelos con descuento batch documentado)',
     month: '≈ coste mensual (30 días, precios de lista)',
     noteIntro: 'Sonnet 5: precio de lanzamiento 2/10 $ hasta el 31.08.2026 — la calculadora usa el precio regular 3/15 $.',
     noteTier: 'Gemini 3.1 Pro: precio hasta prompts de 200k; por encima, 4/18 $.',
@@ -69,7 +81,7 @@ const TXT: Record<string, Record<string, string>> = {
     inTok: 'Input par requête',
     outTok: 'Output par requête',
     reqs: 'Requêtes par jour',
-    batch: 'Batch API (−50 %, documenté pour les modèles Claude)',
+    batch: 'Batch API (−50 % — uniquement pour les modèles avec remise batch documentée)',
     month: '≈ coût mensuel (30 jours, prix catalogue)',
     noteIntro: 'Sonnet 5 : prix de lancement 2/10 $ jusqu’au 31.08.2026 — le calculateur utilise le prix normal 3/15 $.',
     noteTier: 'Gemini 3.1 Pro : prix jusqu’à 200k de prompt ; au-delà 4/18 $.',
@@ -80,7 +92,7 @@ const TXT: Record<string, Record<string, string>> = {
     inTok: '每次请求的输入',
     outTok: '每次请求的输出',
     reqs: '每天请求数',
-    batch: 'Batch API（−50%，Claude 模型有官方说明）',
+    batch: 'Batch API（−50%——仅适用于官方说明有批量折扣的模型）',
     month: '≈ 每月费用（30 天，按目录价）',
     noteIntro: 'Sonnet 5：2026-08-31 前为推广价 $2/$10——计算器使用常规价 $3/$15。',
     noteTier: 'Gemini 3.1 Pro：价格适用于 200k 以内的提示；超过为 $4/$18。',
@@ -93,6 +105,11 @@ const SOURCES = [
   { title: 'OpenAI Models', url: 'https://developers.openai.com/api/docs/models' },
   { title: 'Gemini API Pricing', url: 'https://ai.google.dev/gemini-api/docs/pricing' },
   { title: 'xAI Models', url: 'https://docs.x.ai/docs/models' },
+  { title: 'Kimi Pricing', url: 'https://platform.kimi.ai/docs/pricing/chat-k3' },
+  { title: 'DeepSeek Pricing', url: 'https://api-docs.deepseek.com/quick_start/pricing/' },
+  { title: 'Z.ai Pricing', url: 'https://docs.z.ai/guides/overview/pricing' },
+  { title: 'Meta Model API', url: 'https://developer.meta.com/ai/products/meta-model-api/' },
+  { title: 'Alibaba Model Studio', url: 'https://www.alibabacloud.com/help/en/model-studio/model-pricing' },
 ];
 
 const fmt = (n: number) =>
@@ -106,7 +123,7 @@ export default function PriceCalculator({ lang }: { lang: string }) {
   const [batch, setBatch] = useState(false);
 
   const rows = MODELS.map((m) => {
-    const factor = batch && m.anbieter === 'Anthropic' ? 0.5 : 1;
+    const factor = batch && m.batch ? 0.5 : 1;
     const perReq = ((inTok * 1000) / 1e6) * m.inP + ((outTok * 1000) / 1e6) * m.outP;
     return { ...m, cost: perReq * reqs * 30 * factor };
   }).sort((a, b) => a.cost - b.cost);
