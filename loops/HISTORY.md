@@ -685,3 +685,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Grün-Checks 15/16/17 Uhr ok (views 480, besucher 36). MapDemo.tsx (300 Frames, Welt-1-Insel, 13 Punkte füllen sich, Zähler, Badge, Serien-Chip) ×5 je ~0,6 MB; eingebettet auf /lernpfade unter LearnMap. BUILD_EXIT=0, Deploy 355e84eb, Live-Verify de+zh + mp4 200, Screenshot ok. Commit 366051b. Videos jetzt 70.
 - ⏸️ LOOP AUF MARVINS WUNSCH PAUSIERT (15.07. ~17:45, „kurz pausieren, in zwei Tagen weitermachen"). Wiederaufnahme: neue Session in C:\Users\marvi\promptgarden, „mach weiter mit loop promptgarden" → LOOP.md + diese HISTORY lesen → Rotation fortsetzen: ① Feed (Datum des Wiederaufnahme-Tags, 25 Bestands-ids vorher listen!) ② Ideen-Pitch R3 (Backlog: Newsletter-Digest + 3 neue) ③ Kapitel-Batch 7 (mit den 3 neuen Regeln) ④ Link-Audit ⑤ LOOP.md-Pruning.
 - Known-good: Deploy 355e84eb, Commit 366051b.
+
+## It. 121 — 17.07.2026 ~11:00 — WIEDERAUFNAHME + Feed 17.07 ✅ + Ideen R3 entschieden
+- Wiederaufnahme nach 2-Tage-Pause (Marvin: „mach die loop weiter"). Poll grün, Smoke 6/6. TRAFFIC-SPRUNG: views 541, besucher 79 (+43 in 2 Tagen); /en/befehle/claude-code/scroll-speed/ 18 unique = externer Traffic-Einstieg über Befehlsseite.
+- Feed 17.07: 3 Items ×5 (Kimi K3 2.8T open, Claude Code 2.1.211 Permission-Preview-Fix, HF-Agenten-Einbruch), alle Quellen doppelt verifiziert; Fable-5-Frist geprüft — keine neue Meldung, Item bleibt. Merge 25→28, Deploy a8191ea8, Live-Verify de+zh+RSS. Commit 8abe858.
+- IDEEN RUNDE 3: Marvin wählt ALLE 4 (Newsletter-Digest, Teilen-Buttons, Prompt-Sandbox, Modell-Timeline) + NEUE DIREKTIVE: Vergleiche intensiver — 2D-Quadrant nach Intelligence-to-Cost + Stärken, Modelle GLM/Grok/Gemini/Kimi/DeepSeek/Qwen/Mistral aufnehmen. Reihenfolge: v3 → Teilen → Timeline → Sandbox → Newsletter. Research-Agent für v3 läuft (offizielle Preise + Artificial-Analysis-Index, Quellenpflicht).
+- Known-good: Deploy a8191ea8, Commit 8abe858.

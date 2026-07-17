@@ -63,14 +63,11 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## ⏸️ PAUSIERT (Marvin, 15.07.26 ~17:45 — „in zwei Tagen weiter")
-Wiederaufnahme: „mach weiter mit loop promptgarden" → diese Datei + loops/HISTORY.md (It. 120) lesen → date prüfen → Poll + Smoke → Rotation ab ① Feed (Tages-Datum!, 25 Bestands-ids vorher listen). Alles committed bis 366051b, Deploy 355e84eb grün.
-
-## Aktueller Stand (It. 120, 15.07.26 abends, Commit-Stand siehe HISTORY)
+## Aktueller Stand (It. 121, 17.07.26 vormittags, Commit-Stand siehe HISTORY)
 ~2067 Seiten live auf promptgarten.com: 91 Kapitel ×5 (ALLE 🌱/🔬 + Quiz + Übung mit selfCheck; Batch 6 It. 116: Review 14 Findings/21 Fixes), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity 57/Aider 48/Codex 16), 🧩 Prompts (16), 12 Addons, 4 Welten (W0 5/W1 13/W2 16/W3 23), Vergleiche v2 (+💶 Preisrechner), 🔍 Suche (412 Docs/Sprache), 🗺️ Lern-Landkarte + Demo-Clip auf /lernpfade, Feed (25 News) + 📡 RSS (/feed.xml je Sprache, build-rss.mjs), 🎯 Tages-Challenge /challenge (5 datum-seeded aus 91, build-challenge.mjs, Serie pg_challenge_v1, Demo-Clip), 📱 PWA (manifest+sw.js network-first, SwRegister prod-only), 🎬 70 Remotion-Clips, Favicon, Forum (leer), freie API, Admin V2 (Unique-Besucher + Internal-Filter), WERBUNG AN außer Landing (Google-CMP nötig — Marvin-Todo). Traffic 15.07 17:00: views_7d 480, besucher_7d 36. Direktive 13: Runde 1+2 geliefert (Newsletter-Digest = späteres Todo, NICHT abgelehnt → Kandidat R3).
 
-## Rotation (nächste Arbeit)
-① Feed täglich (nächster 16.07 früh, VORHER 25 Bestands-ids listen) ② Ideen-Pitch Runde 3 (~17./18.07; Backlog: Newsletter-Digest + 3 neue Ideen) ③ Kapitel-Batch 7 (frühestens ~17./18.07 — Rate ≤ Verifikation, Batch 6 war 15.07) ④ Link-Audit wöchentlich (~21.07, ~380 URLs) ⑤ LOOP.md-Pruning wöchentlich (zuletzt 14.07) ⑥ Remotion R9 (Kandidat: Landkarte- oder PWA-Install-Demo) ⑦ Statusboard bei Substanz.
+## Rotation (nächste Arbeit) — R3 KOMPLETT gewählt 17.07 + Vergleiche-Direktive
+① Vergleiche-v3 (Marvin-Direktive 17.07: 2D-Quadrant Intelligence-to-Cost, +GLM/Grok/Gemini/Kimi/DeepSeek/Qwen/Mistral, Stärken-Profile; Research läuft, Adversarial-Review Pflicht) ② Teilen-Buttons ③ Modell-Timeline (nutzt v3-Daten) ④ Prompt-Sandbox ⑤ Newsletter-Digest (Mail-Weg klären, externe Konten NUR mit Marvin) ⑥ Feed täglich (nächster 18.07 früh, 28 Bestands-ids vorher listen) ⑦ Kapitel-Batch 7 ~18./19.07 (mit den 3 neuen Agent-Regeln) ⑧ Link-Audit ~21.07 ⑨ LOOP.md-Pruning ~21.07 ⑩ Remotion R10 später.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - Sponsors: angemeldet ✓ — Restschritte (Bio/Tier/Stripe/W-8BEN/2FA/Submit) in /admin, danach Footer-Link
