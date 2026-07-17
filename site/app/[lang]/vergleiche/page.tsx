@@ -7,6 +7,16 @@ import vglZh from '@/content/vergleiche.zh.json';
 import ScenarioPicker, { type Szenario } from '@/components/ScenarioPicker';
 import PriceCalculator from '@/components/PriceCalculator';
 import ModelQuadrant, { type QuadrantModel, type QuadrantZone } from '@/components/ModelQuadrant';
+import ExampleVideo from '@/components/ExampleVideo';
+
+// Vergleiche-Demo-Clip (Remotion R10) unter dem Scatter
+const COMPARE_LABEL: Record<string, string> = {
+  de: 'Das Diagramm in 10 Sekunden: teurer nach rechts, schlauer nach oben — und wo der Sweet Spot liegt.',
+  en: 'The chart in 10 seconds: pricier to the right, smarter towards the top — and where the sweet spot sits.',
+  es: 'El diagrama en 10 segundos: más caro a la derecha, más listo hacia arriba — y dónde está el punto óptimo.',
+  fr: 'Le graphique en 10 secondes : plus cher à droite, plus malin vers le haut — et où se trouve le sweet spot.',
+  zh: '10 秒看懂图表：越右越贵，越上越聪明——最佳选择在哪里。',
+};
 import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 
 type Source = { title: string; url: string };
@@ -145,6 +155,12 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
           openLabel={data.quadrant.openLabel}
           models={data.quadrant.models}
         />
+      )}
+
+      {data.quadrant && (
+        <div style={{ marginBottom: 30 }}>
+          <ExampleVideo lang={lang} name="compare-demo" label={COMPARE_LABEL[lang]} />
+        </div>
       )}
 
       {/* ②b Ratio-Ranking */}
