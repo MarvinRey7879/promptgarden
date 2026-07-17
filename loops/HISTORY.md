@@ -706,3 +706,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - ShareButtons.tsx: Copy-Link/X/LinkedIn/WhatsApp/Als-Markdown (Agenten-Feature), Pill-Stil, Dict ×5; eingebettet auf Kapitel- (unter Quiz), Befehls- und Prompts-Seiten. Playwright-Klick-Test mit Clipboard-Permission: Link+Markdown korrekt im Clipboard. Task #5 KOMPLETT.
 - BUILD_EXIT=0 ×2, Deploys 73d71cd9 + f692047f, Live-Verify de+zh. Commits c7da94a + 62f0…
 - Known-good: Deploy f692047f.
+
+## It. 124 — 17.07.2026 ~13:15 — Modell-Timeline ✅ (Task #6)
+- /timeline ×5: 12 Einträge (Releases/Sunsets/Preisänderungen) aus verifiziertem v3-Research + Feed, typ-Farben, ⏳-Zukunfts-Marker, Quelle je Eintrag; verlinkt von /vergleiche, Sitemap.
+- Übersetzer fand echten Bug: ASCII-Anführungszeichen in timeline.de.json Zeile 76 (Qwen-Zitat) → JSON invalide; gefixt („…“). Lesson: nach Hand-Autoring IMMER sofort node-parsen (Regel existierte — diesmal erst nach Agent-Hinweis geprüft).
+- BUILD_EXIT=0, Deploy 3e744bf7, Live-Verify de+zh+Link, Screenshot ok.
+- Known-good: Deploy 3e744bf7.
