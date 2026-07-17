@@ -73,6 +73,33 @@ function clip(s, max) {
   return typeof s === 'string' ? s.slice(0, max) : null;
 }
 
+/** Mail via Resend (news.promptgarten.com). Ohne RESEND_API_KEY: no-op (Backfill via Cron, sobald Key da). */
+async function sendMail(env, to, subject, html) {
+  if (!env.RESEND_API_KEY) return false;
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: 'promptgarten 🌱 <mail@news.promptgarten.com>', to, subject, html }),
+  });
+  return r.ok;
+}
+
+const MAIL_TXT = {
+  de: { confirmSub: 'Bitte bestätige deine Anmeldung — promptgarten', confirm: 'Klick zum Bestätigen deiner Newsletter-Anmeldung:', confirmBtn: 'Anmeldung bestätigen', digestSub: 'Deine KI-Woche — promptgarten', unsub: 'Abmelden' },
+  en: { confirmSub: 'Please confirm your signup — promptgarten', confirm: 'Click to confirm your newsletter signup:', confirmBtn: 'Confirm signup', digestSub: 'Your AI week — promptgarten', unsub: 'Unsubscribe' },
+  es: { confirmSub: 'Confirma tu suscripción — promptgarten', confirm: 'Haz clic para confirmar tu suscripción:', confirmBtn: 'Confirmar', digestSub: 'Tu semana de IA — promptgarten', unsub: 'Darse de baja' },
+  fr: { confirmSub: 'Confirme ton inscription — promptgarten', confirm: 'Clique pour confirmer ton inscription :', confirmBtn: 'Confirmer', digestSub: 'Ta semaine IA — promptgarten', unsub: 'Se désinscrire' },
+  zh: { confirmSub: '请确认订阅 — promptgarten', confirm: '点击确认你的订阅：', confirmBtn: '确认订阅', digestSub: '你的 AI 一周 — promptgarten', unsub: '退订' },
+};
+const mailT = (lang) => MAIL_TXT[lang] || MAIL_TXT.de;
+const API_BASE = 'https://promptgarden-api.promptgarden.workers.dev';
+
+function confirmMailHtml(lang, token) {
+  const t = mailT(lang);
+  const link = `${API_BASE}/v1/newsletter/confirm?token=${token}`;
+  return `<div style="font-family:sans-serif;max-width:480px"><p>${t.confirm}</p><p><a href="${link}" style="background:#e8613c;color:#fff;padding:10px 22px;border-radius:99px;text-decoration:none;font-weight:bold">${t.confirmBtn} 🌱</a></p><p style="color:#888;font-size:12px">${link}</p></div>`;
+}
+
 function isEmail(s) {
   return typeof s === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s) && s.length <= MAX_LEN.email;
 }
@@ -88,6 +115,20 @@ export default {
     try {
       if (request.method === 'GET' && path === '/v1/health') {
         return json({ ok: true, service: 'promptgarden-api' }, 200, cors);
+      }
+
+      if (request.method === 'GET' && (path === '/v1/newsletter/confirm' || path === '/v1/newsletter/unsubscribe')) {
+        const token = url.searchParams.get('token') || '';
+        if (!/^[a-f0-9-]{36}$/.test(token)) return new Response('Invalid token', { status: 400 });
+        const row = await env.DB.prepare('SELECT id, lang FROM newsletter_signups WHERE token = ?').bind(token).first();
+        if (!row) return new Response('Unknown token', { status: 404 });
+        const back = `https://promptgarten.com/${['de','en','es','fr','zh'].includes(row.lang) ? row.lang : 'de'}/`;
+        if (path === '/v1/newsletter/confirm') {
+          await env.DB.prepare('UPDATE newsletter_signups SET confirmed = 1 WHERE id = ?').bind(row.id).run();
+          return new Response(`<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="3;url=${back}"><body style="font-family:sans-serif;text-align:center;padding-top:15vh;background:#fdf6ec"><h1>✅ 🌱</h1><p>OK — Newsletter aktiv. / Signup confirmed.</p><a href="${back}">promptgarten.com</a></body>`, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        }
+        await env.DB.prepare('DELETE FROM newsletter_signups WHERE id = ?').bind(row.id).run();
+        return new Response(`<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;text-align:center;padding-top:15vh;background:#fdf6ec"><h1>👋</h1><p>Abgemeldet. / Unsubscribed.</p><a href="${back}">promptgarten.com</a></body>`, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       }
 
       if (request.method === 'GET' && path === '/v1/forum') {
@@ -186,11 +227,20 @@ export default {
 
       if (path === '/v1/newsletter') {
         if (!isEmail(body.email)) return json({ error: 'invalid email' }, 400, cors);
+        const email = body.email.toLowerCase();
+        const lang = clip(body.lang, 8);
+        const token = crypto.randomUUID();
         await env.DB.prepare(
-          'INSERT INTO newsletter_signups (email, lang) VALUES (?, ?) ON CONFLICT(email) DO NOTHING',
+          'INSERT INTO newsletter_signups (email, lang, token) VALUES (?, ?, ?) ON CONFLICT(email) DO NOTHING',
         )
-          .bind(body.email.toLowerCase(), clip(body.lang, 8))
+          .bind(email, lang, token)
           .run();
+        // Double-Opt-in-Mail (bei Re-Signup: vorhandenen Token verwenden; ohne Key: Cron-Backfill)
+        const row = await env.DB.prepare('SELECT token, confirmed, opt_in_sent FROM newsletter_signups WHERE email = ?').bind(email).first();
+        if (row && !row.confirmed) {
+          const sent = await sendMail(env, email, mailT(lang).confirmSub, confirmMailHtml(lang, row.token));
+          if (sent) await env.DB.prepare('UPDATE newsletter_signups SET opt_in_sent = 1 WHERE email = ?').bind(email).run();
+        }
         return json({ ok: true }, 201, cors);
       }
 
@@ -354,6 +404,47 @@ export default {
       return json({ error: 'not found' }, 404, cors);
     } catch (err) {
       return json({ error: 'internal', detail: String(err?.message || err).slice(0, 200) }, 500, cors);
+    }
+  },
+
+  /** Wöchentlicher Digest (Mo 08:00 UTC) + Opt-in-Backfill. Resend-Cap 100/Tag → max 90 Mails/Lauf. */
+  async scheduled(event, env) {
+    if (!env.RESEND_API_KEY) return;
+    let budget = 90;
+
+    // 1) Backfill: Bestätigungsmails, die vor dem API-Key nicht rausgehen konnten
+    const pending = await env.DB.prepare(
+      'SELECT email, lang, token FROM newsletter_signups WHERE confirmed = 0 AND opt_in_sent = 0 LIMIT 30',
+    ).all();
+    for (const p of pending.results) {
+      if (budget <= 0) return;
+      const ok = await sendMail(env, p.email, mailT(p.lang).confirmSub, confirmMailHtml(p.lang, p.token));
+      if (ok) {
+        await env.DB.prepare('UPDATE newsletter_signups SET opt_in_sent = 1 WHERE email = ?').bind(p.email).run();
+        budget--;
+      }
+    }
+
+    // 2) Digest an Bestätigte: Feed-Items der letzten 7 Tage je Sprache
+    const since = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+    const feeds = {};
+    const subs = await env.DB.prepare('SELECT email, lang, token FROM newsletter_signups WHERE confirmed = 1 LIMIT 200').all();
+    for (const s of subs.results) {
+      if (budget <= 0) return;
+      const lang = ['de', 'en', 'es', 'fr', 'zh'].includes(s.lang) ? s.lang : 'de';
+      if (!feeds[lang]) {
+        const r = await fetch(`https://promptgarten.com/api/feed.${lang}.json`);
+        feeds[lang] = r.ok ? (await r.json()).filter((i) => i.date >= since) : [];
+      }
+      const items = feeds[lang];
+      if (!items.length) continue;
+      const t = mailT(lang);
+      const list = items
+        .map((i) => `<li style="margin-bottom:10px"><b>${i.title}</b><br><span style="color:#555">${i.summary}</span></li>`)
+        .join('');
+      const html = `<div style="font-family:sans-serif;max-width:560px"><h2>promptgarten 🌱</h2><ul style="padding-left:18px">${list}</ul><p><a href="https://promptgarten.com/${lang}/feed/">promptgarten.com/feed</a></p><p style="font-size:11px;color:#888"><a href="${API_BASE}/v1/newsletter/unsubscribe?token=${s.token}">${t.unsub}</a></p></div>`;
+      const ok = await sendMail(env, s.email, t.digestSub, html);
+      if (ok) budget--;
     }
   },
 };

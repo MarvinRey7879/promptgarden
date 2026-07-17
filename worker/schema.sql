@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS newsletter_signups (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   email TEXT NOT NULL UNIQUE,
   lang TEXT,
-  confirmed INTEGER NOT NULL DEFAULT 0 -- Double-Opt-in folgt (It. 3+)
+  confirmed INTEGER NOT NULL DEFAULT 0, -- Double-Opt-in (aktiv seit It. 125)
+  token TEXT,                            -- Confirm-/Unsubscribe-Token (UUID)
+  opt_in_sent INTEGER NOT NULL DEFAULT 0 -- Bestätigungsmail raus? (Backfill via Cron)
 );
 
 -- Cookieless Page-Views: nur Datum (kein Timestamp), Pfad, Sprache, Land (CF-Header), Referrer-Host.
