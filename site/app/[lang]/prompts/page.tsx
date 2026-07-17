@@ -6,6 +6,7 @@ import pFr from '@/content/prompts.fr.json';
 import pZh from '@/content/prompts.zh.json';
 import CopyButton from '@/components/CopyButton';
 import ShareButtons from '@/components/ShareButtons';
+import PromptSandbox from '@/components/PromptSandbox';
 import { breadcrumbLd } from '@/lib/schema';
 import { LANGS, isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 
@@ -52,6 +53,11 @@ export default async function PromptsPage({ params }: { params: Promise<{ lang: 
       <h1 style={{ margin: '30px 0 6px', fontSize: 40, fontWeight: 800, letterSpacing: '-.03em' }}>{d.title}</h1>
       <p style={{ margin: '0 0 6px', color: 'var(--muted)', fontSize: 15.5, maxWidth: 640 }}>{d.intro}</p>
       <p className="mono" style={{ margin: '0 0 20px', fontSize: 12, color: 'var(--muted)' }}>Stand / as of: {d.updated}</p>
+
+      <PromptSandbox
+        lang={lang}
+        items={d.items.map((i) => ({ id: i.id, title: i.title, category: i.category, prompt: i.prompt }))}
+      />
 
       {/* Kategorie-Anker */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 26 }}>
