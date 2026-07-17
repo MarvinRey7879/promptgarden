@@ -700,3 +700,9 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Fehler diesmal: 2× cwd (node aus site/, npm build aus Root exit 127) + 1× Deploy trotz Build-Fail durchgerutscht weil `echo BUILD_EXIT=$?` die &&-Kette neutralisiert (stale-identisches out/, kein Schaden). NEUE REGEL: nach `; echo BUILD_EXIT=$?` NIE mit && weiterverketten — Deploy immer als separater Call nach Exit-Prüfung.
 - BUILD_EXIT=0, Deploy 94928428, Live-Verify de/en/zh (Kimi K3, GLM-4.7, DeepSeek, Ratio-Titel), Screenshots ok. Commit b9e4d56.
 - Known-good: Deploy 94928428, Commit b9e4d56.
+
+## It. 123 — 17.07.2026 ~13:30 — Preisrechner-v3 + Teilen-Buttons ✅
+- Preisrechner: +6 Modelle (Kimi K3/K2.5, DeepSeek-V4-Pro, GLM-4.7, Muse Spark 1.1, Qwen3.7-Max = 16 gesamt), Batch-Rabatt jetzt je Modell-Flag (Anthropic+Gemini+Qwen dokumentiert) statt Anthropic-only, +5 Quellen-Links, neue Anbieter-Farben. Task #4 KOMPLETT.
+- ShareButtons.tsx: Copy-Link/X/LinkedIn/WhatsApp/Als-Markdown (Agenten-Feature), Pill-Stil, Dict ×5; eingebettet auf Kapitel- (unter Quiz), Befehls- und Prompts-Seiten. Playwright-Klick-Test mit Clipboard-Permission: Link+Markdown korrekt im Clipboard. Task #5 KOMPLETT.
+- BUILD_EXIT=0 ×2, Deploys 73d71cd9 + f692047f, Live-Verify de+zh. Commits c7da94a + 62f0…
+- Known-good: Deploy f692047f.
