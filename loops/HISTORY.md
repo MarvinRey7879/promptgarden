@@ -712,3 +712,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Übersetzer fand echten Bug: ASCII-Anführungszeichen in timeline.de.json Zeile 76 (Qwen-Zitat) → JSON invalide; gefixt („…“). Lesson: nach Hand-Autoring IMMER sofort node-parsen (Regel existierte — diesmal erst nach Agent-Hinweis geprüft).
 - BUILD_EXIT=0, Deploy 3e744bf7, Live-Verify de+zh+Link, Screenshot ok.
 - Known-good: Deploy 3e744bf7.
+
+## It. 125 — 17.07.2026 ~14:00 — Prompt-Baukasten + Newsletter-Backend ✅ (Tasks #7+#8-Code)
+- Prompt-Baukasten auf /prompts (Task #7 ✅): <PLATZHALTER>-Regex, Felder, Live-Vorschau, Copy — Playwright: füllen→einsetzen→Clipboard ✓. Deploy e10ffb20.
+- Newsletter (Task #8, Code KOMPLETT): Recherche (research/newsletter-mail-weg.md): Resend empfohlen (3.000/Monat frei; MailChannels-Workers tot 404-verifiziert; CF-Send braucht Workers Paid). MARVIN entschied: Resend + news.promptgarten.com. Worker: Opt-in-Token, confirm/unsubscribe-Endpoints (HTML-Antworten), Cron Mo 08:00 UTC (Digest je Sprache aus /api/feed.<lang>.json, 90er-Batch, Opt-in-Backfill), D1 +token/+opt_in_sent (Migration remote ausgeführt). Flow live getestet: Signup→confirmed=1→Unsubscribe. Worker-Version c52b92eb.
+- WARTET AUF MARVIN: Resend-Konto + Domain news.promptgarten.com anlegen, DNS-Werte + API-Key liefern → dann `wrangler secret put RESEND_API_KEY` + DNS via CF_PG_ZONE_TOKEN; Todo im Statusboard.
+- R3-BILANZ: alle 5 gewählten Ideen + Vergleiche-Direktive an EINEM Tag geliefert (v3-Scatter, Ratio, 20 Karten, Preisrechner 16, Teilen, Timeline, Sandbox, Newsletter-Backend).
+- Known-good: Pages e10ffb20, Worker c52b92eb.
