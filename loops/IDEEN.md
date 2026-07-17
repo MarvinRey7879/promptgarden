@@ -28,6 +28,7 @@ Regeln: Abgelehnte Ideen NIE erneut pitchen. Gewählte → Rotation/Umsetzung. O
 - 14.07. abends: ALLE 4 UMGESETZT ✅ (Suche It.99, Preisrechner It.100, Prompts It.101, Landkarte It.102).
 - 15.07.2026, Runde 2: Marvin wählt 📡 RSS-Feed + 🎯 Tages-Challenge + 📱 PWA/Offline. 📰 Newsletter-Digest NICHT abgelehnt — „behalt den newsletter als späteres todo" → Backlog, erst auf Zuruf/späteren Pitch. Umsetzungs-Reihenfolge: ① RSS (kleinster Aufwand) ② Tages-Challenge ③ PWA.
 - 17.07.2026, Runde 3: Marvin wählt ALLE 4 (📰 Newsletter-Digest, 🔗 Teilen-Buttons, 🧑‍💻 Prompt-Sandbox, 📊 Modell-Timeline) + NEUE DIREKTIVE dazu: „Modell-Vergleiche intensiver, 2D-Quadrant besser aufgeteilt — wirklich nach Intelligence-to-Cost-Ratio und Stärken der einzelnen Modelle; GLM, Grok, Gemini, Kimi und andere bekannte Modelle aufnehmen" → Vergleiche-v3-Rework (Research läuft, Quellenpflicht: offizielle Preise + Artificial-Analysis-Index). Reihenfolge: ① Vergleiche-v3 (Marvins Direktive, Research läuft) ② Teilen-Buttons (kleinster Aufwand) ③ Modell-Timeline (nutzt v3-Daten) ④ Prompt-Sandbox ⑤ Newsletter-Digest (Mail-Weg klären).
+- 17.07. abends: ALLE 5 UMGESETZT ✅ — v3 It.122, Teilen It.123, Timeline It.124, Sandbox It.125, Newsletter LIVE It.127 (Resend, news.promptgarten.com verified, Digest Mo 08:00 UTC).
 
 ## Abgelehnt (nie wieder pitchen)
 - (noch nichts)
