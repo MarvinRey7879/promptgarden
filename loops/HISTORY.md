@@ -719,3 +719,7 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - WARTET AUF MARVIN: Resend-Konto + Domain news.promptgarten.com anlegen, DNS-Werte + API-Key liefern → dann `wrangler secret put RESEND_API_KEY` + DNS via CF_PG_ZONE_TOKEN; Todo im Statusboard.
 - R3-BILANZ: alle 5 gewählten Ideen + Vergleiche-Direktive an EINEM Tag geliefert (v3-Scatter, Ratio, 20 Karten, Preisrechner 16, Teilen, Timeline, Sandbox, Newsletter-Backend).
 - Known-good: Pages e10ffb20, Worker c52b92eb.
+
+## It. 126 — 17.07.2026 ~14:35 — Remotion R10 Vergleiche-Demo ✅
+- CompareDemo.tsx (300 Frames): Mini-Scatter mit 7 echten Datenpunkten (Fable/Sol/K3/Grok/Sonnet/DeepSeek★/GLM), Zonen-Chips, Sweet-Spot-Ring; ×5 je ~0,55 MB; eingebettet auf /vergleiche unter dem Quadrant. BUILD_EXIT=0, Deploy 84252298, Live-Verify de+zh+mp4. Videos jetzt 75.
+- Known-good: Pages 84252298, Worker c52b92eb.
