@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCommand, getCommands, getPlatform } from '@/lib/commands';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 import ExampleVideo from '@/components/ExampleVideo';
+import ShareButtons from '@/components/ShareButtons';
 import { breadcrumbLd } from '@/lib/schema';
 
 // Remotion-Terminal-Demos (Direktive 12) für ausgewählte Befehle: platform/slug → Video-Basename
@@ -126,6 +127,8 @@ export default async function CommandPage({
           </ul>
         </div>
       )}
+
+      <ShareButtons lang={lang} title={c.name} teaser={c.summary} />
     </article>
   );
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { marked } from 'marked';
 import BodyToggle from '@/components/BodyToggle';
+import ShareButtons from '@/components/ShareButtons';
 import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
 import TokenPlayground from '@/components/TokenPlayground';
@@ -141,6 +142,8 @@ export default async function EntryPage({
       )}
 
       <Quiz lang={lang} slug={entry.slug} xp={entry.xp} quiz={entry.quiz} />
+
+      <ShareButtons lang={lang} title={entry.title} teaser={entry.teaser} />
 
       <div style={{ marginTop: 26 }}>
         <CompleteButton lang={lang} slug={entry.slug} xp={entry.xp} />

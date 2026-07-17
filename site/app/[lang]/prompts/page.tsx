@@ -5,6 +5,7 @@ import pEs from '@/content/prompts.es.json';
 import pFr from '@/content/prompts.fr.json';
 import pZh from '@/content/prompts.zh.json';
 import CopyButton from '@/components/CopyButton';
+import ShareButtons from '@/components/ShareButtons';
 import { breadcrumbLd } from '@/lib/schema';
 import { LANGS, isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 
@@ -113,11 +114,14 @@ export default async function PromptsPage({ params }: { params: Promise<{ lang: 
         );
       })}
 
-      <p style={{ fontSize: 13, color: 'var(--muted)', paddingBottom: 30 }}>
+      <p style={{ fontSize: 13, color: 'var(--muted)', paddingBottom: 4 }}>
         {t.sources}: {lang === 'de'
           ? 'Vorlagen-Muster aus den verlinkten offiziellen Best-Practices; Vorlagen an dein Projekt anpassen.'
           : 'Template patterns from the linked official best practices; adapt templates to your project.'}
       </p>
+      <div style={{ paddingBottom: 30 }}>
+        <ShareButtons lang={lang} title={d.title} />
+      </div>
     </div>
   );
 }
