@@ -21,6 +21,12 @@ Regeln: Abgelehnte Ideen NIE erneut pitchen. Gewählte → Rotation/Umsetzung. O
 3. 🧑‍💻 **Prompt-Sandbox** — interaktiver Playground: Prompt-Vorlage wählen, Platzhalter ausfüllen, fertigen Prompt kopieren (ohne API-Kosten, rein clientseitig). Macht die Prompt-Bibliothek interaktiv.
 4. 📊 **Modell-Timeline** — öffentliche Chronik der Modell-Releases/Deprecations (Fable 5, Opus 4.8, GPT-5.6, Gemini-CLI-Sunset …) aus dem Feed + Vergleiche-Daten, als vertikale Zeitleiste ×5 Sprachen.
 
+## Gepitcht 18.07.2026 (Runde 4) — ENTSCHIEDEN 18.07 ~11:50
+1. 🔄 **Befehls-Rosetta-Tabelle** — Vergleichstabelle über alle 5 Plattformen: „Was ist das Äquivalent von /compact in Codex, Cursor, Aider, Antigravity?" Nutzt die 293 vorhandenen Befehle, größter SEO-Hebel (genau danach wird gesucht). ← Empfehlung
+2. 🧭 **Setup-Wizard interaktiv** — 5 Fragen (Sprache, Projekt-Typ, Erfahrung, Budget, Plattform) → persönlicher Startpfad + fertige CLAUDE.md zum Kopieren + passende Befehlsliste. Clientseitig, $0.
+3. 📊 **Lern-Statistik / Profil-Seite** — XP-Kurve über Zeit, erledigte Kapitel pro Welt, Streak-Historie, Challenge-Bilanz aus localStorage + „Fortschritt als Bild teilen". Retention-Hebel.
+4. 🩺 **Fehler-Katalog / Troubleshooting** — durchsuchbarer Katalog echter Fehlermeldungen/Agent-Symptome mit Ursache + Fix. Long-Tail-SEO, hohe Suchintention.
+
 ## Entschieden
 - 14.07.2026, Runde 1: Marvin wählt ALLE 4 → Umsetzungs-Reihenfolge nach Wert/Aufwand:
   ① 🔍 Volltext-Suche (größte Lücke) ② 💶 Modell-Preisrechner (Daten liegen frisch verifiziert vor) ③ 🧩 Prompt-Bibliothek (Content-Pipeline wie Kapitel-Batches) ④ 🗺️ Lern-Landkarte (design-schwerste).
@@ -29,6 +35,8 @@ Regeln: Abgelehnte Ideen NIE erneut pitchen. Gewählte → Rotation/Umsetzung. O
 - 15.07.2026, Runde 2: Marvin wählt 📡 RSS-Feed + 🎯 Tages-Challenge + 📱 PWA/Offline. 📰 Newsletter-Digest NICHT abgelehnt — „behalt den newsletter als späteres todo" → Backlog, erst auf Zuruf/späteren Pitch. Umsetzungs-Reihenfolge: ① RSS (kleinster Aufwand) ② Tages-Challenge ③ PWA.
 - 17.07.2026, Runde 3: Marvin wählt ALLE 4 (📰 Newsletter-Digest, 🔗 Teilen-Buttons, 🧑‍💻 Prompt-Sandbox, 📊 Modell-Timeline) + NEUE DIREKTIVE dazu: „Modell-Vergleiche intensiver, 2D-Quadrant besser aufgeteilt — wirklich nach Intelligence-to-Cost-Ratio und Stärken der einzelnen Modelle; GLM, Grok, Gemini, Kimi und andere bekannte Modelle aufnehmen" → Vergleiche-v3-Rework (Research läuft, Quellenpflicht: offizielle Preise + Artificial-Analysis-Index). Reihenfolge: ① Vergleiche-v3 (Marvins Direktive, Research läuft) ② Teilen-Buttons (kleinster Aufwand) ③ Modell-Timeline (nutzt v3-Daten) ④ Prompt-Sandbox ⑤ Newsletter-Digest (Mail-Weg klären).
 - 17.07. abends: ALLE 5 UMGESETZT ✅ — v3 It.122, Teilen It.123, Timeline It.124, Sandbox It.125, Newsletter LIVE It.127 (Resend, news.promptgarten.com verified, Digest Mo 08:00 UTC).
+
+- 18.07.2026, Runde 4: Marvin wählt ALLE 4 (🔄 Rosetta-Tabelle, 🧭 Setup-Wizard, 📊 Lern-Statistik, 🩺 Fehler-Katalog). Reihenfolge nach Wert/Aufwand: ① 🔄 Rosetta (Daten liegen vor, SEO-Hebel) ② 🩺 Fehler-Katalog (Content-Recherche parallel per Agent startbar) ③ 🧭 Setup-Wizard ④ 📊 Lern-Statistik (nutzt bestehende localStorage-Keys).
 
 ## Abgelehnt (nie wieder pitchen)
 - (noch nichts)

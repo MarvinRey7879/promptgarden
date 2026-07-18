@@ -1,0 +1,55 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import RosettaTable from '@/components/RosettaTable';
+import ShareButtons from '@/components/ShareButtons';
+import { getPlatforms } from '@/lib/commands';
+import { getRosetta } from '@/lib/rosetta';
+import { isLang, langAlternates } from '@/lib/i18n';
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  const d = getRosetta(lang);
+  return {
+    title: d.title,
+    description: d.intro.slice(0, 155),
+    alternates: langAlternates(lang, 'rosetta/'),
+  };
+}
+
+const BACK: Record<string, string> = {
+  de: '← Zur Befehls-Referenz',
+  en: '← Back to command reference',
+  es: '← A la referencia de comandos',
+  fr: '← Vers la référence des commandes',
+  zh: '← 返回命令参考',
+};
+
+const STAND: Record<string, string> = { de: 'Stand', en: 'As of', es: 'Actualizado', fr: 'Mise à jour', zh: '数据截至' };
+
+export default async function RosettaPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) notFound();
+  const d = getRosetta(lang);
+  const platformNames = Object.fromEntries(getPlatforms(lang).map((p) => [p.id, p.name]));
+
+  return (
+    <div style={{ maxWidth: 1040, margin: '0 auto' }}>
+      <Link href={`/${lang}/befehle/`} style={{ fontSize: 14, fontWeight: 700 }}>
+        {BACK[lang]}
+      </Link>
+
+      <h1 style={{ margin: '18px 0 8px', fontSize: 38, fontWeight: 800, letterSpacing: '-.03em', textWrap: 'balance' }}>
+        🔄 {d.title}
+      </h1>
+      <p style={{ margin: '0 0 6px', color: 'var(--muted)', fontSize: 15.5, lineHeight: 1.6, maxWidth: 720 }}>{d.intro}</p>
+      <p className="mono" style={{ margin: '0 0 26px', fontSize: 12.5, color: 'var(--muted)' }}>
+        {STAND[lang]}: {d.stand}
+      </p>
+
+      <RosettaTable lang={lang} data={d} platformNames={platformNames} />
+
+      <ShareButtons lang={lang} title={d.title} teaser={d.intro} />
+    </div>
+  );
+}

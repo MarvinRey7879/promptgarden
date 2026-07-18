@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const urls: MetadataRoute.Sitemap = [];
 
   for (const lang of LANGS) {
-    for (const path of ['', 'lexikon/', 'lernpfade/', 'feed/', 'start/', 'vergleiche/', 'loops/', 'benchmarks/', 'forum/', 'befehle/', 'addons/', 'prompts/', 'challenge/', 'timeline/']) {
+    for (const path of ['', 'lexikon/', 'lernpfade/', 'feed/', 'start/', 'vergleiche/', 'loops/', 'benchmarks/', 'forum/', 'befehle/', 'addons/', 'prompts/', 'challenge/', 'timeline/', 'rosetta/', 'fehler/']) {
       urls.push({ url: `${BASE}/${lang}/${path}`, lastModified: now });
     }
     for (const e of getEntries(lang)) {
