@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCommand, getCommands, getPlatform } from '@/lib/commands';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 import ExampleVideo from '@/components/ExampleVideo';
+import RosettaHinweis from '@/components/RosettaHinweis';
 import ShareButtons from '@/components/ShareButtons';
 import { breadcrumbLd } from '@/lib/schema';
 
@@ -84,6 +85,8 @@ export default async function CommandPage({
           <ExampleVideo lang={lang} name={COMMAND_VIDEOS[`${platform}/${slug}`]} label={c.summary} />
         </div>
       )}
+
+      <RosettaHinweis lang={lang} platform={platform} slug={slug} />
 
       {c.whenGood.length > 0 && (
         <div className="card" style={{ padding: '18px 22px', marginBottom: 18, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
