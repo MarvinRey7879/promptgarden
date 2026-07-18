@@ -88,8 +88,12 @@ export const WORLD_1: string[] = [
   'temperatur-und-sampling',
   'halluzination',
   'prompt-strukturen',
+  'few-shot-beispiele',
+  'rollen-prompts',
   'erst-plan-dann-code',
   'ai-coding-ide-vs-cli',
+  'reasoning-modelle',
+  'streaming',
   'rate-limits-und-quotas',
 ];
 
@@ -98,6 +102,7 @@ export const WORLD_2: string[] = [
   'ki-agent',
   'agent-loop',
   'tool-use',
+  'output-formate-erzwingen',
   'vibe-coding',
   'subagents',
   'guardrails-fuer-agenten',
@@ -109,6 +114,7 @@ export const WORLD_2: string[] = [
   'multi-agent-patterns',
   'agent-teams',
   'debugging-mit-agenten',
+  'selbstkritik-schleifen',
   'kontext-strategien',
   'memory-systeme-fuer-agenten',
 ];
@@ -123,7 +129,9 @@ export const WORLD_3: string[] = [
   'mcp',
   'hooks',
   'git-worktrees',
+  'checkpoints-und-rollbacks',
   'headless-non-interactive',
+  'issue-zu-pr-workflow',
   'kosten-kontrolle-agenten',
   'model-routing',
   'caching-strategien',
@@ -138,6 +146,8 @@ export const WORLD_3: string[] = [
   'projekt-deployen',
   'benchmarks-lesen',
   'swe-bench-agenten-benchmarks',
+  'quantisierung',
+  'mixture-of-experts',
 ];
 
 export function difficultyDots(d: 1 | 2 | 3): string {

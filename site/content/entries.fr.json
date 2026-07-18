@@ -4328,5 +4328,536 @@
         "As-tu identifié une différence concrète entre les tâches du benchmark et ton propre projet ?"
       ]
     }
+  },
+  {
+    "slug": "few-shot-beispiele",
+    "title": "Le prompting few-shot : montrer avec des exemples plutôt que seulement décrire",
+    "category": "prompt-pattern",
+    "difficulty": 1,
+    "minutes": 4,
+    "xp": 20,
+    "teaser": "Quelques bons exemples dans le prompt montrent souvent au modèle plus que la description la plus précise qui soit.",
+    "body": "## Montrer plutôt que seulement décrire\nUn prompt zero-shot donne au modèle uniquement une tâche, sans exemple : « Résume ce texte. » Un prompt few-shot (aussi appelé multishot) montre en plus deux ou trois exemples déjà réalisés, illustrant à quoi la réponse doit ressembler – format, ton, structure. Le modèle reconnaît le schéma dans les exemples et l'applique à ta tâche proprement dite.\n\n## Pourquoi ça fonctionne souvent mieux\nDes descriptions comme « réponds de façon brève et factuelle » laissent une grande marge d'interprétation. Un exemple montre exactement ce que « bref » et « factuel » signifient concrètement – pas besoin de traduire des mots en comportement. Justement pour les formats fixes (tableaux, JSON, un ton particulier), deux ou trois exemples remplacent souvent plusieurs phrases de description.\n\n## Quand le zero-shot suffit\nPour des tâches simples et généralement connues (traduction évidente, calcul simple), le few-shot apporte peu de bénéfice supplémentaire et ne fait que coûter plus de tokens. Le few-shot vaut surtout la peine pour des formats particuliers, un style inhabituel, ou des tâches où plusieurs interprétations seraient possibles.\n\n## La qualité prime sur la quantité\nDeux exemples soigneusement choisis et réalistes sont plus fiables que dix exemples au hasard. L'important est que les exemples reflètent ton cas d'usage réel et couvrent des cas limites – sinon le modèle reprend des motifs secondaires non voulus, qui étaient identiques par hasard dans tous les exemples.",
+    "bodyDetail": "## Comment les exemples sont intégrés techniquement\nEn pratique, les exemples few-shot sont souvent structurés avec des séparateurs clairs, par exemple des balises de type XML comme <example>...</example>, ou simplement numérotés. La documentation officielle de Claude recommande de séparer clairement les exemples de la tâche proprement dite, afin que le modèle ne confonde pas par erreur un exemple avec une partie de la demande actuelle.\n\n## Le piège : les motifs involontaires\nSi tous les exemples partagent par hasard la même caractéristique secondaire – par exemple toujours des évaluations positives, toujours des phrases courtes, toujours le même ordre –, le modèle adopte cette caractéristique secondaire comme une règle supposée, même si ce n'était pas voulu du tout. Les exemples devraient donc varier consciemment : longueurs différentes, cas limites différents, et aussi parfois un cas difficile ou négatif.\n\n## La pertinence avant la quantité\nDeux critères déterminent la qualité des exemples few-shot : la pertinence (reflètent-ils le cas d'usage réel ?) et la diversité (couvrent-ils des cas différents, sans que le modèle ne capte un motif aléatoire ?). Trois à cinq exemples bien choisis suffisent pour la plupart des tâches ; en ajouter davantage n'apporte souvent que des tokens supplémentaires sans bénéfice mesurable.\n\n## Few-shot et reasoning combinés\nAvec des modèles au processus de réflexion visible, le few-shot peut être étendu : si un exemple montre non seulement la réponse finale mais aussi un court raisonnement préalable, le modèle tend à adopter un style d'argumentation similaire pour sa propre tâche – le motif s'applique alors non seulement à la forme de sortie, mais aussi au chemin pour y parvenir.\n\n## Distinction avec le fine-tuning\nLes exemples few-shot n'agissent qu'à l'intérieur du prompt actuel et coûtent à nouveau des tokens de contexte à chaque requête. Le fine-tuning, en revanche, modifie durablement les poids du modèle à partir de nombreux exemples ; il est plus coûteux à mettre en place, mais économise du contexte à chaque requête individuelle. Pour la plupart des tâches courantes, le few-shot dans le prompt suffit amplement ; le fine-tuning ne devient intéressant qu'à très fort volume récurrent.",
+    "example": "Zero-shot : « Classe le sentiment de cet avis. »\n\nFew-shot :\n« Exemple 1 : 'Super service, livré en un jour !' → positif\nExemple 2 : 'Cassé après une semaine, très déçu.' → négatif\nClasse maintenant : 'Ça fonctionne, mais le mode d'emploi était confus.' → ? »\n(Le modèle reconnaît à partir des deux exemples aussi bien le format que le degré de nuance, et répond de façon cohérente, par ex. avec 'neutre'.)",
+    "related": [
+      "prompt",
+      "prompt-strukturen",
+      "rollen-prompts",
+      "output-formate-erzwingen"
+    ],
+    "quiz": {
+      "question": "Qu'est-ce qui distingue un prompt few-shot d'un prompt zero-shot ?",
+      "options": [
+        "Les prompts zero-shot ne sont techniquement pas possibles, chaque modèle a toujours besoin d'au moins un exemple",
+        "Le prompting few-shot fonctionne exclusivement pour la génération d'images, jamais pour le texte",
+        "Un prompt few-shot montre en plus deux ou trois exemples concrets, à partir desquels le modèle reconnaît le format, le ton ou la logique souhaités"
+      ],
+      "correct": 2,
+      "explain": "Le few-shot (multishot) complète la simple description de la tâche par des exemples qui montrent directement le motif souhaité au lieu de simplement le décrire – particulièrement efficace pour des formats particuliers ou un style inhabituel."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude : le prompting multishot (travailler avec des exemples)",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/multishot-prompting"
+      },
+      {
+        "title": "Documentation OpenAI : l'ingénierie de prompt",
+        "url": "https://developers.openai.com/api/docs/guides/prompt-engineering"
+      }
+    ],
+    "exercise": {
+      "task": "Transforme un prompt zero-shot en prompt few-shot et compare les réponses.",
+      "steps": [
+        "Écris un prompt zero-shot pour une tâche avec un format fixe, par ex. 'Résume cet avis client en une ligne avec le sentiment (positif/neutre/négatif).'",
+        "Laisse le modèle résoudre la tâche sans exemple et note le résultat.",
+        "Complète ce même prompt avec deux paires d'exemples concrets (avis → résumé souhaité) et pose de nouveau la même tâche.",
+        "Compare les deux réponses : format, cohérence, longueur."
+      ],
+      "selfCheck": [
+        "La réponse few-shot est-elle plus proche du format souhaité que la réponse zero-shot ?",
+        "Tes deux exemples couvraient-ils volontairement des cas différents, ou étaient-ils trop similaires ?",
+        "Que se passerait-il si les deux exemples avaient eu par hasard le même sentiment ?"
+      ]
+    }
+  },
+  {
+    "slug": "rollen-prompts",
+    "title": "Les prompts de rôle : ce que « Tu es un relecteur de code expérimenté » change vraiment",
+    "category": "prompt-pattern",
+    "difficulty": 1,
+    "minutes": 4,
+    "xp": 20,
+    "teaser": "Un rôle dans le system prompt change le ton et le focus du modèle – mais il ne confère aucune nouvelle capacité.",
+    "body": "## Ce que fait un prompt de rôle\n« Tu es un expert en sécurité expérimenté qui vérifie le code à la recherche de failles » est un prompt de rôle classique (aussi appelé prompt de persona). Il figure le plus souvent dans le system prompt, tout au début de la conversation, et détermine la perspective depuis laquelle le modèle répond.\n\n## Ce que cela change\nUn rôle influence surtout trois choses : le ton (concis et technique plutôt que verbeux), le focus (ce à quoi le modèle prête particulièrement attention, par ex. les failles de sécurité plutôt que le style) et le vocabulaire (termes techniques du domaine concerné). Un prompt de rôle « directeur financier » produit des réponses plus courtes et axées sur les chiffres ; un rôle de « correctrice » prête davantage attention à la formulation et à la fluidité de lecture.\n\n## Ce qui NE change PAS\nUn rôle ne débloque pas de savoir caché que le modèle n'aurait pas autrement, et ne le rend pas objectivement « meilleur » au sens d'une capacité accrue. Le savoir sous-jacent et la capacité de raisonnement restent identiques – seule la manière dont ils sont mobilisés se déplace.\n\n## L'erreur la plus fréquente\nBeaucoup attendent d'un prompt de rôle une sorte de mise à niveau des capacités, comme une personne qui suivrait une formation complémentaire. La comparaison la plus réaliste est celle d'une consigne de travail donnée à une personne déjà formée : elle change ce sur quoi la personne porte son attention, pas ce qu'elle sait faire fondamentalement.",
+    "bodyDetail": "## Pourquoi les rôles se placent dans le system prompt\nLa documentation officielle de Claude recommande de définir le rôle via le system prompt plutôt que dans le premier tour utilisateur, car le modèle traite ce contexte comme un cadre global pour toute la conversation, et non comme une instruction isolée. Les détails spécifiques à la tâche, eux, ont leur place dans le tour utilisateur.\n\n## Une seule phrase suffit souvent déjà\nSelon Anthropic, une seule phrase clairement formulée fait déjà une différence mesurable – « Tu es un analyste financier expérimenté » modifie sensiblement les réponses, sans qu'une longue biographie soit nécessaire. Des descriptions de rôle plus détaillées (années d'expérience, domaine de spécialisation, façon de penser typique) affinent encore un peu le focus, mais avec un bénéfice marginal décroissant.\n\n## Où les prompts de rôle apportent le plus\nPour des tâches complexes et ambiguës – comme l'analyse juridique ou la modélisation financière –, un rôle clair a des effets variables : les études montrent surtout un avantage pour les tâches de conseil (par ex. médecine, psychologie), tandis que pour des questions purement conceptuelles ou explicatives (finance, droit, technique) il nuit plutôt qu'il n'aide, car il génère plus de jargon technique et moins de clarté. La raison : les tâches ambiguës laissent davantage de marge d'interprétation, qu'un rôle vient restreindre de façon ciblée, tandis qu'un simple calcul n'offre guère de marge d'interprétation à restreindre.\n\n## La limite avec l'hallucination\nUn rôle peut même devenir risqué lorsqu'il masque un savoir manquant : « Tu es avocat spécialisé en droit fiscal allemand » n'amène pas le modèle à connaître réellement plus de détails fiscaux corrects – cela le rend seulement plus convaincant lorsqu'il formule aussi des informations fausses avec assurance. Les prompts de rôle devraient orienter le ton et le focus, pas servir de substitut à des faits manquants ni de blanc-seing pour des affirmations non étayées.\n\n## Rôle vs. skill vs. tool\nUn rôle n'est que du texte dans le prompt – il n'ajoute aucune nouvelle capacité. De véritables nouvelles capacités ne viennent que par les tools (accès à des systèmes externes) ou les skills (instructions et scripts fournis pour une tâche). Attendre d'un rôle seul qu'il remplace un savoir-outil manquant, c'est confondre orientation de style et extension de capacité.",
+    "example": "System prompt A : « Tu es un relecteur de code axé sur la sécurité. Fais surtout attention aux failles comme l'injection SQL et la validation d'entrée non sécurisée. »\nSystem prompt B : « Tu es une mentore qui donne des retours compréhensibles à de jeunes développeurs. »\nMême code, même question utilisateur (« Que penses-tu de cette fonction ? ») – la réponse A est concise et liste les failles, la réponse B explique plus patiemment et complimente d'abord ce qui est réussi.",
+    "related": [
+      "system-prompt",
+      "prompt",
+      "few-shot-beispiele",
+      "prompt-strukturen"
+    ],
+    "quiz": {
+      "question": "Qu'est-ce qu'un prompt de rôle comme « Tu es un expert en sécurité expérimenté » change vraiment chez Claude ?",
+      "options": [
+        "Il modifie le ton, le focus et le vocabulaire des réponses, mais ne confère au modèle aucun savoir technique supplémentaire ni nouvelle capacité",
+        "Il active un sous-modèle spécial, entraîné uniquement pour ce rôle, doté d'un véritable savoir d'expert",
+        "Il n'a aucun effet mesurable sur la réponse, c'est de la pure décoration de prompt"
+      ],
+      "correct": 0,
+      "explain": "Un rôle oriente le ton, le focus et le vocabulaire – le savoir sous-jacent et la capacité de raisonnement du modèle restent inchangés, seule la manière dont ils sont mobilisés se déplace."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude : donner un rôle à Claude (system prompts)",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/system-prompts"
+      },
+      {
+        "title": "arXiv : Quand le persona-prompting aide-t-il vraiment ? Analyse de récupération et de métriques de l'injection de rôle d'expert dans les LLM",
+        "url": "https://arxiv.org/abs/2605.29420"
+      }
+    ],
+    "exercise": {
+      "task": "Teste le même prompt technique avec deux rôles différents et compare le ton et le focus.",
+      "steps": [
+        "Formule une question technique, par ex. 'Évalue cette clause contractuelle.'",
+        "Pose la question une fois avec le system prompt 'Tu es un avocat conformité prudent' et une fois avec 'Tu es un fondateur de startup pragmatique.'",
+        "Compare les deux réponses sur le ton, le focus sur les risques et le choix des mots."
+      ],
+      "selfCheck": [
+        "Le ton et l'accent des deux réponses ont-ils sensiblement différé ?",
+        "Les deux réponses contenaient-elles le même socle factuel, seulement présenté différemment – ou un rôle a-t-il inventé de nouveaux 'faits' ?"
+      ]
+    }
+  },
+  {
+    "slug": "selbstkritik-schleifen",
+    "title": "Les boucles d'autocritique : faire vérifier au modèle sa propre production",
+    "category": "prompt-pattern",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "Un second passage de vérification, indépendant, trouve plus d'erreurs que la demande « sois minutieux » formulée dans la foulée.",
+    "body": "## Le principe\nDans une boucle d'autocritique (critique-puis-révision), tu fais évaluer au modèle sa propre solution dans une étape séparée après coup – et seulement ensuite, tu la fais retravailler. Au lieu de « résous la tâche minutieusement » dans un seul prompt, cela se déroule en étapes délibérées : d'abord produire, ensuite vérifier, puis améliorer.\n\n## Pourquoi des passages séparés fonctionnent mieux\nSi tu demandes dans le même souffle la solution et la minutie, le modèle évalue souvent sa production dans le même fil de pensée qui l'a générée – les erreurs issues d'une certaine direction de raisonnement y restent généralement non détectées. Un second passage avec un regard neuf sur la production finale trouve en revanche plus facilement les erreurs restées invisibles lors de la génération elle-même.\n\n## Un exemple pratique\nUn passage de relecture avec un contexte neuf : tu ne donnes que le code final (sans l'historique de réflexion) dans une nouvelle requête, et tu demandes explicitement une recherche d'erreurs. Sans souvenir de sa propre « justification » précédente, le modèle examine le code de façon plus neutre.\n\n## La limite : l'autoconfirmation\nLes boucles d'autocritique ne garantissent aucune absence d'erreur. En cas de malentendu fondamental sur la tâche, le modèle répète souvent ce malentendu jusque dans sa propre vérification. Pour une véritable indépendance, un second modèle ou un humain comme instance de contrôle est utile.",
+    "bodyDetail": "## Pourquoi un simple prompt suffit rarement\n« Sois minutieux et vérifie ton travail » à l'intérieur d'un seul et même passage de réponse ne mène souvent qu'à plus de texte, pas à une vérification réellement différente – le modèle reste dans le même fil de pensée, avec les mêmes hypothèses qu'il a déjà posées en produisant la solution. Un ajout incitatif change rarement la trajectoire de raisonnement sous-jacente.\n\n## La réflexion comme motif à part entière\nDans la vue d'ensemble d'Anthropic sur les workflows d'agents, la réflexion apparaît comme un module à part entière : l'étape de travail déjà réalisée est évaluée après coup – soit par l'agent lui-même (autoréflexion), soit par un second agent, soit par un humain. L'article de recherche « Reflexion » va encore plus loin dans cette séparation : une instance évalue uniquement le résultat, une seconde analyse séparément ce qui a concrètement mal tourné – cette répartition facilite l'amélioration de chaque partie individuellement, et conserve l'enseignement verbal ainsi obtenu pour les tentatives suivantes.\n\n## L'évaluateur-optimiseur comme motif d'agent\nLe playbook d'Anthropic sur les agents efficaces cite le motif évaluateur-optimiseur comme l'un des deux motifs multi-étapes particulièrement fiables (avec orchestrateur-workers) : un appel LLM produit une réponse, un second appel indépendant l'évalue et renvoie un retour – en boucle, jusqu'à ce que l'évaluation soit satisfaisante ou qu'une limite soit atteinte.\n\n## Mise en œuvre pratique : le contexte neuf compte\nL'astuce technique décisive consiste à donner à l'étape de vérification un contexte aussi « neuf » que possible – dans l'idéal, uniquement la production finale, sans toute la chaîne d'argumentation précédente. Si la vérification se déroule en revanche dans la même conversation avec l'historique complet, le modèle tend à reprendre les mêmes hypothèses qui ont mené à la solution initiale, et à les confirmer plutôt qu'à les remettre en question. Pour une raison similaire, la documentation officielle de Claude recommande d'inciter explicitement le modèle à vérifier son travail, plutôt que de simplement demander de la minutie en général.\n\n## Où la méthode atteint ses limites\nL'autocritique ne peut pas trouver d'erreurs situées en dehors de son propre horizon de connaissance ou de compréhension – un malentendu fondamental sur la tâche est généralement répété lors de la vérification, pas révélé. Pour des décisions critiques, un second modèle indépendant ou un point de contrôle humain reste plus fiable qu'une simple autovérification par le même système.",
+    "example": "Étape 1 (nouvelle requête) : « Écris une fonction qui valide une date au format JJ.MM.AAAA. »\nÉtape 2 (requête séparée, neuve, avec uniquement le code final en entrée) : « Voici une validation de date. Trouve les bugs et les cas limites, sans savoir comment ni pourquoi elle a été écrite. »\nÉtape 3 : « Retravaille la fonction en te basant sur cette critique. »",
+    "related": [
+      "human-in-the-loop",
+      "multi-agent-patterns",
+      "code-review-mit-ki",
+      "evals"
+    ],
+    "quiz": {
+      "question": "Pourquoi un passage de vérification séparé trouve-t-il souvent plus d'erreurs que la demande « sois minutieux » dans le même passage de réponse ?",
+      "options": [
+        "Parce qu'un passage séparé utilise automatiquement un modèle plus performant",
+        "Parce qu'un contexte neuf, sans la chaîne d'argumentation initiale, peut révéler des erreurs restées non détectées dans le même fil de pensée que celui de la génération",
+        "Parce que 'sois minutieux' ne peut techniquement pas être traité par le modèle"
+      ],
+      "correct": 1,
+      "explain": "Un passage de vérification neuf et indépendant ne reprend pas automatiquement les mêmes hypothèses que le chemin de résolution initial – c'est précisément cela qui révèle les erreurs restées invisibles dans le même fil de pensée."
+    },
+    "sources": [
+      {
+        "title": "Anthropic: Building Effective Agents",
+        "url": "https://www.anthropic.com/engineering/building-effective-agents"
+      },
+      {
+        "title": "arXiv: Reflexion – Language Agents with Verbal Reinforcement Learning",
+        "url": "https://arxiv.org/abs/2303.11366"
+      },
+      {
+        "title": "arXiv: Self-Refine – Iterative Refinement with Self-Feedback",
+        "url": "https://arxiv.org/abs/2303.17651"
+      }
+    ],
+    "exercise": {
+      "task": "Construis une boucle d'autocritique en deux étapes pour une petite tâche de code.",
+      "steps": [
+        "Fais écrire au modèle une petite fonction (par ex. une validation de date).",
+        "Ouvre une nouvelle requête séparée et n'y saisis que le code final, sans l'historique précédent, avec la demande 'Trouve les bugs et les cas limites dans ce code.'",
+        "Fais écrire au modèle une version révisée en te basant sur la critique.",
+        "Compare la première version et la version révisée."
+      ],
+      "selfCheck": [
+        "Le passage de vérification neuf a-t-il trouvé des problèmes qui n'étaient pas apparus lors de l'écriture initiale ?",
+        "'Sois minutieux' dans le même passage aurait-il abouti au même résultat ?"
+      ]
+    }
+  },
+  {
+    "slug": "output-formate-erzwingen",
+    "title": "Imposer des formats de sortie de façon fiable",
+    "category": "prompt-pattern",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "De la simple demande dans le prompt jusqu'au véritable schéma JSON de l'API – trois niveaux pour imposer un format de sortie fixe.",
+    "body": "## Le niveau le plus simple : le prompt\nLe classique est une consigne de format claire dans le prompt : « Réponds exclusivement en JSON avec les champs nom, âge, ville » plus un exemple de sortie. Cela fonctionne souvent bien, mais ce n'est pas garanti – le modèle peut malgré tout ajouter une phrase avant, ou oublier un champ.\n\n## Le niveau plus fiable : les fonctionnalités de l'API\nLes API de LLM modernes proposent leurs propres mécanismes qui imposent techniquement un format au lieu de simplement le recommander. Claude propose pour cela les Structured Outputs avec validation par schéma JSON ; OpenAI nomme sa fonctionnalité également Structured Outputs. Les deux garantissent que la réponse correspond exactement au schéma fourni – plus besoin de corriger après coup du JSON cassé.\n\n## Distinction importante\nLes consignes de prompt sont un pattern – une habitude qui fonctionne la plupart du temps, mais sans garantie. Les fonctionnalités d'API comme les Structured Outputs sont en revanche une garantie technique de l'interface elle-même. Pour un formatage non critique, le prompt suffit souvent ; pour du code qui retraite le résultat, la fonctionnalité API vaut la peine.\n\n## La validation comme troisième filet de sécurité\nMême avec des formats garantis, la validation reste utile : vérifie la réponse par rapport à ton schéma et prévois une boucle de nouvelle tentative en cas d'erreur. Cela couvre les cas qui dépassent la simple question de format – par exemple du JSON valide mais avec des valeurs absurdes sur le fond.",
+    "bodyDetail": "## Trois niveaux en détail\nLe niveau un est de la pure technique de prompt : consigne claire, un exemple de sortie, souvent complété par une astuce de préfixe (faire commencer la réponse par une accolade ouvrante, pour que le modèle démarre directement dans le JSON au lieu d'un texte d'introduction). Le niveau deux est une fonctionnalité d'API : chez Claude, un paramètre de format permet de transmettre un schéma JSON, contre lequel chaque réponse est obligatoirement validée – la réponse correspond alors garantie à la structure, pas seulement probablement. OpenAI offre avec Structured Outputs la même garantie via un champ de schéma dans son API. Le niveau trois est une validation en aval dans son propre code, avec nouvelle tentative en cas d'erreur.\n\n## Deux variantes chez Claude\nClaude distingue deux mécanismes apparentés : les sorties JSON pour un format de réponse fixe, et le Strict Tool Use (strict: true) pour une conformité de schéma garantie lors des appels de tool. Les deux peuvent être utilisés indépendamment l'un de l'autre ou combinés dans la même requête.\n\n## Pourquoi les simples consignes de prompt ont leurs limites\nUn modèle de langage génère du texte token par token selon la probabilité – une consigne comme « uniquement du JSON, pas de texte libre » augmente considérablement la probabilité d'obtenir du JSON propre, mais n'exclut pas complètement les écarts. À fréquence de requêtes élevée, un faible taux d'erreur suffit déjà pour produire régulièrement des réponses cassées qui font planter ta propre application.\n\n## Quand quel niveau vaut la peine\nPour un script ponctuel ou une réponse de chat à un humain, le niveau prompt suffit généralement – une erreur de format occasionnelle se remarque immédiatement et peut être corrigée en redemandant. Pour des pipelines automatisées qui retraitent directement la réponse dans du code (par ex. l'écrire dans une base de données ou la transmettre à une autre fonction), la garantie API est presque toujours le meilleur choix, car une seule erreur de format peut sinon faire planter tout le processus en aval.\n\n## La boucle de nouvelle tentative comme dernier filet\nMême avec une garantie de schéma au niveau de l'API, des erreurs de contenu restent possibles – du JSON syntaxiquement valide avec une valeur fausse ou invraisemblable dans un champ. Une couche de validation supplémentaire dans ton propre code (par ex. vérification de plage de valeurs), avec nouvelle tentative automatique en cas d'échec, couvre précisément ces cas que les simples garanties de format ne couvrent pas.",
+    "example": "Niveau prompt (pas de garantie) : « Réponds UNIQUEMENT avec du JSON valide au format {\\\"stadt\\\": string, \\\"land\\\": string}, sans texte supplémentaire. »\n\nNiveau API (garanti, pseudocode) : output_config={\\\"format\\\": {\\\"type\\\": \\\"json_schema\\\", \\\"schema\\\": {\\\"type\\\": \\\"object\\\", \\\"properties\\\": {\\\"stadt\\\": {\\\"type\\\": \\\"string\\\"}, \\\"land\\\": {\\\"type\\\": \\\"string\\\"}}, \\\"required\\\": [\\\"stadt\\\", \\\"land\\\"]}}} – chaque réponse correspond garantie à ce schéma.",
+    "related": [
+      "structured-outputs",
+      "tool-use",
+      "guardrails-fuer-agenten",
+      "few-shot-beispiele"
+    ],
+    "quiz": {
+      "question": "Quelle est la différence centrale entre une consigne de format dans le prompt et une fonctionnalité d'API comme les Structured Outputs ?",
+      "options": [
+        "Il n'y a aucune différence, les deux garantissent exactement la même chose",
+        "Une fonctionnalité d'API ne fonctionne que pour des réponses très courtes",
+        "La consigne de prompt augmente seulement la probabilité d'obtenir un format propre, la fonctionnalité d'API impose techniquement une conformité de schéma garantie"
+      ],
+      "correct": 2,
+      "explain": "Une consigne de prompt reste un pattern probabiliste qui fonctionne la plupart du temps. Les Structured Outputs, en revanche, valident techniquement la réponse par rapport à un schéma – les écarts sont exclus, pas seulement improbables."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude : Structured Outputs",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+      },
+      {
+        "title": "Documentation OpenAI : Structured Outputs",
+        "url": "https://developers.openai.com/api/docs/guides/structured-outputs"
+      }
+    ],
+    "exercise": {
+      "task": "Impose un format JSON fixe, une fois uniquement via le prompt et une fois via un paramètre de schéma, et compare la fiabilité.",
+      "steps": [
+        "Demande au modèle, via une consigne de prompt, une réponse JSON avec des champs fixes pour 5 requêtes de test.",
+        "Vérifie si les 5 réponses sont bien du JSON valide et complet, sans texte supplémentaire.",
+        "Répète les mêmes requêtes avec un véritable schéma JSON via une fonctionnalité Structured Outputs de ton choix.",
+        "Compare le taux d'erreur des deux approches."
+      ],
+      "selfCheck": [
+        "Y a-t-il eu, dans la variante purement prompt, au moins une réponse avec du texte supplémentaire ou un champ manquant ?",
+        "La variante par schéma était-elle réellement conforme à 100 % dans les 5 cas ?"
+      ]
+    }
+  },
+  {
+    "slug": "reasoning-modelle",
+    "title": "Les modèles de reasoning : quand l'IA réfléchit d'abord, puis répond",
+    "category": "begriff",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "Extended Thinking chez Claude, la série o ou GPT-5-Thinking chez OpenAI, DeepSeek-R1 – les modèles de reasoning calculent de façon visible ou cachée avant de répondre.",
+    "body": "## Le principe de base\nUn modèle de langage normal produit sa réponse directement, token par token. Un modèle de reasoning (ou « thinking ») insère avant cela une étape de réflexion supplémentaire : une chaîne d'argumentation interne plus longue, avant que la réponse proprement dite ne suive. Chez Claude, cela s'appelle Extended Thinking ; chez OpenAI, cela passe par la série o ou les modèles GPT-5-Thinking avec un « reasoning effort » réglable ; chez DeepSeek, via la série R1.\n\n## Visible ou caché\nCertains fournisseurs affichent les étapes de réflexion (l'Extended Thinking de Claude produit des blocs de réflexion consultables), d'autres se contentent de les résumer ou les cachent complètement et ne livrent que le résultat final. Dans tous les cas, les tokens de réflexion comptent dans la consommation, même si tu ne les vois pas.\n\n## Le budget de réflexion\nLa quantité de « réflexion » d'un modèle se pilote généralement via un réglage de budget – chez Claude via budget_tokens, chez OpenAI via reasoning.effort (par ex. low, medium, high). Un budget plus important peut améliorer la qualité sur des tâches complexes, mais coûte plus de temps et de tokens.\n\n## Quand le reasoning vaut la peine\nPour une planification complexe, un débogage à plusieurs étapes ou des mathématiques exigeantes, la réflexion supplémentaire améliore sensiblement les résultats. Pour des modifications simples ou des questions triviales, le mode reasoning n'apporte le plus souvent que des coûts plus élevés et un temps d'attente plus long, sans améliorer la réponse.",
+    "bodyDetail": "## Comment les modèles de reasoning sont entraînés\nDeepSeek-R1 a montré que les capacités de reasoning peuvent s'entraîner uniquement par apprentissage par renforcement, sans chaînes d'argumentation étiquetées par des humains. Le modèle a développé ce faisant des comportements émergents comme l'autoréflexion, la vérification et des changements de stratégie dynamiques, sans que ceux-ci aient été explicitement prescrits – seul le résultat final correct était récompensé. Sur le benchmark de mathématiques AIME 2024, le taux de réussite est passé, selon l'article, de 15,6 % à 71,0 %, et même à 86,7 % avec décision majoritaire.\n\n## Ce que change concrètement un budget de réflexion\nChez Claude, budget_tokens détermine le nombre maximal de tokens pour le processus de réflexion interne (valeur minimale 1024 tokens) ; selon la documentation, il faut commencer avec le minimum et augmenter progressivement pour trouver la plage optimale pour son propre cas. Claude n'épuise pas forcément tout le budget – la documentation met en garde, pour des budgets très élevés, contre un bénéfice marginal décroissant (sans chiffre précis) ; indépendamment de cela, Anthropic recommande, au-delà de 32 000 tokens, le traitement par lots (batch processing) pour éviter les délais d'expiration réseau sur des requêtes de longue durée. Chez OpenAI, reasoning.effort joue le même rôle, mais comme un réglage grossier plutôt qu'un nombre exact de tokens, avec des valeurs par défaut dépendant du modèle (par ex. « medium » pour les modèles GPT-5.6 actuels).\n\n## Coût et latence comme compromis\nLes modèles de reasoning sont plus lents et plus chers que les modèles standards pour la même tâche, car des tokens de réflexion supplémentaires sont générés et facturés avant que la réponse visible ne commence. Pour des solutions claires et vérifiables (mathématiques, compétitions de programmation, logique formelle), le surcoût en vaut généralement nettement la peine – pour des tâches sans réponse « correcte » univoque (textes d'opinion, écriture créative), le bénéfice supplémentaire est plus incertain.\n\n## Le mode standard reste souvent le meilleur choix\nPour des tâches simples et univoques – modifier une ligne de code, reformuler une phrase, chercher une définition – le reasoning supplémentaire apporte rarement un avantage mesurable, mais allonge inutilement le temps de réponse et les coûts. La règle empirique de nombreuses documentations de fournisseurs : activer le reasoning de façon ciblée là où un raisonnement à plusieurs étapes est nécessaire, pas par défaut pour chaque requête.\n\n## Différentes familles de modèles\nOutre l'Extended Thinking de Claude et les modèles o-series/GPT-5-Thinking d'OpenAI, la lignée R1 de DeepSeek compte aussi parmi les modèles de reasoning ouverts connus, dont la méthodologie d'entraînement (Group Relative Policy Optimization, GRPO) a entre-temps influencé d'autres fournisseurs. Toutes ces approches partagent le même principe : une étape de réflexion explicite, souvent facturée séparément, avant la réponse proprement dite.",
+    "example": "API Claude (pseudocode) : thinking={\\\"type\\\": \\\"enabled\\\", \\\"budget_tokens\\\": 10000}\nAPI OpenAI (pseudocode) : reasoning={\\\"effort\\\": \\\"medium\\\"}\nCes deux paramètres pilotent la quantité d'effort de réflexion interne autorisée avant la réponse visible – utile pour un bug à plusieurs étapes, inutile pour 'Change le nom de cette variable.'",
+    "related": [
+      "temperatur-und-sampling",
+      "modell-und-plan-wahl",
+      "kosten-kontrolle-agenten",
+      "mixture-of-experts"
+    ],
+    "quiz": {
+      "question": "Pour quoi l'utilisation d'un modèle de reasoning comme Claude avec Extended Thinking vaut-elle le plus la peine ?",
+      "options": [
+        "Pour des réponses triviales en un mot, parce que chaque milliseconde y compte",
+        "Pour une planification complexe, un débogage à plusieurs étapes ou des mathématiques exigeantes, où la réflexion supplémentaire améliore sensiblement le taux de réussite",
+        "Exclusivement pour le formatage des sorties en JSON"
+      ],
+      "correct": 1,
+      "explain": "Les modèles de reasoning sont rentables pour des tâches qui nécessitent un raisonnement à plusieurs étapes – pour des tâches simples et univoques, l'étape de réflexion supplémentaire n'apporte généralement que des coûts et une latence plus élevés, sans gain de qualité."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude : Extended Thinking",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"
+      },
+      {
+        "title": "Documentation OpenAI : Reasoning Models",
+        "url": "https://developers.openai.com/api/docs/guides/reasoning"
+      },
+      {
+        "title": "arXiv: DeepSeek-R1 – Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+        "url": "https://arxiv.org/abs/2501.12948"
+      }
+    ],
+    "exercise": {
+      "task": "Résous la même tâche complexe une fois avec et une fois sans Extended Thinking, et compare le résultat, la durée et la consommation de tokens.",
+      "steps": [
+        "Choisis une tâche à plusieurs étapes, par ex. une énigme logique ou un bug avec plusieurs causes possibles.",
+        "Résous-la d'abord en mode standard, sans reasoning.",
+        "Résous à nouveau la même tâche avec l'Extended Thinking activé et un budget modéré (par ex. 8 000–16 000 tokens).",
+        "Compare les deux réponses sur le fond ainsi que le temps nécessaire."
+      ],
+      "selfCheck": [
+        "La réponse en mode reasoning était-elle plus correcte ou plus approfondie sur le fond que la réponse standard ?",
+        "Le temps supplémentaire en valait-il la peine pour cette tâche concrète ?"
+      ]
+    }
+  },
+  {
+    "slug": "mixture-of-experts",
+    "title": "Mixture of Experts : pourquoi les grands modèles n'activent pas tout en même temps",
+    "category": "begriff",
+    "difficulty": 3,
+    "minutes": 6,
+    "xp": 60,
+    "teaser": "Kimi K3 compte environ 2,8 billions de paramètres – mais pour chaque réponse, seule une fraction est réellement active. Mixture of Experts explique comment cela fonctionne.",
+    "body": "## Le principe de base\nUn modèle de langage classique, « dense », utilise l'ensemble de ses paramètres pour chaque prédiction. Un modèle Mixture of Experts (MoE) se compose en revanche de nombreux réseaux partiels plus petits, les « experts », plus un routeur qui n'en active qu'une petite sélection par token – souvent seulement une poignée parmi des centaines d'experts possibles. Le reste demeure inutilisé pour ce token.\n\n## Paramètres totaux vs. actifs\nCette architecture donne lieu à deux indicateurs : le nombre total de tous les paramètres (important pour le besoin en mémoire) et le nombre de paramètres réellement actifs par token (important pour la charge de calcul et la vitesse). Mixtral 8x7B de Mistral AI compte environ 47 milliards de paramètres au total, mais seuls environ 13 milliards d'entre eux sont actifs par token.\n\n## Pourquoi c'est un bon compromis\nUn modèle MoE peut stocker autant de savoir qu'un très grand modèle dense, mais ne calcule par requête qu'avec la charge d'un modèle bien plus petit. Mixtral atteint ainsi, selon Mistral AI, la qualité d'un modèle nettement plus grand, avec une charge de calcul plus faible par requête.\n\n## Exemples actuels\nDeepSeek-V3 utilise 671 milliards de paramètres au total, dont 37 milliards actifs par token. Kimi K3 de Moonshot AI, publié en juillet 2026, va nettement plus loin avec environ 2,8 billions de paramètres au total – selon le fabricant, le plus grand modèle ouvertement disponible à ce jour.",
+    "bodyDetail": "## Comment fonctionne le routeur\nPour chaque token, un petit réseau de routage lui-même entraîné détermine quels experts sont les mieux adaptés, et n'y transmet le calcul qu'à ceux-là. Chez Mixtral, le routeur sélectionne, par couche et par token, deux experts parmi huit, dont les sorties sont combinées de façon pondérée. Chez DeepSeek-V3, ce sont 8 experts parmi 256 possibles par token, avec une stratégie propre de répartition de charge qui empêche que toujours les mêmes experts soient surchargés, sans nécessiter de terme de perte supplémentaire.\n\n## Pourquoi capacité et charge de calcul sont découplées\nDans un modèle dense, savoir et charge de calcul sont fermement liés – plus de savoir signifie forcément plus de puissance de calcul par requête. MoE sépare ces deux grandeurs : la capacité totale croît avec le nombre d'experts, tandis que la charge de calcul par requête ne dépend que du petit nombre d'experts activés.\n\n## Ce que cela signifie en pratique\nPour le besoin en mémoire et le matériel, c'est le nombre total de paramètres qui compte – un modèle de 2,8 billions de paramètres a besoin, même quantifié, d'énormément de mémoire vive rien que pour être chargé. Pour la vitesse de réponse et les coûts de calcul, en revanche, c'est surtout le nombre de paramètres actifs qui compte – un modèle MoE avec peu de paramètres actifs peut, malgré une taille totale gigantesque, être étonnamment rapide et peu coûteux par requête.\n\n## Kimi K3 comme exemple extrême actuel\nMoonshot AI a publié Kimi K3 le 16 juillet 2026, avec environ 2,8 billions de paramètres au total et une fenêtre de contexte d'un million de tokens – selon ses propres déclarations, le plus grand modèle d'IA ouvertement disponible à ce jour. Le modèle introduit de nouveaux éléments d'architecture (entre autres un mécanisme d'attention linéaire hybride nommé Kimi Delta Attention), mais repose toujours, au fond, sur le même principe MoE : une sparsité élevée, où seule une petite fraction du total des experts est activée par token.\n\n## Pourquoi MoE est particulièrement apprécié pour les très grands modèles\nSans MoE, doubler la taille du modèle doublerait aussi la charge de calcul par requête – pour des modèles de l'ordre du billion de paramètres, cela deviendrait pratiquement impayable. MoE permet à des fournisseurs comme DeepSeek ou Moonshot AI de continuer à faire évoluer la capacité totale sans que les coûts par réponse n'augmentent au même rythme – le prix à payer est une architecture plus complexe, avec ses propres défis en matière de répartition de charge et de stabilité d'entraînement.",
+    "example": "Mixtral 8x7B, une couche, un token :\n1. Le routeur évalue les 8 experts pour ce token\n2. Le routeur sélectionne les 2 meilleurs selon la pondération\n3. Seuls ces 2 experts sur 8 calculent réellement, leurs résultats sont combinés de façon pondérée\n→ Résultat : 13 milliards de paramètres actifs sur 47 milliards au total par token.",
+    "related": [
+      "was-ist-ein-llm",
+      "reasoning-modelle",
+      "open-source-modelle-lokal",
+      "modell-lifecycle"
+    ],
+    "quiz": {
+      "question": "Que signifie le fait que Kimi K3 ait environ 2,8 billions de paramètres au total, mais, comme d'autres modèles MoE, n'en active qu'une fraction par token ?",
+      "options": [
+        "Le nombre total de paramètres détermine surtout le besoin en mémoire, tandis que la charge de calcul et la vitesse par requête dépendent du nombre bien plus petit de paramètres actifs",
+        "Les paramètres restants sont des données inutilisées issues de l'entraînement et pourraient être supprimés",
+        "Un modèle MoE avec de nombreux paramètres au total est automatiquement plus lent pour chaque requête qu'un modèle dense de même taille totale"
+      ],
+      "correct": 0,
+      "explain": "MoE découple le besoin en mémoire (paramètres totaux, qui doivent tous être disponibles) de la charge de calcul par requête (seuls les experts activés calculent réellement) – c'est pourquoi un immense modèle MoE peut malgré tout être rapide par requête."
+    },
+    "sources": [
+      {
+        "title": "arXiv: Mixtral of Experts",
+        "url": "https://arxiv.org/abs/2401.04088"
+      },
+      {
+        "title": "arXiv: DeepSeek-V3 Technical Report",
+        "url": "https://arxiv.org/abs/2412.19437"
+      },
+      {
+        "title": "MarkTechPost : Moonshot AI publie Kimi K3 (2,8 billions de paramètres, modèle MoE ouvert)",
+        "url": "https://www.marktechpost.com/2026/07/16/moonshot-ai-releases-kimi-k3-a-2-8-trillion-parameter-open-moe-model-with-kimi-delta-attention-and-1m-context/"
+      }
+    ],
+    "exercise": {
+      "task": "Recherche, pour deux modèles MoE actuels, les indicateurs paramètres totaux et paramètres actifs, et mets-les en perspective.",
+      "steps": [
+        "Cherche les données officielles sur les paramètres totaux et actifs pour deux modèles de ton choix, par ex. DeepSeek-V3 et Kimi K3.",
+        "Calcule pour les deux le rapport entre paramètres actifs et paramètres totaux.",
+        "Réfléchis à celui des deux modèles qui a vraisemblablement besoin de plus de mémoire vive pour être chargé, et celui qui répond vraisemblablement plus vite par requête."
+      ],
+      "selfCheck": [
+        "As-tu réussi à trouver, pour les deux modèles, aussi bien le nombre total que le nombre actif de paramètres ?",
+        "Comprends-tu pourquoi un modèle avec un nombre total de paramètres gigantesque peut malgré tout répondre rapidement ?"
+      ]
+    }
+  },
+  {
+    "slug": "streaming",
+    "title": "Le streaming : pourquoi les réponses apparaissent mot par mot",
+    "category": "begriff",
+    "difficulty": 1,
+    "minutes": 3,
+    "xp": 20,
+    "teaser": "Claude Code, ChatGPT & Co. affichent le plus souvent leur réponse morceau par morceau plutôt que d'un seul coup – le streaming ne change rien à la qualité ni au coût.",
+    "body": "## Ce qu'est le streaming\nSans streaming, tu attends que le modèle ait fini de produire la réponse complète, et tu vois alors tout d'un coup. Avec le streaming, l'API envoie immédiatement chaque fragment de mot (token) généré, dès qu'il est prêt – tu vois la réponse apparaître en direct, un peu comme si tu regardais quelqu'un taper.\n\n## Pourquoi les outils font ça\nLe streaming ne change rien à la rapidité globale avec laquelle le modèle termine – le temps d'attente ressenti diminue tout de même nettement, parce que tu vois immédiatement les premiers mots au lieu d'un espace vide. De plus, une réponse peut être interrompue tôt si le début part déjà visiblement dans la mauvaise direction, au lieu d'attendre la génération complète.\n\n## La technique derrière\nLe mécanisme habituel pour cela s'appelle Server-Sent Events (SSE) – une technique web simple et établie, où le serveur utilise une connexion ouverte pour envoyer en continu de petits paquets de données au client. L'API de Claude comme celle d'OpenAI proposent le streaming via SSE, activé par un simple paramètre (stream: true) dans la requête.\n\n## Ce que le streaming NE change PAS\nLe streaming n'influence ni la qualité de la réponse ni son coût total – la facturation se fait toujours au nombre de tokens, qu'ils arrivent un par un ou groupés. C'est une pure technique d'affichage pour une meilleure expérience ressentie, pas un changement de contenu.",
+    "bodyDetail": "## Les Server-Sent Events en détail\nSSE est un canal de communication unidirectionnel : le serveur maintient une connexion HTTP ouverte et envoie en continu des événements nommés avec des données JSON associées, jusqu'à ce que la réponse soit complète ou qu'un événement de fin arrive. L'API de streaming de Claude envoie notamment des deltas de texte (fragments de texte nouveaux), des deltas d'utilisation de tool (appels d'outils construits étape par étape), et, si le reasoning est activé, également des deltas de réflexion – chaque événement porte un nom de type propre, comme message_stop, qui permet au client de savoir ce qui se passe.\n\n## Pourquoi les CLI et les IDE misent particulièrement sur le streaming\nPour des outils interactifs comme Claude Code, la vitesse de réaction ressentie compte particulièrement, parce que des humains regardent directement. Sans streaming, un long bloc de code n'apparaîtrait qu'après une génération complète – avec le streaming, on peut déjà lire le début pendant que le reste se génère encore, et une approche manifestement erronée peut être stoppée par interruption avant que trop de tokens inutiles ne soient générés (et potentiellement facturés).\n\n## Deux API, un motif similaire\nAussi bien la Messages API de Claude que l'API d'OpenAI fonctionnent selon le même principe de base : un paramètre booléen active le mode streaming, après quoi arrivent des événements structurés au lieu d'une seule réponse complète. Les SDK officiels proposent pour cela des fonctions d'assistance toutes faites, qui rassemblent automatiquement le flux d'événements en un message complet si, au final, le résultat complet est malgré tout nécessaire – le streaming et le « traitement de tout d'un coup à la fin » ne s'excluent donc pas mutuellement.\n\n## Streaming et appels de tool\nMême des réponses complexes avec plusieurs appels de tool consécutifs peuvent être streamées – les paramètres d'un appel de tool se construisent alors eux aussi progressivement à partir de deltas individuels, au lieu d'apparaître complets d'un coup. Cela permet aux interfaces d'afficher, pendant même la génération, quel tool est en train d'être préparé avec quels arguments (encore incomplets).\n\n## Une confusion fréquente\nLe streaming est parfois confondu à tort avec une réponse « plus rapide » ou « moins chère ». En réalité, le streaming détermine uniquement la façon dont les données déjà générées sont transmises – pas le nombre de tokens générés, ni la durée totale du calcul. Un modèle avec reasoning activé reste par exemple toujours plus lent qu'un modèle sans, indépendamment du fait que la sortie soit streamée ou non.",
+    "example": "curl -N https://api.anthropic.com/v1/messages \\\n  -H \"anthropic-version: 2023-06-01\" \\\n  -d '{\"model\":\"claude-sonnet-5\",\"stream\":true,\"max_tokens\":100,\"messages\":[{\"role\":\"user\",\"content\":\"Compte jusqu'à 5\"}]}'\n# La sortie arrive comme une suite d'événements SSE (event: content_block_delta, ...) au lieu d'une seule réponse complète.",
+    "related": [
+      "api",
+      "tool-use",
+      "claude-code",
+      "rate-limits-und-quotas"
+    ],
+    "quiz": {
+      "question": "Qu'est-ce que le streaming change dans une réponse d'API ?",
+      "options": [
+        "Il réduit le coût total, car moins de tokens sont facturés",
+        "Il améliore automatiquement la qualité du contenu de la réponse",
+        "Il transmet immédiatement les fragments de texte déjà générés au lieu de les regrouper à la fin – le coût et la durée totale de la génération restent inchangés"
+      ],
+      "correct": 2,
+      "explain": "Le streaming est une pure technique de transmission : il envoie les tokens dès qu'ils sont prêts, au lieu de tout envoyer d'un coup à la fin. Le nombre de tokens générés et leur coût restent identiques."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude : Streaming Messages",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/streaming"
+      },
+      {
+        "title": "Documentation OpenAI : Streaming API Responses",
+        "url": "https://developers.openai.com/api/docs/guides/streaming-responses"
+      }
+    ],
+    "exercise": {
+      "task": "Appelle l'API Claude une fois avec et une fois sans streaming, et observe la différence directement dans le terminal.",
+      "steps": [
+        "Envoie une requête avec stream: false et attends la réponse complète.",
+        "Envoie la même requête avec stream: true (par ex. via curl -N) et observe comment la réponse arrive par fragments.",
+        "Compare la durée totale jusqu'au dernier caractère pour les deux variantes."
+      ],
+      "selfCheck": [
+        "Le temps d'attente ressenti était-il plus court avec le streaming, alors que la durée totale était similaire ?",
+        "As-tu pu identifier des événements SSE individuels (event: ...) dans le format brut streamé ?"
+      ]
+    }
+  },
+  {
+    "slug": "quantisierung",
+    "title": "La quantification : comment faire tenir de grands modèles sur son propre ordinateur",
+    "category": "begriff",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "Stocker un modèle avec une précision numérique plus faible économise énormément d'espace de stockage – le prix à payer est une petite perte de qualité, souvent à peine perceptible.",
+    "body": "## Le principe de base\nLes poids d'un modèle sont généralement stockés lors de l'entraînement avec une haute précision, souvent en nombre à virgule flottante 16 bits (FP16). La quantification réduit cette précision après coup, par exemple à 8 bits (INT8) ou 4 bits (INT4) – chaque nombre individuel nécessite alors nettement moins d'espace de stockage, et le modèle entier rétrécit en conséquence.\n\n## Pourquoi c'est déterminant pour les modèles locaux\nUn modèle de 7 milliards de paramètres nécessite environ 14 Go de mémoire vive en FP16 – trop pour de nombreux ordinateurs portables. Avec une quantification courante en 4 bits (Q4_K_M), ce même besoin descend à environ 4,5 Go, ce qui rend le modèle enfin utilisable sur du matériel grand public classique. C'est précisément pour cette raison que les modèles quantifiés sont la base d'outils comme Ollama.\n\n## Le format GGUF\nGGUF est le format de fichier courant pour les modèles quantifiés, tels qu'utilisés par Ollama ou llama.cpp – il regroupe les poids et les métadonnées (tokenizer, configuration) en un seul fichier, reconnaissable dans son nom à des abréviations comme Q4_K_M ou Q8_0.\n\n## Le prix à payer : la perte de qualité\nPlus la quantification est agressive, plus la perte de précision est importante. Pour Q4_K_M, la perte de qualité mesurée sur des benchmarks standards se situe généralement entre un et trois pour cent seulement – à peine perceptible pour la plupart des tâches quotidiennes. Avec une compression encore plus forte, la perte devient en revanche nettement plus sensible.",
+    "bodyDetail": "## Ce que signifie techniquement la quantification\nAu lieu de stocker chaque poids sous forme de nombre à virgule flottante 32 ou 16 bits, la quantification arrondit les valeurs sur une grille plus grossière avec moins de niveaux possibles – de 2 à 8 bits par valeur, selon la méthode. Pour les « K-quants » (par ex. Q4_K_M), tous les poids ne sont en plus pas traités de la même façon : les blocs de poids plus importants se voient accorder tendanciellement plus de précision que les moins importants, ce qui réduit la perte de qualité par rapport à une quantification uniforme.\n\n## Ordres de grandeur typiques\nComme règle empirique approximative : FP16 nécessite environ 2 Go de mémoire par milliard de paramètres, Q8_0 (8 bits) environ 1,1 Go par milliard, Q4_K_M (4 bits) environ 0,55 Go par milliard. Un modèle de 32 milliards de paramètres atteint ainsi environ 64 Go en FP16, mais seulement environ 18 Go en Q4_K_M – cette différence détermine souvent directement si un modèle peut même être chargé sur le matériel disponible.\n\n## Comment quantifier toi-même\nOllama quantifie directement les modèles FP16 ou FP32 via la commande ollama create avec le flag -q ou --quantize, par exemple ollama create --quantize q4_K_M mymodel. Pour plus de contrôle, le projet llama.cpp propose son propre outil en ligne de commande (llama-quantize), qui prend en charge des dizaines de variantes de quantification, de très agressive à quasiment sans perte (Q8_0). Hugging Face propose en plus, avec « GGUF-my-repo », un outil web qui convertit et quantifie un modèle directement en ligne, sans installation locale.\n\n## Où la perte de qualité se remarque le plus\nPour les tâches de chat courantes, la différence entre FP16 et Q4_K_M est généralement à peine perceptible. Pour des tâches exigeant une haute précision – code complexe, nombres exacts, raisonnement à plusieurs étapes –, une quantification trop agressive se remarque en revanche plus facilement : Q8_0 est considéré en pratique comme quasiment sans perte, et convient donc particulièrement aux tâches de code, tandis que des nombres de bits très faibles ne sont généralement plus recommandables pour des tâches exigeantes.\n\n## Lien avec les modèles fonctionnant en local\nLa quantification est la condition technique qui permet à des outils comme Ollama de proposer des modèles ouverts sur du matériel grand public ordinaire – sans elle, même des modèles ouverts de taille moyenne seraient hors de portée pour la plupart des ordinateurs portables. Le choix du niveau de quantification est un compromis conscient entre besoin en mémoire, vitesse et qualité, que tu fais toi-même selon le matériel disponible et le cas d'usage.",
+    "example": "ollama create --quantize q4_K_M monmodele\n# Convertit un modèle FP16 en version 4 bits – le besoin en mémoire tombe à environ un tiers, la perte de qualité reste généralement sous 3 %.",
+    "related": [
+      "open-source-modelle-lokal",
+      "was-ist-ein-llm",
+      "kosten-kontrolle-agenten",
+      "mixture-of-experts"
+    ],
+    "quiz": {
+      "question": "Que se passe-t-il lors de la quantification d'un modèle de FP16 vers 4 bits (par ex. Q4_K_M) ?",
+      "options": [
+        "Le nombre de paramètres du modèle diminue, et le modèle 'oublie' ainsi délibérément certaines capacités",
+        "Chaque poids est stocké avec une précision numérique plus faible, ce qui réduit nettement le besoin en mémoire, avec généralement seulement une faible perte de qualité",
+        "Le modèle est ainsi automatiquement entraîné plus vite, mais ne devient pas plus petit"
+      ],
+      "correct": 1,
+      "explain": "La quantification ne change pas le nombre de paramètres, mais la précision avec laquelle chaque valeur individuelle est stockée – moins de bits par poids signifie moins de besoin en mémoire, avec généralement seulement une petite perte de précision."
+    },
+    "sources": [
+      {
+        "title": "Documentation Hugging Face : GGUF",
+        "url": "https://huggingface.co/docs/hub/en/gguf"
+      },
+      {
+        "title": "GitHub : llama.cpp – README de quantification",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md"
+      },
+      {
+        "title": "Documentation Ollama : Importer un modèle (quantification)",
+        "url": "https://docs.ollama.com/import"
+      }
+    ],
+    "exercise": {
+      "task": "Télécharge un modèle ouvert avec Ollama et compare la taille ainsi que le comportement selon différents niveaux de quantification.",
+      "steps": [
+        "Installe Ollama et télécharge un modèle dans sa quantification standard, par ex. ollama run gemma4.",
+        "Vérifie la taille du fichier du modèle téléchargé (par ex. via ollama list).",
+        "Télécharge, à titre de comparaison, si disponible, un autre niveau de quantification du même modèle (par ex. un tag avec q8_0) et compare la taille ainsi que le comportement de réponse pour la même question."
+      ],
+      "selfCheck": [
+        "Quelle était l'ampleur de la différence de taille de fichier entre les deux niveaux de quantification ?",
+        "As-tu seulement remarqué une différence de qualité sur des questions normales ?"
+      ]
+    }
+  },
+  {
+    "slug": "issue-zu-pr-workflow",
+    "title": "De l'issue GitHub à la pull request avec un agent",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "Une bonne issue est fondamentalement un prompt – avec du contexte et des critères d'acceptation, elle devient une pull request propre et vérifiable.",
+    "body": "## Le déroulement de base\nUn workflow d'agent typique se déroule ainsi : une issue GitHub décrit une tâche, un agent (par ex. via @claude dans un commentaire, ou un pipeline CI) lit l'issue, travaille sur sa propre branche, produit des modifications de code et ouvre finalement une pull request – pour une vérification humaine, pas pour une fusion automatique.\n\n## Une bonne issue est un bon prompt\nLes mêmes règles qui valent pour un bon prompt valent pour une bonne issue : un contexte clair (quel fichier, quel comportement, pourquoi), des critères d'acceptation concrets et, si possible, un exemple du comportement attendu. Une issue vague mène à une PR vague, souvent inutilisable – que ce soit un humain ou un agent qui la réalise.\n\n## Pourquoi une branche propre est importante\nL'agent ne travaille jamais directement sur la branche principale, mais sur sa propre branche de fonctionnalité. Cela garde les modifications isolées, vérifiables et – si quelque chose tourne mal – annulables sans conséquence, sans toucher à la branche principale.\n\n## La revue humaine reste la porte d'entrée\nLa pull request est le point de contrôle décisif : un humain vérifie le diff, la description et les résultats de la CI avant la fusion. Les vérifications CI (tests, linting, build) s'exécutent automatiquement comme filet de sécurité supplémentaire, mais ne remplacent pas le jugement humain sur la pertinence de la modification.",
+    "bodyDetail": "## Ce qui rend une issue forte en tant que prompt\nUne issue qu'un agent peut réaliser de façon fiable mentionne typiquement quatre choses : la zone concernée (fichier, module, fonction), le comportement défaillant actuel ou la fonctionnalité manquante, le comportement cible souhaité, et des critères d'acceptation explicites (« le test X doit rester vert », « le champ Z ne doit pas changer »). Si ces informations manquent, l'agent comble les lacunes avec ses propres hypothèses – qui correspondent rarement exactement à ce qui était voulu.\n\n## Le déroulement technique avec Claude Code\nAvec l'intégration GitHub officielle, une mention @claude dans un commentaire d'issue ou de PR suffit à déclencher l'agent : il lit l'issue, comprend la demande, écrit la réalisation et ouvre une pull request – configuré le plus souvent via /install-github-app, qui configure automatiquement l'app GitHub et les secrets nécessaires. Pour plus de contrôle, on peut aussi créer son propre fichier de workflow, qui réagit à certains événements (issue_comment, pull_request_review_comment, issues, pull_request_review).\n\n## Ce que l'agent fournit pour une bonne PR\nAu-delà de la simple modification de code, un tel workflow génère généralement aussi une description de PR qui résume ce qui a été changé et pourquoi – souvent avec une référence à l'issue (par ex. « Closes #123 », que GitHub relie automatiquement et qui ferme l'issue lors de la fusion). Pour des modifications plus importantes, un guide de lecture pour les relecteurs aide en plus : quel fichier regarder en premier, et comment la modification s'articule.\n\n## La CI comme second filet de sécurité\nDes vérifications automatisées – tests, linting, validation de build – s'exécutent pour chaque PR indépendamment de la revue humaine, et interceptent les erreurs mécaniques avant qu'un humain ne regarde. Cela réduit la charge de vérification à ce que les machines ne peuvent pas évaluer de façon fiable : si la modification a du sens sur le fond, si elle s'accorde avec l'architecture, si elle a des effets de bord cachés.\n\n## Pourquoi le point de contrôle humain demeure\nUn agent peut réaliser une issue de façon techniquement correcte et pourtant livrer la mauvaise solution – par exemple si l'issue était incomplète. Selon la documentation de GitHub elle-même, les relecteurs devraient recevoir des titres clairs, des descriptions claires et, pour des changements plus importants, un guide de lecture – cela vaut aussi bien pour les PR générées par des agents que pour celles créées par des humains. La revue se termine par l'une de trois décisions : commentaire (retour sans validation), approve (validation pour la fusion) ou request changes (modifications nécessaires avant la fusion).",
+    "example": "Issue :\n« Bug : /api/users renvoie 500 au lieu d'une liste vide quand le champ de recherche est vide.\nContexte : routes/users.js, ligne 42.\nCritère d'acceptation : GET /api/users?q= renvoie [] avec le statut 200, le test existant tests/users.test.js reste vert. »\n\nCommentaire dans l'issue : @claude merci de réaliser cela\n→ L'agent travaille sur la branche fix/empty-search, ouvre la PR \"Fix: empty search returns [] instead of 500 (Closes #123)\"",
+    "related": [
+      "ci-cd-mit-agenten",
+      "code-review-mit-ki",
+      "git-github-basics",
+      "human-in-the-loop"
+    ],
+    "quiz": {
+      "question": "Qu'est-ce qui fait d'une issue GitHub un « bon prompt » pour un agent de code ?",
+      "options": [
+        "Un contexte clair (fichier/fonction concerné), le comportement cible souhaité et des critères d'acceptation explicites, permettant de vérifier objectivement la réussite",
+        "Le moins de texte possible, pour laisser à l'agent une libre interprétation",
+        "Une issue doit être rédigée exclusivement par le propriétaire du dépôt lui-même, sinon l'agent l'ignore"
+      ],
+      "correct": 0,
+      "explain": "Tout comme pour un bon prompt, un agent comble les informations manquantes avec ses propres hypothèses – un contexte clair, un comportement cible et des critères d'acceptation vérifiables dans l'issue évitent que ces hypothèses passent à côté du besoin réel."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude Code : GitHub Actions",
+        "url": "https://code.claude.com/docs/en/github-actions"
+      },
+      {
+        "title": "GitHub Docs: About GitHub Copilot Cloud Agent",
+        "url": "https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent"
+      },
+      {
+        "title": "GitHub Docs: About pull request reviews",
+        "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews"
+      }
+    ],
+    "exercise": {
+      "task": "Écris une issue GitHub complète, exploitable par un agent, pour un petit correctif de bug, et fais-la réaliser.",
+      "steps": [
+        "Choisis un petit bug clairement délimité, ou un détail mineur, dans un de tes propres dépôts.",
+        "Rédige une issue avec le fichier/la fonction concerné(e), le comportement défaillant actuel, le comportement cible et au moins un critère d'acceptation concret.",
+        "Fais proposer la réalisation par un agent (par ex. Claude Code ou l'intégration GitHub) sur sa propre branche, et fais-lui ouvrir une pull request.",
+        "Vérifie la PR comme le ferait un relecteur : titre, description, diff, lien avec l'issue."
+      ],
+      "selfCheck": [
+        "Ton issue contenait-elle les quatre éléments (contexte, comportement défaillant, comportement cible, critère d'acceptation) ?",
+        "L'agent a-t-il pu réaliser la tâche sans question de clarification, ou des informations manquaient-elles ?"
+      ]
+    }
+  },
+  {
+    "slug": "checkpoints-und-rollbacks",
+    "title": "Checkpoints et rollbacks : revenir en arrière proprement plutôt que bricoler",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "Des commits Git avant les étapes risquées et des fonctions de rewind intégrées transforment une tentative d'agent ratée en un simple « retour en arrière », au lieu de corriger sans fin.",
+    "body": "## Deux niveaux de checkpoints\nDans le travail avec des agents, les checkpoints sont utiles à deux niveaux : durablement dans Git (un commit avant une étape risquée, que tu peux récupérer de façon ciblée à tout moment), et localement dans l'outil lui-même, comme le checkpointing de Claude Code, qui sauvegarde automatiquement l'état des fichiers avant chaque prompt.\n\n## Comment fonctionne le rewind de Claude Code\nAvant chaque prompt, Claude Code enregistre automatiquement un instantané du code. Via /rewind (ou deux fois Échap avec le champ de saisie vide), tu ouvres un menu d'options de récupération – de la remise à zéro complète du code et de la conversation, jusqu'à la remise à zéro de la seule conversation, le code étant conservé.\n\n## Pourquoi revenir en arrière vaut mieux que de bricoler\nQuand un agent s'est fourvoyé dans une mauvaise approche, « le laisser simplement continuer à réparer » mène souvent à toujours plus de patches sur une base déjà cassée. Un rollback propre vers le dernier état fonctionnel, suivi d'un nouveau départ conscient, est généralement plus rapide qu'une situation bloquée sauvée étape par étape.\n\n## La limite des checkpoints\nLes checkpoints intégrés ne capturent que les modifications que l'outil lui-même a effectuées via ses tools de fichiers – les modifications faites via des commandes bash comme rm, mv ou cp n'y figurent pas. Les checkpoints complètent Git, mais ne le remplacent pas : les checkpoints sont le « annuler » local, Git est l'historique durable.",
+    "bodyDetail": "## Ce que le checkpointing de Claude Code enregistre concrètement\nClaude Code conserve les 100 derniers checkpoints d'une session sous forme d'instantanés de fichiers, liés à la conversation – même une session reprise plus tard peut encore être rembobinée jusqu'à ces points. Après 30 jours, les checkpoints sont automatiquement nettoyés (configurable via cleanupPeriodDays). Le menu /rewind propose plusieurs options : réinitialiser le code et la conversation, réinitialiser uniquement la conversation (le code reste), réinitialiser uniquement le code (la conversation reste), ou compresser l'historique à partir de ce point en un résumé.\n\n## Ce que le checkpointing ne couvre volontairement PAS\nSeules les modifications directes de fichiers via les tools d'édition intégrés sont enregistrées. Si un agent supprime, déplace ou écrase un fichier via une commande bash à la place, cette modification reste en dehors de l'historique des checkpoints et ne peut pas être annulée via /rewind – une raison importante de s'appuyer en plus sur Git pour les opérations bash risquées.\n\n## Les commits Git comme checkpoint conscient\nUn git commit crée un instantané durable de toutes les modifications préparées avec git add, accompagné de l'auteur, de l'horodatage, du message et d'une référence au commit précédent. Contrairement aux checkpoints automatiques de l'outil, c'est un état conscient et nommé, que tu peux poser délibérément avant un refactoring risqué – et retrouver à tout moment via git reset ou git checkout, même après la fin de la session ou sur une autre machine.\n\n## L'interaction en pratique\nUne façon de travailler robuste combine les deux niveaux : fais un commit d'un état intermédiaire propre dans Git avant une tâche d'agent risquée, laisse l'agent travailler librement, et utilise /rewind si besoin pour des corrections rapides au sein de la session. Si malgré tout quelque chose tourne fondamentalement mal – par exemple parce qu'une commande bash a modifié des fichiers en dehors de la capture des checkpoints –, le commit Git reste le dernier recours fiable.\n\n## Distinction avec « agent bloqué »\nLes checkpoints et les rollbacks sont de la pure mécanique : l'outil pour récupérer un état. Savoir si un rollback est la bonne décision – par exemple parce qu'un agent ne progresse plus depuis plusieurs tentatives – est en revanche une question de stratégie, qui nécessite ses propres signes (erreurs répétées, diffs qui grandissent au lieu de rétrécir) pour être identifiée à temps.",
+    "example": "git add -A && git commit -m \"checkpoint : avant le refactoring de auth.py\"\n# ensuite, laisser l'agent travailler librement\n# si nécessaire : git reset --hard HEAD~1  (retour au checkpoint)\n# ou au sein de la session : /rewind → \"Réinitialiser le code\" pour le dernier prompt",
+    "related": [
+      "agent-festgefahren",
+      "git-github-basics",
+      "claude-code-befehle",
+      "git-worktrees"
+    ],
+    "quiz": {
+      "question": "Qu'est-ce que le checkpointing de Claude Code NE capture PAS, ce qui rend Git toujours nécessaire pour cela ?",
+      "options": [
+        "Les modifications directes de fichiers via les tools d'édition intégrés de l'agent",
+        "Les modifications effectuées via des commandes bash comme rm, mv ou cp",
+        "Les modifications de la conversation elle-même"
+      ],
+      "correct": 1,
+      "explain": "Le checkpointing ne suit que les modifications effectuées via les tools de fichiers intégrés. Les opérations sur les fichiers via des commandes bash comme rm, mv ou cp ne sont pas capturées – pour cela, Git reste le recours fiable."
+    },
+    "sources": [
+      {
+        "title": "Documentation Claude Code : Checkpointing",
+        "url": "https://code.claude.com/docs/en/checkpointing"
+      },
+      {
+        "title": "Documentation Git : git-commit",
+        "url": "https://git-scm.com/docs/git-commit"
+      },
+      {
+        "title": "Documentation Git : Undoing Things",
+        "url": "https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things"
+      }
+    ],
+    "exercise": {
+      "task": "Pose consciemment un checkpoint Git avant une tâche d'agent risquée, et teste aussi bien /rewind qu'un rollback Git.",
+      "steps": [
+        "Fais un commit de l'état actuel propre de ton projet avec un message de checkpoint clair.",
+        "Fais réaliser par un agent une modification importante et risquée (par ex. un refactoring sur plusieurs fichiers).",
+        "Utilise /rewind pour réinitialiser uniquement le code de façon ciblée, tout en conservant la conversation.",
+        "Simule un cas plus grave : reviens en plus, à titre de test, au commit précédent avec git reset --hard."
+      ],
+      "selfCheck": [
+        "As-tu pu, avec /rewind, réinitialiser uniquement le code de façon ciblée, sans perdre la conversation ?",
+        "Qu'aurais-tu fait si l'agent avait supprimé le fichier via rm à la place ?"
+      ]
+    }
   }
 ]

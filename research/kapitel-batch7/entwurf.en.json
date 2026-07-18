@@ -1,0 +1,546 @@
+[
+  {
+    "slug": "few-shot-beispiele",
+    "title": "Few-Shot Examples: Show, Don't Just Tell",
+    "category": "prompt-pattern",
+    "difficulty": 1,
+    "minutes": 3,
+    "xp": 20,
+    "teaser": "Instead of describing exactly what you want, you show the model two or three examples - and it picks up the pattern on its own.",
+    "body": "## What few-shot prompting is\nYou give the model a couple of example inputs and outputs right inside the prompt, then ask for one more. No fine-tuning, no extra tool - just examples sitting in your prompt, showing the pattern you want repeated.\n\n## Why it works\nExplaining a format in words is often vaguer than showing it. \"Write a short, punchy product description\" leaves a lot open. Three examples of exactly the tone, length, and structure you want leave much less room for the model to guess wrong.\n\n## Zero-shot vs. few-shot\nZero-shot means no examples at all - just an instruction. That's fine for simple, common tasks a model has seen a million times, like summarizing a paragraph. Few-shot earns its keep once you need a specific format, a house style, or a slightly unusual pattern the model wouldn't default to on its own.\n\n## Quality beats quantity\nTwo or three sharp, representative examples usually beat ten mediocre ones. A bad example teaches a bad habit just as reliably as a good one teaches a good one - the model has no way of knowing which examples you actually meant as the rule.",
+    "bodyDetail": "## How many examples, really\nAnthropic's own prompting docs suggest three to five examples for most tasks - enough to establish a clear pattern without bloating your prompt. Some tasks need only two; a handful of edge cases might need more, especially if the task has several branches you want reflected at least once.\n\n## Structuring examples so the model can tell them apart\nWrapping each example clearly - for instance in tags like `<example>...</example>` - matters more than people expect. Without clear boundaries, a model can blend an example's content with the actual instruction, or treat part of an example as part of its answer. A short label like \"Example 1:\" before each one already helps a lot.\n\n## Diversity over volume\nIf every example follows the exact same shape, the model may lock onto surface details that don't actually matter - like always producing exactly three bullet points because that's what every example happened to have. Mixing in a slightly different edge case within your few-shot set teaches the model what actually varies versus what stays fixed.\n\n## Few-shot for reasoning, not just format\nExamples aren't only for output shape. Showing two or three worked examples of a multi-step calculation, each with the intermediate steps written out, tends to make a model more likely to show its own steps on a new problem - an old prompting idea sometimes called chain-of-thought-by-example, related to but distinct from a model's own built-in reasoning mode.\n\n## The cost side\nEvery example lives in your prompt, so more examples means more input tokens on every single call. Prompt caching - storing the unchanging example block once and reusing it - is the standard fix once a few-shot prompt gets called often; it keeps a large example set cheap instead of paying for it on every request.\n\n## When it stops helping\nFew-shot has a ceiling: it steers format and local style well, but it can't teach a model something it fundamentally can't do, and beyond a certain point more examples yield diminishing returns while just burning context. If a task needs consistently precise structure regardless of phrasing, a schema-based feature is usually the sturdier tool.",
+    "example": "Without examples:\n\"Turn this feature into a changelog entry.\"\n\nWith few-shot:\nExample 1:\nFeature: Added dark mode toggle in settings\nChangelog: Dark mode - switch it on under Settings -> Appearance.\n\nExample 2:\nFeature: Fixed crash when uploading files over 50MB\nChangelog: Fixed a crash when uploading large files (50MB+).\n\nNow:\nFeature: Added CSV export for reports\nChangelog: (model completes it in the same style)",
+    "related": [
+      "prompt-strukturen",
+      "rollen-prompts",
+      "output-formate-erzwingen",
+      "prompt"
+    ],
+    "quiz": {
+      "question": "What's the main benefit of few-shot examples over a purely zero-shot instruction?",
+      "options": [
+        "They let the model see exactly the pattern you want, which is often clearer than describing it in words",
+        "They make the model permanently better at every task, even without examples next time",
+        "They replace the need for a system prompt entirely"
+      ],
+      "correct": 0,
+      "explain": "Examples directly show the desired format, tone, or logic - typically more precise than a verbal description. But that effect only applies to that one prompt, not to the model's general ability going forward."
+    },
+    "sources": [
+      {
+        "title": "Claude Platform Docs: Multishot Prompting",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/multishot-prompting"
+      },
+      {
+        "title": "OpenAI Platform Docs: Prompt Engineering",
+        "url": "https://developers.openai.com/api/docs/guides/prompt-engineering"
+      }
+    ],
+    "exercise": {
+      "task": "Turn a vague formatting instruction into a working few-shot prompt.",
+      "steps": [
+        "Pick a small formatting task you do often, like turning a feature note into a changelog line.",
+        "Write the zero-shot version: just the instruction, no examples. Run it once and note the output.",
+        "Write 2-3 examples in the exact format you want, each wrapped clearly (e.g. \"Example 1: ... Example 2: ...\").",
+        "Add your real input after the examples and run the few-shot version.",
+        "Compare both outputs - check if the few-shot version matches your intended format more consistently."
+      ],
+      "selfCheck": [
+        "Did the few-shot output match your intended format more closely than the zero-shot one?",
+        "If you run the few-shot prompt again with a different input, does it still follow the same pattern?"
+      ]
+    }
+  },
+  {
+    "slug": "rollen-prompts",
+    "title": "Role Prompts: What \"You Are an Expert...\" Actually Changes",
+    "category": "prompt-pattern",
+    "difficulty": 1,
+    "minutes": 3,
+    "xp": 20,
+    "teaser": "Telling a model \"You are a senior security engineer\" changes its tone and focus - but it doesn't hand it new abilities it didn't already have.",
+    "body": "## What a role prompt does\nA role or persona prompt puts the model in a specific frame before you ask your actual question - \"You are an experienced code reviewer,\" \"You are a patient math tutor.\" Usually this goes in the system prompt, sometimes right at the top of the user message.\n\n## What actually shifts\nVocabulary, tone, and what the model pays attention to. A \"senior security engineer\" framing nudges the model toward flagging injection risks and auth edge cases; a \"patient tutor\" framing nudges it toward smaller steps and gentler language. It's steering, not a capability switch.\n\n## What it does not do\nIt doesn't give the model information or skills it didn't have. Calling it \"a world-class oncologist\" doesn't make its medical knowledge more accurate - it just makes the answer sound more like an oncologist wrote it. Confusing the two is the most common misconception around role prompts.\n\n## When it actually helps\nRole prompts pay off most in advisory, tone-sensitive tasks - code review comments, tutoring, customer-facing writing - where framing genuinely shapes what a good answer looks like. For a pure factual lookup or a well-specified coding task, a role often changes little beyond word choice.",
+    "bodyDetail": "## Research is more mixed than the folklore\nFor years, \"act as an expert\" was treated as a near-free performance boost. More recent controlled studies complicate that: comparing persona prompts against neutral baselines across many tasks and roles shows persona prompting produces only small differences on average, with the effect depending heavily on the task type - advisory domains like medicine or psychology see more benefit than plain factual or conceptual questions, where a role can even add unhelpful padding.\n\n## The expertise-depth vs. clarity tradeoff\nOne consistent pattern in this research: adding a role systematically increases perceived expertise, structure, and formal framing, while it can reduce readability and directness. A \"senior architect\" persona might produce a more jargon-heavy, longer answer that reads as authoritative but is actually harder to act on than a plain, direct one.\n\n## Roles can also backfire\nSome studies found persona prompts perform worse than a neutral prompt on a chunk of reasoning benchmarks - the framing adds tokens and a narrative layer the model has to track, without adding real signal. A role prompt is a nudge, not a strictly positive force; on tasks with one clean correct answer, it can dilute focus rather than sharpen it.\n\n## Role prompts vs. system prompts, not the same thing\nA role is one specific use of a system prompt, not the whole concept. A system prompt can also carry formatting rules, safety constraints, or tool-use instructions with no persona involved at all. Mixing a persona into a system prompt that's mostly doing configuration work can blur which part is actually driving a given behavior, making the prompt harder to debug.\n\n## Practical framing that tends to work\nThe most reliable version of a role prompt isn't a vague label (\"You are an expert\") but a role plus a concrete behavior: \"You are a code reviewer who flags security issues before style issues, and always explains why a change matters.\" That combines framing with an explicit instruction - the instruction is likely doing most of the real work, with the role adding tone on top.\n\n## Where the real capability comes from\nIf a task genuinely needs domain expertise the base model lacks, no persona fixes that - the actual levers are retrieval, tool-use, or a genuinely stronger or differently-trained model. A role prompt is cheap and can help with framing; treat it as seasoning, not substance.",
+    "example": "Same question, two personas:\n\nSystem: \"You are a terse senior engineer reviewing a PR.\"\nUser: \"Is this function okay?\"\n-> \"No. Missing null check on line 12, and the loop is O(n^2) for no reason.\"\n\nSystem: \"You are a patient mentor helping a junior developer.\"\nUser: \"Is this function okay?\"\n-> \"Good start! Two things to look at: line 12 could get a null value it doesn't handle yet, and there's a way to make the loop faster - want me to show you?\"",
+    "related": [
+      "system-prompt",
+      "prompt-strukturen",
+      "few-shot-beispiele",
+      "prompt"
+    ],
+    "quiz": {
+      "question": "What does a role prompt like 'You are an experienced security auditor' primarily change?",
+      "options": [
+        "The model's underlying knowledge - it now genuinely knows more about security",
+        "The model's tone, vocabulary, and what it pays attention to in its answer",
+        "The model's context window size for that conversation"
+      ],
+      "correct": 1,
+      "explain": "A role prompt shifts framing and focus, not the model's actual knowledge or capabilities - it can't teach the model facts or skills it doesn't already have."
+    },
+    "sources": [
+      {
+        "title": "Claude Platform Docs: Giving Claude a Role With a System Prompt",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/system-prompts"
+      },
+      {
+        "title": "arXiv: When Does Persona Prompting Actually Help? A Retrieval and Metric Analysis of Expert Role Injection in LLMs",
+        "url": "https://arxiv.org/abs/2605.29420"
+      }
+    ],
+    "exercise": {
+      "task": "Test whether a role prompt actually changes the substance of an answer or just its tone.",
+      "steps": [
+        "Pick a question with a factual or technical answer (e.g. \"what causes a race condition?\").",
+        "Ask it with no role prompt and save the answer.",
+        "Ask the same question again with a role like \"You are a senior systems engineer\" in the system prompt.",
+        "Ask it a third time with a very different role, like \"You are explaining this to a curious teenager\".",
+        "Compare all three: did the core facts change, or just the tone and vocabulary?"
+      ],
+      "selfCheck": [
+        "Did the actual technical content stay consistent across all three versions?",
+        "Could you point to specific tone or vocabulary differences the role caused?"
+      ]
+    }
+  },
+  {
+    "slug": "selbstkritik-schleifen",
+    "title": "Self-Critique Loops: Have the Model Check Its Own Work",
+    "category": "prompt-pattern",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "teaser": "Asking a model to review and revise its own answer - in a separate pass - catches more than just telling it to 'be thorough' the first time.",
+    "body": "## The basic idea\nInstead of one shot at an answer, you run two: generate a first draft, then feed that draft back with a prompt like \"review this for errors, then produce a corrected version.\" That second pass is the self-critique step.\n\n## Why not just ask for care upfront\n\"Please double-check your work\" baked into the first prompt asks the model to write and verify at the same time, under the same train of thought that produced the mistake. A model that made an error is often anchored to the reasoning that led there - it's genuinely harder to catch your own blind spot mid-answer than to review a finished piece of text with fresh eyes.\n\n## What a separate pass buys you\nA fresh critique pass reads the draft as a finished artifact, not as a chain of thought still in progress. That framing shift - from \"producing\" to \"reviewing\" - is often enough to surface issues that self-monitoring during generation misses, especially formatting slips, missed edge cases, or a claim that contradicts an earlier one.\n\n## The catch: self-confirmation\nA model reviewing its own output shares the same blind spots that produced it. If it was confidently wrong about a fact, asking it to check its own fact tends to just restate the same wrong answer with more confidence. Self-critique is good at catching structural and logical slips, much weaker at catching a hallucination the model still believes.",
+    "bodyDetail": "## The evaluator-optimizer pattern\nAnthropic's write-up on effective agent design names this as one of its core workflow patterns: evaluator-optimizer, where one call generates and a second call evaluates and gives feedback, looped until the evaluation passes. It works best when there's a clear criterion for \"good\" and iterative refinement genuinely helps close the gap - not every task benefits equally from another round.\n\n## Give the critique pass a job description\nA vague \"check this\" produces a vague critique. A rubric works better: \"Check for: (1) factual claims not supported by the source text, (2) inconsistent terminology, (3) any step skipped in the calculation.\" Specific criteria turn a fuzzy pass into something closer to a checklist a model can actually apply consistently.\n\n## Separate context helps more than separate prompts\nRunning the critique in a genuinely fresh context - a new conversation, or a different subagent that only sees the draft, not the original reasoning - reduces anchoring further than just adding a second turn in the same conversation. The critic hasn't seen the excuses the writer already talked itself into along the way.\n\n## Diminishing (and sometimes negative) returns\nOne critique-and-revise pass usually helps. A second or third round often adds much less, and can start hurting - a model told repeatedly to \"find more problems\" sometimes invents ones that weren't there, over-editing a correct answer into a worse one. One well-specified critique pass reliably beats three vague ones.\n\n## Where this connects to evals\nThe same self-critique idea shows up at a larger scale as an \"LLM-as-judge\" step in evals - a separate model call scoring outputs against criteria. The lesson carries over: a judge model is a useful signal, not ground truth, especially when the mistake it needs to catch is one the judge itself might also make.\n\n## A concrete failure mode worth knowing\nIf you ask the same model, in the same context, \"are you sure?\" it will very often say yes regardless of correctness - that's not a critique loop, it's just the model agreeing with itself. A real self-critique pass needs a genuinely different task framing (reviewer, not author) to produce a signal that's actually different from simple reaffirmation.",
+    "example": "Pass 1 (draft):\n\"Summarize this contract's termination clause.\" -> draft summary\n\nPass 2 (critique, fresh context):\n\"Here is a contract and a summary of its termination clause. Check the summary against the contract for: (1) any claim not supported by the text, (2) any deadline or notice period stated incorrectly, (3) missing conditions. List issues, then give a corrected summary.\"",
+    "related": [
+      "evals",
+      "agent-loop",
+      "kontext-strategien",
+      "human-in-the-loop"
+    ],
+    "quiz": {
+      "question": "Why does a separate self-critique pass usually catch more than just telling the model to 'be careful' upfront?",
+      "options": [
+        "Because a second pass always uses a stronger model",
+        "Because it gives the model twice as many output tokens to work with",
+        "Because reviewing a finished draft with fresh framing surfaces issues that self-monitoring during generation tends to miss"
+      ],
+      "correct": 2,
+      "explain": "The framing shift from 'producing' to 'reviewing' - ideally in a fresh context - is what helps, not extra tokens or a different model."
+    },
+    "sources": [
+      {
+        "title": "Anthropic: Building Effective AI Agents",
+        "url": "https://www.anthropic.com/engineering/building-effective-agents"
+      },
+      {
+        "title": "arXiv: Reflexion: Language Agents with Verbal Reinforcement Learning",
+        "url": "https://arxiv.org/abs/2303.11366"
+      },
+      {
+        "title": "arXiv: Self-Refine: Iterative Refinement with Self-Feedback",
+        "url": "https://arxiv.org/abs/2303.17651"
+      }
+    ],
+    "exercise": {
+      "task": "Build a two-pass critique loop for a piece of writing or code and compare it against a single-pass attempt.",
+      "steps": [
+        "Pick a task with a checkable answer - summarizing a document, writing a small function, drafting an email.",
+        "Generate a single-pass answer with a \"be careful and thorough\" instruction baked in. Save it.",
+        "Generate a fresh draft without that instruction, then in a separate prompt (new conversation if possible) ask the model to critique it against 2-3 specific criteria.",
+        "Have the model produce a revised version based on that critique.",
+        "Compare the single-pass and two-pass results against the same criteria - which caught more real issues?"
+      ],
+      "selfCheck": [
+        "Did the critique pass find at least one real issue the single-pass version had missed?",
+        "Did the critique pass invent any 'issues' that weren't actually problems?"
+      ]
+    }
+  },
+  {
+    "slug": "output-formate-erzwingen",
+    "title": "Forcing Output Formats: From Prompt Tricks to Guaranteed Schemas",
+    "category": "prompt-pattern",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "teaser": "There are two very different ways to get clean JSON out of a model: politely asking for it in the prompt, and having the API mechanically enforce it. Only one of them actually guarantees it.",
+    "body": "## The prompt-level approach\nThe simplest way to shape output: describe the format explicitly (\"respond with exactly these three fields, no extra text\") and show one example. This is a prompt pattern - words in, words out, no special API support needed. It works most of the time, but that's the key phrase: a model can still add a stray sentence before the JSON, or slightly misname a field.\n\n## The API-level approach\nStructured outputs (also called JSON mode, or schemas via tool use) is different: a feature built into the API where you hand over a formal JSON schema, and the response is mechanically constrained to match it - not just asked to, but unable to produce anything that doesn't. Both Anthropic's and OpenAI's platforms offer this for current models.\n\n## Pattern vs. feature\nA prompt-level instruction is portable (any model, any API) but probabilistic. A schema-based feature isn't portable the same way, but it's deterministic for models that support it - \"very likely correctly formatted\" versus \"guaranteed to validate.\"\n\n## Validation and retry as the fallback\nWhere a real schema feature isn't available, the standard safety net is: parse the output, validate it against your schema, and if it fails, send it back with the specific error and ask for a fix. Cheap and framework-agnostic, though it costs an extra round trip.",
+    "bodyDetail": "## Why prompt-only formatting breaks under pressure\nA model generates output token by token, and a formatting instruction is just one more thing competing for its attention alongside the actual content. Under a long or unusual input, formatting compliance can slip - a bit of preamble sneaks in, a field gets renamed, an array becomes a comma-separated string. The model isn't ignoring you; formatting is requested, not enforced.\n\n## What structured outputs actually constrain\nWith true structured outputs, the schema restricts which tokens the model is even allowed to generate next, via constrained decoding - it's not post-hoc filtering, it's built into how the response is produced. That's why providers can say every required field will be present and every type correct, instead of \"the model usually gets this right.\"\n\n## Two flavors: response format vs. tool use\nBoth major APIs offer schema enforcement two ways: directly on the final response (send a JSON schema, get back matching JSON), or via a tool/function definition, where the \"arguments\" the model produces for a tool call are the structured data you want, even if you never run the tool. The tool-call route is often preferred for extraction, since tool-use is heavily trained into these models.\n\n## Prompt-level tricks that still help even with a schema\nPrefilling the start of the response (starting the assistant's turn with `{` so the model can't add a preamble) and showing one example output remain useful even alongside a schema feature - they reduce how much work the constraint has to do and can improve the values inside the structure, since the schema guarantees shape but not correctness.\n\n## Where validation-and-retry is still necessary\nEven with a schema-enforced shape, values inside it can be wrong - a correctly-typed but hallucinated field, a number that's syntactically fine but semantically nonsense. Schema enforcement solves the format problem, not the accuracy problem; a validation layer checking business logic (\"does this date make sense\") still belongs on top.\n\n## The practical decision\nIf you're building something that parses model output in code - an agent's tool-calling, a data-extraction pipeline - reach for the API-level structured output feature if your provider and model support it: it removes a whole category of retry-loop and parsing bugs. For steering the last mile of a human-facing answer's shape, prompt-level formatting is usually simpler and good enough.",
+    "example": "Prompt-only (probabilistic):\n\"Respond with only JSON: {\\\"name\\\": string, \\\"age\\\": number}\"\n\nAPI-level (guaranteed), Claude Messages API:\n{\n  \"model\": \"claude-sonnet-5\",\n  \"messages\": [...],\n  \"output_config\": {\n    \"format\": {\n      \"type\": \"json_schema\",\n      \"schema\": {\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\"}, \"age\": {\"type\": \"integer\"}}, \"required\": [\"name\", \"age\"]}\n    }\n  }\n}",
+    "related": [
+      "structured-outputs",
+      "prompt-strukturen",
+      "tool-use",
+      "api"
+    ],
+    "quiz": {
+      "question": "What's the key difference between a prompt-level format instruction and an API-level structured output feature?",
+      "options": [
+        "A prompt instruction is a request the model usually follows; a structured output feature mechanically constrains what tokens the model can generate, guaranteeing schema match",
+        "There is no real difference - both use the exact same mechanism under the hood",
+        "Prompt-level instructions only work for JSON, while structured output features only work for XML"
+      ],
+      "correct": 0,
+      "explain": "Prompt-level formatting is a request the model is trained to usually follow; a schema-based API feature constrains generation itself, so the output can't violate the schema at all."
+    },
+    "sources": [
+      {
+        "title": "Claude Platform Docs: Structured Outputs",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+      },
+      {
+        "title": "OpenAI Platform Docs: Structured Model Outputs",
+        "url": "https://developers.openai.com/api/docs/guides/structured-outputs"
+      }
+    ],
+    "exercise": {
+      "task": "Compare prompt-only formatting against a schema-enforced structured output for the same extraction task.",
+      "steps": [
+        "Pick a small extraction task, like pulling a name, date, and amount out of a short paragraph of text.",
+        "Write a prompt-only version asking for JSON with those three fields, no schema feature.",
+        "Run it 5 times with slightly different input text and check whether the output always parses cleanly as JSON.",
+        "If your API access supports it, rewrite the same task using a JSON schema / structured output feature.",
+        "Run the schema version 5 times the same way and compare how often each version produces valid, correctly-shaped JSON."
+      ],
+      "selfCheck": [
+        "Did the prompt-only version ever produce invalid JSON or an extra field/preamble across your 5 runs?",
+        "Did the schema-enforced version fail to parse even once?"
+      ]
+    }
+  },
+  {
+    "slug": "reasoning-modelle",
+    "title": "Reasoning Models: When a Model Thinks Before It Answers",
+    "category": "begriff",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "teaser": "Some models pause and work through a problem step by step before answering - visibly or invisibly. That extra thinking costs time and tokens, and it doesn't always pay off.",
+    "body": "## What a reasoning model does differently\nA standard model generates its answer directly, token by token, from your prompt. A reasoning model - like Claude with extended thinking switched on, OpenAI's gpt-5.6 in a higher reasoning-effort mode, or DeepSeek's R1 line - first generates an internal chain of reasoning, then produces the final answer informed by that reasoning. Depending on the product, you can see that reasoning trace, or it stays hidden.\n\n## The thinking budget\nMost reasoning models let you control how much thinking happens - a token budget, or an effort level like low/medium/high. A bigger budget means more room to work through a hard problem, but it also means more tokens spent and more time before the first visible output.\n\n## Where it actually pays off\nPlanning a multi-step task, debugging a subtle logic error, working through math or a puzzle with several dependent steps - reasoning tends to help most where a wrong first instinct is common and a bit of deliberate checking catches it.\n\n## Where it's often wasted\nA simple edit, a short factual lookup, a one-line fix - reasoning mode on a task like that just burns tokens and adds latency for basically the same answer you'd have gotten directly. Good tooling routes trivial requests to standard mode and saves reasoning for tasks that actually need it.",
+    "bodyDetail": "## Visible vs. hidden thinking\nAnthropic's extended thinking exposes at least a summary of the reasoning trace by default, so you can inspect how Claude got to an answer alongside the final response. OpenAI's reasoning models generate reasoning tokens too, but by default those aren't shown the same way - you mostly see the effort level's effect on the final answer, not the trace itself. Both bill reasoning tokens as output tokens either way.\n\n## The mechanics of a thinking budget\nFor Claude, `budget_tokens` sets a maximum number of tokens the model may spend thinking before producing a final answer - the minimum is 1,024 tokens, and Anthropic recommends starting low and raising it only if a task needs more depth, since a bigger budget won't necessarily get used. OpenAI's models instead expose a `reasoning.effort` parameter - values like none, minimal, low, medium, high, or xhigh - trading speed and token usage for more complete reasoning.\n\n## Adaptive reasoning\nNewer reasoning models increasingly reason adaptively: spending very few reasoning tokens on an easy question and noticeably more on a hard one, without you manually dialing effort for every call. That reduces, but doesn't eliminate, the cost and latency tradeoff of a fixed setting for everything.\n\n## DeepSeek's contribution to the idea\nDeepSeek's R1, trained largely through reinforcement learning rather than supervised fine-tuning on human-written reasoning traces, showed a model can learn to produce long, effective chains of reasoning on its own, without being explicitly taught the \"shape\" of good reasoning by example. That pushed the field toward training models to reason as a first-class objective, not just prompting them to.\n\n## Why it isn't free\nExtra reasoning tokens count toward your context window and bill like any other output tokens, and add latency before a final answer - the thinking has to finish first. For quick iteration on a small change, that latency can outweigh the benefit; for a genuinely hard multi-file refactor, it's often the difference between a working plan and a broken one.\n\n## A practical rule of thumb\nReach for reasoning mode when a task has several interdependent steps, an easy-to-miss edge case, or a bug a first-instinct answer tends to get wrong. Skip it for anything answerable in a few seconds - that usually means a standard pass handles it just as well, faster and cheaper.",
+    "example": "Claude API call with a thinking budget:\n{\n  \"model\": \"claude-sonnet-5\",\n  \"thinking\": {\"type\": \"enabled\", \"budget_tokens\": 4000},\n  \"messages\": [{\"role\": \"user\", \"content\": \"Find the bug in this recursive function and explain why it fails on n=0.\"}]\n}\n\nResponse includes a thinking block reasoning through base cases before the final answer.",
+    "related": [
+      "temperatur-und-sampling",
+      "kosten-kontrolle-agenten",
+      "model-routing",
+      "was-ist-ein-llm"
+    ],
+    "quiz": {
+      "question": "What's the main tradeoff when you turn on a reasoning/thinking mode for a simple task?",
+      "options": [
+        "The model becomes more likely to hallucinate",
+        "It usually just adds tokens and latency without a meaningful quality improvement, since a standard pass already handles the task",
+        "It disables tool use for that request"
+      ],
+      "correct": 1,
+      "explain": "Reasoning tokens cost time and money. On tasks a standard pass already handles well, that extra thinking rarely changes the outcome - it mostly adds overhead."
+    },
+    "sources": [
+      {
+        "title": "Claude Platform Docs: Extended Thinking",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"
+      },
+      {
+        "title": "OpenAI Platform Docs: Reasoning Models",
+        "url": "https://developers.openai.com/api/docs/guides/reasoning"
+      },
+      {
+        "title": "arXiv: DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+        "url": "https://arxiv.org/abs/2501.12948"
+      }
+    ],
+    "exercise": {
+      "task": "Compare a standard response against a reasoning-mode response on both an easy and a hard task.",
+      "steps": [
+        "Pick one trivial task (e.g. \"capitalize this sentence\") and one genuinely tricky one (e.g. a multi-step logic puzzle or a subtle bug).",
+        "Run both tasks with reasoning/extended thinking turned off, and note the time and quality.",
+        "Run both tasks again with reasoning turned on, using a moderate thinking budget or effort level.",
+        "Compare token usage and response time for each task, with and without reasoning.",
+        "Judge: did reasoning meaningfully improve the hard task? Did it change anything on the easy one besides speed?"
+      ],
+      "selfCheck": [
+        "Did reasoning mode measurably improve the answer to the hard task compared to the standard pass?",
+        "Did reasoning mode noticeably increase latency or tokens on the trivial task without improving the result?"
+      ]
+    }
+  },
+  {
+    "slug": "mixture-of-experts",
+    "title": "Mixture of Experts: Huge Models That Only Use a Slice of Themselves",
+    "category": "begriff",
+    "difficulty": 3,
+    "minutes": 5,
+    "xp": 60,
+    "teaser": "A trillion-parameter model doesn't have to run a trillion parameters on every word. Mixture-of-experts architectures activate only a fraction of themselves per token - and that's the whole trick.",
+    "body": "## The basic idea\nA mixture-of-experts (MoE) model is built from many separate \"expert\" subnetworks instead of one giant uniform network. For every token it processes, a small router decides which handful of experts get used - the rest sit idle. Total parameters describes the whole model as stored on disk; active parameters describes what runs for any given token.\n\n## Why this matters practically\nOnly active parameters need computing per token, so an MoE model can have a total parameter count many times larger than a dense model while costing roughly what a much smaller dense model costs to run, since most of it isn't touched on any given step. That's how models get well over a trillion total parameters while staying fast to serve.\n\n## Real examples\nDeepSeek-V3 has 671 billion total parameters but activates only 37 billion per token, via 8 of 256 experts. Mixtral, an earlier open MoE model, uses 8 experts with 2 active per token. Kimi K3, released by Moonshot AI in mid-2026, goes further: 2.8 trillion total parameters across 896 experts, only 16 active per token - under 2% running at once.\n\n## The catch\nAll those parameters still need loading into memory, even idle ones, so MoE saves compute per token, not memory footprint. You still need serious hardware to host the model, just not to run every part of it on every request.",
+    "bodyDetail": "## How the router decides\nA small trained network - the router or gate - looks at each token's representation and scores every expert, then picks the top few (say, top-8 of 256) to process that token. This happens fresh for every token, so two tokens right next to each other in the same sentence can route to completely different experts.\n\n## Why sparsity, not just size, is the innovation\nMaking a dense model bigger increases quality and compute cost roughly in step - twice the parameters, twice the compute per token. MoE breaks that link: total capacity can keep growing largely independent of active parameters, which is what actually determines inference cost and speed. That's the appeal - more knowledge capacity without a proportional compute bill.\n\n## Load balancing is the hard part\nLeft untrained, a router tends to collapse onto favorite experts, leaving others rarely used and undertrained. Modern MoE training adds mechanisms to spread tokens more evenly; DeepSeek-V3 uses an auxiliary-loss-free load-balancing strategy to avoid this collapse without hurting quality the way an explicit penalty term sometimes does.\n\n## Shared experts vs. routed experts\nSome architectures, including DeepSeek's, combine a small number of shared experts that process every token (handling common patterns) with a larger pool of routed experts chosen dynamically per token. This split separates \"things every token needs\" from \"things only certain tokens need.\"\n\n## What total vs. active parameters means in practice\nTotal parameters is a rough proxy for how much a model has learned; active parameters is a much better proxy for latency and inference cost. A model with a huge total count but modest active parameters can be cheaper to run per token than a much smaller dense model, despite sounding enormous on paper - the total number is largely a storage figure, not a running-cost one.\n\n## Why this shows up in pricing\nAPI pricing roughly tracks compute cost, which tracks active parameters more than total ones - part of why very large MoE models can be priced competitively against smaller-sounding dense models.\n\n## The bigger trend\nMost current frontier-scale open-weight models - DeepSeek's V3 and R1, Mixtral, Kimi's K2 and K3 lines - are MoE, not dense. Dense models stay common at smaller sizes, where MoE's routing overhead isn't worth it yet.",
+    "example": "Total vs. active parameters, three models:\n- Mixtral: 8 experts, 2 active per token\n- DeepSeek-V3: 671B total, 37B active (8 of 256 experts)\n- Kimi K3: 2.8T total, ~16 of 896 experts active per token\n\nA request to any of these only pays compute for the active slice, not the full total.",
+    "related": [
+      "was-ist-ein-llm",
+      "modell-und-plan-wahl",
+      "open-source-modelle-lokal",
+      "quantisierung"
+    ],
+    "quiz": {
+      "question": "In a mixture-of-experts model with 2.8T total parameters and only 16 active experts per token, what does 'total parameters' mainly describe?",
+      "options": [
+        "How much compute is spent processing each individual token",
+        "How fast the model responds to a request",
+        "The full size of the model as stored, only a fraction of which actually runs for any single token"
+      ],
+      "correct": 2,
+      "explain": "Total parameters is the full stored model size. Active parameters - the fraction actually used per token - is what determines compute cost and speed."
+    },
+    "sources": [
+      {
+        "title": "arXiv: Mixtral of Experts",
+        "url": "https://arxiv.org/abs/2401.04088"
+      },
+      {
+        "title": "arXiv: DeepSeek-V3 Technical Report",
+        "url": "https://arxiv.org/abs/2412.19437"
+      },
+      {
+        "title": "MarkTechPost: Moonshot AI Releases Kimi K3 (2.8T Parameter Open MoE Model)",
+        "url": "https://www.marktechpost.com/2026/07/16/moonshot-ai-releases-kimi-k3-a-2-8-trillion-parameter-open-moe-model-with-kimi-delta-attention-and-1m-context/"
+      }
+    ],
+    "exercise": {
+      "task": "Compare the total vs. active parameter counts of a few current MoE models and see how that relates to their pricing.",
+      "steps": [
+        "Look up the total and active parameter counts for two or three MoE models (e.g. DeepSeek-V3, Mixtral, Kimi K2 or K3).",
+        "Look up the per-token API pricing for the same models where available.",
+        "Also note the parameter counts of a dense model you're familiar with for comparison.",
+        "Check whether models with a lower active-parameter count tend to be priced lower, even if their total parameter count is huge.",
+        "Write one sentence explaining, in your own words, why total parameters alone doesn't predict how expensive a model is to run."
+      ],
+      "selfCheck": [
+        "Can you name the total and active parameter counts for at least two MoE models from memory now?",
+        "Can you explain why a 2.8T-total model can be cheaper to run than a 70B dense model?"
+      ]
+    }
+  },
+  {
+    "slug": "streaming",
+    "title": "Streaming: Why Answers Appear Word by Word",
+    "category": "begriff",
+    "difficulty": 1,
+    "minutes": 3,
+    "xp": 20,
+    "teaser": "When a chat or CLI shows you an answer typing itself out live, that's streaming - the model sending its response one small piece at a time instead of making you wait for the whole thing.",
+    "body": "## What streaming actually is\nInstead of waiting for the model to finish an entire response and then sending it back all at once, streaming sends the output incrementally - piece by piece, as it's generated - so you see text appear progressively rather than waiting in silence and getting a wall of text at the end.\n\n## Why tools stream at all\nTwo reasons, both about perceived experience rather than actual quality: it feels faster, because you start reading immediately instead of staring at a spinner, and it lets you abort early. If the first sentence already tells you the answer is going the wrong direction, you can stop the request instead of waiting for tokens you don't need.\n\n## The mechanism: server-sent events\nStreaming APIs typically use server-sent events (SSE), a simple one-way protocol where the server pushes a sequence of small messages over one open connection, and the client processes each one as it arrives. Both Claude's and OpenAI's APIs use SSE for streaming responses.\n\n## What streaming doesn't change\nThe model doesn't \"think differently\" when streaming is on - it's the exact same generation process, same quality, same cost per token. Streaming is purely about delivery: whether you get the response in one lump at the end, or in a running trickle as it's produced.",
+    "bodyDetail": "## What's actually inside the event stream\nA streamed response from Claude's Messages API arrives as typed events: a `content_block_start`, then a series of `content_block_delta` events (each carrying one small chunk of new text), a `content_block_stop`, one or more `message_delta` events for top-level changes, and finally `message_stop`. A client library assembles these deltas back into the final message; integrating directly against the API means handling that assembly yourself.\n\n## Non-streaming isn't slower to compute - it just delivers differently\nTurning streaming off doesn't make the model generate the answer any faster or slower under the hood - total generation time is the same either way. What changes is when you see output: all at once at the end, versus continuously as it's produced. For a long response, that's staring at nothing for ten seconds versus reading for ten seconds.\n\n## Why CLIs and agent tools lean on this heavily\nA coding agent like Claude Code streams not just the final answer text but intermediate signals too - which tool it's about to call, snippets of a file it's editing - which is what makes watching an agent work feel responsive rather than opaque. Without streaming, a multi-step task could leave you watching a blank terminal with zero feedback.\n\n## Streaming and tool use together\nWhen a model streams a response that includes a tool call, the tool-call arguments also arrive incrementally, as partial JSON building up over several delta events - a client generally waits until that content block is complete before parsing and executing the call.\n\n## Cost and rate limits are unaffected by the toggle\nStreaming versus non-streaming makes no difference to token counts, pricing, or rate limits - you're billed the same either way. The only thing streaming trades is UX: lower perceived latency and the ability to cancel early, at the cost of client code that has to assemble a stream instead of reading one response object.\n\n## Time-to-first-token vs. total time\nStreaming makes time-to-first-token the metric that matters for perceived speed, and it's often much lower than total generation time. A model that takes eight seconds total might show its first word after 400 milliseconds when streaming - feeling instant versus feeling slow often comes entirely from that first-token latency, not the underlying generation speed.",
+    "example": "Simplified SSE event stream for the word \"Hi there\":\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0}\n\nevent: content_block_delta\ndata: {\"delta\":{\"text\":\"Hi\"}}\n\nevent: content_block_delta\ndata: {\"delta\":{\"text\":\" there\"}}\n\nevent: content_block_stop\ndata: {\"index\":0}\n\nevent: message_stop",
+    "related": [
+      "api",
+      "rate-limits-und-quotas",
+      "kosten-kontrolle-agenten",
+      "headless-non-interactive"
+    ],
+    "quiz": {
+      "question": "Does turning streaming on change the model's answer quality or the total time it takes to generate a response?",
+      "options": [
+        "No - streaming only changes how the response is delivered (incrementally vs. all at once), not the generation itself",
+        "Yes - streamed responses are generated using a faster, lower-quality mode",
+        "Yes - streaming always produces shorter answers to reduce latency"
+      ],
+      "correct": 0,
+      "explain": "Streaming is purely a delivery mechanism. The underlying generation - and its quality, cost, and total time - stays the same whether you stream or not."
+    },
+    "sources": [
+      {
+        "title": "Claude Platform Docs: Streaming Messages",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/streaming"
+      },
+      {
+        "title": "OpenAI Platform Docs: Streaming API Responses",
+        "url": "https://developers.openai.com/api/docs/guides/streaming-responses"
+      }
+    ],
+    "exercise": {
+      "task": "Observe the difference between a streamed and a non-streamed response to the same prompt.",
+      "steps": [
+        "Pick a prompt that produces a fairly long answer (a few paragraphs).",
+        "If you have API access, send it once with streaming enabled and once with it disabled, and time both from request to first visible output.",
+        "If you don't have API access, compare a chat UI (which streams) against copy-pasting the same prompt somewhere that shows the full answer at once.",
+        "Note the time-to-first-token in the streamed version versus the wait time in the non-streamed version.",
+        "Confirm the final text content is identical either way - only the delivery differs."
+      ],
+      "selfCheck": [
+        "Was the time-to-first-token noticeably shorter with streaming than the total wait for the non-streamed version?",
+        "Was the final answer text the same in both cases?"
+      ]
+    }
+  },
+  {
+    "slug": "quantisierung",
+    "title": "Quantization: Squeezing Model Weights Down to Fit",
+    "category": "begriff",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "teaser": "A model's weights don't have to stay in full precision. Storing them in fewer bits per number shrinks a model enough to run on a laptop - at some cost to quality.",
+    "body": "## What's actually being reduced\nA model's weights - the huge set of numbers that define what it knows - are normally stored in a fairly high-precision format, like 16-bit floating point (FP16). Quantization converts those numbers to a lower-precision format, like 8-bit or 4-bit integers (INT8, INT4), so each weight takes a fraction of the space it used to.\n\n## Why that matters\nLower precision means a smaller file and less memory to load and run the model. A model needing 32GB of VRAM at full precision might fit in 8-9GB after aggressive quantization - the difference between needing a data-center GPU and running on a gaming laptop.\n\n## The tradeoff\nFewer bits per number means less precision, and past a point that shows up as real quality loss - subtly worse reasoning, more mistakes on hard tasks, sometimes broken output at extreme settings. How much you lose depends on how aggressive it is: 8-bit is close to indistinguishable from full precision, 4-bit noticeably more of a compromise, lower gets risky fast.\n\n## GGUF: the common local format\nGGUF is a file format built for storing quantized models efficiently, widely used by local-inference tools. A base model is often distributed as a family of GGUF files at different quantization levels, so you pick the size/speed vs. quality tradeoff that fits your hardware.",
+    "bodyDetail": "## Where the precision actually goes\nA weight stored in FP16 uses 16 bits to represent one number, capturing a wide range of values with fine gradations. Quantizing to INT8 represents that weight using only 256 possible values, and INT4 using just 16 - the original numbers get mapped onto that coarser grid, with some information lost in rounding. Good quantization is about choosing how to do that mapping so the loss lands on the least important variation rather than randomly.\n\n## Why quality loss isn't uniform\nQuantization doesn't hurt every capability equally. Fluent text generation degrades gracefully even at aggressive settings, while precise tasks - exact arithmetic, multi-step logic, code that has to compile - show quality loss earlier and more sharply. That's why a heavily-quantized local model can feel fine for casual chat but noticeably worse at debugging a tricky function.\n\n## GGUF quantization levels, roughly\nGGUF levels are typically labeled like Q8_0, Q5_K_M, Q4_K_M, or Q2_K - the number is the rough average bits per weight, and the letters describe the scheme (K-quants use more sophisticated per-block scaling than older methods, generally holding up better at the same bit width). Q4_K_M is a common sweet spot: a large size reduction with quality loss that's noticeable in benchmarks but usually not glaring day to day.\n\n## The tooling around it\nHugging Face's transformers library can load GGUF files directly; llama.cpp, the engine GGUF grew out of, remains the reference implementation for running these files efficiently on CPU or GPU. Ollama builds on that ecosystem: point it at a GGUF file, or pull one of the tens of thousands hosted on Hugging Face, and it handles loading and serving locally with minimal setup.\n\n## Quantization isn't only for local use\nProviders also quantize models they serve over an API, trading a small amount of quality for lower serving cost and higher throughput - invisible to you, since it's baked into the hosted model's default config. The local version is the same tradeoff, made explicitly by you, to fit your own hardware.\n\n## Connecting to running models locally\nQuantization is what makes running open models on your own machine practical for most people - without it, anything beyond a small model on consumer hardware would be essentially impossible. The level you pick when downloading a GGUF file is, in effect, choosing how much of that tradeoff you accept.",
+    "example": "ollama pull command using a specific quantization tag:\n$ ollama pull llama3.1:8b-instruct-q4_K_M\n\nSame base model, different files:\n- q8_0  ~8.5GB, closest to full quality\n- q4_K_M  ~4.9GB, common sweet spot\n- q2_K   ~3.2GB, smallest, most quality loss",
+    "related": [
+      "open-source-modelle-lokal",
+      "was-ist-ein-llm",
+      "mixture-of-experts",
+      "kosten-optimierung-praxis"
+    ],
+    "quiz": {
+      "question": "What does quantizing a model's weights from FP16 to INT4 primarily trade away?",
+      "options": [
+        "Context window size",
+        "Some precision/quality, in exchange for a much smaller model that needs far less memory to run",
+        "The model's license terms"
+      ],
+      "correct": 1,
+      "explain": "Quantization reduces numeric precision to shrink memory and storage requirements. It doesn't change the license or the context window - it trades quality for size."
+    },
+    "sources": [
+      {
+        "title": "Hugging Face Docs: GGUF",
+        "url": "https://huggingface.co/docs/hub/en/gguf"
+      },
+      {
+        "title": "GitHub: ggml-org/llama.cpp – Quantize README",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md"
+      },
+      {
+        "title": "Ollama Docs: Importing a Model",
+        "url": "https://docs.ollama.com/import"
+      }
+    ],
+    "exercise": {
+      "task": "Download and compare two quantization levels of the same local model.",
+      "steps": [
+        "Pick a small open model available in GGUF format (e.g. via Ollama's library).",
+        "Pull two versions with different quantization tags, e.g. a q8_0 and a q4_K_M variant.",
+        "Check the file sizes of both and note the difference.",
+        "Run the same prompt - ideally something with a precise answer, like a small math or logic question - on both.",
+        "Compare the answers and, if possible, the response speed on your hardware."
+      ],
+      "selfCheck": [
+        "Did the smaller quantization noticeably reduce file size and/or memory use compared to the larger one?",
+        "Did you notice any quality difference in the answers, especially on the more precise prompt?"
+      ]
+    }
+  },
+  {
+    "slug": "issue-zu-pr-workflow",
+    "title": "From GitHub Issue to Pull Request: Letting an Agent Do the Work",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 5,
+    "xp": 40,
+    "teaser": "Write a clear issue, assign it to an agent, get a pull request back for review. The whole workflow hinges on one thing: how good the issue actually is.",
+    "body": "## The workflow, in short\nYou write an issue describing a bug or feature. Instead of picking it up yourself, you assign it to a coding agent - GitHub's own Copilot coding agent, or Claude Code / Codex wired into your repo's CI. The agent works on a branch, opens a pull request when done, and you review it like a human contributor's.\n\n## Why the issue is the real prompt\nAn agent working from an issue has no context beyond what's written plus whatever it discovers in the repo. A vague issue (\"fix the login bug\") gets a vague attempt. A good one includes what's wrong, how to reproduce it, and acceptance criteria - what \"done\" looks like, concretely.\n\n## The agent works on a branch\nThe agent doesn't touch main directly. It creates its own branch and commits there - the same shape as a human contributor's workflow, automated end to end from issue to open PR.\n\n## The PR description matters as much as the code\nA well-behaved agent generates a PR description summarizing what changed and why, linking the issue and noting what it tested - often the fastest way to judge if it understood the task, before you open the diff.\n\n## Human review is the gate\nThe agent opening a PR doesn't mean the work is done - it means it's ready for review. Treat it like a new team member's PR: read the diff, check it against acceptance criteria, don't merge just because it compiles.",
+    "bodyDetail": "## What a good issue looks like in practice\nThe elements that separate a usable agent-assigned issue from a wasted attempt: a clear problem statement, steps to reproduce (for a bug) or a concrete user-facing description (for a feature), file or module pointers if you know roughly where the fix belongs, and explicit acceptance criteria - a short list of what must be true for the PR to be correct. Skipping acceptance criteria is the single most common reason a first attempt misses the mark; without them, the agent has to guess what \"fixed\" means.\n\n## How GitHub's own coding agent fits this pattern\nGitHub's Copilot coding agent runs inside GitHub Actions: you assign it an issue like you'd assign a person, optionally adding guidance in a prompt field, and it plans the work, writes the code, runs the tests, and opens a PR requesting review. If you leave review feedback, the agent revises and iterates until you approve - the loop continues through review comments like a human contributor.\n\n## The self-hosted equivalent\nThe same shape works with Claude Code or Codex wired into your own CI: a trigger (a label on an issue, a slash-command comment, a scheduled job) kicks off a headless agent run with read access to the issue and repo, and write access to open a branch and PR. Claude Code's GitHub Actions integration follows this pattern - non-interactive, triggered by repo events, producing a PR as output.\n\n## CI as the safety net underneath review\nEven before a human looks at the diff, CI - tests, linters, type checks - runs against the agent's branch just as for a human PR, catching a large class of mistakes automatically before your review time is spent on anything CI could catch for free. A workflow without CI gates leans much more on manual review catching everything.\n\n## Where this workflow tends to fail\nCross-cutting changes touching many interdependent files, issues that are really several problems bundled together, and tasks needing context outside the repo are where an agent's first PR is most likely wrong or incomplete - not from carelessness, but because the issue didn't contain what was needed.\n\n## Scoping issues for this workflow\nIssues written for a human to eventually get to often assume shared context an agent doesn't have. Writing issues with agent hand-off in mind - explicit, self-contained, acceptance criteria spelled out - tends to produce better human-assigned outcomes too.",
+    "example": "Issue #482: Export button silently fails on large reports\n\nProblem: Clicking \"Export CSV\" on reports over 10k rows does nothing - no error, no download.\nSteps to reproduce: Open any report with 10k+ rows, click Export CSV.\nAcceptance criteria:\n- Reports over 10k rows export successfully as CSV\n- If export fails for any reason, the user sees an error message instead of silence\n- Add a test covering the 10k+ row case\n\n-> assigned to Copilot coding agent -> agent opens PR #491 \"Fix silent CSV export failure on large reports\" with a description linking issue #482 and noting the added test.",
+    "related": [
+      "ci-cd-mit-agenten",
+      "code-review-mit-ki",
+      "git-github-basics",
+      "checkpoints-und-rollbacks"
+    ],
+    "quiz": {
+      "question": "What's the most common reason an agent's first pull request from an assigned issue misses the mark?",
+      "options": [
+        "The agent chose the wrong programming language",
+        "GitHub Actions ran out of compute",
+        "The issue lacked explicit acceptance criteria, leaving the agent to guess what 'done' actually means"
+      ],
+      "correct": 2,
+      "explain": "Without concrete acceptance criteria, the agent has no clear target for what a correct fix looks like - it's forced to guess, which is where most first-attempt misses come from."
+    },
+    "sources": [
+      {
+        "title": "Claude Code Docs: GitHub Actions",
+        "url": "https://code.claude.com/docs/en/github-actions"
+      },
+      {
+        "title": "GitHub Docs: About GitHub Copilot Cloud Agent",
+        "url": "https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent"
+      },
+      {
+        "title": "GitHub Docs: About Pull Request Reviews",
+        "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews"
+      }
+    ],
+    "exercise": {
+      "task": "Rewrite a vague issue into one that's actually usable for an agent, and if possible, hand it off.",
+      "steps": [
+        "Find (or write) a vague issue, like \"the search page is slow\" or \"fix the export bug\".",
+        "Rewrite it to include: a clear problem statement, reproduction steps, and 2-3 explicit acceptance criteria.",
+        "If you have access to a coding agent wired into a repo (GitHub Copilot coding agent, or Claude Code in CI), assign the rewritten issue to it.",
+        "If you don't have that access, hand the rewritten issue to a CLI agent locally and ask it to work only from the issue text, on a branch.",
+        "Review the resulting PR or diff against your acceptance criteria before considering it done."
+      ],
+      "selfCheck": [
+        "Does your rewritten issue include acceptance criteria specific enough that you and the agent would agree on what 'done' means?",
+        "Did the agent's PR or diff satisfy every acceptance criterion you listed, or did you find a gap during review?"
+      ]
+    }
+  },
+  {
+    "slug": "checkpoints-und-rollbacks",
+    "title": "Checkpoints and Rollbacks: Your Undo Button for Agent Work",
+    "category": "guide",
+    "difficulty": 2,
+    "minutes": 4,
+    "xp": 40,
+    "teaser": "Before a risky step, save a checkpoint. If an agent goes sideways, roll back cleanly instead of trying to patch your way out of a mess.",
+    "body": "## The basic habit\nBefore letting an agent make a large or risky change - a big refactor, a schema migration, anything touching many files - commit your current working state first. That commit is your checkpoint: a known-good point you can always get back to.\n\n## Why a clean rollback beats digging deeper\nWhen an agent's change goes wrong, there's a pull to ask it to fix its own mistake - \"that broke the tests, please fix it.\" Often that works. But sometimes each fix attempt adds more changes onto an already-confused state, making the diff harder to review. Rolling back and starting over with a more specific prompt is frequently faster than untangling a fix-on-a-fix spiral.\n\n## Two layers of checkpoints\nGit commits are the durable layer - they survive as long as your repo does, and they're what you'd use for a real rollback. Some tools add a lighter, session-scoped layer: Claude Code's checkpointing snapshots file state before each prompt, letting you rewind within a session without a git commit for every step.\n\n## This is about mechanics, not strategy\nKnowing when an agent is stuck and what to do about it strategically is a separate skill. Checkpoints and rollbacks are the mechanical tool that makes acting on that judgment cheap and safe: a clean point to return to is what makes abandoning an approach easy to execute.",
+    "bodyDetail": "## What Claude Code's checkpointing actually tracks\nCheckpointing automatically captures file state before every prompt you send during a session, reached via `/rewind` or by pressing Escape twice with an empty prompt. From there you can restore code and conversation together, restore just the conversation, restore just the code, or summarize from that point forward to free up context. It keeps the 100 most recent checkpoints per session, cleaned up after 30 days, configurable.\n\n## The important limitation: what it doesn't track\nCheckpointing only tracks changes through Claude's own file-editing tools - Write, Edit, NotebookEdit. Anything done via a shell command - `rm`, `mv`, a script that modifies files, a migration actually applied - falls outside what a rewind can undo. If an agent runs a command with real side effects outside files Claude directly edited, checkpointing can't put things back.\n\n## Why git commits remain the durable backstop\nSession checkpoints are scoped to a session, gone once cleaned up. A git commit has no such expiry: it survives across sessions, machines, and tools, and it's the artifact your team's whole workflow already understands. The practical pattern: session checkpoints for quick within-session undos, a git commit as the checkpoint you'd rely on before something genuinely risky.\n\n## What makes a good checkpoint moment\nBefore: a large refactor, a dependency upgrade, a schema change, an agent running with broad autonomy for a stretch, or any step you can't easily reason your way back out of by hand. After: once a chunk of work is verified working - tests pass - commit it, so a later failed attempt has a recent, known-good point to return to.\n\n## Rollback versus fixing forward\nFixing forward makes sense when the fix is small and well understood. Rolling back makes more sense once the agent has failed to fix the same issue twice, the diff is too large to tell original code from repair-on-repair, or the whole approach seems wrong. There, only starting over from a checkpoint actually fixes it.\n\n## A note on git specifically\n`git commit` creates the checkpoint; `git reset --hard <commit>` or `git revert` are the two common ways back. `reset --hard` rewrites history so risky commits look like they never happened - fine on a private branch, dangerous once shared. `revert` adds new commits undoing the old ones, preserving history - the safer default once shared.",
+    "example": "$ git add -A && git commit -m \"checkpoint: before auth refactor\"\n# agent attempts refactor, tests fail\n# agent's fix attempt also fails\n$ git reset --hard HEAD~0   # back to the checkpoint commit\n# retry with a narrower, more specific prompt this time",
+    "related": [
+      "agent-festgefahren",
+      "git-github-basics",
+      "git-worktrees",
+      "human-in-the-loop"
+    ],
+    "quiz": {
+      "question": "What's a key limitation of Claude Code's session checkpointing (the /rewind feature)?",
+      "options": [
+        "It only tracks changes made through Claude's own file-editing tools, not side effects from shell commands like rm or mv",
+        "It can only be used once per session",
+        "It permanently deletes your git history when used"
+      ],
+      "correct": 0,
+      "explain": "Rewind only undoes what Claude's Write/Edit/NotebookEdit tools changed. Side effects from bash commands - deleting files, running migrations - aren't tracked and can't be undone this way."
+    },
+    "sources": [
+      {
+        "title": "Claude Code Docs: Checkpointing",
+        "url": "https://code.claude.com/docs/en/checkpointing"
+      },
+      {
+        "title": "Git Docs: git-commit",
+        "url": "https://git-scm.com/docs/git-commit"
+      },
+      {
+        "title": "Git Book: Undoing Things",
+        "url": "https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things"
+      }
+    ],
+    "exercise": {
+      "task": "Practice the checkpoint-before-risky-step habit on a real (or throwaway) repo.",
+      "steps": [
+        "Pick a repo you can safely experiment in, or create a throwaway one.",
+        "Before making a risky change, commit the current state with a clear checkpoint message.",
+        "Let an agent (or do it yourself, simulating an agent) attempt a moderately risky change, like a refactor across a few files.",
+        "If something breaks in a way that's hard to untangle, roll back with `git reset --hard` to your checkpoint instead of trying to patch forward.",
+        "Retry the change with a more specific prompt or plan, and compare how much cleaner the second attempt is."
+      ],
+      "selfCheck": [
+        "Did you commit a clear checkpoint before the risky step, with a message that actually describes the known-good state?",
+        "If you rolled back, was the retry noticeably cleaner or more successful than trying to patch the broken state forward?"
+      ]
+    }
+  }
+]
