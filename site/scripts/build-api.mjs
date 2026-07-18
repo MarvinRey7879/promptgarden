@@ -23,7 +23,33 @@ for (const f of readdirSync(contentDir).filter((x) => x.startsWith('feed.') && x
 
 mkdirSync(apiDir, { recursive: true });
 
+/**
+ * Beschreibung je Content-Typ. Fehlt hier ein Typ, der in content/ liegt, bricht
+ * der Build — sonst wächst die API still weiter, während der Index alt bleibt
+ * (It. 148: rosetta/fehler waren seit Tagen ausgeliefert, aber nirgends dokumentiert).
+ */
+const ENDPOINT_DOCS = {
+  'entries.<lang>.json': 'All glossary/learning entries (title, teaser, body + bodyDetail, difficulty 1-3, quiz, exercise, sources).',
+  'feed.<lang>.json': 'Curated AI news feed items with verified sources.',
+  'vergleiche.<lang>.json': 'Model and tool comparison: intelligence-per-dollar quadrant, price/performance ratio table, provider profiles.',
+  'commands.<lang>.json': 'Command reference: every CLI/slash command per platform with when-to-use and when-not examples and sources.',
+  'rosetta.<lang>.json': 'Cross-platform command map: one task per row, the matching command on each of the 5 platforms (null where a platform has none).',
+  'fehler.<lang>.json': 'Troubleshooting catalog: real error messages with cause, fix steps, prevention and sources.',
+  'loops.<lang>.json': 'Loop gallery: annotated examples of good and bad agent loops.',
+  'addons.<lang>.json': 'Add-ons and MCP servers with setup instructions from official docs.',
+  'prompts.<lang>.json': 'Reusable prompt templates with placeholders and when-to-use notes.',
+  'benchmarks.<lang>.json': 'Benchmark explainers: what each benchmark measures and how to read it.',
+  'timeline.<lang>.json': 'Model release and deprecation timeline.',
+};
+
 const files = readdirSync(contentDir).filter((f) => f.endsWith('.json'));
+
+const typen = [...new Set(files.map((f) => f.replace(/\.(de|en|es|fr|zh)\.json$/, '')))];
+const undokumentiert = typen.filter((t) => !ENDPOINT_DOCS[`${t}.<lang>.json`]);
+if (undokumentiert.length) {
+  console.error(`FEHLER: Content-Typ(en) ohne API-Beschreibung in build-api.mjs: ${undokumentiert.join(', ')}`);
+  process.exit(1);
+}
 for (const f of files) {
   cpSync(join(contentDir, f), join(apiDir, f));
 }
@@ -33,13 +59,7 @@ const index = {
   description:
     'Free, no-auth JSON access to all promptgarten learning content. CC-BY-style reuse: link back to promptgarten. Content language variants: de, en, es, fr, zh.',
   base: '/api/',
-  endpoints: {
-    'entries.<lang>.json': 'All glossary/learning entries (title, teaser, body markdown, difficulty 1-3, quiz, sources).',
-    'feed.<lang>.json': 'Curated AI news feed items with verified sources.',
-    'vergleiche.<lang>.json': 'Tool comparison (Claude Code, Cursor, Codex CLI, Aider).',
-    'commands.<lang>.json': 'Command reference: every CLI/slash command per platform with when-to-use and when-not examples and sources.',
-    'loops.<lang>.json': 'Loop gallery: annotated examples of good and bad agent loops.',
-  },
+  endpoints: ENDPOINT_DOCS,
   files,
   generated: new Date().toISOString().slice(0, 10),
 };
