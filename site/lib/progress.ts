@@ -5,7 +5,11 @@ export type Progress = {
   streak: number;
   lastVisit: string; // YYYY-MM-DD
   completed: string[];
+  /** XP-Stand je Tag (YYYY-MM-DD → XP), für die Fortschritts-Kurve. Max. 120 Tage. */
+  history?: Record<string, number>;
 };
+
+const HISTORY_DAYS = 120;
 
 const KEY = 'pg_progress_v1';
 export const PROGRESS_EVENT = 'pg-progress';
@@ -22,25 +26,31 @@ function yesterday(): string {
 
 export function loadProgress(): Progress {
   if (typeof window === 'undefined') {
-    return { xp: 0, streak: 0, lastVisit: '', completed: [] };
+    return { xp: 0, streak: 0, lastVisit: '', completed: [], history: {} };
   }
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return { xp: 0, streak: 0, lastVisit: '', completed: [] };
+    if (!raw) return { xp: 0, streak: 0, lastVisit: '', completed: [], history: {} };
     const p = JSON.parse(raw) as Progress;
     return {
       xp: typeof p.xp === 'number' ? p.xp : 0,
       streak: typeof p.streak === 'number' ? p.streak : 0,
       lastVisit: typeof p.lastVisit === 'string' ? p.lastVisit : '',
       completed: Array.isArray(p.completed) ? p.completed : [],
+      history: p.history && typeof p.history === 'object' ? p.history : {},
     };
   } catch {
-    return { xp: 0, streak: 0, lastVisit: '', completed: [] };
+    return { xp: 0, streak: 0, lastVisit: '', completed: [], history: {} };
   }
 }
 
 function save(p: Progress) {
   try {
+    // Tages-Snapshot für die Kurve; ältere Einträge fallen hinten raus.
+    const hist = { ...(p.history ?? {}), [today()]: p.xp };
+    const keys = Object.keys(hist).sort();
+    for (const k of keys.slice(0, Math.max(0, keys.length - HISTORY_DAYS))) delete hist[k];
+    p.history = hist;
     localStorage.setItem(KEY, JSON.stringify(p));
     window.dispatchEvent(new CustomEvent(PROGRESS_EVENT));
   } catch {

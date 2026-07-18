@@ -78,12 +78,17 @@ export default function Header({ lang }: { lang: Lang }) {
         </nav>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           {progress && (progress.xp > 0 || progress.streak >= 1) && (
-            <span className="chip" title="XP & Streak — nur in deinem Browser gespeichert">
+            <Link
+              href={`/${lang}/fortschritt/`}
+              className="chip"
+              title="XP & Streak — nur in deinem Browser gespeichert"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               <span>{levelEmoji(progress.xp)}</span>
               <span style={{ color: 'var(--accent)' }}>⚡ {progress.xp} {t.xp}</span>
               <span style={{ color: 'var(--muted)' }}>·</span>
               <span>🔥 {t.streakDays(progress.streak)}</span>
-            </span>
+            </Link>
           )}
           <SearchModal lang={lang} />
           <Link href={switchHref} className="pill" style={{ padding: '7px 10px' }}>
