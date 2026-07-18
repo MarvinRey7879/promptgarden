@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * Baut je Sprache einen Volltext-Suchindex nach public/search/index.<lang>.json.
- * Quellen: entries (Kapitel), commands (Befehle), addons. Läuft im prebuild nach lint.
- * Doc-Format: { id, g: 'k'|'b'|'a', t: Titel, s: Untertitel, b: Text-Anriss, u: Pfad ohne Sprach-Präfix }
+ * Quellen: entries (Kapitel), commands (Befehle), addons, prompts, fehler (Troubleshooting).
+ * Läuft im prebuild nach lint.
+ * Doc-Format: { id, g: 'k'|'b'|'a'|'p'|'f', t: Titel, s: Untertitel, b: Text-Anriss, u: Pfad ohne Sprach-Präfix }
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -30,6 +31,18 @@ for (const lang of LANGS) {
   }
   for (const pr of read(`prompts.${lang}.json`).items) {
     docs.push({ id: `p:${pr.id}`, g: 'p', t: pr.title, s: strip(pr.wann, 140), b: strip(pr.prompt, 300), u: `prompts/#${pr.category}` });
+  }
+  // Fehlermeldungen: Leute tippen den Fehlertext wörtlich in die Suche, daher
+  // symptom als Titel und Ursache + Fix-Schritte in den durchsuchten Text.
+  for (const f of read(`fehler.${lang}.json`).items) {
+    docs.push({
+      id: `f:${f.id}`,
+      g: 'f',
+      t: strip(f.symptom, 110),
+      s: strip(f.ursache, 140),
+      b: strip(f.fix.join(' '), 300),
+      u: `fehler/`,
+    });
   }
   const out = join(ROOT, 'public', 'search', `index.${lang}.json`);
   writeFileSync(out, JSON.stringify(docs));
