@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import ExampleVideo from '@/components/ExampleVideo';
 import RosettaTable from '@/components/RosettaTable';
 import ShareButtons from '@/components/ShareButtons';
 import { getPlatforms } from '@/lib/commands';
@@ -27,6 +28,14 @@ const BACK: Record<string, string> = {
 
 const STAND: Record<string, string> = { de: 'Stand', en: 'As of', es: 'Actualizado', fr: 'Mise à jour', zh: '数据截至' };
 
+const VIDEO_LABEL: Record<string, string> = {
+  de: 'In 11 Sekunden: dieselbe Aufgabe auf allen fünf Plattformen — und wo es keinen eigenen Befehl gibt.',
+  en: 'In 11 seconds: the same task across all five platforms — and where no dedicated command exists.',
+  es: 'En 11 segundos: la misma tarea en las cinco plataformas y dónde no existe un comando propio.',
+  fr: 'En 11 secondes : la même tâche sur les cinq plateformes — et là où aucune commande dédiée n’existe.',
+  zh: '11 秒看懂：同一个任务在五个平台上的写法，以及哪里没有专门命令。',
+};
+
 export default async function RosettaPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
@@ -46,6 +55,8 @@ export default async function RosettaPage({ params }: { params: Promise<{ lang: 
       <p className="mono" style={{ margin: '0 0 26px', fontSize: 12.5, color: 'var(--muted)' }}>
         {STAND[lang]}: {d.stand}
       </p>
+
+      <ExampleVideo lang={lang} name="rosetta-demo" label={VIDEO_LABEL[lang]} />
 
       <RosettaTable lang={lang} data={d} platformNames={platformNames} />
 

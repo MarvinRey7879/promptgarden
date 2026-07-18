@@ -7,6 +7,7 @@ import { ChallengeDemo } from './ChallengeDemo';
 import { MapDemo } from './MapDemo';
 import { CompareDemo } from './CompareDemo';
 import { MoeDemo } from './MoeDemo';
+import { RosettaDemo } from './RosettaDemo';
 import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo, CodexExecDemo, CodexReviewDemo, AgyPrintDemo } from './TerminalDemo';
 import type { Lang } from './theme';
 
@@ -89,6 +90,15 @@ export const RemotionRoot = () => {
         id="CodexReviewDemo"
         component={CodexReviewDemo}
         durationInFrames={400}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{ lang: 'de' as Lang }}
+      />
+      <Composition
+        id="RosettaDemo"
+        component={RosettaDemo}
+        durationInFrames={330}
         fps={30}
         width={1280}
         height={720}
