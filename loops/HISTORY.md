@@ -792,3 +792,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - BUILD_EXIT=0, Deploy ff187e87, Live-Verify: Video-Tag de+zh, mp4 vollständig ausgeliefert (1.037.850 B), Tabelle unverändert darunter, mobil 0px Overflow.
 - MERKE: Browser-Screenshot zeigt bei preload=metadata nur das leere Poster (currentTime-Sprung greift nicht zuverlässig) → Videoinhalt stattdessen mit `npx remotion still <Id> --frame=N` prüfen. So verifiziert: Layout, alle 15 Zellen, gestrichelte Lücke, Fußnote.
 - Commit 9ea905a. Videos gesamt: 85 (17 Motive ×5).
+
+## It. 148 (18.07.2026 ~18:36–19:00) — llms.txt + API-Index nachgezogen ✅
+- Poll 542/91 (Traffic zieht an), Smoke 10/10 grün.
+- BEFUND: Die Plattform wirbt mit „KI- und scrape-freundlich", aber llms.txt kannte nur 6 Seiten und 5 API-Endpunkte. Nicht erwähnt, obwohl live: 293 Befehle, Rosetta, Fehler-Katalog, Prompts, Addons, Benchmarks, Timeline, Challenge, Fortschritt, Start-Wizard, RSS, Sitemap. Für die eigene Zielgruppe (KI-Agenten) war die Seite damit halb unsichtbar.
+- llms.txt neu geschrieben: alle 12 API-Endpunkte (je Sprache), Feeds, 16 Seiten mit einer Zeile Zweck, Hinweise zu Quellenpflicht/„—"-Konvention/zwei Detail-Levels. Behauptete RSS-Pfade vorher gegen build-rss.mjs geprüft (feed.<lang>.xml + feed.xml stimmen).
+- build-api.mjs: kopiert seit jeher ALLE content-Dateien, dokumentierte aber nur 5 Typen — rosetta/fehler waren tagelang ausgeliefert, standen aber in keinem Index. ENDPOINT_DOCS auf 11 Typen erweitert + GUARD: undokumentierter Content-Typ bricht den Build. Guard getestet (fiktiver Typ → Exit 1, keine Reste in public/api, Guard läuft vor dem Kopieren).
+- ZWISCHENFALL: Erster Deploy lief aus dem Repo-Root statt aus site/ (cwd-Reset zwischen Calls) und schlug fehl — exakt die dokumentierte LOOP.md-Regel. Zweiter Versuch mit `cd … && wrangler` im selben Call: Deploy b0e12f11.
+- Live-Verify: llms.txt nennt alle neuen Seiten, API-Index 11 Endpunkte/55 Dateien, /api/rosetta.en.json liefert 6 Gruppen/28 Aufgaben, /feed.en.xml 200. Commit f39a02c. (public/api/ ist generiert und gitignored.)
