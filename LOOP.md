@@ -13,12 +13,12 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 ## Marvin-Direktiven (alle aktiv, bindend)
 1. **KEIN Nachtmodus** — 24/7 voller Takt, immer Substanz bauen.
 2. **Quellenpflicht** — jede Behauptung sichtbar belegt auf der Seite; URLs selbst verifizieren (curl -L -A Browser-UA → 200); nie Quellen erfinden.
-3. **Befehls-Referenz** — JEDER CLI-Befehl pro Plattform mit wann/wann-nicht ✅ KOMPLETT für alle 4 Zielplattformen (236: Claude Code 92 + Codex 16 + Cursor 80 + Aider 48; neue Plattformen bei Relevanz).
+3. **Befehls-Referenz** — JEDER CLI-Befehl pro Plattform mit wann/wann-nicht ✅ KOMPLETT für 5 Plattformen (293: Claude Code 92 + Cursor 80 + Antigravity 57 + Aider 48 + Codex 16; neue Plattformen bei Relevanz). Quer dazu: /rosetta/ = dieselbe Aufgabe auf allen 5 Plattformen.
 4. **Addons mit eigenen Detailseiten** (✅ 12×5) — Setup aus offiziellen READMEs.
 5. **Visualisierungen** — verständlich aber hochwertig, Inline-SVG im 1d-Stil (✅ Loops+Addons+Context-Window) + Remotion-Videos (Direktive 12).
 6. **KEINE KI-Autorschaft** — Marvin ist der Macher; Seite kommuniziert „KI- & Scrape-freundlich, jeder soll lernen".
 7. **MEHR KAPITEL** — hohes Content-Tempo, ABER siehe Publikationsraten-Regel unten.
-8. **ZWEI Detail-Level** — 🌱/🔬-Toggle ✅ KOMPLETT (alle 51 Kapitel ×5, It. 78).
+8. **ZWEI Detail-Level** — 🌱/🔬-Toggle ✅ KOMPLETT (alle Kapitel ×5, Lint erzwingt bodyDetail-Parität).
 9. **Admin-Dashboard richtig stark** (✅ V2) + Monetarisierungs-Todos mit Schritt-für-Schritt in /admin.
 10. **Responsiveness + Wow** immer; erledigte Todos raus aus Statusboard-Todo-Sektion.
 11. **Landing ausbauen** (✅ It. 73 nach research/landing-cro-seo-2026-07.md).
@@ -27,7 +27,8 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 
 ## 🔴 Harte Arbeitsregeln (Fehler-erprobt)
 - **cwd**: JEDER Repo-Befehl (node/npm/grep/deploy/ls) mit explizitem `cd /c/Users/marvi/promptgarden/site && …` in DEMSELBEN Call — Shell-cwd resettet zwischen Calls (3× Vorfall, zuletzt It. 75: Deploy lief aus ~ und passierte gar nicht).
-- **Build-Exit separat**: `npm run build > /tmp/build.log 2>&1; echo "BUILD_EXIT=$?"` — NIE `| tail` (maskierte 2× TS-Fehler → stale Deploy).
+- **Build-Exit separat**: `cd …/site && npm run build > ../build.log 2>&1; echo BUILD_EXIT=$?` — NIE `| tail` (maskierte 2× TS-Fehler → stale Deploy) und NIE `&& deploy` dahinterhängen: das `echo` setzt `$?` auf 0, der Deploy lief trotz BUILD_EXIT=1 (It. 127). Deploy immer als SEPARATER Call.
+- **Route ohne Content parken statt Platzhalter deployen**: fehlt die Content-Datei, bricht der Build (Modul nicht gefunden) — Route + lib + Komponente nach `site/_hold/` verschieben, Rest ausliefern, nach Eintreffen der Daten zurückholen (It. 143). Nie Dummy-Inhalte live stellen.
 - **Live-Verify auf INHALTS-Strings** pollen, nie Status-200/UI-Labels (RSC-Payload → False Positives; Edge braucht ~60s).
 - **Responsive Grids als CSS-Klasse** mit Media Query, nie inline gridTemplateColumns.
 - **Static Export**: leere generateStaticParams bricht Build → Route in site/_hold/ parken bis Daten da.
@@ -37,6 +38,11 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 - **Parallelen Agents die Geschwister MITTEILEN** („Agent X schreibt parallel Datei Y — nicht anfassen"): It. 116 hielt der DE-Autor den parallelen EN-Autor für einen Rogue-Fork und benannte dessen Output-Datei um.
 - **Reviewer-Sub-Forks liefern an den ORCHESTRATOR**, nie an den Reviewer zurück (SendMessage an „fork"/Typnamen schlägt fehl) — Reviewer-Prompts explizit anweisen, NICHT auf Fork-Antworten zu warten; Orchestrator relayed (It. 116: Reviewer hing wartend fest).
 - **Autoren-Schema komplett ausschreiben** (inkl. exercise.selfCheck!) — It. 116: fehlendes selfCheck crashte Prerender; Lint-Regel deckt es jetzt ab.
+- **Reviewer-Fixes selbst gegenprüfen**: It. 143 lieferte der Adversarial-Reviewer einen Fix, der identisch zum Anker war (No-op) — der Claim stimmte trotzdem, der Fix aber nicht. Anker können außerdem doppelt JSON-escaped ankommen; Apply-Skript braucht Unescape-Fallback + `throw` bei NOT FOUND.
+- **Secret-Dateien sind geteilt**: vor `>>` in ~/.tm2-secrets/autopilot.env prüfen, ob der Var-Name schon einem anderen Projekt gehört (`RESEND_API_KEY` = framefetch!). promptgarten nutzt `PG_RESEND_KEY` (Versand) + `PG_RESEND_FULL_KEY` (Domain-Verwaltung).
+- **Bot-Blocking ≠ toter Link**: npmjs/openai.com/x.ai/meta blocken Node-fetch (403/400), sind per Browser-UA bzw. `https://r.jina.ai/<url>` erreichbar. Umgekehrt: 200 + Weiterleitung auf eine Übersichtsseite kann ein verstecktes Soft-404 sein → Ziel immer auf den Kern-Claim greppen (It. 144: AWS-Quelle so entlarvt). `docs.cursor.com` liefert per curl nur die JS-Navigations-Hülle → Belege aus `cursor.com/docs/cli/changelog` ziehen.
+- **git commit mit Anführungszeichen im Text** → `git commit -F -` + Heredoc; `-m "…\"…\"…"` zerlegt die Message in Pfad-Argumente (It. 144).
+- **Artifact-Republish OHNE `url`-Parameter**, solange dieselbe Datei in derselben Session publiziert wurde — die URL bleibt. Ein falsch getippter `url` trifft ein fremdes/gelöschtes Artifact.
 
 ## ✅ Verify-Gate (Pflicht vor „fertig" — DR-Umsetzung It. 73)
 1. `node scripts/lint-content.mjs` (läuft auch als prebuild, blockt Build): Slug-Parität ×5, Quiz-Indizes, Quellenpflicht, Quellen-Konsistenz (Wiki lokalisiert ok), bodyDetail-Parität, Feed-Daten.
@@ -63,11 +69,12 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 121, 17.07.26 vormittags, Commit-Stand siehe HISTORY)
-~2067 Seiten live auf promptgarten.com: 91 Kapitel ×5 (ALLE 🌱/🔬 + Quiz + Übung mit selfCheck; Batch 6 It. 116: Review 14 Findings/21 Fixes), 293 Befehle ×5 auf 5 Plattformen (Claude Code 92/Cursor 80/Antigravity 57/Aider 48/Codex 16), 🧩 Prompts (16), 12 Addons, 4 Welten (W0 5/W1 13/W2 16/W3 23), Vergleiche v2 (+💶 Preisrechner), 🔍 Suche (412 Docs/Sprache), 🗺️ Lern-Landkarte + Demo-Clip auf /lernpfade, Feed (25 News) + 📡 RSS (/feed.xml je Sprache, build-rss.mjs), 🎯 Tages-Challenge /challenge (5 datum-seeded aus 91, build-challenge.mjs, Serie pg_challenge_v1, Demo-Clip), 📱 PWA (manifest+sw.js network-first, SwRegister prod-only), 🎬 70 Remotion-Clips, Favicon, Forum (leer), freie API, Admin V2 (Unique-Besucher + Internal-Filter), WERBUNG AN außer Landing (Google-CMP nötig — Marvin-Todo). Traffic 15.07 17:00: views_7d 480, besucher_7d 36. Direktive 13: Runde 1+2 geliefert (Newsletter-Digest = späteres Todo, NICHT abgelehnt → Kandidat R3).
+## Aktueller Stand (It. 145, 18.07.26 nachmittags, Commit-Stand siehe HISTORY)
+~2132 Seiten live: **101 Kapitel ×5** (alle 🌱/🔬 + Quiz + Übung mit selfCheck), **293 Befehle ×5** auf 5 Plattformen + **🔄 /rosetta/** (28 Aufgaben × 5 Plattformen, 96 gegen commands.json validierte Zellen), **🩺 /fehler/** (24 Fehlermeldungen mit geprüften Quellen, Suche + Kategorie-Filter), **📊 /fortschritt/** (XP-Kurve, Welt-Balken, Challenge-Bilanz, Teilen-Bild), 🧭 /start/-Wizard **mit Starter-Kit** (Projekt-Anleitungsdatei je Tool + erste 5 Befehle), 🧩 16 Prompts + Sandbox, 12 Addons, 4 Welten (W0 5/W1 17/W2 18/W3 27), Vergleiche v3 (Intelligence-per-Dollar-Quadrant, Ratio-Tabelle, 💶 Preisrechner), 📊 /timeline/, 🔍 Suche, 🗺️ Lern-Landkarte, **Feed 32 News** + 📡 RSS, 🎯 Tages-Challenge (Pool 101), 📱 PWA, 🎬 **80 Remotion-Clips**, 📬 **Newsletter LIVE** (Resend, news.promptgarten.com verifiziert, Digest-Cron Mo 08:00 UTC), Forum, freie API, Admin V2, WERBUNG AN außer Landing. Traffic 18.07 15:00: views_7d 539, besucher_7d 89. Direktive 13: **Runden 1–4 alle geliefert**, Abgelehnt-Liste leer.
+**Quellen-Gesundheit** (Link-Audit 18.07): 410 URLs, 0 defekt; Skripte `research/link-audit.mjs` (Rohtext-Scan nötig — addons/vergleiche/timeline/benchmarks/loops halten Links NICHT in sources[]) + `research/kanonisiere-links.mjs`. 9 Kapitel aus Batch 5/6 haben bewusst je Sprache eigene Quellen — kein Fehler.
 
-## Rotation (nächste Arbeit) — R3 KOMPLETT gewählt 17.07 + Vergleiche-Direktive
-① Vergleiche-v3 (Marvin-Direktive 17.07: 2D-Quadrant Intelligence-to-Cost, +GLM/Grok/Gemini/Kimi/DeepSeek/Qwen/Mistral, Stärken-Profile; Research läuft, Adversarial-Review Pflicht) ② Teilen-Buttons ③ Modell-Timeline (nutzt v3-Daten) ④ Prompt-Sandbox ⑤ Newsletter-Digest (Mail-Weg klären, externe Konten NUR mit Marvin) ⑥ Feed täglich (nächster 18.07 früh, 28 Bestands-ids vorher listen) ⑦ Kapitel-Batch 7 ~18./19.07 (mit den 3 neuen Agent-Regeln) ⑧ Link-Audit ~21.07 ⑨ LOOP.md-Pruning ~21.07 ⑩ Remotion R10 später.
+## Rotation (nächste Arbeit)
+① Feed täglich (nächster 19.07 früh; erst alle 32 Bestands-ids listen; 🔔 Fable-5-Frist endet 19.07) ② Kapitel-Batch 8 (101→111) ~19./20.07 — Kandidaten: WebSearch/Grounding, Distillation, Agent-Kosten-Benchmarks, CLAUDE.md-Patterns tiefer, Retrieval-Evaluation, Multi-Repo, Secrets-Management, Observability-Metriken, Fine-Tuning-vs-Prompting, Agent-Fehlerkultur ③ Remotion R12 ④ Ideen-Pitch R5 ~22./23.07 (4 NEUE Kandidaten) ⑤ Kapitel-Batch 9 ⑥ Link-Audit erneut ~25.07 (Skript wiederverwenden) ⑦ LOOP.md-Pruning ~25.07.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
 - Sponsors: angemeldet ✓ — Restschritte (Bio/Tier/Stripe/W-8BEN/2FA/Submit) in /admin, danach Footer-Link
@@ -76,7 +83,8 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 - Bing: Sitemap eingereicht ✓ (14.07.)
 - Ko-fi-Verification-Token → `wrangler secret put KOFI_TOKEN` (Webhook liegt bereit)
 - www→apex-Redirect: kein Token mit Ruleset-Recht (canonical entschärft)
-- 🔔 28.07.: MCP-Spec final? → Feed-Update
+- Newsletter: Marvin ist erster Abonnent — Opt-in-Mail bestätigen (kein Blocker)
+- 🔔 19.07.: Fable-5-Frist läuft ab → Feed · 🔔 Mo 20.07 ~08:05 UTC: ersten Digest-Cron-Lauf prüfen (`GET https://api.resend.com/emails` mit PG_RESEND_FULL_KEY) · 🔔 24.07. DeepSeek-Migration · 🔔 27.07. Kimi-K3-Weights · 🔔 28.07.: MCP-Spec final? → alle als Feed-Update
 
 ## Architektur
 ```
