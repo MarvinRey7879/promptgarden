@@ -1,0 +1,436 @@
+[
+  {
+    "id": "http-429-rate-limit-error",
+    "symptom": "\"429 rate_limit_error\" bzw. in Claude Code \"API Error: Request rejected (429) · this may be a temporary capacity issue.\"",
+    "kategorie": "limits",
+    "plattformen": ["api", "claude-code", "alle"],
+    "ursache": "Du hast das Rate-Limit deines API-Keys, deines Bedrock-Projekts oder deines Google-Cloud-Projekts überschritten (Requests pro Minute oder Tokens pro Minute). Die offiziellen SDKs und Claude Code retryen 429-Fehler automatisch mit Exponential Backoff, aber danach siehst du den Fehler trotzdem. Ein plötzlicher Traffic-Anstieg kann zusätzlich kurzfristige Acceleration-Limits auslösen.",
+    "fix": [
+      "Prüfe mit /status (Claude Code) oder am Response-Header, welcher Credential aktiv ist – ein alter API-Key kann dich auf ein Low-Tier statt dein Abo routen.",
+      "Reduziere Parallelität: weniger gleichzeitige Subagents/Requests, oder CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY senken.",
+      "Prüfe dein Rate-Limit-Tier in der Claude Console (platform.claude.com) und beantrage bei Bedarf ein höheres Tier.",
+      "Baue eigene Retries mit Exponential Backoff ein, falls du nicht die offiziellen SDKs nutzt.",
+      "Steigere dein Nutzungsvolumen langsam statt sprunghaft, um Acceleration-Limits zu vermeiden."
+    ],
+    "vorbeugen": "Setze CLAUDE_CODE_RETRY_WATCHDOG=1 in unbeaufsichtigten Sessions/CI, damit 429/529 automatisch weiterversucht statt sofort abgebrochen wird, und plane dein Rate-Limit-Tier vorab passend zur Teamgröße.",
+    "sources": [
+      {"title": "Claude API errors – HTTP errors (429 rate_limit_error)", "url": "https://platform.claude.com/docs/en/api/errors"},
+      {"title": "Claude Code Error reference – Request rejected (429)", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  },
+  {
+    "id": "api-529-overloaded-error",
+    "symptom": "\"529 overloaded_error\" bzw. \"API Error: Repeated 529 Overloaded errors. The API is at capacity\"",
+    "kategorie": "limits",
+    "plattformen": ["api", "claude-code"],
+    "ursache": "Die Claude API ist wegen hoher Last über alle Nutzer hinweg kurzfristig ausgelastet. Ein 529 ist kein persönliches Rate-Limit und zählt nicht gegen dein Kontingent. In Claude Code hat das Tool den Request vor der Fehlermeldung bereits mehrfach mit Backoff wiederholt.",
+    "fix": [
+      "Prüfe status.claude.com auf aktive Incidents oder Kapazitätsmeldungen.",
+      "Warte ein paar Minuten und sende die Anfrage erneut – bei langem Prompt reicht in Claude Code oft ein einfaches 'try again'.",
+      "Wechsle in Claude Code kurzfristig mit /model auf ein anderes Modell, da Kapazität pro Modell getrackt wird.",
+      "Erhöhe CLAUDE_CODE_MAX_RETRIES oder aktiviere CLAUDE_CODE_RETRY_WATCHDOG=1 für automatische Langzeit-Retries in CI/unbeaufsichtigten Läufen."
+    ],
+    "vorbeugen": "Baue für produktive API-Integrationen von Anfang an Exponential-Backoff-Retries ein (die offiziellen SDKs machen das standardmäßig) statt bei 529 sofort abzubrechen.",
+    "sources": [
+      {"title": "Claude API errors – 529 overloaded_error", "url": "https://platform.claude.com/docs/en/api/errors"},
+      {"title": "Claude Code Error reference – Repeated 529 Overloaded errors", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  },
+  {
+    "id": "invalid-api-key-401",
+    "symptom": "\"401 - Incorrect API key provided\" (OpenAI) bzw. in Claude Code \"Invalid API key · Fix external API key\" oder \"This organization has been disabled\"",
+    "kategorie": "auth",
+    "plattformen": ["api", "claude-code", "alle"],
+    "ursache": "Der verwendete API-Key ist ungültig, wurde widerrufen, ist abgelaufen oder enthält einen Tippfehler bzw. ein Leerzeichen. Bei Claude Code kommt ein häufiger Sonderfall dazu: eine alte ANTHROPIC_API_KEY-Umgebungsvariable aus einem früheren Projekt überschreibt dein aktives Abo-Login und schickt Requests mit einem toten oder deaktivierten Key.",
+    "fix": [
+      "Generiere in der OpenAI- bzw. Anthropic-Console einen neuen Key und ersetze den alten überall in Code und Env-Dateien.",
+      "Prüfe mit env | grep ANTHROPIC (bzw. OPENAI) im gleichen Terminal, ob eine alte Variable aus .env, direnv oder dem IDE-Terminal geladen wird.",
+      "In Claude Code: unset ANTHROPIC_API_KEY ausführen und danach /login, um wieder über das Abo statt über den API-Key zu laufen.",
+      "Prüfe mit /status (Claude Code), welche Credential-Quelle gerade aktiv ist.",
+      "Falls der Key aus einem apiKeyHelper-Script kommt: das Script direkt im Terminal ausführen und prüfen, ob es einen gültigen Key auf stdout ausgibt."
+    ],
+    "vorbeugen": "Räume alte export ANTHROPIC_API_KEY=… bzw. OPENAI_API_KEY=…-Zeilen aus Shell-Profilen und .env-Dateien auf, sobald ein Projekt oder Key nicht mehr gebraucht wird.",
+    "sources": [
+      {"title": "OpenAI API error codes – 401 Incorrect API key provided", "url": "https://developers.openai.com/api/docs/guides/error-codes"},
+      {"title": "Claude Code Error reference – Invalid API key / This organization has been disabled", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  },
+  {
+    "id": "prompt-is-too-long-context-window",
+    "symptom": "\"Prompt is too long\" – Kontextfenster des Modells ist voll",
+    "kategorie": "kontext",
+    "plattformen": ["claude-code", "api"],
+    "ursache": "Die Konversation plus angehängte Dateien überschreitet das Kontextfenster des Modells. Auto-Compact greift normalerweise vorher automatisch ein, aber bei DISABLE_AUTO_COMPACT, sehr großen Einzeldateien oder MCP-Tool-Definitionen (die Subagents komplett erben) kann das Fenster trotzdem volllaufen, bevor kompaktiert werden kann.",
+    "fix": [
+      "Führe /compact aus, um ältere Gesprächsteile zusammenzufassen, oder /clear für einen komplett neuen Start.",
+      "Führe /context aus, um zu sehen, was den Kontext füllt: System-Prompt, Tools, Memory-Dateien, Nachrichten.",
+      "Deaktiviere nicht genutzte MCP-Server mit /mcp disable <name>, bevor du Subagents startest – die erben sonst alle Tool-Definitionen.",
+      "Kürze große CLAUDE.md-Dateien oder lagere Anweisungen in pfadgebundene Regeln aus, die nur bei Bedarf laden.",
+      "Lass Claude große Dateien in kleineren Ausschnitten (Zeilenbereich oder Funktion) statt komplett lesen."
+    ],
+    "vorbeugen": "Lass Auto-Compact aktiviert und starte für unabhängige Aufgaben jeweils mit /clear neu, statt einen Chat endlos wachsen zu lassen.",
+    "sources": [
+      {"title": "Claude Code Error reference – Prompt is too long", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  },
+  {
+    "id": "auto-compact-thrashing",
+    "symptom": "\"Autocompact is thrashing: the context refilled to the limit...\"",
+    "kategorie": "kontext",
+    "plattformen": ["claude-code"],
+    "ursache": "Die automatische Kontext-Kompaktierung ist erfolgreich gelaufen, aber eine Datei oder Tool-Ausgabe hat das Kontextfenster direkt danach mehrfach hintereinander wieder vollgeschrieben. Claude Code bricht den Retry-Loop dann bewusst ab, um nicht sinnlos API-Calls zu verbrauchen.",
+    "fix": [
+      "Lass Claude die übergroße Datei in kleineren Abschnitten lesen (bestimmter Zeilenbereich oder Funktion) statt komplett.",
+      "Führe /compact mit Fokus-Anweisung aus, z. B. '/compact keep only the plan and the diff', um die große Ausgabe gezielt zu verwerfen.",
+      "Verlagere die Arbeit an der großen Datei in einen Subagent, damit sie in einem eigenen Kontextfenster läuft.",
+      "Führe /clear aus, wenn der bisherige Gesprächsverlauf nicht mehr gebraucht wird."
+    ],
+    "vorbeugen": "Vermeide es, sehr große Log- oder Build-Ausgaben ungefiltert ins Gespräch zu holen – lass Claude gezielt filtern statt ganze Dateien zu lesen.",
+    "sources": [
+      {"title": "Claude Code Troubleshooting – Auto-compaction stops with a thrashing error", "url": "https://code.claude.com/docs/en/troubleshooting"}
+    ]
+  },
+  {
+    "id": "aider-token-limit-hit",
+    "symptom": "\"Model gpt-3.5-turbo has hit a token limit! ... Output tokens: 4096 of 4096 -- exceeded output limit!\"",
+    "kategorie": "kontext",
+    "plattformen": ["aider"],
+    "ursache": "Aider erzwingt selbst kein Token-Limit, meldet aber den Fehler weiter, sobald der API-Provider ihn zurückgibt – entweder weil der Input das Kontextfenster sprengt oder weil die Antwort das oft kleine Output-Token-Limit des Modells (z. B. 4k) überschreitet. Das passiert vor allem bei schwächeren Modellen oder wenn zu viele Dateien gleichzeitig im Chat sind.",
+    "fix": [
+      "Entferne nicht benötigte Dateien aus dem Chat mit /drop, damit weniger Input-Tokens verbraucht werden.",
+      "Nutze /tokens, um den aktuellen Verbrauch zu sehen, und /clear, um die Historie zu leeren.",
+      "Bitte um kleinere, gezieltere Änderungen statt einer großen Umstrukturierung in einem Rutsch.",
+      "Teile den Code in kleinere Quelldateien auf.",
+      "Wechsle auf ein stärkeres Modell mit Diff-Edit-Format (z. B. Sonnet, DeepSeek V3) statt eines schwächeren Modells."
+    ],
+    "vorbeugen": "Füge dem Chat von vornherein nur die Dateien hinzu, die tatsächlich bearbeitet werden müssen – Aider ergänzt relevanten Code ohnehin automatisch über die Repo-Map.",
+    "sources": [
+      {"title": "Aider Troubleshooting – Token limits", "url": "https://aider.chat/docs/troubleshooting/token-limits.html"}
+    ]
+  },
+  {
+    "id": "aider-failed-to-apply-edit",
+    "symptom": "\"Failed to apply edit to <filename>\" – Aider wiederholt denselben fehlerhaften Änderungsversuch",
+    "kategorie": "werkzeuge",
+    "plattformen": ["aider"],
+    "ursache": "Das LLM antwortet mit Code-Änderungen in einem Format, das Aider nicht sauber parsen kann, weil es die Vorgaben zum Edit-Format nicht exakt befolgt. Das passiert häufiger, je mehr irrelevante Dateien oder Kontext im Chat sind – oberhalb von etwa 25.000 Tokens lässt die Formattreue vieler Modelle spürbar nach – und bei schwächeren oder quantisierten Modellen.",
+    "fix": [
+      "Füge nur die Dateien hinzu, die wirklich bearbeitet werden müssen, und entferne den Rest mit /drop.",
+      "Leere die Historie mit /clear, damit sich das Modell wieder auf die Formatvorgabe fokussiert.",
+      "Starte Aider mit --edit-format whole, damit das Modell ganze Dateien statt Diffs zurückgibt.",
+      "Aktiviere den Architect-Modus (--architect bzw. /chat-mode architect), der Planung und Datei-Edits auf zwei Schritte/Modelle aufteilt.",
+      "Wechsle auf ein stärkeres Modell (z. B. Claude Sonnet, GPT-4o, DeepSeek V3/R1) statt eines lokalen oder quantisierten Modells."
+    ],
+    "vorbeugen": "Halte den Chat-Kontext schlank (wenige, relevante Dateien) und bevorzuge starke Modelle mit gutem Diff-Edit-Verhalten für komplexe Refactorings.",
+    "sources": [
+      {"title": "Aider Troubleshooting – File editing problems", "url": "https://aider.chat/docs/troubleshooting/edit-errors.html"}
+    ]
+  },
+  {
+    "id": "tool-use-concurrency-conversation-corrupted",
+    "symptom": "\"API Error: 400 due to tool use concurrency issues. Run /rewind to recover the conversation.\" bzw. \"unexpected tool_use_id found in tool_result blocks\"",
+    "kategorie": "werkzeuge",
+    "plattformen": ["claude-code", "api"],
+    "ursache": "Die Abfolge von tool_use-, tool_result- und thinking-Blöcken in der Gesprächshistorie passt nicht mehr zu dem, was die API erwartet – meist weil ein Tool-Aufruf mitten in der Ausführung unterbrochen wurde oder ein Turn nachträglich verändert wurde. Der Fehler tritt danach bei jedem weiteren Versuch erneut auf, bis der beschädigte Turn entfernt wird.",
+    "fix": [
+      "Führe /rewind aus (oder drücke zweimal Esc) und springe zu einem Checkpoint vor dem beschädigten Turn zurück.",
+      "Setze die Arbeit von dort mit einer neuen, klar formulierten Anfrage fort.",
+      "Aktualisiere Claude Code mit claude update, falls du eine Version vor 2.1.156 mit Opus 4.7/4.8 nutzt – ältere Versionen konnten diesen Fehler bei normaler Tool-Nutzung auslösen.",
+      "Unterbrich laufende Tool-Aufrufe möglichst nicht mitten in der Ausführung, z. B. kein Ctrl+C während ein Bash-Befehl läuft."
+    ],
+    "vorbeugen": "Lass lange Tool-Aufrufe (Bash, Web-Fetch) durchlaufen statt sie manuell abzubrechen, und aktualisiere Claude Code regelmäßig.",
+    "sources": [
+      {"title": "Claude Code Error reference – Tool use or thinking block mismatch", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  },
+  {
+    "id": "mcp-server-not-connecting",
+    "symptom": "MCP-Server bleibt in Claude Code auf 'failed' bzw. \"spawn claude ENOENT\" / MCP server hat \"url\" but no \"type\"",
+    "kategorie": "werkzeuge",
+    "plattformen": ["claude-code"],
+    "ursache": "Häufigste Ursachen: Das ausführbare Programm im command-Feld ist nicht im PATH auffindbar (ENOENT), die JSON-Konfiguration hat eine url ohne passendes type-Feld, oder der Server antwortet beim Verbindungsaufbau nicht rechtzeitig (Standard-Timeout 30 Sekunden über MCP_TIMEOUT). Bei HTTP/SSE-Servern versucht Claude Code zwar automatisch bis zu 5 Reconnects mit steigendem Backoff, markiert den Server danach aber als 'failed'.",
+    "fix": [
+      "Führe claude mcp list bzw. /mcp aus, um den Verbindungsstatus jedes Servers zu prüfen.",
+      "Bei stdio-Servern: which <command> ausführen und den vollen Pfad statt eines PATH-abhängigen Befehlsnamens in der Config eintragen.",
+      "Bei HTTP/SSE-Config sicherstellen, dass \"type\": \"http\" (bzw. sse/ws) explizit gesetzt ist, wenn eine url angegeben wird.",
+      "Bei langsam startenden Servern MCP_TIMEOUT erhöhen, z. B. MCP_TIMEOUT=10000.",
+      "Server einzeln mit claude mcp get <name> prüfen und bei OAuth-Servern die Authentifizierung über /mcp erneuern."
+    ],
+    "vorbeugen": "Teste neu hinzugefügte MCP-Server zuerst isoliert mit claude mcp get <name>, bevor du sie produktiv in ein Projekt-.mcp.json einträgst.",
+    "sources": [
+      {"title": "Claude Code – Connect Claude Code to tools via MCP (Installation, Automatic reconnection)", "url": "https://code.claude.com/docs/en/mcp"}
+    ]
+  },
+  {
+    "id": "unexpected-cost-explosion",
+    "symptom": "Unerwartet hohe Rechnung bzw. Token-Verbrauch trotz scheinbar normaler Nutzung",
+    "kategorie": "limits",
+    "plattformen": ["claude-code", "api"],
+    "ursache": "Laut Anthropics eigener Auswertung über Enterprise-Deployments liegt der Durchschnitt bei rund 13 US-Dollar pro aktivem Entwickler-Tag bzw. 150–250 US-Dollar pro Monat, bei 90 % der Nutzer unter 30 US-Dollar pro aktivem Tag. Ausreißer nach oben gehen fast immer auf zwei Muster zurück: Sessions, die nie mit /clear beendet wurden, sodass der volle Verlauf bei jeder Nachricht neu mitgeschickt wird, und Opus als Standardmodell für Routineaufgaben. Agent-Teams verbrauchen zusätzlich rund 7x mehr Tokens als eine Einzel-Session, weil jedes Teammitglied ein eigenes Kontextfenster führt.",
+    "fix": [
+      "Beende abgeschlossene Aufgaben mit /clear, statt eine Session endlos weiterlaufen zu lassen – benenne sie vorher mit /rename, falls du später zurückwillst.",
+      "Prüfe mit /usage den Verbrauch der aktuellen Session und mit /context, wie viel davon auf Tools, MCP-Server und Memory-Dateien entfällt.",
+      "Nutze Sonnet statt Opus für Routineaufgaben und reserviere Opus für komplexe Architekturentscheidungen.",
+      "Deaktiviere ungenutzte MCP-Server mit /mcp, da jede Tool-Definition Kontext und damit Kosten verursacht.",
+      "Halte Agent-Teams klein und beende Teammitglieder aktiv, sobald ihre Aufgabe erledigt ist."
+    ],
+    "vorbeugen": "Setze bei API-/Console-Nutzung ein Workspace-Spend-Limit in der Claude Console und beobachte /usage regelmäßig, statt erst am Monatsende auf die Rechnung zu schauen.",
+    "sources": [
+      {"title": "Claude Code – Manage costs effectively", "url": "https://code.claude.com/docs/en/costs"}
+    ]
+  },
+  {
+    "id": "agent-deletes-files-not-recoverable",
+    "symptom": "Agent löscht oder überschreibt eine Datei per Bash (rm/mv/cp), und /rewind bringt sie nicht zurück",
+    "kategorie": "sicherheit",
+    "plattformen": ["claude-code"],
+    "ursache": "Checkpointing/Rewind in Claude Code trackt ausschließlich Änderungen, die über die eingebauten Datei-Editier-Tools (Edit/Write) laufen. Änderungen, die der Agent per Bash-Befehl macht, etwa rm file.txt, mv old.txt new.txt oder cp source.txt dest.txt, werden nicht mitgeschnitten und können daher über /rewind nicht rückgängig gemacht werden.",
+    "fix": [
+      "Nutze Git als eigentliches Sicherheitsnetz: committe regelmäßig, bevor du dem Agent riskante Aufgaben gibst.",
+      "Schränke destruktive Bash-Befehle über Permission-Regeln ein, z. B. eine Deny-Regel für Bash(rm *) in /permissions.",
+      "Nutze acceptEdits-Modus statt bypassPermissions für Routinearbeit – bypassPermissions überspringt auch Schreibzugriffe auf .git und andere sensible Ordner.",
+      "Nach einem Zwischenfall git status und git diff prüfen und über git checkout bzw. den Reflog wiederherstellen, wenn bereits committed wurde.",
+      "Lass dir bei riskanten Bash-Befehlen mit Strg+E die Risiko-Einschätzung (Low/Med/High) anzeigen, bevor du bestätigst."
+    ],
+    "vorbeugen": "Verlasse dich bei Datei-Sicherheit nicht auf /rewind – ein sauberer Git-Commit vor jeder größeren Aufgabe ist der einzige verlässliche Schutz gegen Bash-basierte Datei-Löschungen.",
+    "sources": [
+      {"title": "Claude Code – Checkpointing (Limitations: Bash command changes not tracked)", "url": "https://code.claude.com/docs/en/checkpointing"}
+    ]
+  },
+  {
+    "id": "git-merge-conflict-after-agent-changes",
+    "symptom": "\"CONFLICT (content): Merge conflict in <datei>\" / \"Automatic merge failed; fix conflicts and then commit the result.\"",
+    "kategorie": "code",
+    "plattformen": ["alle"],
+    "ursache": "Der Agent (oder ein zweiter Branch bzw. Kollege) hat denselben Abschnitt derselben Datei anders geändert als der Branch, in den gemerged wird. Git kann die beiden Versionen dann nicht automatisch per Drei-Wege-Merge zusammenführen und markiert die Datei als 'unmerged'.",
+    "fix": [
+      "Führe git status aus, um alle betroffenen Dateien unter 'Unmerged paths' zu sehen.",
+      "Öffne die Konfliktdateien und suche die Marker <<<<<<<, ======= und >>>>>>>, die HEAD-Version und die eingehende Version zeigen.",
+      "Entscheide dich pro Abschnitt für eine Version oder führe beide manuell zusammen und entferne dabei alle Konflikt-Marker.",
+      "Markiere jede gelöste Datei mit git add <datei> als aufgelöst.",
+      "Schließe den Merge mit git commit ab, oder nutze git mergetool für ein visuelles Diff-Tool."
+    ],
+    "vorbeugen": "Lass den Agent in einem eigenen Branch oder Worktree arbeiten und synchronisiere häufig mit dem Ziel-Branch, statt lange auf einem stark divergierenden Branch zu bleiben.",
+    "sources": [
+      {"title": "Pro Git – Basic Branching and Merging (Basic Merge Conflicts)", "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging"}
+    ]
+  },
+  {
+    "id": "model-not-found-or-deprecated",
+    "symptom": "\"There's an issue with the selected model (claude-...). It may not exist or you may not have access to it.\" bzw. \"Model ... is not a recognized model id.\"",
+    "kategorie": "setup",
+    "plattformen": ["claude-code", "api"],
+    "ursache": "Entweder ist die Modell-ID ein Tippfehler oder eine veraltete Version, oder das Modell wurde inzwischen von Anthropic zurückgezogen (retired) – Anfragen an ein Modell nach seinem Retirement-Datum schlagen grundsätzlich fehl. Anthropic kündigt Deprecations mindestens 60 Tage vorher per E-Mail und Doku an, bevor ein Modell erst 'deprecated' und danach 'retired' wird.",
+    "fix": [
+      "Führe /model ohne Argument aus, um aus den für deinen Account verfügbaren Modellen zu wählen.",
+      "Nutze einen Alias wie sonnet oder opus statt einer fest einprogrammierten Versions-ID, damit die Referenz nicht veraltet.",
+      "Prüfe in Priorität das --model-Flag, die ANTHROPIC_MODEL-Umgebungsvariable, dann die model-Felder in .claude/settings.local.json, .claude/settings.json und ~/.claude/settings.json auf eine veraltete ID.",
+      "Exportiere in der Claude Console dein API-Nutzungsprotokoll (Usage → Export), um alle Aufrufe mit deprecated Modellen zu finden, bevor sie retired werden.",
+      "Wechsle rechtzeitig vor dem Retirement-Datum auf das empfohlene Ersatzmodell aus der Migrationsanleitung."
+    ],
+    "vorbeugen": "Verwende in Produktionscode wo möglich Modell-Aliase statt gepinnter Versions-IDs, und prüfe die Deprecation-Hinweise in der Doku regelmäßig statt erst beim ersten Fehlschlag zu reagieren.",
+    "sources": [
+      {"title": "Claude Code Error reference – There's an issue with the selected model", "url": "https://code.claude.com/docs/en/errors"},
+      {"title": "Anthropic – Model deprecations", "url": "https://docs.claude.com/en/docs/about-claude/model-deprecations"}
+    ]
+  },
+  {
+    "id": "thinking-budget-over-32k-timeout",
+    "symptom": "Anfrage mit hohem Thinking-Budget hängt oder bricht mit Timeout ab, bzw. \"max_tokens must be greater than thinking.budget_tokens\"",
+    "kategorie": "limits",
+    "plattformen": ["api", "claude-code"],
+    "ursache": "Ab einem Thinking-Budget (budget_tokens) von über 32.000 Tokens werden Requests so lange, dass sie an System-Timeouts und offene Verbindungslimits stoßen können – Anthropic empfiehlt für diesen Bereich explizit die Batch-API statt synchroner Requests. Zusätzlich schlägt die Kombination fehl, wenn budget_tokens größer als max_tokens gesetzt ist, weil dann kein Platz für die eigentliche Antwort bleibt.",
+    "fix": [
+      "Nutze für Thinking-Budgets über 32k die Message-Batches-API statt synchroner Requests, um Netzwerk-Timeouts zu vermeiden.",
+      "Stelle sicher, dass max_tokens größer als thinking.budget_tokens ist.",
+      "Nutze für lange Anfragen generell die streamende Messages API statt eines einzelnen langen Requests.",
+      "In Claude Code: MAX_THINKING_TOKENS senken oder CLAUDE_CODE_MAX_OUTPUT_TOKENS über den Thinking-Budget-Wert anheben.",
+      "Setze bei Eigenintegrationen einen TCP-Socket-Keepalive, falls dein Netzwerk inaktive Verbindungen killt."
+    ],
+    "vorbeugen": "Behandle Thinking-Budgets über 32k Tokens von vornherein als Batch-Workload statt als synchronen Chat-Request.",
+    "sources": [
+      {"title": "Claude Extended thinking – Best practices for extended thinking (Large budgets)", "url": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"},
+      {"title": "Claude Code Error reference – Thinking budget exceeds output limit", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  },
+  {
+    "id": "windows-git-bash-not-found",
+    "symptom": "\"Claude Code on Windows requires either Git for Windows (for bash) or PowerShell\"",
+    "kategorie": "setup",
+    "plattformen": ["claude-code"],
+    "ursache": "Claude Code nutzt auf Windows PowerShell, sobald Git Bash fehlt – dieser Fehler bedeutet, dass keine der beiden Shells gefunden wurde. Meist ist entweder PowerShell nicht im PATH, Git for Windows nicht installiert, oder eine Endpoint-Security-Software (AppLocker, Group-Policy-Restriktionen, EDR-Agents) blockiert den Prozess, mit dem Claude Code vor Version 2.1.116 den Bash-Pfad verifiziert hat.",
+    "fix": [
+      "Installiere Git for Windows von git-scm.com/downloads/win und wähle bei der Installation 'Add to PATH'.",
+      "Falls Git bereits installiert ist, aber nicht gefunden wird: den Pfad manuell in settings.json über CLAUDE_CODE_GIT_BASH_PATH setzen, z. B. C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe.",
+      "Finde den korrekten Pfad mit where.exe git in PowerShell.",
+      "Aktualisiere auf Claude Code 2.1.116 oder neuer – ältere Versionen prüften den Pfad über einen blockierbaren Kindprozess.",
+      "Falls der Pfad stimmt und die Datei existiert, aber der Fehler bleibt: IT bitten, claude.exe sowie cmd.exe und bash.exe in der Endpoint-Protection freizugeben."
+    ],
+    "vorbeugen": "Installiere Git for Windows gleich bei der Ersteinrichtung mit aktivierter PATH-Option, auch wenn du primär PowerShell nutzen willst.",
+    "sources": [
+      {"title": "Claude Code – Troubleshoot installation and login (Git for Windows or PowerShell)", "url": "https://code.claude.com/docs/en/troubleshoot-install"}
+    ]
+  },
+  {
+    "id": "aider-not-recognized-windows",
+    "symptom": "\"aider: The term 'aider' is not recognized as a name of a cmdlet, function, script file, or executable program.\"",
+    "kategorie": "setup",
+    "plattformen": ["aider"],
+    "ursache": "Der aider-Befehl liegt nach der Installation nicht im Shell-Pfad – das betrifft laut Aider-Dokumentation vor allem Windows-Nutzer, oft wegen Berechtigungs- oder Security-Einstellungen des Betriebssystems.",
+    "fix": [
+      "Starte Aider stattdessen mit python -m aider – das funktioniert unabhängig vom PATH.",
+      "Installiere Aider alternativ über aider-install, uv oder pipx, die den PATH meist zuverlässiger einrichten.",
+      "Prüfe mit where aider (PowerShell) bzw. Get-Command aider, ob überhaupt ein Eintrag existiert.",
+      "Öffne ein neues Terminal nach der Installation, damit PATH-Änderungen greifen."
+    ],
+    "vorbeugen": "Installiere Aider mit einem der empfohlenen Installer (aider-install, uv, pipx) statt mit einem rohen pip install, das PATH-Probleme unter Windows begünstigt.",
+    "sources": [
+      {"title": "Aider Troubleshooting – Aider not found", "url": "https://aider.chat/docs/troubleshooting/aider-not-found.html"}
+    ]
+  },
+  {
+    "id": "npm-native-binary-not-found",
+    "symptom": "\"Could not find native binary package @anthropic-ai/claude-code-<platform>\"",
+    "kategorie": "setup",
+    "plattformen": ["claude-code"],
+    "ursache": "Das npm-Paket @anthropic-ai/claude-code liefert die eigentliche ausführbare Datei nur als plattformspezifische Optional Dependency (z. B. @anthropic-ai/claude-code-darwin-arm64). Wird die Installation mit --omit=optional (npm), --no-optional (pnpm) oder --ignore-optional (yarn) durchgeführt, fehlt dieses Paket komplett – dafür gibt es keinen JavaScript-Fallback.",
+    "fix": [
+      "Installiere ohne die Flags --omit=optional, --no-optional oder --ignore-optional neu.",
+      "Prüfe deine .npmrc auf optional=false und entferne den Eintrag.",
+      "Prüfe, ob deine Plattform überhaupt unterstützt wird: darwin-arm64/x64, linux-x64/arm64 (glibc und musl), win32-x64/arm64.",
+      "Bei einem eigenen npm-Mirror bzw. Registry-Proxy sicherstellen, dass alle acht @anthropic-ai/claude-code-*-Plattformpakete gespiegelt werden, nicht nur das Meta-Paket.",
+      "Alternativ den nativen Installer statt npm verwenden: curl -fsSL https://claude.ai/install.sh | bash."
+    ],
+    "vorbeugen": "Nutze für Claude Code den offiziellen nativen Installer statt npm install -g, dann entfällt das Optional-Dependency-Problem komplett.",
+    "sources": [
+      {"title": "Claude Code – Troubleshoot installation and login (Native binary not found after npm install)", "url": "https://code.claude.com/docs/en/troubleshoot-install"}
+    ]
+  },
+  {
+    "id": "structured-output-json-truncated",
+    "symptom": "JSON-Antwort bricht mitten im Objekt ab, bzw. JSONDecodeError beim Parsen der strukturierten Ausgabe",
+    "kategorie": "code",
+    "plattformen": ["api", "alle"],
+    "ursache": "Die Antwort wurde am Output-Token-Limit abgeschnitten (finish_reason ist 'length'), bevor das JSON-Objekt vollständig war, oder das Modell hat aus Sicherheitsgründen verweigert (refusal-Feld statt Content) – beides bricht ein naives Parsen der Rohausgabe.",
+    "fix": [
+      "Prüfe vor dem Parsen explizit finish_reason (bzw. stop_reason): bei 'length' ist die Antwort unvollständig, nicht kaputt formatiert.",
+      "Prüfe zusätzlich auf ein refusal-Feld in der Antwort und behandle das separat von einem Parse-Fehler.",
+      "Erhöhe max_tokens bzw. max_completion_tokens, wenn 'length' die Ursache ist.",
+      "Nutze die SDK-eigenen Parse-Methoden (z. B. client.chat.completions.parse) statt eines eigenen JSON-Parsers, die genau diese Fälle als Exceptions abbilden.",
+      "Baue bei Eigenimplementierung einen Retry mit knapperem Schema bzw. kürzerer Antwortvorgabe ein, statt stumpf erneut zu parsen."
+    ],
+    "vorbeugen": "Setze Structured Outputs mit striktem JSON-Schema ein, statt das Modell per Prompt zu JSON zu überreden – das reduziert Formatfehler, ersetzt aber nicht die Prüfung auf finish_reason und refusal.",
+    "sources": [
+      {"title": "OpenAI – Structured Outputs guide (finish_reason und refusal handling)", "url": "https://developers.openai.com/api/docs/guides/structured-outputs"}
+    ]
+  },
+  {
+    "id": "hallucinated-packages-imports",
+    "symptom": "Agent importiert oder installiert ein Paket, das gar nicht existiert (z. B. npm install <fantasiename> oder ein import, der zu ModuleNotFoundError führt)",
+    "kategorie": "code",
+    "plattformen": ["alle"],
+    "ursache": "LLMs erfinden regelmäßig Paketnamen, die plausibel klingen, aber nicht existieren ('Package Hallucination'). Eine Studie über 16 Code-Modelle fand im Schnitt 5,2 % halluzinierte Pakete bei kommerziellen und 21,7 % bei Open-Source-Modellen, insgesamt 205.474 einzigartige halluzinierte Paketnamen über rund 576.000 generierte Code-Proben. Eine Folgestudie mit aktuellen 2026er-Modellen misst die Rate niedriger, aber weiterhin zwischen 4,62 % und 6,10 %. Das Risiko: Angreifer registrieren vorhersagbare Fantasienamen vorab mit Schadcode ('Slopsquatting').",
+    "fix": [
+      "Installiere kein Paket automatisch, ohne den Namen vorher manuell auf npmjs.com oder pypi.org zu prüfen.",
+      "Lass den Agent den Paketnamen gezielt gegen die Registry verifizieren, z. B. per npm view <paket> oder pip index versions <paket>, bevor er ihn einbaut.",
+      "Nutze Lockfiles und CI-Schritte, die unbekannte oder neue Abhängigkeiten separat markieren statt sie stillschweigend zu installieren.",
+      "Bevorzuge etablierte, oft genutzte Bibliotheken statt Nischenpaketen, wenn das Modell zwischen mehreren Optionen wählt.",
+      "Bei Import-Fehlern nach einem Agent-Lauf zuerst prüfen, ob das Paket überhaupt real existiert, bevor du nach anderen Ursachen suchst."
+    ],
+    "vorbeugen": "Baue einen automatisierten Registry-Check in deine Agent-Pipeline ein, bevor neue Dependencies installiert werden – halluzinierte Namen sind oft plausibel, aber bei genauer Prüfung nicht auffindbar.",
+    "sources": [
+      {"title": "We Have a Package for You! A Comprehensive Analysis of Package Hallucinations by Code Generating LLMs", "url": "https://arxiv.org/abs/2406.10279"},
+      {"title": "The Range Shrinks, the Threat Remains: Re-evaluating LLM Package Hallucinations on the 2026 Frontier-Model Cohort", "url": "https://arxiv.org/abs/2605.17062"}
+    ]
+  },
+  {
+    "id": "codex-sandbox-blocks-network",
+    "symptom": "Codex CLI verweigert Internetzugriff bzw. ein Befehl schlägt im Sandbox-Modus fehl, obwohl er lokal ohne Codex funktioniert",
+    "kategorie": "werkzeuge",
+    "plattformen": ["codex-cli"],
+    "ursache": "Der Standardmodus workspace-write erlaubt Datei-Edits und lokale Befehle innerhalb des Projektordners, blockiert aber Netzwerkzugriff – Codex fragt dafür separat nach Freigabe. Auf Linux/WSL2 braucht die Sandbox zusätzlich bubblewrap (bwrap); fehlt es, nutzt Codex einen Fallback-Helper, der unprivilegierte User-Namespaces benötigt. Auf Ubuntu 24.04 kann selbst nach der Installation von bubblewrap noch eine AppArmor-Restriktion für unprivilegierte User-Namespaces die Sandbox blockieren.",
+    "fix": [
+      "Installiere bubblewrap über den Paketmanager: sudo apt install bubblewrap (Ubuntu/Debian) bzw. sudo dnf install bubblewrap (Fedora).",
+      "Auf Ubuntu 24.04 bei fortbestehender Warnung: das apparmor-profiles-Paket installieren und das bwrap-userns-restrict-Profil mit apparmor_parser -r laden.",
+      "Falls das Profil nicht verfügbar ist, die AppArmor-Restriktion gezielt lösen mit sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0.",
+      "Für einzelne Befehle, die wirklich ins Internet müssen, im Freigabe-Dialog explizit genehmigen statt die Sandbox global zu deaktivieren.",
+      "Nur für isolierte Umgebungen wie Container oder VMs den Modus danger-full-access setzen, der Datei- und Netzwerkgrenzen komplett aufhebt."
+    ],
+    "vorbeugen": "Behandle danger-full-access als Ausnahme für Container/VMs – für den normalen Arbeitsalltag bleibt workspace-write mit gezielter Netzwerk-Freigabe pro Befehl der sicherere Standard.",
+    "sources": [
+      {"title": "OpenAI Codex – How sandboxing works across ChatGPT and Codex clients", "url": "https://developers.openai.com/codex/sandboxing"}
+    ]
+  },
+  {
+    "id": "antigravity-permission-denied",
+    "symptom": "Antigravity-CLI-Agent bricht eine Aktion mit einem Ask-Prompt oder Deny ab, obwohl eine passende Allow-Regel konfiguriert scheint",
+    "kategorie": "sicherheit",
+    "plattformen": ["antigravity-cli"],
+    "ursache": "Antigravitys Permission Engine wertet deny-, ask- und allow-Regeln in genau dieser Reihenfolge aus – eine deny- oder ask-Regel gewinnt also immer gegen eine speziellere allow-Regel für dieselbe Aktion. Laut Dokumentation sorgt z. B. command(*) in der ask-Liste dafür, dass trotz command(git) in der allow-Liste vor jedem Git-Befehl nachgefragt wird.",
+    "fix": [
+      "Prüfe ~/.gemini/antigravity-cli/settings.json auf überlappende Regeln in deny, ask und allow für dieselbe Aktion.",
+      "Denke an die Präzedenz Deny > Ask > Allow: eine breite ask- oder deny-Regel wie command(*) blockiert jede speziellere allow-Regel.",
+      "Nutze im Prompt-Fenster die Möglichkeit, das Ziel (z. B. einen Dateipfad) vor dem Bestätigen gezielt zu erweitern, statt jede einzelne Datei neu freizugeben.",
+      "Bedenke bei Dateizugriffen: write_file gewährt implizit auch read_file, aber ein Deny auf read_file blockiert automatisch auch write_file.",
+      "Verwalte Regeln bei Bedarf interaktiv über den eingebauten Permissions-Befehl statt die JSON-Datei von Hand zu editieren."
+    ],
+    "vorbeugen": "Halte deine allow/ask/deny-Listen so spezifisch wie möglich und vermeide breite Wildcard-Regeln wie command(*) in ask, wenn du bestimmte Befehle wirklich automatisch erlauben willst.",
+    "sources": [
+      {"title": "Google Antigravity CLI – Permissions", "url": "https://antigravity.google/docs/cli/permissions"}
+    ]
+  },
+  {
+    "id": "worktree-file-not-found-gitignored",
+    "symptom": "Agent meldet, eine .env- oder Config-Datei sei nicht gefunden, obwohl sie im Hauptverzeichnis eindeutig existiert",
+    "kategorie": "werkzeuge",
+    "plattformen": ["claude-code"],
+    "ursache": "Läuft die Session in einem Git-Worktree (--worktree-Flag oder vom Agent selbst erstellt), handelt es sich um einen frischen Checkout – nicht committete, gitignorte Dateien wie .env oder .env.local aus dem Haupt-Checkout werden dabei standardmäßig nicht mitkopiert.",
+    "fix": [
+      "Lege eine .worktreeinclude-Datei im Projekt-Root an (Syntax wie .gitignore), damit gitignorte Dateien beim Erstellen jedes neuen Worktrees automatisch mitkopiert werden.",
+      "Prüfe bei 'Datei nicht gefunden' zuerst, ob die Session gerade in einem Worktree unter .claude/worktrees/ statt im Hauptverzeichnis läuft.",
+      "Richte die Entwicklungsumgebung im neuen Worktree explizit neu ein (Dependencies installieren, Config-Dateien kopieren), statt anzunehmen, dass alles wie im Hauptcheckout vorhanden ist.",
+      "Füge .claude/worktrees/ zu deiner .gitignore hinzu, damit Worktree-Inhalte nicht versehentlich als Untracked Files im Hauptcheckout auftauchen."
+    ],
+    "vorbeugen": "Richte .worktreeinclude von Anfang an für jedes Projekt ein, das mit Worktrees und lokalen Secrets oder Configs arbeitet.",
+    "sources": [
+      {"title": "Claude Code – Run parallel sessions with worktrees (Copy gitignored files into worktrees)", "url": "https://code.claude.com/docs/en/worktrees"}
+    ]
+  },
+  {
+    "id": "session-not-found-wrong-directory",
+    "symptom": "\"No conversation found with session ID: <session-id>\" beim Versuch, eine Session fortzusetzen",
+    "kategorie": "werkzeuge",
+    "plattformen": ["claude-code"],
+    "ursache": "Claude-Code-Sessions werden pro Projektverzeichnis gespeichert. Die Session-ID-Suche ist auf das aktuelle Projektverzeichnis und dessen Git-Worktrees beschränkt – versuchst du, eine Session mit claude --resume <session-id> aus einem anderen Verzeichnis fortzusetzen, findet Claude Code sie nicht, obwohl der Verlauf lokal weiterhin existiert.",
+    "fix": [
+      "Wechsle zurück in genau das Verzeichnis bzw. den Worktree, in dem die Session ursprünglich gestartet wurde.",
+      "Nutze claude --resume ohne ID, um den interaktiven Session-Picker zu öffnen, statt die ID manuell einzutippen.",
+      "Drücke im Picker Strg+A, um Sessions aus allen Projekten auf der Maschine anzuzeigen, statt nur aus dem aktuellen Verzeichnis.",
+      "Bei Sessions aus einem anderen Worktree desselben Repos Strg+W im Picker nutzen, um alle Worktrees einzubeziehen.",
+      "Vergib Sessions von Anfang an sprechende Namen mit /rename, damit du sie über den Picker leichter wiederfindest als über rohe IDs."
+    ],
+    "vorbeugen": "Merke dir bei parallelen Sessions in mehreren Ordnern oder Worktrees, wo welche Session läuft, oder vergib Namen statt dich auf IDs zu verlassen.",
+    "sources": [
+      {"title": "Claude Code – Manage sessions (Resume a session)", "url": "https://code.claude.com/docs/en/sessions"}
+    ]
+  },
+  {
+    "id": "suspected-prompt-injection-warning",
+    "symptom": "Claude warnt vor einer vermuteten Prompt-Injection oder verweigert eine Anfrage, nachdem Fremdinhalte (Webseite, Datei, MCP-Tool-Ergebnis) ins Gespräch geladen wurden",
+    "kategorie": "sicherheit",
+    "plattformen": ["claude-code", "alle"],
+    "ursache": "Prompt Injection ist eine Technik, bei der eingeschleuster Text aus einer Webseite, Datei oder einem Tool-Ergebnis versucht, die eigentlichen Anweisungen zu überschreiben. Claude Code erkennt das über kontextbewusste Analyse der gesamten Anfrage und schlägt dann Alarm oder verweigert die Aktion – auch bei False Positives, etwa wenn ein Web-Fetch-Ergebnis zufällig wie eine Anweisung klingt.",
+    "fix": [
+      "Prüfe den zitierten Text genau: stammt er wirklich aus Fremdinhalt (Datei/Web/Tool-Ergebnis) oder aus Kontext, den Claude Code selbst automatisch hinzufügt?",
+      "Bei automatisch hinzugefügtem Kontext als Ursache: claude update ausführen und die Aktion erneut versuchen – das behebt bekannte False Positives.",
+      "Bleibt die Warnung nach dem Update bestehen, über /feedback melden statt den geflaggten Inhalt einfach erneut in den Prompt zu kopieren.",
+      "Netzwerk-Befehle wie curl/wget sind in Claude Code standardmäßig nicht automatisch freigegeben – im Zweifel manuell bestätigen statt pauschal zu allowlisten.",
+      "Bei Arbeit mit nicht vertrauenswürdigen Inhalten eine VM oder Sandbox nutzen, besonders wenn externe Web-Services angesprochen werden."
+    ],
+    "vorbeugen": "Prüfe MCP-Server und Web-Quellen auf Vertrauenswürdigkeit, bevor du sie einbindest – gerade Server, die Fremdinhalte abrufen, sind ein bekanntes Einfallstor für Prompt Injection.",
+    "sources": [
+      {"title": "Claude Code – Security (Protect against prompt injection)", "url": "https://code.claude.com/docs/en/security"},
+      {"title": "Claude Code Error reference – Responses seem lower quality than usual", "url": "https://code.claude.com/docs/en/errors"}
+    ]
+  }
+]

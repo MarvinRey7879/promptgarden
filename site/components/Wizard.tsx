@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import WizardKit, { type WizardKitData } from '@/components/WizardKit';
 import { type Lang, ui } from '@/lib/i18n';
 
 const CARD_COLORS = ['var(--lime)', 'var(--blue)', 'var(--pink)', 'var(--yellow)', '#e8d9c3'];
@@ -29,7 +30,7 @@ const TOOL_TARGET: ((lang: Lang) => string)[] = [
   (lang) => `/${lang}/lexikon/claude-code-installieren/`,
 ];
 
-export default function Wizard({ lang }: { lang: Lang }) {
+export default function Wizard({ lang, kit }: { lang: Lang; kit: WizardKitData }) {
   const t = ui[lang];
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -115,6 +116,8 @@ export default function Wizard({ lang }: { lang: Lang }) {
         >
           {t.wizardRestart}
         </button>
+
+        {tool !== null && <WizardKit lang={lang} level={level} tool={tool} data={kit} />}
       </div>
     );
   }

@@ -1,7 +1,31 @@
 import { notFound } from 'next/navigation';
 import Wizard from '@/components/Wizard';
+import type { KitCommand } from '@/components/WizardKit';
 import ExampleVideo from '@/components/ExampleVideo';
-import { isLang, langAlternates, ui } from '@/lib/i18n';
+import { getCommands } from '@/lib/commands';
+import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
+
+/**
+ * Starter-Befehle je Tool-Antwort des Wizards (Reihenfolge = Optionen der Tool-Frage).
+ * Alle Slugs existieren in commands.<lang>.json — beim Build hart geprüft.
+ */
+const KIT_SLUGS: [string, string[]][] = [
+  ['claude-code', ['init', 'compact', 'clear', 'model', 'rewind']],
+  ['cursor-cli', ['rules', 'summarize', 'clear', 'model', 'context']],
+  ['aider', ['add', 'diff', 'undo', 'model', 'commit']],
+  ['codex-cli', ['plan', 'diff', 'review', 'model', 'new']],
+];
+
+function kitFor(lang: Lang): KitCommand[][] {
+  return KIT_SLUGS.map(([platform, slugs]) => {
+    const all = getCommands(lang, platform);
+    return slugs.map((slug) => {
+      const c = all.find((x) => x.slug === slug);
+      if (!c) throw new Error(`WizardKit: Befehl ${platform}/${slug} existiert nicht`);
+      return { platform, slug, name: c.name, summary: c.summary };
+    });
+  });
+}
 
 // Suche-Demo unter dem Wizard (Remotion R7): zeigt Neulingen die Volltext-Suche.
 const SEARCH_LABEL: Record<string, string> = {
@@ -31,7 +55,7 @@ export default async function StartPage({ params }: { params: Promise<{ lang: st
         </h1>
         <p style={{ margin: '10px 0 0', color: 'var(--muted)', fontSize: 15 }}>{t.wizardSub}</p>
       </div>
-      <Wizard lang={lang} />
+      <Wizard lang={lang} kit={{ commandsByTool: kitFor(lang) }} />
       <ExampleVideo lang={lang} name="search-demo" label={SEARCH_LABEL[lang]} />
     </div>
   );

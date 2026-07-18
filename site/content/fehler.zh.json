@@ -1,0 +1,594 @@
+{
+  "title": "错误图鉴:当 Agent 卡住时",
+  "intro": "使用编程 Agent 时常见的错误信息和症状——可按你在终端看到的原文文本搜索。每个条目包含:技术层面的原因是什么、如何修复、以及以后如何避免。每条原因都有官方文档支持。",
+  "stand": "18.07.2026",
+  "items": [
+    {
+      "id": "http-429-rate-limit-error",
+      "symptom": "\"429 rate_limit_error\",或在 Claude Code 中出现 \"API Error: Request rejected (429) · this may be a temporary capacity issue.\"",
+      "kategorie": "limits",
+      "plattformen": [
+        "api",
+        "claude-code",
+        "alle"
+      ],
+      "ursache": "你已超出 API key、Bedrock 项目或 Google Cloud 项目的速率限制(每分钟请求数或每分钟 token 数)。官方 SDK 和 Claude Code 会自动以指数退避方式重试 429 错误,但之后你仍会看到该错误。流量突然激增还可能触发短期的加速限制(acceleration limit)。",
+      "fix": [
+        "用 /status(Claude Code)或查看响应头,确认当前激活的是哪个凭证——旧的 API key 可能会把你路由到低档位而不是你的订阅。",
+        "降低并发度:减少同时运行的 subagent/请求数,或调低 CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY。",
+        "在 Claude Console(platform.claude.com)查看你的速率限制档位,必要时申请更高档位。",
+        "如果你没有使用官方 SDK,自行实现带指数退避的重试逻辑。",
+        "逐步而非突然地提升使用量,以避免触发加速限制。"
+      ],
+      "vorbeugen": "在无人值守的会话/CI 中设置 CLAUDE_CODE_RETRY_WATCHDOG=1,使 429/529 错误自动重试而不是立即中止,并提前根据团队规模规划好速率限制档位。",
+      "sources": [
+        {
+          "title": "Claude API errors – HTTP errors (429 rate_limit_error)",
+          "url": "https://platform.claude.com/docs/en/api/errors"
+        },
+        {
+          "title": "Claude Code Error reference – Request rejected (429)",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    },
+    {
+      "id": "api-529-overloaded-error",
+      "symptom": "\"529 overloaded_error\",或 \"API Error: Repeated 529 Overloaded errors. The API is at capacity\"",
+      "kategorie": "limits",
+      "plattformen": [
+        "api",
+        "claude-code"
+      ],
+      "ursache": "Claude API 因所有用户的整体负载过高而短暂过载。529 不是你个人的速率限制,也不计入你的额度。在 Claude Code 中,工具在显示该错误之前已经用退避策略重试过请求多次。",
+      "fix": [
+        "查看 status.claude.com,确认是否有正在进行的事件或容量提示。",
+        "等待几分钟后重新发送请求——对于较长的 prompt,在 Claude Code 中通常只需输入 'try again' 即可。",
+        "在 Claude Code 中用 /model 临时切换到其他模型,因为容量是按模型分别追踪的。",
+        "提高 CLAUDE_CODE_MAX_RETRIES,或启用 CLAUDE_CODE_RETRY_WATCHDOG=1,以便在 CI/无人值守运行中自动进行长时间重试。"
+      ],
+      "vorbeugen": "对于生产环境的 API 集成,从一开始就内置指数退避重试(官方 SDK 默认就是这样做的),而不是在遇到 529 时立即中止。",
+      "sources": [
+        {
+          "title": "Claude API errors – 529 overloaded_error",
+          "url": "https://platform.claude.com/docs/en/api/errors"
+        },
+        {
+          "title": "Claude Code Error reference – Repeated 529 Overloaded errors",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    },
+    {
+      "id": "invalid-api-key-401",
+      "symptom": "\"401 - Incorrect API key provided\"(OpenAI),或在 Claude Code 中出现 \"Invalid API key · Fix external API key\" 或 \"This organization has been disabled\"",
+      "kategorie": "auth",
+      "plattformen": [
+        "api",
+        "claude-code",
+        "alle"
+      ],
+      "ursache": "所使用的 API key 无效、已被吊销、已过期,或含有拼写错误或多余空格。在 Claude Code 中有一种常见的特殊情况:来自旧项目的过时 ANTHROPIC_API_KEY 环境变量覆盖了你当前有效的订阅登录状态,导致请求使用一个失效或被禁用的 key 发出。",
+      "fix": [
+        "在 OpenAI 或 Anthropic 控制台生成一个新 key,并在代码和环境文件中的所有位置替换旧 key。",
+        "在同一个终端里用 env | grep ANTHROPIC(或 OPENAI)检查是否有旧变量正从 .env、direnv 或 IDE 终端中被加载。",
+        "在 Claude Code 中:执行 unset ANTHROPIC_API_KEY,然后运行 /login,以重新通过订阅而非 API key 运行。",
+        "用 /status(Claude Code)查看当前激活的是哪个凭证来源。",
+        "如果该 key 来自 apiKeyHelper 脚本:直接在终端运行该脚本,检查它是否在 stdout 输出了有效的 key。"
+      ],
+      "vorbeugen": "一旦某个项目或 key 不再需要,就从 shell 配置文件和 .env 文件中清理掉旧的 export ANTHROPIC_API_KEY=… 或 OPENAI_API_KEY=… 语句。",
+      "sources": [
+        {
+          "title": "OpenAI API error codes – 401 Incorrect API key provided",
+          "url": "https://developers.openai.com/api/docs/guides/error-codes"
+        },
+        {
+          "title": "Claude Code Error reference – Invalid API key / This organization has been disabled",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    },
+    {
+      "id": "prompt-is-too-long-context-window",
+      "symptom": "\"Prompt is too long\"——模型的 context window(上下文窗口)已满",
+      "kategorie": "kontext",
+      "plattformen": [
+        "claude-code",
+        "api"
+      ],
+      "ursache": "对话内容加上附加的文件超出了模型的上下文窗口。Auto-Compact 通常会在这种情况发生前自动介入,但在设置了 DISABLE_AUTO_COMPACT、存在非常大的单个文件,或存在会被 subagent 完整继承的 MCP 工具定义时,窗口仍可能在压缩发生前被填满。",
+      "fix": [
+        "运行 /compact,总结较早的对话内容,或运行 /clear 彻底重新开始。",
+        "运行 /context,查看是什么占满了上下文:system prompt、工具、memory 文件、消息。",
+        "在启动 subagent 之前,用 /mcp disable <name> 禁用未使用的 MCP 服务器——否则它们会继承全部工具定义。",
+        "精简过大的 CLAUDE.md 文件,或把说明拆分到按路径加载、按需生效的规则文件中。",
+        "让 Claude 分小段(指定行范围或函数)读取大文件,而不是整份读取。"
+      ],
+      "vorbeugen": "保持 Auto-Compact 开启,针对独立任务用 /clear 重新开始,而不是让一次对话无限增长。",
+      "sources": [
+        {
+          "title": "Claude Code Error reference – Prompt is too long",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    },
+    {
+      "id": "auto-compact-thrashing",
+      "symptom": "\"Autocompact is thrashing: the context refilled to the limit...\"",
+      "kategorie": "kontext",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "自动上下文压缩成功执行了,但某个文件或工具输出紧接着又反复多次把上下文窗口重新填满。Claude Code 此时会主动中止重试循环,以避免无谓地消耗 API 调用。",
+      "fix": [
+        "让 Claude 分较小的部分(指定行范围或函数)读取超大文件,而不是整份读取。",
+        "用带聚焦指令的 /compact,例如 '/compact keep only the plan and the diff',有针对性地丢弃大段输出。",
+        "把处理大文件的工作转移到一个 subagent 中,使其在独立的上下文窗口中运行。",
+        "如果之前的对话历史已不再需要,运行 /clear。"
+      ],
+      "vorbeugen": "避免把非常大的日志或构建输出未经过滤地引入对话——让 Claude 有针对性地过滤内容,而不是读取整个文件。",
+      "sources": [
+        {
+          "title": "Claude Code Troubleshooting – Auto-compaction stops with a thrashing error",
+          "url": "https://code.claude.com/docs/en/troubleshooting"
+        }
+      ]
+    },
+    {
+      "id": "aider-token-limit-hit",
+      "symptom": "\"Model gpt-3.5-turbo has hit a token limit! ... Output tokens: 4096 of 4096 -- exceeded output limit!\"",
+      "kategorie": "kontext",
+      "plattformen": [
+        "aider"
+      ],
+      "ursache": "Aider 本身不强制设置 token 限制,但一旦 API 提供方返回该错误,它就会继续把错误传递出来——原因要么是输入超出了上下文窗口,要么是响应超出了模型通常较小的输出 token 限制(例如 4k)。这种情况多发生在能力较弱的模型上,或聊天中同时存在过多文件时。",
+      "fix": [
+        "用 /drop 从聊天中移除不需要的文件,以减少输入 token 消耗。",
+        "用 /tokens 查看当前消耗,用 /clear 清空历史记录。",
+        "请求更小、更有针对性的修改,而不是一次性进行大规模重构。",
+        "把代码拆分成更小的源文件。",
+        "改用支持 diff 编辑格式的更强模型(例如 Sonnet、DeepSeek V3),而不是较弱的模型。"
+      ],
+      "vorbeugen": "从一开始就只把真正需要修改的文件加入聊天——Aider 本来就会通过 repo map 自动补充相关代码。",
+      "sources": [
+        {
+          "title": "Aider Troubleshooting – Token limits",
+          "url": "https://aider.chat/docs/troubleshooting/token-limits.html"
+        }
+      ]
+    },
+    {
+      "id": "aider-failed-to-apply-edit",
+      "symptom": "\"Failed to apply edit to <filename>\"——Aider 反复重复同一个失败的修改尝试",
+      "kategorie": "werkzeuge",
+      "plattformen": [
+        "aider"
+      ],
+      "ursache": "LLM 返回的代码修改格式 Aider 无法干净地解析,因为它没有严格遵循编辑格式的要求。聊天中无关文件或上下文越多,这种情况越常见——一旦超过约 25,000 token,许多模型对格式的遵循度会明显下降——较弱或量化过的模型也更容易出现这个问题。",
+      "fix": [
+        "只添加真正需要修改的文件,其余的用 /drop 移除。",
+        "用 /clear 清空历史,让模型重新聚焦于格式要求。",
+        "用 --edit-format whole 启动 Aider,让模型返回完整文件而不是 diff。",
+        "启用 architect 模式(--architect 或 /chat-mode architect),把规划和文件编辑拆分为两个步骤/两个模型完成。",
+        "改用更强的模型(例如 Claude Sonnet、GPT-4o、DeepSeek V3/R1),而不是本地或量化模型。"
+      ],
+      "vorbeugen": "让聊天上下文保持精简(只包含少量相关文件),复杂重构任务优先选择 diff 编辑表现良好的强模型。",
+      "sources": [
+        {
+          "title": "Aider Troubleshooting – File editing problems",
+          "url": "https://aider.chat/docs/troubleshooting/edit-errors.html"
+        }
+      ]
+    },
+    {
+      "id": "tool-use-concurrency-conversation-corrupted",
+      "symptom": "\"API Error: 400 due to tool use concurrency issues. Run /rewind to recover the conversation.\",或 \"unexpected tool_use_id found in tool_result blocks\"",
+      "kategorie": "werkzeuge",
+      "plattformen": [
+        "claude-code",
+        "api"
+      ],
+      "ursache": "对话历史中 tool_use、tool_result 和 thinking 块的顺序不再符合 API 的预期——通常是因为某个工具调用在执行过程中被中断,或某一轮对话事后被修改过。此错误此后会在每次尝试时重复出现,直到损坏的那一轮被移除为止。",
+      "fix": [
+        "运行 /rewind(或按两次 Esc),跳回到损坏轮次之前的一个 checkpoint。",
+        "从那里用一个新的、表述清晰的请求继续工作。",
+        "如果你使用的是 2.1.156 之前配合 Opus 4.7/4.8 的版本,用 claude update 更新 Claude Code——旧版本在正常使用工具时也可能触发此错误。",
+        "尽量不要在执行过程中中断正在运行的工具调用,例如不要在 Bash 命令运行时按 Ctrl+C。"
+      ],
+      "vorbeugen": "让耗时较长的工具调用(Bash、web fetch)自然运行完成,而不是手动中止它们,并定期更新 Claude Code。",
+      "sources": [
+        {
+          "title": "Claude Code Error reference – Tool use or thinking block mismatch",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    },
+    {
+      "id": "mcp-server-not-connecting",
+      "symptom": "MCP server 在 Claude Code 中一直停留在 'failed' 状态,或出现 \"spawn claude ENOENT\" / MCP server 只有 \"url\" 却没有 \"type\"",
+      "kategorie": "werkzeuge",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "最常见的原因:command 字段中指定的可执行程序在 PATH 中找不到(ENOENT)、JSON 配置里有 url 但没有对应的 type 字段,或服务器在建立连接时没有及时响应(默认超时为 30 秒,由 MCP_TIMEOUT 控制)。对于 HTTP/SSE 服务器,Claude Code 确实会以递增退避方式自动尝试最多 5 次重连,但之后仍会把该服务器标记为 'failed'。",
+      "fix": [
+        "运行 claude mcp list 或 /mcp,查看每个服务器的连接状态。",
+        "对于 stdio 服务器:运行 which <command>,在配置中填写完整路径,而不是依赖 PATH 的命令名。",
+        "对于 HTTP/SSE 配置,确保在给出 url 时明确设置了 \"type\": \"http\"(或 sse/ws)。",
+        "对于启动较慢的服务器,提高 MCP_TIMEOUT,例如设为 MCP_TIMEOUT=10000。",
+        "用 claude mcp get <name> 逐个检查服务器,对于 OAuth 服务器,通过 /mcp 重新完成身份验证。"
+      ],
+      "vorbeugen": "新添加的 MCP 服务器,先用 claude mcp get <name> 单独测试,确认没问题后再正式写入项目的 .mcp.json。",
+      "sources": [
+        {
+          "title": "Claude Code – Connect Claude Code to tools via MCP (Installation, Automatic reconnection)",
+          "url": "https://code.claude.com/docs/en/mcp"
+        }
+      ]
+    },
+    {
+      "id": "unexpected-cost-explosion",
+      "symptom": "账单或 token 消耗异常高,尽管使用方式看起来很正常",
+      "kategorie": "limits",
+      "plattformen": [
+        "claude-code",
+        "api"
+      ],
+      "ursache": "根据 Anthropic 自己对企业级部署的统计,平均每个活跃开发者每天花费约 13 美元,即每月 150–250 美元,90% 的用户每个活跃日花费低于 30 美元。偏高的异常值几乎都可以归结为两种模式:会话从未用 /clear 结束,导致每条消息都要重新发送完整的历史记录,以及把 Opus 用作日常任务的默认模型。此外,Agent 团队消耗的 token 大约是单一会话的 7 倍,因为每个团队成员都维护着各自独立的上下文窗口。",
+      "fix": [
+        "用 /clear 结束已完成的任务,而不是让一个会话无限期运行下去——如果之后还想回来继续,可以先用 /rename 命名。",
+        "用 /usage 查看当前会话的消耗,用 /context 查看其中有多少来自工具、MCP 服务器和 memory 文件。",
+        "日常任务使用 Sonnet 而不是 Opus,把 Opus 留给复杂的架构决策。",
+        "用 /mcp 禁用未使用的 MCP 服务器,因为每个工具定义都会占用上下文,从而产生费用。",
+        "让 Agent 团队保持精简,团队成员的任务一完成就主动结束它。"
+      ],
+      "vorbeugen": "在 API/Console 使用场景下,在 Claude Console 中设置 workspace 支出上限,并定期查看 /usage,而不是等到月底才看账单。",
+      "sources": [
+        {
+          "title": "Claude Code – Manage costs effectively",
+          "url": "https://code.claude.com/docs/en/costs"
+        }
+      ]
+    },
+    {
+      "id": "agent-deletes-files-not-recoverable",
+      "symptom": "Agent 通过 Bash(rm/mv/cp)删除或覆盖了一个文件,/rewind 无法将其恢复",
+      "kategorie": "sicherheit",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "Claude Code 的 checkpointing/rewind 只追踪通过内置文件编辑工具(Edit/Write)所做的更改。Agent 通过 Bash 命令进行的更改,比如 rm file.txt、mv old.txt new.txt 或 cp source.txt dest.txt,不会被记录,因此无法通过 /rewind 撤销。",
+      "fix": [
+        "把 Git 当作真正的安全网:在给 Agent 分配有风险的任务之前定期提交 commit。",
+        "通过 permission 规则限制具有破坏性的 Bash 命令,例如在 /permissions 中为 Bash(rm *) 设置 deny 规则。",
+        "日常工作使用 acceptEdits 模式而不是 bypassPermissions——bypassPermissions 还会跳过对 .git 及其他敏感目录的写入检查。",
+        "出现问题后检查 git status 和 git diff,如果已经提交过,可通过 git checkout 或 reflog 恢复。",
+        "对于有风险的 Bash 命令,在确认前用 Ctrl+E 查看风险评估(Low/Med/High)。"
+      ],
+      "vorbeugen": "文件安全不要依赖 /rewind——在每个较大任务开始前进行一次干净的 Git commit,是防止 Bash 导致文件被删除的唯一可靠保障。",
+      "sources": [
+        {
+          "title": "Claude Code – Checkpointing (Limitations: Bash command changes not tracked)",
+          "url": "https://code.claude.com/docs/en/checkpointing"
+        }
+      ]
+    },
+    {
+      "id": "git-merge-conflict-after-agent-changes",
+      "symptom": "\"CONFLICT (content): Merge conflict in <file>\" / \"Automatic merge failed; fix conflicts and then commit the result.\"",
+      "kategorie": "code",
+      "plattformen": [
+        "alle"
+      ],
+      "ursache": "Agent(或另一个分支、同事)对同一文件的同一部分做了与被合并目标分支不同的修改。Git 无法通过三方合并自动整合这两个版本,于是将该文件标记为 'unmerged'。",
+      "fix": [
+        "运行 git status,在 'Unmerged paths' 下查看所有受影响的文件。",
+        "打开冲突文件,查找 <<<<<<<、======= 和 >>>>>>> 标记,它们分别标示 HEAD 版本和传入版本。",
+        "针对每个冲突段落选择保留其中一个版本,或手动合并两者,并删除所有冲突标记。",
+        "用 git add <file> 把每个已解决的文件标记为已解决。",
+        "用 git commit 完成合并,或使用 git mergetool 进行可视化对比。"
+      ],
+      "vorbeugen": "让 Agent 在独立的分支或 worktree 中工作,并频繁与目标分支同步,而不是长期停留在严重分叉的分支上。",
+      "sources": [
+        {
+          "title": "Pro Git – Basic Branching and Merging (Basic Merge Conflicts)",
+          "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging"
+        }
+      ]
+    },
+    {
+      "id": "model-not-found-or-deprecated",
+      "symptom": "\"There's an issue with the selected model (claude-...). It may not exist or you may not have access to it.\",或 \"Model ... is not a recognized model id.\"",
+      "kategorie": "setup",
+      "plattformen": [
+        "claude-code",
+        "api"
+      ],
+      "ursache": "要么是模型 ID 存在拼写错误或使用了过时版本,要么该模型已被 Anthropic 下线(retired)——对已过退役日期的模型发起请求必然会失败。Anthropic 会在模型先变为 'deprecated'、后来变为 'retired' 之前,至少提前 60 天通过邮件和文档发布弃用公告。",
+      "fix": [
+        "不带参数运行 /model,从你账户可用的模型列表中进行选择。",
+        "使用 sonnet 或 opus 这样的别名,而不是写死具体版本 ID,以免该引用过时失效。",
+        "按优先级依次检查:--model 参数、ANTHROPIC_MODEL 环境变量,然后是 .claude/settings.local.json、.claude/settings.json、~/.claude/settings.json 中的 model 字段,看是否存在过时的 ID。",
+        "在 Claude Console 中导出你的 API 使用记录(Usage → Export),找出所有仍在使用即将下线的 deprecated 模型的调用。",
+        "在退役日期之前及时切换到迁移指南中推荐的替代模型。"
+      ],
+      "vorbeugen": "在生产代码中尽量使用模型别名而不是固定版本 ID,并定期查看文档中的弃用公告,而不是等到第一次调用失败才应对。",
+      "sources": [
+        {
+          "title": "Claude Code Error reference – There's an issue with the selected model",
+          "url": "https://code.claude.com/docs/en/errors"
+        },
+        {
+          "title": "Anthropic – Model deprecations",
+          "url": "https://docs.claude.com/en/docs/about-claude/model-deprecations"
+        }
+      ]
+    },
+    {
+      "id": "thinking-budget-over-32k-timeout",
+      "symptom": "设置了较高 thinking budget 的请求卡住或因超时而失败,或出现 \"max_tokens must be greater than thinking.budget_tokens\"",
+      "kategorie": "limits",
+      "plattformen": [
+        "api",
+        "claude-code"
+      ],
+      "ursache": "当 thinking budget(budget_tokens)超过约 32,000 token 时,请求耗时会变得很长,以至于可能触发系统超时和开放连接数限制——针对这一区间,Anthropic 明确建议使用 Batch API 而不是同步请求。此外,如果 budget_tokens 大于 max_tokens,该组合会直接失败,因为这样一来就没有空间留给实际的响应内容了。",
+      "fix": [
+        "对于超过 32k 的 thinking budget,使用 Message Batches API 而不是同步请求,以避免网络超时。",
+        "确保 max_tokens 大于 thinking.budget_tokens。",
+        "对于一般的长请求,使用流式的 Messages API,而不是单个长请求。",
+        "在 Claude Code 中:调低 MAX_THINKING_TOKENS,或把 CLAUDE_CODE_MAX_OUTPUT_TOKENS 提高到超过 thinking budget 的数值。",
+        "在自建集成中,如果你的网络会关闭空闲连接,可设置 TCP socket keepalive。"
+      ],
+      "vorbeugen": "从一开始就把超过 32k token 的 thinking budget 当作批处理(batch)任务来对待,而不是同步的聊天请求。",
+      "sources": [
+        {
+          "title": "Claude Extended thinking – Best practices for extended thinking (Large budgets)",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"
+        },
+        {
+          "title": "Claude Code Error reference – Thinking budget exceeds output limit",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    },
+    {
+      "id": "windows-git-bash-not-found",
+      "symptom": "\"Claude Code on Windows requires either Git for Windows (for bash) or PowerShell\"",
+      "kategorie": "setup",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "在 Windows 上,只要缺少 Git Bash,Claude Code 就会改用 PowerShell——出现这条错误说明两种 shell 都没有找到。通常原因是 PowerShell 不在 PATH 中、Git for Windows 未安装,或某种终端安全软件(AppLocker、组策略限制、EDR agent)阻止了 Claude Code 在 2.1.116 版本之前用来验证 bash 路径的那个进程。",
+      "fix": [
+        "从 git-scm.com/downloads/win 安装 Git for Windows,安装过程中选择 'Add to PATH'。",
+        "如果 Git 已安装但未被识别:在 settings.json 中通过 CLAUDE_CODE_GIT_BASH_PATH 手动设置路径,例如 C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe。",
+        "在 PowerShell 中用 where.exe git 找到正确的路径。",
+        "更新到 Claude Code 2.1.116 或更新版本——旧版本是通过一个可能被拦截的子进程来验证路径的。",
+        "如果路径正确、文件也存在,但错误依然存在:请 IT 在终端防护软件中放行 claude.exe,以及 cmd.exe 和 bash.exe。"
+      ],
+      "vorbeugen": "在首次配置环境时就安装 Git for Windows 并启用 PATH 选项,即使你主要打算使用 PowerShell。",
+      "sources": [
+        {
+          "title": "Claude Code – Troubleshoot installation and login (Git for Windows or PowerShell)",
+          "url": "https://code.claude.com/docs/en/troubleshoot-install"
+        }
+      ]
+    },
+    {
+      "id": "aider-not-recognized-windows",
+      "symptom": "\"aider: The term 'aider' is not recognized as a name of a cmdlet, function, script file, or executable program.\"",
+      "kategorie": "setup",
+      "plattformen": [
+        "aider"
+      ],
+      "ursache": "安装完成后,aider 命令没有被加入到 shell 的 PATH 中——根据 Aider 官方文档,这主要影响 Windows 用户,通常与操作系统的权限或安全设置有关。",
+      "fix": [
+        "改用 python -m aider 启动 Aider——这种方式不依赖 PATH。",
+        "也可以改用 aider-install、uv 或 pipx 来安装 Aider,它们通常能更可靠地配置好 PATH。",
+        "用 where aider(PowerShell)或 Get-Command aider 检查是否存在任何条目。",
+        "安装完成后打开一个新终端,使 PATH 的变更生效。"
+      ],
+      "vorbeugen": "使用推荐的安装方式之一(aider-install、uv、pipx)来安装 Aider,而不是直接用 pip install,后者在 Windows 上更容易导致 PATH 问题。",
+      "sources": [
+        {
+          "title": "Aider Troubleshooting – Aider not found",
+          "url": "https://aider.chat/docs/troubleshooting/aider-not-found.html"
+        }
+      ]
+    },
+    {
+      "id": "npm-native-binary-not-found",
+      "symptom": "\"Could not find native binary package @anthropic-ai/claude-code-<platform>\"",
+      "kategorie": "setup",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "npm 包 @anthropic-ai/claude-code 仅以平台专属的可选依赖(optional dependency)形式提供真正的可执行文件(例如 @anthropic-ai/claude-code-darwin-arm64)。如果安装时使用了 --omit=optional(npm)、--no-optional(pnpm)或 --ignore-optional(yarn),该包就会完全缺失——这种情况没有 JavaScript 层面的兜底方案。",
+      "fix": [
+        "不带 --omit=optional、--no-optional 或 --ignore-optional 这些参数重新安装。",
+        "检查你的 .npmrc 中是否有 optional=false,如果有就删除该配置。",
+        "检查你的平台是否受支持:darwin-arm64/x64、linux-x64/arm64(glibc 和 musl)、win32-x64/arm64。",
+        "如果你使用自建的 npm 镜像或 registry 代理,确保全部八个 @anthropic-ai/claude-code-* 平台包都被镜像了,而不仅仅是 meta 包。",
+        "或者改用官方原生安装脚本而不是 npm:curl -fsSL https://claude.ai/install.sh | bash。"
+      ],
+      "vorbeugen": "为 Claude Code 使用官方原生安装程序,而不是 npm install -g,这样就能完全避开可选依赖的问题。",
+      "sources": [
+        {
+          "title": "Claude Code – Troubleshoot installation and login (Native binary not found after npm install)",
+          "url": "https://code.claude.com/docs/en/troubleshoot-install"
+        }
+      ]
+    },
+    {
+      "id": "structured-output-json-truncated",
+      "symptom": "JSON 响应在对象中途被截断,或在解析结构化输出时出现 JSONDecodeError",
+      "kategorie": "code",
+      "plattformen": [
+        "api",
+        "alle"
+      ],
+      "ursache": "响应在 JSON 对象完整之前就因触及输出 token 限制而被截断(finish_reason 为 'length'),或模型出于安全原因拒绝作答(返回 refusal 字段而非内容)——这两种情况都会导致对原始输出的朴素解析出错。",
+      "fix": [
+        "解析之前先显式检查 finish_reason(或 stop_reason):如果是 'length',说明响应是不完整的,而不是格式损坏。",
+        "同时检查响应中是否存在 refusal 字段,并将其与解析错误分开处理。",
+        "如果原因是 'length',就提高 max_tokens 或 max_completion_tokens。",
+        "使用 SDK 自带的解析方法(例如 client.chat.completions.parse)而不是自己实现的 JSON 解析器,前者会把这些情况准确地映射为异常。",
+        "如果是自研实现,应加入重试逻辑,使用更精简的 schema 或更短的响应要求,而不是简单粗暴地重新解析。"
+      ],
+      "vorbeugen": "使用带严格 JSON schema 的 Structured Outputs,而不是靠 prompt 去“说服”模型输出 JSON——这能减少格式错误,但不能替代对 finish_reason 和 refusal 的检查。",
+      "sources": [
+        {
+          "title": "OpenAI – Structured Outputs guide (finish_reason and refusal handling)",
+          "url": "https://developers.openai.com/api/docs/guides/structured-outputs"
+        }
+      ]
+    },
+    {
+      "id": "hallucinated-packages-imports",
+      "symptom": "Agent 导入或安装了一个根本不存在的包(例如 npm install <虚构包名>,或某个 import 导致 ModuleNotFoundError)",
+      "kategorie": "code",
+      "plattformen": [
+        "alle"
+      ],
+      "ursache": "LLM 经常会编造出听起来合理但实际并不存在的包名('package hallucination',包幻觉)。一项针对 16 个代码模型的研究发现,商用模型平均有 5.2% 的包是幻觉出来的,开源模型则高达 21.7%,在约 576,000 份生成的代码样本中,总共出现了 205,474 个独特的幻觉包名。一项针对 2026 年最新模型的后续研究测得的比例更低,但仍在 4.62% 到 6.10% 之间。风险在于:攻击者会提前把这些可预测的虚构包名注册好并植入恶意代码('slopsquatting')。",
+      "fix": [
+        "不要自动安装任何包,先手动在 npmjs.com 或 pypi.org 上核实包名是否真实存在。",
+        "让 Agent 在引入某个包之前,针对性地在 registry 上进行核实,例如通过 npm view <package> 或 pip index versions <package>。",
+        "使用 lockfile 以及能单独标记未知或新增依赖的 CI 步骤,而不是悄悄地直接安装它们。",
+        "当模型需要在多个选项之间做选择时,优先使用成熟、常用的库,而不是小众包。",
+        "Agent 运行后出现 import 错误时,先确认该包是否确实存在,再去排查其他原因。"
+      ],
+      "vorbeugen": "在新依赖被安装之前,把自动化的 registry 核实步骤内置到你的 Agent pipeline 中——幻觉出来的包名往往看起来很合理,但仔细核实后就会发现根本找不到。",
+      "sources": [
+        {
+          "title": "We Have a Package for You! A Comprehensive Analysis of Package Hallucinations by Code Generating LLMs",
+          "url": "https://arxiv.org/abs/2406.10279"
+        },
+        {
+          "title": "The Range Shrinks, the Threat Remains: Re-evaluating LLM Package Hallucinations on the 2026 Frontier-Model Cohort",
+          "url": "https://arxiv.org/abs/2605.17062"
+        }
+      ]
+    },
+    {
+      "id": "codex-sandbox-blocks-network",
+      "symptom": "Codex CLI 拒绝联网访问,或某个命令在 sandbox 模式下失败,而在本地不通过 Codex 运行时却能正常工作",
+      "kategorie": "werkzeuge",
+      "plattformen": [
+        "codex-cli"
+      ],
+      "ursache": "默认的 workspace-write 模式允许在项目目录内进行文件编辑和本地命令,但会阻止联网访问——Codex 会单独就此请求授权。在 Linux/WSL2 上,sandbox 还额外需要 bubblewrap(bwrap);如果缺失,Codex 会使用一个需要非特权用户命名空间(unprivileged user namespace)的后备 helper。在 Ubuntu 24.04 上,即使安装了 bubblewrap,针对非特权用户命名空间的 AppArmor 限制仍可能继续阻挡 sandbox。",
+      "fix": [
+        "通过包管理器安装 bubblewrap:sudo apt install bubblewrap(Ubuntu/Debian)或 sudo dnf install bubblewrap(Fedora)。",
+        "在 Ubuntu 24.04 上,如果警告依然存在:安装 apparmor-profiles 包,并用 apparmor_parser -r 加载 bwrap-userns-restrict 配置文件。",
+        "如果该配置文件不可用,可用 sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 有针对性地解除该 AppArmor 限制。",
+        "对于真正需要联网的个别命令,在授权对话框中逐一显式批准,而不是全局关闭 sandbox。",
+        "只在容器或虚拟机等隔离环境中设置 danger-full-access 模式,该模式会完全解除文件和网络方面的限制。"
+      ],
+      "vorbeugen": "把 danger-full-access 当作容器/虚拟机场景下的例外——日常工作中,带有按命令逐项授权网络访问的 workspace-write 仍然是更安全的默认选择。",
+      "sources": [
+        {
+          "title": "OpenAI Codex – How sandboxing works across ChatGPT and Codex clients",
+          "url": "https://developers.openai.com/codex/sandboxing"
+        }
+      ]
+    },
+    {
+      "id": "antigravity-permission-denied",
+      "symptom": "Antigravity CLI Agent 用 ask 提示或 deny 中止了某个操作,尽管看起来已经配置了匹配的 allow 规则",
+      "kategorie": "sicherheit",
+      "plattformen": [
+        "antigravity-cli"
+      ],
+      "ursache": "Antigravity 的权限引擎会严格按照 deny、ask、allow 这个顺序来评估规则——对同一操作而言,deny 或 ask 规则总是会胜过更具体的 allow 规则。根据官方文档,例如 ask 列表中的 command(*) 会导致即使 allow 列表中有 command(git),每次执行 Git 命令前仍会被询问。",
+      "fix": [
+        "检查 ~/.gemini/antigravity-cli/settings.json,看 deny、ask、allow 中是否对同一操作存在互相重叠的规则。",
+        "牢记优先级顺序 Deny > Ask > Allow:像 command(*) 这样宽泛的 ask 或 deny 规则,会屏蔽任何更具体的 allow 规则。",
+        "在提示窗口中,可以在确认前有针对性地扩大目标范围(例如某个文件路径),而不是逐个文件重新授权。",
+        "在文件访问方面要注意:write_file 会隐式地同时授予 read_file 权限,但对 read_file 的 deny 也会自动阻止 write_file。",
+        "需要时通过内置的 permissions 命令交互式地管理规则,而不是手动编辑 JSON 文件。"
+      ],
+      "vorbeugen": "让你的 allow/ask/deny 列表尽量具体,如果你确实想自动放行某些特定命令,就要避免在 ask 中使用像 command(*) 这样宽泛的通配规则。",
+      "sources": [
+        {
+          "title": "Google Antigravity CLI – Permissions",
+          "url": "https://antigravity.google/docs/cli/permissions"
+        }
+      ]
+    },
+    {
+      "id": "worktree-file-not-found-gitignored",
+      "symptom": "Agent 报告找不到某个 .env 或配置文件,但该文件在主目录中明明存在",
+      "kategorie": "werkzeuge",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "如果会话运行在一个 Git worktree 中(通过 --worktree 参数,或由 Agent 自行创建),那它是一个全新的 checkout——主 checkout 中未提交、被 Git 忽略的文件,比如 .env 或 .env.local,默认不会被一并复制过去。",
+      "fix": [
+        "在项目根目录创建一个 .worktreeinclude 文件(语法与 .gitignore 相同),这样在每次创建新 worktree 时,被 Git 忽略的文件都会自动被复制过去。",
+        "遇到“文件未找到”时,先确认当前会话是否正运行在 .claude/worktrees/ 下的某个 worktree 中,而不是主目录。",
+        "在新 worktree 中显式重新搭建开发环境(安装依赖、复制配置文件),而不要假设一切都和主 checkout 中一样齐全。",
+        "把 .claude/worktrees/ 加入你的 .gitignore,以免 worktree 内容意外地在主 checkout 中显示为未跟踪(untracked)文件。"
+      ],
+      "vorbeugen": "对每个会用到 worktree 以及本地密钥或配置的项目,从一开始就配置好 .worktreeinclude。",
+      "sources": [
+        {
+          "title": "Claude Code – Run parallel sessions with worktrees (Copy gitignored files into worktrees)",
+          "url": "https://code.claude.com/docs/en/worktrees"
+        }
+      ]
+    },
+    {
+      "id": "session-not-found-wrong-directory",
+      "symptom": "尝试恢复某个会话时出现 \"No conversation found with session ID: <session-id>\"",
+      "kategorie": "werkzeuge",
+      "plattformen": [
+        "claude-code"
+      ],
+      "ursache": "Claude Code 的会话是按项目目录存储的。session ID 的查找范围仅限于当前项目目录及其 Git worktree——如果你尝试在另一个目录中用 claude --resume <session-id> 恢复某个会话,即使该历史记录在本地依然存在,Claude Code 也找不到它。",
+      "fix": [
+        "切回到当初启动该会话时所在的那个确切目录或 worktree。",
+        "使用不带 ID 的 claude --resume,打开交互式会话选择器,而不是手动输入 ID。",
+        "在选择器中按 Ctrl+A,显示这台机器上所有项目的会话,而不仅是当前目录的会话。",
+        "对于来自同一仓库中另一个 worktree 的会话,在选择器中按 Ctrl+W 以纳入所有 worktree。",
+        "从一开始就用 /rename 给会话起有意义的名字,这样通过选择器查找会比用原始 ID 容易得多。"
+      ],
+      "vorbeugen": "在多个文件夹或 worktree 中并行运行多个会话时,记清楚哪个会话在哪里运行,或者用名字而不是依赖 ID 来区分它们。",
+      "sources": [
+        {
+          "title": "Claude Code – Manage sessions (Resume a session)",
+          "url": "https://code.claude.com/docs/en/sessions"
+        }
+      ]
+    },
+    {
+      "id": "suspected-prompt-injection-warning",
+      "symptom": "在外部内容(网页、文件、MCP 工具结果)被载入对话后,Claude 发出疑似 prompt injection 的警告,或拒绝执行某个请求",
+      "kategorie": "sicherheit",
+      "plattformen": [
+        "claude-code",
+        "alle"
+      ],
+      "ursache": "Prompt injection(提示注入)是一种技术手段:来自网页、文件或工具结果中被植入的文本,试图覆盖真正的指令。Claude Code 通过对整个请求进行上下文感知分析来检测这种情况,一旦发现就会发出警报或拒绝执行相应操作——其中也包括误报的情况,比如某个 web fetch 的结果碰巧读起来像是一条指令。",
+      "fix": [
+        "仔细检查被引用的文本:它是否真的来自外部内容(文件/网页/工具结果),还是来自 Claude Code 自己自动添加的上下文?",
+        "如果原因是自动添加的上下文:运行 claude update 并重新尝试该操作——这能修复一些已知的误报问题。",
+        "如果更新后警告仍然存在,通过 /feedback 反馈,而不是直接把被标记的内容重新复制回 prompt 中。",
+        "curl/wget 这类联网命令在 Claude Code 中默认不会被自动放行——如有疑虑,应手动确认,而不是一律加入白名单。",
+        "在处理不可信内容时使用虚拟机或 sandbox,尤其是在会联系外部 web 服务的情况下。"
+      ],
+      "vorbeugen": "在接入 MCP 服务器和网页数据源之前先评估其可信度——那些会抓取外部内容的服务器,尤其是 prompt injection 的一个已知入口。",
+      "sources": [
+        {
+          "title": "Claude Code – Security (Protect against prompt injection)",
+          "url": "https://code.claude.com/docs/en/security"
+        },
+        {
+          "title": "Claude Code Error reference – Responses seem lower quality than usual",
+          "url": "https://code.claude.com/docs/en/errors"
+        }
+      ]
+    }
+  ]
+}
