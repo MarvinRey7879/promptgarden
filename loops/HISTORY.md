@@ -784,3 +784,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Abdeckung: 96 der 293 Befehlsseiten (claude-code 25, cursor-cli 23, antigravity-cli 23, aider 15, codex-cli 10). Daten kommen aus rosetta.<lang>.json, also bereits gegen commands.json validiert — kein neuer Erfindungs-Pfad.
 - BUILD_EXIT=0, Deploy a7f34ff0, Live-Verify de/en/zh je 1 Treffer, scroll-speed korrekt ohne Hinweis, aider/model zeigt alle 4 Cross-Links, mobil 0px Overflow, Screenshot sauber. Commit 74fcc8f.
 - MERKE: Live-Verify mit `grep -c` case-insensitiv fahren, wenn der Titel im Markup via .toUpperCase() gerendert wird — erster Check meldete fälschlich 0 Treffer.
+
+## It. 147 (18.07.2026 ~17:23–17:40) — REMOTION R12: Rosetta-Demo ✅
+- Poll 539/89 grün, Smoke 10/10. Kapitel-Stopp gilt weiter (Direktive 7) — Video ist keine Kapitel-Publikation, Direktive 12 verlangt wiederkehrende Clips.
+- videos/src/RosettaDemo.tsx: 3 Zeilen laufen ein, Befehle leuchten spaltenweise auf. Modell wechseln (/model ×5), Diff ansehen (/diff ×4 + Cursors /changes), Änderungen zurücknehmen (/rewind ×3, Aiders /undo, Codex als gestrichelte „—"-Lücke). Werte 1:1 aus rosetta.de.json — die Lücke ist echt, nicht dramatisiert. 330 Frames/720p, dict ×5.
+- 5 Renders (je ~1 MB) → site/public/videos/rosetta-demo.<lang>.mp4, eingebettet über der Tabelle auf /[lang]/rosetta/ mit VIDEO_LABEL ×5.
+- BUILD_EXIT=0, Deploy ff187e87, Live-Verify: Video-Tag de+zh, mp4 vollständig ausgeliefert (1.037.850 B), Tabelle unverändert darunter, mobil 0px Overflow.
+- MERKE: Browser-Screenshot zeigt bei preload=metadata nur das leere Poster (currentTime-Sprung greift nicht zuverlässig) → Videoinhalt stattdessen mit `npx remotion still <Id> --frame=N` prüfen. So verifiziert: Layout, alle 15 Zellen, gestrichelte Lücke, Fußnote.
+- Commit 9ea905a. Videos gesamt: 85 (17 Motive ×5).
