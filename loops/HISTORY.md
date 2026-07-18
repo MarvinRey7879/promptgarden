@@ -808,3 +808,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Deploy 78195f2f. Browser-Test statt Index-grep: „rate limit", „429", „prompt is too long" — alle drei zeigen die Fehler-Gruppe. Mein erster Index-Test per String-includes hätte fälschlich „kein Treffer" gemeldet (MiniSearch tokenisiert, `rate_limit_error` ≠ `rate limit`) — Lehre: Such-Features im Browser prüfen, nicht am Rohindex.
 - Screenshot zunächst unbrauchbar (Eingabefeld nicht geleert → „prompt is too long429"), sauber nachgezogen: „429" liefert Kapitel „Rate Limits und Quotas" + die Einträge 429 und 529.
 - Commit 626f9e0.
+
+## It. 150 (18.07.2026 ~20:50–21:15) — Batch-8-Themen vorbereitet ✅ (5 Kandidaten verworfen)
+- Poll 548/93 grün, Smoke 10/10. Kapitel-Publikationsstopp gilt → Vorbereitung statt Content.
+- Alle 10 geplanten Themen inhaltlich gegen die 101 Bestands-Kapitel geprüft (nicht nur Slug-Vergleich, sondern Teaser/Body der nächstgelegenen Kapitel gelesen). Ergebnis: 5 Kandidaten VERWORFEN — observability-metriken (agenten-observability deckt Logs/Kosten/OpenTelemetry ab), claude-md-patterns (claude-md + monorepo-mit-agenten), agent-kosten-benchmarks (zwei Kosten- + zwei Benchmark-Kapitel vorhanden), secrets-management-agenten (api-keys-sicher-verwalten, d1), agent-fehlerkultur (zu weich, nah an agent-festgefahren).
+- Ersatz über Lücken-Suche gefunden: ki-code-und-lizenzen (0 Treffer für Lizenz/Urheberrecht im gesamten Bestand — große Lücke bei einer Coding-Plattform), latenz-optimieren (Latenz wird in 6 Kapiteln nebenbei erwähnt, nirgends gebündelt), prompt-versionierung (0 Treffer), speculative-decoding (frei, ergänzt streaming um die Erzeugungsseite).
+- Finale 10 mit Kategorie/Schwierigkeit/Abgrenzungsauftrag in research/kapitel-batch8-themen.md (3 konzept, 2 begriff, 5 guide; 6× d2, 4× d3). Zwei Themen tragen einen expliziten Abgrenzungsauftrag in den Autoren-Prompt: multi-repo-arbeit ≠ monorepo-mit-agenten, red-teaming-agenten ≠ prompt-injection-abwehr-praxis.
+- Commit 1a6de25. Morgen früh: Feed 19.07, dann direkt Autoren mit dieser Liste starten.
