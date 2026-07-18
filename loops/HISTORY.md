@@ -800,3 +800,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - build-api.mjs: kopiert seit jeher ALLE content-Dateien, dokumentierte aber nur 5 Typen — rosetta/fehler waren tagelang ausgeliefert, standen aber in keinem Index. ENDPOINT_DOCS auf 11 Typen erweitert + GUARD: undokumentierter Content-Typ bricht den Build. Guard getestet (fiktiver Typ → Exit 1, keine Reste in public/api, Guard läuft vor dem Kopieren).
 - ZWISCHENFALL: Erster Deploy lief aus dem Repo-Root statt aus site/ (cwd-Reset zwischen Calls) und schlug fehl — exakt die dokumentierte LOOP.md-Regel. Zweiter Versuch mit `cd … && wrangler` im selben Call: Deploy b0e12f11.
 - Live-Verify: llms.txt nennt alle neuen Seiten, API-Index 11 Endpunkte/55 Dateien, /api/rosetta.en.json liefert 6 Gruppen/28 Aufgaben, /feed.en.xml 200. Commit f39a02c. (public/api/ ist generiert und gitignored.)
+
+## It. 149 (18.07.2026 ~19:43–20:15) — Fehler-Katalog in die Volltextsuche ✅
+- Poll 546/92 (Traffic steigt weiter), Smoke 10/10 grün.
+- BEFUND: Suchindex (422 Docs) kannte Kapitel, Befehle, Addons, Prompts — aber nicht den Fehler-Katalog. Genau der Inhalt, den Leute wörtlich in eine Suche tippen („429", „prompt is too long"), war nur über die /fehler/-Seite selbst auffindbar.
+- build-search-index.mjs um fehler.<lang>.json erweitert (symptom als Titel, ursache als Untertitel, fix-Schritte in den Suchtext) → 446 Docs (k 101 / b 293 / f 24 / p 16 / a 12). SearchModal um Gruppe 'f' erweitert: Typ, Labels ×5 („Fehler & Lösungen"/„Errors & fixes"/…), Platzhalter-Text, Sortierung (nach Befehlen), eigene Farbe.
+- Deploy 78195f2f. Browser-Test statt Index-grep: „rate limit", „429", „prompt is too long" — alle drei zeigen die Fehler-Gruppe. Mein erster Index-Test per String-includes hätte fälschlich „kein Treffer" gemeldet (MiniSearch tokenisiert, `rate_limit_error` ≠ `rate limit`) — Lehre: Such-Features im Browser prüfen, nicht am Rohindex.
+- Screenshot zunächst unbrauchbar (Eingabefeld nicht geleert → „prompt is too long429"), sauber nachgezogen: „429" liefert Kapitel „Rate Limits und Quotas" + die Einträge 429 und 529.
+- Commit 626f9e0.
