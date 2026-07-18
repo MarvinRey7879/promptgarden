@@ -746,3 +746,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Merge ×5: 91→101, SLUGS SYNCHRON. WORLD: W1→17 (+few-shot, rollen, reasoning, streaming), W2→18 (+output-formate, selbstkritik), W3→27 (+checkpoints, issue-zu-pr, quantisierung, MoE).
 - BUILD_EXIT=0. Deploy fac6ae12. Live-Verify 5/5 (reasoning/moe/checkpoints de, few-shot zh, Lernpfade). Screenshot data/shot-batch7-moe.png sauber. Commit c3bd85a gepusht.
 - Challenge-Pool wächst automatisch auf 101 Fragen (build-challenge.mjs zieht aus entries).
+
+## It. 142 (18.07.2026 ~08:52–09:40) — REMOTION R11: MoE-Demo ✅
+- Poll 536/86 grün, Smoke 7/7 (inkl. neuem MoE-Kapitel).
+- videos/src/MoeDemo.tsx: 3 Tokens laufen durch Router, je 2 von 8 Experten leuchten auf (nicht-aktive dimmen), Schluss-Chip „2,8 Bio. total, Bruchteil aktiv" (Kimi K3), dict ×5. 300 Frames/720p.
+- 5 Renders (je ~1,2 MB) → site/public/videos/moe-demo.<lang>.mp4. Einbettung slug-conditional in lexikon/[slug]/page.tsx.
+- BUILD_EXIT=0, Deploy 76266a9a, Live-Verify: Video-Tag 1×, mp4 200 + volle 1.271.937 B ausgeliefert, Playwright: 1 <video> auf Seite, Player rendert (0:10). Commit 499a339.
+- Videos gesamt: 80 (16 Motive ×5).
