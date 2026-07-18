@@ -729,3 +729,20 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Stolpersteine: Sending-Key ist restricted (kann keine Domains lesen) → Full-Key nachgefragt; autopilot.env hatte schon RESEND_API_KEY von ANDEREM Projekt (framefetch) → grep-Guard verhinderte Append still, env-Var blieb leer → promptgarten-Keys jetzt als PG_RESEND_KEY/PG_RESEND_FULL_KEY (Memory-Notiz aktualisiert). Lesson: vor Append in geteilte Secret-Dateien prüfen ob NAME schon (fremd-)belegt ist.
 - Damit R3 zu 100 % LIVE inkl. Versand. Wochen-Digest feuert automatisch Mo 08:00 UTC.
 - Known-good: Pages 84252298, Worker c52b92eb.
+
+## It. 141 (18.07.2026 ~06:35–07:10) — FEED 18.07 LIVE ✅ + Batch 7 gestartet
+- Nacht It. 128–140 komplett grün (stündlich Poll+Smoke 6/6, views 534→535, besucher 84→85).
+- Feed 18.07: Research-Agent (28 Bestands-ids als Dubletten-Bann) → 4 News verifiziert: claude-code-2-1-214-permission-bypass-fixes (18.07, security), kimi-k3-frontend-arena-market-reaction (17.07, modelle), codex-cli-0-144-5-dangerous-command-detection (16.07, tools), paper-early-adoption-agentic-coding-github (16.07, papers). Fable-Frist-Kandidat: KEINE neue offizielle Meldung → korrekt ausgelassen.
+- 2 eigene Live-Stichproben: GitHub-Release v2.1.214 (200, PowerShell×6), arXiv 2607.14037 (200, agentic×15).
+- Übersetzer ×4 MD5-gepinnt (6ae1fb3d) → ALLE 4 OK, meta byte-identisch.
+- Merge VORN ×5: 28→32, IDS SYNCHRON. BUILD_EXIT=0. Deploy 2b6743b9. Live-Verify de+zh 4/4. Commit dae8bc6 targeted, gepusht.
+- Parallel: Batch-7-Autoren DE+EN laufen (10 Themen: 4× prompt-pattern, reasoning-modelle, mixture-of-experts, streaming, quantisierung, issue-zu-pr-workflow, checkpoints-und-rollbacks).
+
+## It. 141 (Fortsetzung, 18.07.2026 ~07:10–09:20) — KAPITEL-BATCH 7 LIVE ✅ (91→101)
+- 2 Autoren (DE+EN, Sonnet) parallel mit Komplett-Schema + Geschwister-Hinweis: sauber, kein Rogue-Fork, beide selbst hart validiert.
+- Adversarial-Review (37 Quellen-Checks): 9 Findings — 2 kritisch (EN-MoE zitierte Kimi-K2-HF-Card statt K3; EN-Beispiel nutzte veraltetes Top-Level `output_format` statt `output_config.format`), 4 moderat (u.a. DE-reasoning verschmolz 32k-Timeout-Hinweis mit „sinkendem Nutzen"; DE/EN-Widerspruch rollen-prompts), 3 gering (Redirect-URLs). Quellen-Sets DE=EN je slug harmonisiert.
+- ZWISCHENFÄLLE: (1) Reviewer-Anker doppelt-JSON-escaped → Decode-Fallback in apply-Skript. (2) Reviewer-Fix für output-formate-erzwingen war NO-OP (fix==anchor) → Claim selbst gegen platform.claude.com-Doku verifiziert (output_config.format, Migration von output_format dokumentiert) und handgefixt (fix-en-output-config.mjs; erster Handfix verschachtelte falsch, zweiter korrekt). REGEL bestätigt: Reviewer-Fixes IMMER selbst verifizieren.
+- 3 Übersetzer es/fr/zh MD5-gepinnt (de=25295155…) parallel: alle OK, selbst nachvalidiert (meta/related/correct/urls byte-identisch).
+- Merge ×5: 91→101, SLUGS SYNCHRON. WORLD: W1→17 (+few-shot, rollen, reasoning, streaming), W2→18 (+output-formate, selbstkritik), W3→27 (+checkpoints, issue-zu-pr, quantisierung, MoE).
+- BUILD_EXIT=0. Deploy fac6ae12. Live-Verify 5/5 (reasoning/moe/checkpoints de, few-shot zh, Lernpfade). Screenshot data/shot-batch7-moe.png sauber. Commit c3bd85a gepusht.
+- Challenge-Pool wächst automatisch auf 101 Fragen (build-challenge.mjs zieht aus entries).
