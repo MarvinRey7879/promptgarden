@@ -117,6 +117,10 @@ export default async function EntryPage({
         <ExampleVideo lang={lang} name="loop-zyklus" label={entry.title} />
       )}
 
+      {entry.slug === 'mixture-of-experts' && (
+        <ExampleVideo lang={lang} name="moe-demo" label={entry.title} />
+      )}
+
       {entry.exercise && (
         <div className="card" style={{ padding: '18px 22px', marginTop: 26, background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
           <p className="kicker" style={{ color: 'var(--ink)' }}>
