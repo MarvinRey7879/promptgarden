@@ -851,3 +851,10 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - ECHTE LÜCKE: Die Karte sagte nicht, in welchem Abo Fable steckt — genau die Frage, die sich ab morgen stellt. Ergänzt: dauerhaft in Max/Team Premium bei 50 % der Limits, Pro/Team Standard mit 100 $ Einmalguthaben und danach API-Preisen. Als DATIERTE ANKÜNDIGUNG formuliert („Ab 20.07.2026 …"), nicht als Gegenwart — der Tag ist noch nicht erreicht. Quelle dieselbe wie im Feed.
 - Skript research/vergleiche-fable-abo.mjs arbeitet über alle 5 Sprachen, ist idempotent (erkennt bereits ergänzte Karten) und setzt updated auf 2026-07-19. Quellen-URL-Sets bleiben ×5 identisch.
 - BUILD_EXIT=0, Deploy ac123441, Live-Verify de+zh + Stand-Marker. Commit e5caf6f.
+
+## It. 162 (19.07.2026 ~10:45–11:05) — Preisrechner geprüft + Statusboard-Todos vervollständigt ✅
+- Poll 581/105, Smoke 10/10 grün.
+- Preisrechner (site/components/PriceCalculator.tsx) auf Fable-Konsistenz geprüft: Fable 5 mit 10 $/50 $ und gesetztem Batch-Flag — korrekt, kein Update nötig. Die API-Preise ändern sich durch die Abo-Umstellung nicht, nur die Zuordnung zu den Plänen.
+- BEFUND im Statusboard: Die Todo-Sektion war aktuell, aber UNVOLLSTÄNDIG — ich tracke fünf Marvin-Todos in LOOP.md, sichtbar waren nur drei (Newsletter-Opt-in, GitHub Sponsors, GSC-TXT). AdSense und Ko-fi fehlten komplett, obwohl beide seit Tagen offen sind und direkt Geld kosten bzw. bringen.
+- Ergänzt mit konkreten Klickwegen: AdSense (Site-Review anfordern + DSGVO-Meldung und Limited Ads aktivieren — ohne beides verdient die Seite in der EU nichts) und Ko-fi (Verification-Token aus More → API → Webhooks, Webhook liegt fertig).
+- Artifact republished. LEHRE: Direktive 10 heißt nicht nur „erledigte Todos raus", sondern auch „offene müssen drinstehen" — sonst sieht Marvin im Statusboard weniger, als die Loop verfolgt.
