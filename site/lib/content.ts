@@ -94,7 +94,10 @@ export const WORLD_1: string[] = [
   'ai-coding-ide-vs-cli',
   'reasoning-modelle',
   'streaming',
+  'speculative-decoding',
+  'distillation',
   'rate-limits-und-quotas',
+  'ki-code-und-lizenzen',
 ];
 
 /** Welt 2 — Agenten: eigener Pfad, unabhängig von Welt 1 freischaltbar */
@@ -115,8 +118,10 @@ export const WORLD_2: string[] = [
   'agent-teams',
   'debugging-mit-agenten',
   'selbstkritik-schleifen',
+  'websearch-und-grounding',
   'kontext-strategien',
   'memory-systeme-fuer-agenten',
+  'red-teaming-agenten',
 ];
 
 /** Welt 3 — Werkzeugkasten: Praxis-Guides als Pfad */
@@ -142,12 +147,17 @@ export const WORLD_3: string[] = [
   'rag-selbst-bauen',
   'vektordatenbanken',
   'chunking-strategien',
+  'retrieval-evaluation',
+  'fine-tuning-oder-prompting',
   'mcp-sicherheit',
   'projekt-deployen',
   'benchmarks-lesen',
   'swe-bench-agenten-benchmarks',
   'quantisierung',
   'mixture-of-experts',
+  'latenz-optimieren',
+  'prompt-versionierung',
+  'multi-repo-arbeit',
 ];
 
 export function difficultyDots(d: 1 | 2 | 3): string {
