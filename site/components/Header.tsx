@@ -15,6 +15,7 @@ export default function Header({ lang }: { lang: Lang }) {
   const [showNews, setShowNews] = useState(false);
   const [email, setEmail] = useState('');
   const [newsState, setNewsState] = useState<'idle' | 'sent' | 'error'>('idle');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const signup = async () => {
     const ok = await apiPost('/v1/newsletter', { email: email.trim(), lang });
@@ -34,6 +35,19 @@ export default function Header({ lang }: { lang: Lang }) {
   const langCycle: Lang[] = ['de', 'en', 'es', 'fr', 'zh'];
   const otherLang: Lang = langCycle[(langCycle.indexOf(lang) + 1) % langCycle.length];
   const switchHref = pathname.replace(`/${lang}`, `/${otherLang}`) || `/${otherLang}/`;
+
+  // Menü schließt sich, sobald ein Punkt angetippt wurde
+  useEffect(() => setMenuOpen(false), [pathname]);
+
+  const menuLabel: Record<Lang, string> = {
+    de: 'Menü',
+    en: 'Menu',
+    es: 'Menú',
+    fr: 'Menu',
+    zh: '菜单',
+  };
+
+  const isActive = (href: string) => pathname.startsWith(href.replace(/\/$/, ''));
 
   const navItems = [
     { label: t.nav.lexikon, href: `/${lang}/lexikon/` },
@@ -65,19 +79,27 @@ export default function Header({ lang }: { lang: Lang }) {
         >
           prompt<span style={{ color: 'var(--accent)' }}>garten</span> 🌱
         </Link>
-        <nav style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        <nav className="nav-desktop">
           {navItems.map((n) => (
             <Link
               key={n.href}
               href={n.href}
-              className={`pill${pathname.startsWith(n.href.replace(/\/$/, '')) ? ' active' : ''}`}
+              className={`pill${isActive(n.href) ? ' active' : ''}`}
             >
               {n.label}
             </Link>
           ))}
         </nav>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {progress && (progress.xp > 0 || progress.streak >= 1) && (
+          <button
+            className="nav-toggle"
+            aria-expanded={menuOpen}
+            aria-controls="hauptmenue"
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            {menuOpen ? '✕' : '☰'} {menuLabel[lang]}
+          </button>
+          {progress && progress.xp > 0 && (
             <Link
               href={`/${lang}/fortschritt/`}
               className="chip"
@@ -94,11 +116,30 @@ export default function Header({ lang }: { lang: Lang }) {
           <Link href={switchHref} className="pill" style={{ padding: '7px 10px' }}>
             🌍 {otherLang.toUpperCase()}
           </Link>
-          <button className="btn" onClick={() => setShowNews(true)}>
+          <button className="btn hide-mobile" onClick={() => setShowNews(true)}>
             {t.newsletter}
           </button>
         </div>
       </header>
+      {menuOpen && (
+        <nav className="nav-drawer" id="hauptmenue">
+          {navItems.map((n) => (
+            <Link key={n.href} href={n.href} className={isActive(n.href) ? 'active' : ''}>
+              {n.label}
+            </Link>
+          ))}
+          <button
+            className="btn"
+            style={{ gridColumn: '1 / -1', marginTop: 4 }}
+            onClick={() => {
+              setMenuOpen(false);
+              setShowNews(true);
+            }}
+          >
+            {t.newsletter}
+          </button>
+        </nav>
+      )}
       {showNews && (
         <div className="modal-back" onClick={() => setShowNews(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

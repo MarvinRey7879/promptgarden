@@ -17,13 +17,17 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 4. **Addons mit eigenen Detailseiten** (✅ 12×5) — Setup aus offiziellen READMEs.
 5. **Visualisierungen** — verständlich aber hochwertig, Inline-SVG im 1d-Stil (✅ Loops+Addons+Context-Window) + Remotion-Videos (Direktive 12).
 6. **KEINE KI-Autorschaft** — Marvin ist der Macher; Seite kommuniziert „KI- & Scrape-freundlich, jeder soll lernen".
-7. **MEHR KAPITEL** — hohes Content-Tempo, ABER siehe Publikationsraten-Regel unten.
+7. **MEHR KAPITEL** — hohes Content-Tempo, ABER siehe Publikationsraten-Regel unten. ⏸️ **AUSGESETZT seit 19.07. nachmittags zugunsten von Direktive 16.**
 8. **ZWEI Detail-Level** — 🌱/🔬-Toggle ✅ KOMPLETT (alle Kapitel ×5, Lint erzwingt bodyDetail-Parität).
 9. **Admin-Dashboard richtig stark** (✅ V2) + Monetarisierungs-Todos mit Schritt-für-Schritt in /admin.
 10. **Responsiveness + Wow** immer; erledigte Todos raus aus Statusboard-Todo-Sektion.
 11. **Landing ausbauen** (✅ It. 73 nach research/landing-cro-seo-2026-07.md).
 12. **Remotion-Beispiel-Videos** (NEU 13.07 abends): Mit Remotion (React-Video-Framework, Skill remotion-video-creation vorhanden) kurze Beispiel-/How-to-Videos rendern und dort einbetten, wo sie passen (z. B. Loop-Zyklus animiert auf /loops, Context-Window-Füllung, Befehls-Demos). IMMER WIEDER reviewen und ausbauen (fester Rotations-Punkt, nicht einmalig). Constraints: Cloudflare Pages 25MB/Datei → kurze Clips (10–25s, 720p, stumm ok, <10MB), `<video>`-Tag mit poster+controls, kein Autoplay mit Ton; Videos versioniert in videos/ (Remotion-Projekt) + gerenderte mp4 in site/public/videos/.
 13. **IDEEN-PITCHES wiederkehrend** (NEU 14.07): Die Loop brainstormt IMMER WIEDER selbst konkrete Ideen, was der Seite hinzugefügt werden kann, und stellt sie Marvin vor — er sagt ja/nein oder wählt aus („mach mir 3 Vorschläge"). Mechanik: mind. 1×/Tag bzw. alle ~6 Iterationen 3-5 frische Ideen (Feature/Content/Monetarisierung/Wow) per AskUserQuestion (multiSelect, max 4 Optionen + Other) pitchen; wenn Marvin nicht aktiv im Chat ist zusätzlich PushNotification. Backlog in loops/IDEEN.md pflegen: gepitcht/gewählt/abgelehnt mit Datum — ABGELEHNTE nie erneut pitchen, GEWÄHLTE in die Rotation. Keine Antwort = beim nächsten Pitch andere Ideen, alte bleiben offen gelistet.
+
+14. **WERBUNG AN** außer auf der Landing.
+15. **VERGLEICHE INTENSIV** (17.07): 2D-Quadrant nach Intelligence-to-Cost + Stärken-Profile, breite Modell-Abdeckung ✅.
+16. 🎯 **QUALITÄTS-PHASE (NEU 19.07. nachmittags, Marvin-Direktive — gilt bis auf Widerruf)**: Der Fokus liegt jetzt auf dem BESTEHENDEN Produkt, nicht auf Wachstum. Texte überarbeiten, Layout verbessern, Seiten schöner und angenehmer machen, Schwachstellen ausbessern. **Ausnahme: der Feed bleibt täglich aktuell** (Direktive 2 gilt dort unverändert). Neue Kapitel-Batches pausieren (Direktive 7 ausgesetzt) — vorbereitete Themen bleiben in research/kapitel-batch9-themen.md liegen, bis Marvin sie wieder freigibt. Arbeitsweise: erst Befund (Screenshots, Text-Stichproben, Mobil-Ansicht, Ladeverhalten), dann priorisiert verbessern, jede Änderung live gegenprüfen. Verbesserungen sind Substanz — sie zählen als Tagespensum wie ein Kapitel-Batch.
 
 ## 🔴 Harte Arbeitsregeln (Fehler-erprobt)
 - **cwd**: JEDER Repo-Befehl (node/npm/grep/deploy/ls) mit explizitem `cd /c/Users/marvi/promptgarden/site && …` in DEMSELBEN Call — Shell-cwd resettet zwischen Calls (3× Vorfall, zuletzt It. 75: Deploy lief aus ~ und passierte gar nicht).

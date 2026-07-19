@@ -74,7 +74,7 @@ export default async function FeedPage({ params }: { params: Promise<{ lang: str
               >
                 {t.feedTags[item.tag] ?? item.tag}
               </span>
-              <span className="mono" style={{ fontSize: 12, color: 'var(--muted)' }}>
+              <span className="mono" style={{ fontSize: 13, color: 'var(--muted)' }}>
                 {item.date}
               </span>
             </div>
@@ -82,7 +82,7 @@ export default async function FeedPage({ params }: { params: Promise<{ lang: str
               {item.title}
             </h2>
             <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6 }}>{item.summary}</p>
-            <p style={{ margin: '12px 0 0', fontSize: 12.5 }}>
+            <p style={{ margin: '12px 0 0', fontSize: 14 }}>
               {item.sources.map((s, j) => (
                 <span key={s.url}>
                   {j > 0 && ' · '}
