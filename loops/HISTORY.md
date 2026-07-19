@@ -957,3 +957,43 @@ genau diese Seiten den Suchverkehr tragen. Jede Erweiterung braucht Belege
 aus der jeweils verlinkten Doku.
 
 Commits f7d4c9e, f8e2966. Pages-Deploy 02c64026.
+
+## It. 167 — So 19.07. abends — Befehls-Inventar gegen die offizielle Referenz
+
+Poll 583/107, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Statt die 86 duennen Befehlsseiten blind mit Woertern zu fuellen (viele sind
+duenn-aber-vollstaendig, z.B. /help "Zeigt Hilfe und verfuegbare Befehle"),
+habe ich unsere 92 Claude-Code-Befehle Zeile fuer Zeile gegen die offizielle
+Referenz und den Changelog abgeglichen. Das foerderte echte Fehler zutage.
+
+### /vim beschrieb einen entfernten Befehl (Commit 751781a)
+
+Zwei unabhaengige Belege: die Referenz sagt "Removed in v2.1.92 ... use
+/config -> Editor mode", der Changelog unter 2.1.92 "Removed `/vim` command".
+Seite bleibt (SEO: Leute suchen /vim), Text sagt jetzt in allen 5 Sprachen,
+dass der Befehl weg ist und wie man den Vim-Modus stattdessen umschaltet.
+Changelog als zweite Quelle ergaenzt.
+
+### Drei erfundene Befehle entfernt (Commit 7adf98d)
+
+/thinking, /web-search und /web waren nie echte Slash-Befehle. Alle beriefen
+sich auf die Referenzseite, auf der sie nicht stehen ("HTTP 200 != belegt").
+Changelog fuehrt "web search"/"web fetch" nur als Werkzeuge, "thinking" nur
+als Konfiguration; Websuche ueber anthropic-Domains: kein Treffer. Autoren-
+fehler - Werkzeuge/Config mit Befehlen verwechselt. Seiten geloescht (anders
+als /vim, das es ja gab). Zwei Rosetta-Zellen auf null gesetzt (bestehende
+Konvention fuer Plattformen ohne Befehl); Cursor/Aider-Zellen bleiben.
+290 statt 293 Befehle, llms.txt nachgezogen, Landing zaehlt dynamisch.
+Lint gruen, entfernte Routen live 404, /vim + /rosetta 200.
+
+### Offen fuer It. 168 (im Statusboard vermerkt)
+
+Der Abgleich fand 12 Befehle, die in der Referenz stehen und uns FEHLEN:
+bug, pr-comments (selbst "Removed in v2.1.91"), stop, team-onboarding,
+terminal-setup, theme, tui, ultrareview, usage-credits, voice, web-setup,
+workflows. Die 11 aktuellen davon gehoeren angelegt (Autoren-Pipeline DE+EN
++ 3 Uebersetzer, je Befehl aus der Doku belegt) - das ist die naechste
+Hauptaufgabe. pr-comments ggf. als entfernt-Hinweis wie /vim.
+
+Commits 751781a, 7adf98d. Pages-Deploy efd65167.
