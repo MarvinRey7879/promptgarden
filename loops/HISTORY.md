@@ -1034,3 +1034,51 @@ Commit c4a167c. Pages-Deploy b9e3e8b4.
 
 Als Naechstes heute (Mo 20.07): ~08:05 UTC ersten Digest-Cron pruefen, dann
 Feed 20.07.
+
+## It. 169 — Mo 20.07. ~01:40 — Inventar der anderen 4 Plattformen, 560 tote Links gefixt
+
+Poll 585/109, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Den Befehls-Abgleich aus It. 167 auf die vier uebrigen Plattformen ausgeweitet.
+
+### Der grosse Fund: umgezogene Dokus, 560 tote Quell-URLs
+
+Beim Fetchen der offiziellen Dokus stellte sich heraus, dass die Quell-URLs
+auf ALLEN Cursor-CLI- und Codex-CLI-Befehlsseiten 404 lieferten - beide Dokus
+sind umgezogen:
+- Cursor: cursor.com/docs/cli/OVERVIEW/... -> cursor.com/docs/cli/... (Segment
+  "overview" weg)
+- Codex: learn.chatgpt.com/docs/codex/... -> developers.openai.com/codex/...
+
+Neue kanonische Adressen per Websuche gefunden, jede der 10 Ziel-URLs einzeln
+auf 200 geprueft, dann 560 Quellenangaben ersetzt (112 je Sprache,
+research/tote-quell-urls-fix.mjs). 0 alte verblieben, live gegengeprueft.
+Das war die zeitwertigste Sache - 96 Seiten je Sprache zitierten tote Links.
+
+### Inhalts-Abgleich
+
+- Aider: SAUBER. 48/48 stimmen; die 5 scheinbar fehlenden sind Argumentwerte/
+  Flags (/vim = --vim-Switch, kein Befehl), die 5 scheinbar ueberzaehligen sind
+  legitime Eintraege aus modes.html/options.html.
+- Codex: 0 erfundene, aber die Doku fuehrt ~64 Befehle, wir nur 16 - ~48 fehlen.
+  Einige Kandidaten (/pet, /pets, /personality, /raw) sehen nach Easter-Eggs
+  aus und brauchen Einzelpruefung.
+- Antigravity: 0 erfundene (Slash-Ebene), ~17 Kandidaten fehlend; Doku via
+  r.jina.ai lesbar (direkt nur JS-Huelle), Quell-URLs waren nicht tot.
+- Cursor: nach URL-Fix inhaltlich weitgehend deckungsgleich (die Diffs sind
+  Aliase: /auto-run=/run-everything, /compress=/summarize, /new*=/clear).
+  Ein Eintrag hat einen zusammengesetzten Namen "/opus, /composer, /fast"
+  (slug opus-composer-fast) - unschoen, aber inhaltlich korrekt gruppiert.
+
+### Offen fuer Folge-Iterationen (im Statusboard)
+
+Codex ~48 + Antigravity ~17 fehlende Befehle anlegen - je Befehl aus der Doku
+belegt, in Chargen, Easter-Egg-Kandidaten einzeln verifizieren. Das ist die
+Fortsetzung der Befehls-Vervollstaendigung, sobald der Feed-Tag durch ist.
+
+Werkzeug-Notiz: cursor.com und antigravity.google liefern per curl nur die
+JS-Huelle; r.jina.ai/<url> rendert sie (Original zitieren). Cursor-Doku gibt
+es auch als .md (cursor.com/docs/cli/reference/slash-commands.md) - sauberste
+Quelle.
+
+Commit d0372cd. Pages-Deploy b1c8301f.
