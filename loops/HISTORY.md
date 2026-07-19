@@ -910,3 +910,50 @@ Repo und Cloudflare-Projekt heissen mit D, die Domain mit T. In LOOP.md vermerkt
 
 Poll: 582 Views / 106 Besucher (7d), keine Notes/Bugs/Feedback. Smoke 10/10 gruen.
 Commits ede9b0d, 14e9350. Pages-Deploy 7b22ef7e.
+
+## It. 166 — So 19.07. nachmittags — Lokalisierungs-Luecke und ehrliche Messung
+
+Poll 583/107, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+### Der Fund des Tages
+
+Die Textpruefung fiel zunaechst unauffaellig aus: 111 Kapitel, im Schnitt
+17,5 Woerter je Satz, 9 Floskeln insgesamt, kaum wiederholte Einstiege. Nur
+5 Saetze ueber 40 Woerter stehen im einfachen 🌱-Text (45 weitere im 🔬-Teil,
+dort vertretbar).
+
+Beim Blick auf die zweitstaerkste Einstiegsseite - eine Befehlsseite mit
+23 Aufrufen von 23 verschiedenen Besuchern - fiel dagegen auf: unter dem
+Beleg stand "Claude Code Doku (offiziell)". Auf der englischen Seite. Die
+Pruefung ueber alle Inhalte ergab 1031 solcher Stellen in en/es/fr/zh -
+182 je Sprache allein in den Befehlen, dazu Kapitel, Addons, Vergleiche.
+
+104 verschiedene Titel, per Agent nach vier Sprachen uebersetzt (nur das
+deutsche Geruest; Produktnamen und englische Zielseiten-Ueberschriften
+bleiben, sonst waere die Quelle nicht mehr auffindbar). Angewandt mit
+research/quellentitel-lokalisieren.mjs, idempotent.
+
+Gegenprobe: 0 deutsche Titel verblieben, alle 1784 URLs unveraendert
+(URL-Mengen vor/nach verglichen). Live in allen vier Sprachen bestaetigt.
+Die erste EN-Stichprobe zeigte noch den alten Titel - Edge-Cache, mit
+Cache-Bust sofort korrekt, kurz darauf auch ohne.
+
+### Messung korrigiert
+
+Das Audit liegt jetzt als research/audit-ux.mjs im Repo statt im Scratchpad
+und zaehlt ehrlicher: SVG-Diagrammknoten und Links mitten im Fliesstext
+(WCAG 2.5.8 nimmt sie aus) zaehlen nicht mehr als Klickziele. Statt 5-82
+meldet es 4-7 je Seite. Die verbliebenen waren echt: die drei Nachschlage-
+Links in der Fusszeile standen 19 px hoch in einem Absatz und sind jetzt
+eine eigene Navigationszeile mit 40 px Mindesthoehe. Danach bleibt nur der
+Schriftzug in der Kopfzeile (27 px hoch, 164 px breit) - akzeptabel.
+
+### Nicht angefasst
+
+Die Landing-Ueberschrift ist markenbildend; eine Umformulierung waere eine
+Marvin-Entscheidung, keine autonome. 86 Befehlsseiten haben unter 25 Woerter
+Beschreibung (/cost genau drei) - das ist der naechste grosse Hebel, weil
+genau diese Seiten den Suchverkehr tragen. Jede Erweiterung braucht Belege
+aus der jeweils verlinkten Doku.
+
+Commits f7d4c9e, f8e2966. Pages-Deploy 02c64026.
