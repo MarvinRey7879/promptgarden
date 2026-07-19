@@ -42,11 +42,31 @@ export default function Footer({ lang }: { lang: Lang }) {
               Impressum
             </a>
           </p>
-          <p style={{ margin: '10px 0 0', display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-            <Link href={`/${lang}/rosetta/`}>🔄 {EXTRA_LINKS[lang].rosetta}</Link>
-            <Link href={`/${lang}/fehler/`}>🩺 {EXTRA_LINKS[lang].fehler}</Link>
-            <Link href={`/${lang}/fortschritt/`}>📊 {EXTRA_LINKS[lang].fortschritt}</Link>
-          </p>
+          {/* Eigene Zeile statt Fließtext: als Nachschlage-Einstiege brauchen sie
+              fingerfreundliche Höhe (waren 19 px, Audit It. 166). */}
+          <nav style={{ margin: '10px 0 0', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {[
+              { href: `/${lang}/rosetta/`, label: `🔄 ${EXTRA_LINKS[lang].rosetta}` },
+              { href: `/${lang}/fehler/`, label: `🩺 ${EXTRA_LINKS[lang].fehler}` },
+              { href: `/${lang}/fortschritt/`, label: `📊 ${EXTRA_LINKS[lang].fortschritt}` },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  minHeight: 40,
+                  padding: '6px 12px',
+                  border: '2px solid rgba(43,33,24,.25)',
+                  borderRadius: 99,
+                  fontWeight: 600,
+                }}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           {live.length > 0 ? (
