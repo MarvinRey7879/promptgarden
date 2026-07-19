@@ -835,3 +835,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - 3 Übersetzer es/fr/zh MD5-gepinnt (240f6a9e…), alle drei prüften den Hash vor dem Start. Merge ×5: 101→111, SLUGS SYNCHRON. WORLD: W1 +speculative-decoding/distillation/ki-code-und-lizenzen (→20), W2 +websearch-und-grounding/red-teaming-agenten (→20), W3 +retrieval-evaluation/fine-tuning-oder-prompting/latenz-optimieren/prompt-versionierung/multi-repo-arbeit (→32).
 - BUILD_EXIT=0, Deploy 44edc319, Live-Verify: red-teaming 5×, Rechts-Hinweis 2×, Monorepo-Abgrenzung 4×, zh-Latenz + zh-Distillation, Lernpfade zeigt neue Kapitel, Challenge-Pool automatisch auf 111 Fragen. Mobil 0px Overflow. Commit 1f5f8c5.
 - llms.txt-Kapitelzahl 101→111 nachgezogen (3 Stellen), Deploy a7589f68, live verifiziert (0 Reste). Commit 5239a1f.
+
+## It. 160 (19.07.2026 ~08:27–09:00) — REMOTION R13: Latenz-Hebel ✅
+- Poll 581/105 (+34 Views in einer Stunde), Smoke 10/10 grün. Kapitel-Stopp gilt → Video als Substanz (Direktive 12).
+- videos/src/LatenzDemo.tsx: fünf Hebel gegen Antwortzeit als Balken in der Reihenfolge ihrer Wirkung (schnelleres Modell → kürzerer Prompt → Prompt-Caching → Thinking-Budget → Streaming), Werte aus dem neuen Kapitel latenz-optimieren.
+- BEWUSSTE ENTSCHEIDUNG: nur EINE harte Zahl im Clip — „bis 85 % bei langen Prompts" fürs Caching, belegt durch anthropic.com/news/prompt-caching. Balkenlängen zeigen die Rangfolge, keine erfundenen Prozentwerte. Fußzeile trägt den Kernpunkt: Streaming ändert die Wahrnehmung, nicht die Gesamtdauer.
+- ZWEI LAYOUT-FEHLER VORAB GEFUNDEN, weil ich erst `npx remotion still` gerendert habe statt gleich fünf Videos: (1) beim kürzesten Balken lief der Text über den Rand → sitzt jetzt daneben, gedämpfte Farbe; (2) die Fußzeile überlappte die letzte Zeile → TOP/ROW_H/bottom angepasst. ZH-Frame als Härtetest (längste Zeilen). Das spart bei jedem Fund ~5 Minuten Renderzeit.
+- 5 Renders (je ~0,8 MB), Einbettung slug-conditional. BUILD_EXIT=0, Deploy db4c329e, Live-Verify de+zh Video-Tag, mp4 vollständig (851.597 B), Kapiteltext unverändert, mobil 0px Overflow, 1 video-Element. Commit c379550.
+- Videos gesamt: 90 (18 Motive ×5).
