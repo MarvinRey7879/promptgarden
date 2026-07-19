@@ -843,3 +843,11 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - ZWEI LAYOUT-FEHLER VORAB GEFUNDEN, weil ich erst `npx remotion still` gerendert habe statt gleich fünf Videos: (1) beim kürzesten Balken lief der Text über den Rand → sitzt jetzt daneben, gedämpfte Farbe; (2) die Fußzeile überlappte die letzte Zeile → TOP/ROW_H/bottom angepasst. ZH-Frame als Härtetest (längste Zeilen). Das spart bei jedem Fund ~5 Minuten Renderzeit.
 - 5 Renders (je ~0,8 MB), Einbettung slug-conditional. BUILD_EXIT=0, Deploy db4c329e, Live-Verify de+zh Video-Tag, mp4 vollständig (851.597 B), Kapiteltext unverändert, mobil 0px Overflow, 1 video-Element. Commit c379550.
 - Videos gesamt: 90 (18 Motive ×5).
+
+## It. 161 (19.07.2026 ~09:39–10:10) — Vergleiche-Seite auf die Fable-Umstellung geprüft ✅
+- Poll 581/105, Smoke 10/10 grün. Kapitel-Stopp gilt → Datenpflege statt Content.
+- ANLASS: Die Fable-5-Umstellung tritt morgen (20.07.) in Kraft. Geprüft, ob /vergleiche/ dadurch falsch wird.
+- BEFUND: Nein. Die Seite enthält keine „kostenlos für alle"- oder Fristen-Aussage; der Preis (10 $/50 $ pro MTok, blended 20) stimmt und wird für Pro ab morgen sogar direkt relevant; die Duell-Empfehlung („langer Loop mit Verifikation → Fable 5") bleibt gültig; der imTool-Abschnitt nennt Fable gar nicht.
+- ECHTE LÜCKE: Die Karte sagte nicht, in welchem Abo Fable steckt — genau die Frage, die sich ab morgen stellt. Ergänzt: dauerhaft in Max/Team Premium bei 50 % der Limits, Pro/Team Standard mit 100 $ Einmalguthaben und danach API-Preisen. Als DATIERTE ANKÜNDIGUNG formuliert („Ab 20.07.2026 …"), nicht als Gegenwart — der Tag ist noch nicht erreicht. Quelle dieselbe wie im Feed.
+- Skript research/vergleiche-fable-abo.mjs arbeitet über alle 5 Sprachen, ist idempotent (erkennt bereits ergänzte Karten) und setzt updated auf 2026-07-19. Quellen-URL-Sets bleiben ×5 identisch.
+- BUILD_EXIT=0, Deploy ac123441, Live-Verify de+zh + Stand-Marker. Commit e5caf6f.
