@@ -866,3 +866,47 @@ Reihenfolge: It. 67 Admin-V2 → It. 68 Detail-Toggle-Feature + erste bodyDetail
 - Schwerpunkt bewusst auf guide (10 von 10) — Batch 8 hatte viel Begriff/Konzept. Echte Lücken u.a.: Barrierefreiheit mit KI (0 Treffer, bei einer Coding-Plattform auffällig), Commit-Messages, API-Design, Open-Source-Beiträge mit KI (inkl. Offenlegungs-Etikette).
 - VIER Pflicht-Abgrenzungen notiert, jeweils gegen ein konkret gelesenes Bestandskapitel: kontextfenster-voll (Reaktion) vs. kontext-strategien (Planung) · technische-schulden (Priorisierung im Betrieb) vs. legacy-code-modernisieren (Code ohne Tests) · agent-logs-lesen (auswerten) vs. agenten-observability (erfassen) · modell-benchmarks-selbst-messen vs. benchmarks-lesen UND evals.
 - „agent-fehlerkultur" aus Batch 8 war als zu weich verworfen worden — kehrt als `fehlerkultur-nach-agenten-vorfall` zurück, jetzt an einen konkreten Anlass gebunden und mit Checkliste, abgegrenzt gegen agent-festgefahren.
+
+## It. 165 — So 19.07. nachmittags — Qualitaets-Phase, Tag 1
+
+Marvin-Direktive vom Mittag: der Fokus liegt jetzt auf dem bestehenden Produkt —
+Texte, Layout, Ausbessern. Der Feed bleibt taeglich aktuell, neue Kapitel-Batches
+pausieren. Als Direktive 16 in LOOP.md aufgenommen, Direktive 7 ausgesetzt.
+
+### Befund (Playwright-Audit ueber 8 Seiten, 390x844)
+
+Die Navigation belegte mit 9 umgebrochenen Punkten rund 30 % des Handy-Bildschirms;
+auf der Landing begann die Ueberschrift erst bei y=330 von 844. /vergleiche/ hatte
+335 Textknoten unter 13 px und 24 937 px Scrollhoehe, /feed/ 124 Knoten und 19 665 px.
+
+### Umgesetzt und live gegengeprueft
+
+- Kopfzeile klappt auf schmalen Bildschirmen hinter einen Menue-Knopf, Desktop
+  unveraendert. Spart rund 150 px auf jeder Seite; Ueberschrift und CTA der Landing
+  stehen jetzt ueber der Falz.
+- XP-Anzeige begruesste Erstbesucher mit "0 XP - 1 Tag"; erscheint jetzt erst ab
+  dem ersten verdienten Punkt.
+- Fliesstext auf /vergleiche/ und /feed/ von 12-12,5 auf 14 px, Meta-Zeilen 13 px,
+  Fakten-Chips 10,5 -> 12,5 px. Kleine Textknoten: 335 -> 15 bzw. 124 -> 0.
+- Anbieter-Gruppen auf /vergleiche/ mobil einklappbar (erste offen), SSR rendert
+  den offenen Zustand. Scrollhoehe 26 705 -> 18 767 px.
+- Ranking zeigte mobil die unsortierte Index-Spalte, waehrend die Sortierspalte
+  rechts abgeschnitten war - das las sich wie eine kaputte Reihenfolge.
+  Intelligenz/$ steht jetzt direkt hinter dem Namen.
+- Feed-Filter nach Rubrik mit Anzahl (Alle 35, Tools 14, Modelle 9, Security 6,
+  Papers 5, MCP 1). Klick auf Tools: 35 -> 14 Meldungen, 19 973 -> 7 713 px.
+  Alle 35 Artikel bleiben im ausgelieferten HTML.
+
+Kapitel- und Landing-Seite waren bereits sauber: die verbliebenen kleinen Elemente
+sind kurze Versal-Labels und Diagramm-Beschriftungen. Die 82 angeblich zu kleinen
+Klickziele auf /lernpfade/ sind SVG-Knoten in den Diagrammen - Fehlalarm des Audits.
+
+### Eigener Fehler
+
+Ein Tippfehler in meinem Testskript (promptgar*d*en statt promptgar*t*en) lieferte
+HTTP 000 und Namecheap-Parkseite; ich hielt das kurz fuer einen Prod-Ausfall. Die
+Domain mit D gehoert jemand anderem und ist wegen fehlender WHOIS-Pruefung gesperrt.
+Repo und Cloudflare-Projekt heissen mit D, die Domain mit T. In LOOP.md vermerkt.
+
+Poll: 582 Views / 106 Besucher (7d), keine Notes/Bugs/Feedback. Smoke 10/10 gruen.
+Commits ede9b0d, 14e9350. Pages-Deploy 7b22ef7e.

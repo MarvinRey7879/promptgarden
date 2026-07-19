@@ -46,6 +46,7 @@ Kostenlose, sich selbst weiterbauende Lern-Plattform für KI-/Agenten-Programmie
 - **Secret-Dateien sind geteilt**: vor `>>` in ~/.tm2-secrets/autopilot.env prüfen, ob der Var-Name schon einem anderen Projekt gehört (`RESEND_API_KEY` = framefetch!). promptgarten nutzt `PG_RESEND_KEY` (Versand) + `PG_RESEND_FULL_KEY` (Domain-Verwaltung).
 - **Bot-Blocking ≠ toter Link**: npmjs/openai.com/x.ai/meta blocken Node-fetch (403/400), sind per Browser-UA bzw. `https://r.jina.ai/<url>` erreichbar. Umgekehrt: 200 + Weiterleitung auf eine Übersichtsseite kann ein verstecktes Soft-404 sein → Ziel immer auf den Kern-Claim greppen (It. 144: AWS-Quelle so entlarvt). `docs.cursor.com` liefert per curl nur die JS-Navigations-Hülle → Belege aus `cursor.com/docs/cli/changelog` ziehen.
 - **git commit mit Anführungszeichen im Text** → `git commit -F -` + Heredoc; `-m "…\"…\"…"` zerlegt die Message in Pfad-Argumente (It. 144).
+- **Die Domain heißt `promptgarten.com` mit T** (Garten, nicht garden). `promptgarden.com` mit D gehört jemand anderem und steht wegen fehlender WHOIS-Prüfung auf einer Namecheap-Parkseite. It. 165 hat mich ein Tippfehler in einem Testskript kurz an einen Prod-Ausfall glauben lassen — Cloudflare-Repo/Projekt heißen mit D, die Domain mit T. Vor jedem „Seite ist tot"-Alarm die Schreibweise prüfen.
 - **Artifact-Republish OHNE `url`-Parameter**, solange dieselbe Datei in derselben Session publiziert wurde — die URL bleibt. Ein falsch getippter `url` trifft ein fremdes/gelöschtes Artifact.
 
 ## ✅ Verify-Gate (Pflicht vor „fertig" — DR-Umsetzung It. 73)
