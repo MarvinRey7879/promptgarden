@@ -997,3 +997,40 @@ workflows. Die 11 aktuellen davon gehoeren angelegt (Autoren-Pipeline DE+EN
 Hauptaufgabe. pr-comments ggf. als entfernt-Hinweis wie /vim.
 
 Commits 751781a, 7adf98d. Pages-Deploy efd65167.
+
+## It. 168 — Mo 20.07. ~00:30 — Elf fehlende Befehle angelegt
+
+Poll 584/108, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Der Inventar-Abgleich aus It. 167 hatte 12 Befehle gefunden, die in der
+offiziellen Referenz stehen und uns fehlten. Alle jetzt angelegt, jeder Text
+woertlich aus code.claude.com/docs/en/commands (am 20.07. neu gefetcht):
+
+- Elf echte Befehle: bug, stop, team-onboarding, terminal-setup, theme, tui,
+  ultrareview, usage-credits, voice, web-setup, workflows. Mit den echten
+  Grenzen/Aliasen aus der Doku - /voice braucht ein Claude.ai-Konto,
+  /ultrareview ist Alias von /code-review ultra (3 Freilaeufe auf Pro/Max),
+  /bug legt ohne Anthropic-Login nach ~/.claude/feedback-bundles/ ab,
+  /usage-credits verhaelt sich je nach Plan und Version verschieden.
+- /pr-comments als entfernt-Hinweis wie /vim: in v2.1.91 gestrichen.
+
+DE+EN direkt aus der gelesenen Quelle geschrieben (genauer als Delegation, da
+ich den Doku-Text vor mir hatte). es/fr/zh von drei md5-gepinnten Agenten
+(Quelle-Hash dbf45658 in allen dreien bestaetigt; Produktnamen/Befehle/
+Versionen/Modusnamen unangetastet, Quellentitel lokalisiert). 290 -> 302
+Befehle, 101 Claude-Code-Slugs je Sprache, Paritaet OK.
+
+Verify: Lint gruen, 15 Stichproben-Routen (de/en/zh x bug/voice/workflows/
+usage-credits/pr-comments) live 200, Inhalt EN+ZH geprueft, Landing zaehlt
+live 302, llms.txt 302 (3 Stellen). Rosetta bewusst nicht angefasst - neue
+Zellen zu fuellen braucht Verifikation der Aequivalente auf 4 anderen
+Plattformen, eigener Arbeitsschritt.
+
+Merke: DE+EN selbst schreiben, wenn die Quelle schon extrahiert ist - spart
+den Delegations-Umweg und die Gefahr, dass ein Agent Details erfindet. Nur die
+mechanische Uebersetzung es/fr/zh delegieren.
+
+Commit c4a167c. Pages-Deploy b9e3e8b4.
+
+Als Naechstes heute (Mo 20.07): ~08:05 UTC ersten Digest-Cron pruefen, dann
+Feed 20.07.
