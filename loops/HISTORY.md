@@ -1288,3 +1288,24 @@ Commit e69be6d. Pages-Deploy 19d62129.
 
 Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen (zeitkritisch),
 dann Feed 20.07.
+
+## It. 177 — Mo 20.07. ~08:10 UTC — Erster Digest-Cron-Lauf geprüft + Feed 20.07
+
+Poll 583/115, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+### 🔔 Erster Newsletter-Digest-Cron (Cron „0 8 * * 1", heute 08:00 UTC): KORREKT
+
+Um 08:09 UTC (nach dem 08:00-Lauf) die Resend-API geprueft: weiterhin genau 2
+gesendete Mails, unveraendert zur Baseline von 07:42 (beide vom 17.07.: eine
+Anmelde-Bestaetigung an marvin.mez@tm2.ai + ein Test). Der Digest-Cron ist also
+gelaufen, hat aber NICHTS verschickt — weil es 0 bestaetigte Abonnenten gibt
+(confirmed=1). Das ist der ERWARTETE, KORREKTE Zustand: Double-Opt-in wie
+gebaut. Marvin hat sich am 17.07. angemeldet, aber die Bestaetigung noch nicht
+angeklickt (confirmed=0), darum bekam er korrekt keinen Digest. Kein Bug.
+Backfill hat auch keine neue Bestaetigung geschickt, weil opt_in_sent bereits 1.
+
+Marvin-Todo bleibt: Newsletter-Opt-in bestaetigen, dann testet der naechste
+Montags-Digest den echten Versand.
+
+(D1 direkt abzufragen klemmte — weder Pages- noch Master-Token hat D1-Read.
+Die Resend-API ist die maßgebliche Wahrheit und genuegt fuer den Check.)
