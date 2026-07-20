@@ -1191,3 +1191,43 @@ cursor-cli 82 Slugs je Sprache, alter Sammel-Eintrag ueberall weg. Lint gruen,
 Commit 0d45607. Pages-Deploy 690597d0.
 
 Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
+
+## It. 173 — Mo 20.07. ~04:30 UTC — Timeline-Frische: Fable-Eintrag war veraltet
+
+Poll 580/112, keine Notes/Bugs/Feedback, Smoke 10/10 gruen. Digest noch nicht
+faellig (04:30 UTC < 08:00 UTC).
+
+Nach abgeschlossener Quellen-Integritaet neue Achse: inhaltliche Frische. Die
+Timeline gegen das heutige Datum geprueft.
+
+### Echter Frische-Fehler gefunden und behoben
+
+Die Timeline fuehrte Claude Fable 5 als "Ende des Gratiszugangs" (sunset,
+19.07.) - aber die angekuendigte Abschaltung fand nicht statt. Anthropic kuen-
+digte am 17.07. an, dass Fable bleibt; ab heute (20.07.) tritt die Neuregelung
+in Kraft. Feed und Vergleiche trugen die Aufloesung schon seit It.165, die
+Timeline war der letzte Ort mit der veralteten "endet"-Darstellung.
+
+Beleg woertlich am 20.07. gegengeprueft (@claudeai via simonwillison.net):
+"Beginning July 20, Claude Fable 5 will be included in all Max and Team Premium
+plans, at 50% of limits. Pro and Team Standard users will continue to have
+access to Fable via usage credits, and will receive a one-time $100 credit."
+
+Eintrag jetzt typ preisaenderung/2026-07-20, Text beschreibt Aufnahme in
+Max/Team Premium + 100-$-Guthaben fuer Pro/Team Standard + Hinweis, dass die
+Abschaltung nicht kam. Alle 5 Sprachen, korrekt einsortiert. Live DE+EN geprueft.
+
+### Nebenbefund: Timeline war bei der It.166-Lokalisierung uebersehen worden
+
+Der Fable-Eintrag trug in allen Sprachen den deutschen Quellentitel
+"BleepingComputer: Fable 5 frei bis 19. Juli". Nur dieser eine Eintrag war
+betroffen (Rest der Timeline sauber); mit der neuen simonwillison-Quelle ist
+auch der Titel jetzt lokalisiert.
+
+Merke: nach einem angekuendigten Termin (sunset/Release/Preis) am Stichtag
+pruefen, ob er wirklich eintrat - eine Ankuendigung ist noch kein Faktum, und
+eine Aufloesung muss ueberall nachgezogen werden, nicht nur im Feed.
+
+Commit 984a6af. Pages-Deploy e9e478dd.
+
+Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
