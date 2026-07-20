@@ -1387,3 +1387,18 @@ zwischen Grok 4.5 und Muse Spark. Quelle nochmals verbatim gegengeprueft
 Merke: was in den Feed geht und ein Release/Meilenstein ist, gehoert oft auch
 in die Timeline - Feed = Strom, Timeline = kuratierte Chronik. Beide konsistent
 halten (wie schon bei Fable It.173).
+
+## It. 180 — Mo 20.07. ~11:45 UTC — Fehler-Katalog-Frische (keine Änderung)
+
+Poll 583/115, newsletter_count=1, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Inkling in Vergleiche aufzunehmen verworfen: offenes Modell, 5 Tage alt, kein
+belegbarer API-Preis / kein Artificial-Analysis-Index → ohne beides keine
+Ratio-Zeile ohne Erfindung. Nicht erzwungen (steht in Feed+Timeline, richtig).
+
+Stattdessen fehler.*.json geprueft: 24 Eintraege, 0 Verweise auf entfernte/
+geaenderte Befehle (/thinking, /web-search, /vim). Zwei Versionsnummern
+(2.1.156, 2.1.116) sind korrekte historische Grenzen ("vor 2.1.156 aktualisieren"
+bei tool-use-concurrency-Bug; "vor 2.1.116 verifizierte Claude Code den
+Bash-Pfad" bei windows-git-bash-not-found) - kein veralteter Rat trotz
+aktueller CLI 2.1.215. Katalog frisch, keine Aenderung.
