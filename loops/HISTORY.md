@@ -1427,3 +1427,19 @@ Merke: Traffic-staerkste Seiten lohnen den genauesten Doku-Abgleich - dort
 zahlt sich Vollstaendigkeit am meisten aus.
 
 Commit folgt. Pages-Deploy 9acabcc2.
+
+## Marvin-Bugreport 20.07. ~15:15 UTC — Prompt-Baukasten-Vorschau unsichtbar → GEFIXT
+
+Marvin meldete: im Prompt-Baukasten sieht man die Prompts nicht (Text in
+Hintergrundfarbe). Ursache: globale pre-Regel setzt color:var(--bg) auf
+background:var(--ink) (fuer dunkle Code-Bloecke). Die Sandbox-Vorschau
+(PromptSandbox.tsx, data-sandbox-preview) ueberschrieb per Inline-Style nur
+background auf var(--bg) (hell), nicht color → heller Text auf hellem Grund,
+unsichtbar. Fix: color:var(--ink) ergaenzt. Nur diese eine Stelle betroffen
+(prompts/page.tsx-pre hat dunklen Grund+hellen Text=ok; vergleiche-Chips sind
+spans). Live: computed color rgb(43,33,24)/bg rgb(253,246,236), Screenshot
+lesbar, Prod 200. Commit a07360b, Deploy b16a5eda.
+
+Merke: jede <pre> mit hellem background-Override braucht auch ein
+color-Override, sonst greift die globale color:var(--bg) und macht den Text
+unsichtbar. Klasse „Override nur halb" - bei Farbpaaren immer beide setzen.
