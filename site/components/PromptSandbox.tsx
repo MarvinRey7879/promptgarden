@@ -83,7 +83,7 @@ export default function PromptSandbox({ lang, items }: { lang: string; items: Sa
       <pre
         data-sandbox-preview
         className="mono"
-        style={{ background: 'var(--bg)', border: '2.5px solid var(--ink)', borderRadius: 12, padding: '14px 16px', fontSize: 13, lineHeight: 1.55, whiteSpace: 'pre-wrap', margin: '0 0 12px' }}
+        style={{ background: 'var(--bg)', color: 'var(--ink)', border: '2.5px solid var(--ink)', borderRadius: 12, padding: '14px 16px', fontSize: 13, lineHeight: 1.55, whiteSpace: 'pre-wrap', margin: '0 0 12px' }}
       >
         {filled}
       </pre>
