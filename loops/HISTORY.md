@@ -1409,3 +1409,21 @@ Poll 584/116, newsletter_count=1, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
 llms.txt-Zahlen konsistent (111 Kapitel, 320 Befehle; Feed ohne feste Zahl).
 Ruhige Phase, nichts erzwungen. Naechste substanzielle Anker: Feed Di 21.07,
 Ideen-Pitch R5 ~22./23.07, Digest-Versandtest 27.07.
+
+## It. 183 — Mo 20.07. ~15:00 UTC — /scroll-speed angereichert (Top-Sucheinstieg)
+
+Poll 584/116, newsletter_count=1, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+(It.182 war reiner Routine-Check ohne Commit.)
+
+/scroll-speed ist laut top_paths die zweitstaerkste Sucheinstiegsseite
+(/en/befehle/claude-code/scroll-speed/, 23 Views/23 unique). Der Bestandstext
+liess ein dokumentiertes Detail weg. Frisch an der offiziellen Doku
+gegengeprueft (code.claude.com/docs/en/commands): "...with a ruler you can
+scroll while the dialog is open to preview the change." Das Lineal-Detail in
+allen 5 Sprachen in den what-Body ergaenzt (summary bleibt kurz, Renderer
+schneidet sie ab). Lint gruen, live EN+DE bestaetigt.
+
+Merke: Traffic-staerkste Seiten lohnen den genauesten Doku-Abgleich - dort
+zahlt sich Vollstaendigkeit am meisten aus.
+
+Commit folgt. Pages-Deploy 9acabcc2.
