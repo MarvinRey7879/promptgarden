@@ -1355,3 +1355,18 @@ commands selbst: 17 Regex-Treffer, alle Fehlalarme:
 
 Ergebnis: 0 tote Verweise. Die Befehls-Entfernung (It.167) war sauber, nichts
 haengt. Keine Aenderung noetig — legitime Verifikation.
+
+## It. 178b — Mo 20.07. ~10:30 UTC — Marvin hat Newsletter bestätigt (erster confirmed Abonnent)
+
+Marvin fragte, wo er bestätigt. Loesung: erneuten Signup-Call an
+/v1/newsletter mit seiner Adresse ausgeloest → die Route sendet bei confirmed=0
+eine FRISCHE Bestaetigungsmail mit dem vorhandenen Token (Resend 2→3, heute
+10:28 UTC an marvin.mez@tm2.ai). Marvin hat den Button geklickt.
+
+Verifikation OHNE D1-Zugriff (Token-Perms fehlen): erneuter Signup-POST loeste
+KEINE weitere Mail aus (Resend blieb bei 3) → der Guard `if (!row.confirmed)`
+griff → confirmed=1 bestaetigt. Sauberer Indirekt-Test.
+
+Damit erster bestaetigter Abonnent (marvin.mez@tm2.ai, de). Naechster
+Montags-Digest 27.07. 08:00 UTC = erster echter End-to-End-Versandtest.
+Marvin-Todo „Newsletter-Opt-in" erledigt.
