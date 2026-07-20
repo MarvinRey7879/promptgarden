@@ -1261,3 +1261,30 @@ Marginal-Aenderung. Kein Deploy.
 
 Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen (zeitkritisch),
 dann Feed 20.07.
+
+## It. 175 — Mo 20.07. ~06:40 UTC — Rosetta: neue Codex-Befehle in leere Zellen
+
+Poll 583/115, keine Notes/Bugs/Feedback, Smoke 10/10 gruen. Digest noch nicht
+faellig (06:40 UTC < 08:00 UTC).
+
+benchmarks.*.json kurz geprueft: Evergreen-Beschreibungen (was misst SWE-bench
+etc.), keine zeit-sensitiven Scores → kein Frische-Thema.
+
+Dann etwas Additives statt weiterer Verifikation: die 16 neuen Codex-Befehle
+(It.170) konnten vier bislang leere Codex-Spalten in der Befehls-Rosetta fuellen,
+wo der neue Befehl die Aufgabe sicher abdeckt:
+- kontext-komprimieren -> /compact
+- projekt-config -> /init (AGENTS.md-Geruest)
+- bug-melden -> /feedback
+- beenden -> /quit
+
+Bewusst NICHT gefuellt: kontext-visualisieren (Codex hat kein /context, /status
+zeigt Kontext nur nebenbei - keine echte Entsprechung). Von 18 leeren
+Codex-Zellen also nur die 4 sicheren, nicht erzwungen. Alle vier zeigen auf
+existierende Codex-Befehlsseiten (gegengeprueft), 5 Sprachen, Lint gruen, live
+auf /rosetta/ verlinkt.
+
+Commit e69be6d. Pages-Deploy 19d62129.
+
+Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen (zeitkritisch),
+dann Feed 20.07.
