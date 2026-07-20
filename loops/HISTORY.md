@@ -1152,3 +1152,42 @@ HTTP-Check je URL, kein Domain-Whitelist-Ansatz.
 Commit 2019a6f. Pages-Deploy 92eda35a.
 
 Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
+
+## It. 172 — Mo 20.07. ~03:20 UTC — Link-Sweep abgeschlossen, Cursor-Shortcuts entzerrt
+
+Poll 578/110, keine Notes/Bugs/Feedback, Smoke 10/10 gruen. Digest noch nicht
+faellig (03:20 UTC < 08:00 UTC).
+
+### Link-Sweep der restlichen Inhaltstypen: SAUBER
+
+vergleiche/prompts/feed/timeline/fehler/loops (de+en) - 112 verschiedene URLs
+je auf HTTP geprueft. 110 echt 200, 2x 403 (bleepingcomputer, x.ai/news/grok-4-5)
+- beide als Bot-Block auf ECHTEN Seiten verifiziert: bleepingcomputer via
+r.jina.ai (Titel+Datum stimmen), x.ai via Websuche (erstes Ergebnis ist exakt
+diese URL, Titel "Introducing Grok 4.5" passt). Keine toten Links.
+
+Damit ist die Quellen-Integritaet ueber ALLE Inhaltstypen einmal komplett
+geprueft: commands, addons, benchmarks, entries, vergleiche, prompts, feed,
+timeline, fehler, loops. Zwei tote-URL-Klassen gefunden und behoben (Doku-
+Umzug It.169, Pfad-Verkettung It.171), Rest sauber.
+
+### /lexikon/ und /lernpfade/ Laenge: kein Problem
+
+Beide Index-Seiten haben bereits Suche + Kategorie/Welt-Filter (LexikonList hat
+q+cat+completed). Die vom Audit geflaggte Hoehe (8869/11818px) ist gewollt und
+navigierbar - kein Fix noetig, keine Laenge um ihrer selbst willen aendern.
+
+### Cursor-Modell-Shortcuts entzerrt (letzte Inventar-Inkonsistenz)
+
+Der Eintrag opus-composer-fast hatte den zusammengesetzten Namen
+"/opus, /composer, /fast" - als einziger Eintrag mehr als ein Befehl. In drei
+eigenstaendige Seiten aufgeteilt (opus/composer/fast), inhaltlich unveraendert,
+weiter durch den Cursor-Changelog belegt (heute geprueft: die drei stehen dort
+aktuell, kein /vim-Fall). DE+EN selbst, es/fr/zh 3 md5-Agenten. 318 -> 320,
+cursor-cli 82 Slugs je Sprache, alter Sammel-Eintrag ueberall weg. Lint gruen,
+9 neue Routen auf Deploy-URL 200, alte 404, Zaehler 320. Prod-Edge-Cache lag
+(zeigte kurz 318, deploy-URL korrekt).
+
+Commit 0d45607. Pages-Deploy 690597d0.
+
+Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
