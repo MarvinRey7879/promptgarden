@@ -1082,3 +1082,42 @@ es auch als .md (cursor.com/docs/cli/reference/slash-commands.md) - sauberste
 Quelle.
 
 Commit d0372cd. Pages-Deploy b1c8301f.
+
+## It. 170 — Mo 20.07. ~01:10 UTC — Codex vervollstaendigt, Inventar aller 5 Plattformen durch
+
+Poll 577/109, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Den Befehls-Inventar-Abgleich abgeschlossen. Ergebnis ueber alle 5 Plattformen:
+- claude-code: It.167-168 bereinigt (3 erfundene weg, 11 fehlende + /pr-comments angelegt)
+- aider: SAUBER (48/48)
+- antigravity: SAUBER (31/31 Kernbefehle; die gestrigen "~17 fehlend" waren
+  Aliase /branch /new /quit /switch /undo /quota /settings /conversation und
+  Config-Werte altscreen/bash/sandbox/web/workspace - reines Regex-Rauschen)
+- cursor: nach It.169-URL-Fix deckungsgleich (Diffs = dokumentierte Aliase)
+- codex: 16 echte Luecken (heute geschlossen)
+
+### 16 Codex-Befehle angelegt
+
+Korrektur zur gestrigen Schaetzung: die "~64 Codex-Befehle" waren die
+Navigation der gerenderten Doku-Seite, nicht Befehle. Die echte Tabelle auf
+developers.openai.com/codex/cli/slash-commands hat 23 Eintraege; wir hatten 16,
+genau 16 fehlten. /personality und /side sind darin dokumentiert - meine
+Easter-Egg-Vermutung war falsch, beide sind echte Befehle.
+
+Neu (jeder aus der Doku-Tabelle belegt, dokumentierte Bedingungen uebernommen):
+init compact reasoning fast personality memories ide-context feedback approve
+side project cloud local cloud-environment worktree quit. Mit Querverweisen
+(/cloud<->/local, /side<->fork, /reasoning<->/model).
+
+DE+EN selbst aus der Quelle geschrieben, es/fr/zh von 3 md5-Agenten (Hash
+0bf7feac in allen bestaetigt). 302 -> 318 Befehle, codex-cli 32 Slugs je
+Sprache, Paritaet OK. Lint gruen, 12 Stichproben-Routen live 200, Inhalt EN+ZH
+geprueft, Landing zaehlt live 318, llms.txt 318.
+
+Damit ist das Befehls-Inventar aller 5 Plattformen einmal vollstaendig gegen die
+offiziellen Dokus geprueft und bereinigt. Naechste inhaltliche Befehls-Arbeit
+erst wieder, wenn eine Plattform neue Befehle veroeffentlicht (Changelog-Watch).
+
+Commit 0fbeb2d. Pages-Deploy ebd1992a.
+
+Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
