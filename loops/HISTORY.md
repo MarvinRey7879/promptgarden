@@ -1370,3 +1370,20 @@ griff → confirmed=1 bestaetigt. Sauberer Indirekt-Test.
 Damit erster bestaetigter Abonnent (marvin.mez@tm2.ai, de). Naechster
 Montags-Digest 27.07. 08:00 UTC = erster echter End-to-End-Versandtest.
 Marvin-Todo „Newsletter-Opt-in" erledigt.
+
+## It. 179 — Mo 20.07. ~10:40 UTC — Inkling in die Timeline
+
+Poll 583/115, keine Notes/Bugs/Feedback, Smoke 10/10 gruen. newsletter_count=1
+(Marvin bestaetigt).
+
+Echte additive Frische statt Verifikation: das heute im Feed aufgenommene
+offene Modell Inkling (Thinking Machines, 15.07) gehoerte auch in die Modell-
+Timeline (bedeutender Coding-Modell-Release, staerkstes offenes US-Modell,
+77,6% SWE-bench). Als typ release, 2026-07-15, 5 Sprachen, datumsrichtig
+zwischen Grok 4.5 und Muse Spark. Quelle nochmals verbatim gegengeprueft
+(thinkingmachines.ai Primaerquelle). Lint gruen, live DE+ZH. Timeline jetzt
+13 Eintraege. Commit 68a5aa0, Deploy 45976334.
+
+Merke: was in den Feed geht und ein Release/Meilenstein ist, gehoert oft auch
+in die Timeline - Feed = Strom, Timeline = kuratierte Chronik. Beide konsistent
+halten (wie schon bei Fable It.173).
