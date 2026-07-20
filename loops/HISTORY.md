@@ -1402,3 +1402,10 @@ geaenderte Befehle (/thinking, /web-search, /vim). Zwei Versionsnummern
 bei tool-use-concurrency-Bug; "vor 2.1.116 verifizierte Claude Code den
 Bash-Pfad" bei windows-git-bash-not-found) - kein veralteter Rat trotz
 aktueller CLI 2.1.215. Katalog frisch, keine Aenderung.
+
+## It. 181 — Mo 20.07. ~12:48 UTC — Stabil, kein Änderungsbedarf
+
+Poll 584/116, newsletter_count=1, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+llms.txt-Zahlen konsistent (111 Kapitel, 320 Befehle; Feed ohne feste Zahl).
+Ruhige Phase, nichts erzwungen. Naechste substanzielle Anker: Feed Di 21.07,
+Ideen-Pitch R5 ~22./23.07, Digest-Versandtest 27.07.
