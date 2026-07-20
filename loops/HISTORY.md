@@ -1309,3 +1309,30 @@ Montags-Digest den echten Versand.
 
 (D1 direkt abzufragen klemmte — weder Pages- noch Master-Token hat D1-Read.
 Die Resend-API ist die maßgebliche Wahrheit und genuegt fuer den Check.)
+
+### FEED 20.07 — 5 belegte News (35 → 40)
+
+Research-Agent lieferte 5 Items, ALLE von mir unabhaengig gegengeprueft (nicht
+dem Agenten vertraut, selbst an den Quellen nachgelesen):
+- gemini-3-5-pro-delay-coding: Delay+Coding-Grund an 9to5google bestaetigt; der
+  4%-Alphabet-Kursrutsch stand NICHT in 9to5google → separat bei CNBC (via jina)
+  verifiziert bevor stehengelassen. „HTTP 200 != belegt" in Aktion.
+- thinking-machines-inkling: alle Zahlen (975B/41B, 1M, 45T, 77,6% SWE-bench,
+  63,8% Terminal-Bench, Inkling-Small 12B) verbatim an der Primaerquelle.
+- gemini-cli-0-51-0: Version+gitconfig an GitHub-Releases.
+- github-copilot-cli-mcp-flag: 1.0.72 + --plugin/--mcp/--skill an GitHub-Releases.
+- harness-handbook-paper: arXiv 2607.13285 Titel exakt bestaetigt.
+
+DE+EN selbst geschrieben, es/fr/zh 3 md5-Agenten (Hash d0bd5c1a; Falscher-
+Freund-Zahlen billion/trillion pro Sprache korrekt: es „mil millones/billones",
+fr „milliards", zh unangetastet). 40 Items ×5 paritaetisch, datumsrichtig
+einsortiert (Pos 4-17, da die News 14.-17.07 aelter als der Bestands-Neueste
+18.07 sind). Lint gruen, live DE+ZH + RSS(40) + Filter „Alle (40)" auf Deploy-URL
+UND Prod.
+
+Eigener Fehler unterwegs: Live-Verify-curl zunaechst gegen promptgarTen.pages.dev
+(mit T) statt promptgarDen.pages.dev — die pages.dev-Subdomain nutzt den PROJEKT-
+namen (mit D), nicht die Domain (mit T). Sofort korrigiert. (Gleiche T/D-Falle
+wie It.165, hier andersrum.)
+
+Commit 3934e90. Pages-Deploy 27860540.
