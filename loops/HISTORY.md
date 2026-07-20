@@ -1336,3 +1336,22 @@ namen (mit D), nicht die Domain (mit T). Sofort korrigiert. (Gleiche T/D-Falle
 wie It.165, hier andersrum.)
 
 Commit 3934e90. Pages-Deploy 27860540.
+
+## It. 178 — Mo 20.07. ~09:35 UTC — Integritäts-Check nach Befehls-Entfernung (keine Änderung)
+
+Poll 583/115, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Geprueft, ob nach dem Entfernen von /thinking, /web-search, /web und der /vim-
+Korrektur (It.167) irgendein Inhalt diese Befehle noch als aktuell referenziert
+(toter Verweis / veralteter Rat). Volltextsuche ueber alle Inhalte ausser
+commands selbst: 17 Regex-Treffer, alle Fehlalarme:
+- entries web-search-tool-URLs = Doku des echten Claude-WebSearch-WERKZEUGS
+  (kein Slash-Befehl), legitim.
+- „thinking-machines"/„reasoning-thinking mode" = Firmenname bzw. generischer
+  Text, nicht der /thinking-Befehl.
+- rosetta aider.name „/web" = AIDERS echter /web-Befehl (Webseite scrapen), Route
+  /de/befehle/aider/web/ live 200, im Bestand vorhanden. Kein Bezug zum
+  entfernten claude-code /web.
+
+Ergebnis: 0 tote Verweise. Die Befehls-Entfernung (It.167) war sauber, nichts
+haengt. Keine Aenderung noetig — legitime Verifikation.
