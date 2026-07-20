@@ -1121,3 +1121,34 @@ erst wieder, wenn eine Plattform neue Befehle veroeffentlicht (Changelog-Watch).
 Commit 0fbeb2d. Pages-Deploy ebd1992a.
 
 Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
+
+## It. 171 — Mo 20.07. ~02:10 UTC — Addons/Benchmark-Quellen geprüft, 20 kaputte MCP-URLs gefixt
+
+Poll 578/110, keine Notes/Bugs/Feedback, Smoke 10/10 gruen.
+
+Nach dem Command-Inventar dieselbe Fehlerklasse (umgezogene/kaputte Quell-URLs)
+bei Addons und Benchmarks geprüft: alle 47 sources[].url je auf HTTP-Status
+getestet.
+
+Ergebnis: 43 erreichbar. Eine GitHub-URL gab kurz 000 (transient, beim Retry
+200). Vier modelcontextprotocol.io-URLs lieferten 404 - ein String-
+Verkettungsfehler hatte das Präfix ".../docs/getting-started/intro" vor den
+eigentlichen Pfad geklebt, sodass "introintroduction" und "introdocs/..."
+entstanden:
+- .../getting-started/introintroduction -> .../getting-started/intro
+- .../introdocs/tutorials/security/security_best_practices -> .../docs/tutorials/security/security_best_practices
+- .../introdocs/develop/build-server -> .../docs/develop/build-server
+- .../introdocs/learn/server-concepts -> .../docs/learn/server-concepts
+
+Zwei in addons.*.json, zwei in entries.*.json, je 5 Sprachen = 20 Stellen
+(research/mcp-url-verkettung-fix.mjs). Jede Ziel-URL einzeln auf 200 geprüft.
+Gegenprobe: 0 kaputte URLs im gesamten Build.
+
+Merke fuer den Link-Audit: nicht nur auf tote Domains achten, sondern auch auf
+Verkettungsfehler INNERHALB einer lebenden Domain (die Domain modelcontext-
+protocol.io lebt, nur der Pfad war Murks). Solche Fehler findet nur ein echter
+HTTP-Check je URL, kein Domain-Whitelist-Ansatz.
+
+Commit 2019a6f. Pages-Deploy 92eda35a.
+
+Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
