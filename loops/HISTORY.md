@@ -1231,3 +1231,33 @@ eine Aufloesung muss ueberall nachgezogen werden, nicht nur im Feed.
 Commit 984a6af. Pages-Deploy e9e478dd.
 
 Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen, dann Feed 20.07.
+
+## It. 174 — Mo 20.07. ~05:35 UTC — Frische-/Konsistenz-Verifikation (keine Änderung nötig)
+
+Poll 583/115, keine Notes/Bugs/Feedback, Smoke 10/10 gruen. Digest noch nicht
+faellig (05:35 UTC < 08:00 UTC).
+
+Nach dem Timeline-Fix (It.173) geprueft, ob die Fable-Umstellung ueberall
+konsistent ist und ob sonst etwas veraltet ist. Ergebnis: alles sauber, daher
+bewusst KEINE Aenderung (statt einer erzwungenen Marginal-Aenderung).
+
+- Volltext-Sweep aller Inhalte nach der alten "Fable endet/Gratiszugang endet/
+  end of free access"-Darstellung: 0 Treffer. Die Timeline war der einzige
+  veraltete Ort, jetzt behoben.
+- Fable-Preis konsistent ueber vier Flaechen: Preisrechner 10/50 $ pro MTok,
+  Vergleiche-Karte "10 $ / 50 $", Ratio-Tabelle blended 20 $ (= (3x10+50)/4,
+  Mathematik stimmt), Abo-Note "ab 20.07. in Max/Team Premium" deckungsgleich
+  zur korrigierten Timeline.
+- prompts.*.json: 0 veraltete Modellnamen (die Vorlagen referenzieren Rollen/
+  Werkzeuge, nicht Modellversionen - alterungsresistent).
+- Mobil-Stichprobe der meistbesuchten Seitentypen (Kapitel /lexikon/token/,
+  Befehl /befehle/claude-code/scroll-speed/, neuer Codex-Befehl /worktree/):
+  overflow 0, Hoehen 1309-3658px, Burger-Nav kompakt, grün/rosa-Karten klar,
+  neue Codex-Seite mit lokalisierter Quelle sauber. Kein Politur-Punkt.
+
+Merke: Ein Verifikations-Durchlauf ohne Aenderung ist ein legitimes Ergebnis -
+er belegt, dass frühere Arbeit haelt, und ist ehrlicher als eine erzwungene
+Marginal-Aenderung. Kein Deploy.
+
+Als Naechstes heute Mo 20.07: ~08:00 UTC Digest-Cron pruefen (zeitkritisch),
+dann Feed 20.07.
