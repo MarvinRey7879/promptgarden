@@ -9,7 +9,7 @@ import { CompareDemo } from './CompareDemo';
 import { MoeDemo } from './MoeDemo';
 import { RosettaDemo } from './RosettaDemo';
 import { LatenzDemo } from './LatenzDemo';
-import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo, CodexExecDemo, CodexReviewDemo, AgyPrintDemo, ContextCmdDemo, RewindDemo } from './TerminalDemo';
+import { GoalDemo, SandboxDemo, LoopDemo, AiderAddDemo, CompactDemo, CursorPlanDemo, CodexExecDemo, CodexReviewDemo, AgyPrintDemo, ContextCmdDemo, RewindDemo, AiderArchitectDemo } from './TerminalDemo';
 import type { Lang } from './theme';
 
 export const RemotionRoot = () => {
@@ -181,6 +181,15 @@ export const RemotionRoot = () => {
         id="RewindDemo"
         component={RewindDemo}
         durationInFrames={400}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{ lang: 'de' as Lang }}
+      />
+      <Composition
+        id="AiderArchitectDemo"
+        component={AiderArchitectDemo}
+        durationInFrames={420}
         fps={30}
         width={1280}
         height={720}

@@ -1595,3 +1595,14 @@ topisch nach dem 2.1.216-Feed-Item. rewindScripts ×5 + RewindDemo +
 Composition (400f/720p) → rewind-demo.<lang>.mp4 → COMMAND_VIDEOS
 claude-code/rewind. Build 0, Deploy 5bd9e694, live+Standbild verifiziert,
 prod 200. 21 Basis-Clips × 5 = 105 mp4.
+
+## It. 205 — Remotion /architect-Clip (#22, Direktive 12, aider)
+
+Plattform diversifiziert: erster aider-Clip neben /add. /architect (Aider):
+2-Modell-Feature — Hauptmodell (Architect) plant, separates Editor-Modell
+(--editor-model) setzt in Datei-Edits um; faktentreu aus commands.json.
+aiderArchitectScripts ×5 + AiderArchitectDemo + Composition (420f/720p) →
+aider-architect-demo.<lang>.mp4 → COMMAND_VIDEOS aider/architect. Build 0,
+Deploy 30ee089b, live+Standbild verifiziert, prod 200. 22 Basis-Clips × 5 =
+110 mp4. Video-Abdeckung jetzt: claude-code 5, cursor 2, aider 2, codex 2,
+antigravity 1.

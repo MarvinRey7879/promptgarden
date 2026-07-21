@@ -17,6 +17,7 @@ const COMMAND_VIDEOS: Record<string, string> = {
   'cursor-cli/sandbox-run': 'sandbox-demo',
   'cursor-cli/plan': 'cursor-plan-demo',
   'aider/add': 'aider-add-demo',
+  'aider/architect': 'aider-architect-demo',
   'codex-cli/exec': 'codex-exec-demo',
   'codex-cli/review': 'codex-review-demo',
   'antigravity-cli/print': 'agy-print-demo',

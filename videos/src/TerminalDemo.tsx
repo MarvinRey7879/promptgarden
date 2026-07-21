@@ -733,3 +733,66 @@ export const rewindScripts: Record<Lang, TermScript> = {
 };
 
 export const RewindDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={rewindScripts[lang]} />;
+
+// ---------- Demo 12: /architect (Aider) — Fakten aus commands.de.json aider/architect ----------
+// Faktentreu: Hauptmodell (Architect) plant, separates Editor-Modell
+// (--editor-model) setzt den Plan in konkrete Datei-Edits um.
+export const aiderArchitectScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Aider: /architect — planen + umsetzen (2 Modelle)',
+    lines: [
+      { kind: 'cmd', text: '/architect Zahlungslogik refaktorieren' },
+      { kind: 'out', text: 'Architect-Modell entwirft die Lösung …' },
+      { kind: 'out', text: 'Plan: payment.py aufteilen, Validierung auslagern' },
+      { kind: 'out', text: 'Editor-Modell setzt den Plan in Datei-Edits um …' },
+      { kind: 'ok', text: 'payment.py + validators.py geändert und committet.' },
+      { kind: 'note', text: 'Editor-Modell wählbar: --editor-model' },
+    ],
+  },
+  en: {
+    title: 'Aider: /architect — plan + apply (two models)',
+    lines: [
+      { kind: 'cmd', text: '/architect refactor the payment logic' },
+      { kind: 'out', text: 'Architect model drafts the solution …' },
+      { kind: 'out', text: 'Plan: split payment.py, extract validation' },
+      { kind: 'out', text: 'Editor model turns the plan into file edits …' },
+      { kind: 'ok', text: 'payment.py + validators.py changed and committed.' },
+      { kind: 'note', text: 'Pick the editor model: --editor-model' },
+    ],
+  },
+  es: {
+    title: 'Aider: /architect — planear + aplicar (dos modelos)',
+    lines: [
+      { kind: 'cmd', text: '/architect refactorizar la lógica de pago' },
+      { kind: 'out', text: 'El modelo arquitecto redacta la solución …' },
+      { kind: 'out', text: 'Plan: dividir payment.py, extraer la validación' },
+      { kind: 'out', text: 'El modelo editor convierte el plan en ediciones …' },
+      { kind: 'ok', text: 'payment.py + validators.py modificados y con commit.' },
+      { kind: 'note', text: 'Elegir modelo editor: --editor-model' },
+    ],
+  },
+  fr: {
+    title: 'Aider : /architect — planifier + appliquer (deux modèles)',
+    lines: [
+      { kind: 'cmd', text: '/architect refactorer la logique de paiement' },
+      { kind: 'out', text: 'Le modèle architecte rédige la solution …' },
+      { kind: 'out', text: 'Plan : découper payment.py, extraire la validation' },
+      { kind: 'out', text: 'Le modèle éditeur transforme le plan en éditions …' },
+      { kind: 'ok', text: 'payment.py + validators.py modifiés et commités.' },
+      { kind: 'note', text: 'Choisir le modèle éditeur : --editor-model' },
+    ],
+  },
+  zh: {
+    title: 'Aider：/architect——规划 + 落地（两个模型）',
+    lines: [
+      { kind: 'cmd', text: '/architect 重构支付逻辑' },
+      { kind: 'out', text: '架构模型起草方案 …' },
+      { kind: 'out', text: '方案：拆分 payment.py，抽离校验' },
+      { kind: 'out', text: '编辑模型把方案转成文件改动 …' },
+      { kind: 'ok', text: 'payment.py + validators.py 已修改并提交。' },
+      { kind: 'note', text: '可选编辑模型：--editor-model' },
+    ],
+  },
+};
+
+export const AiderArchitectDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={aiderArchitectScripts[lang]} />;
