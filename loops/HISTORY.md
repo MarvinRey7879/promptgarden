@@ -1620,3 +1620,14 @@ codexDiffScripts ×5 + CodexDiffDemo + Composition (400f/720p) →
 codex-diff-demo.<lang>.mp4 → COMMAND_VIDEOS codex-cli/diff. Build 0, Deploy
 76bc08e0, live+Standbild verifiziert, prod 200. 23 Basis-Clips × 5 = 115 mp4.
 Video-Abdeckung: claude-code 5, cursor 2, aider 2, codex 3, antigravity 1.
+
+## It. 208 — Remotion cursor /model-Clip (#24)
+
+cursor-cli /model: Modellwechsel in laufender Session, faktentreu aus
+commands.json (Fuzzy-Picker; Fast-Modus, Reasoning-Effort und Kontext bleiben
+beim Wechsel erhalten). Modellnamen aus aktueller vergleiche-Liste (Opus 4.8,
+GPT-5.6 Sol). cursorModelScripts ×5 + CursorModelDemo + Composition (400f/720p)
+→ cursor-model-demo.<lang>.mp4 → COMMAND_VIDEOS cursor-cli/model. Build 0,
+Deploy f9c97fe3, live+Standbild verifiziert, prod 200. 24 Basis-Clips × 5 =
+120 mp4. Video-Abdeckung: claude-code 5, cursor 3, aider 2, codex 3,
+antigravity 1.

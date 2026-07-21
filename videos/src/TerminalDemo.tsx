@@ -863,3 +863,66 @@ export const codexDiffScripts: Record<Lang, TermScript> = {
 };
 
 export const CodexDiffDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={codexDiffScripts[lang]} />;
+
+// ---------- Demo 14: /model (Cursor CLI) — Fakten aus commands.de.json cursor-cli/model ----------
+// Faktentreu: Modell-Picker (Fuzzy) in laufender Session; Fast-Modus,
+// Reasoning-Effort und Kontext bleiben beim Wechsel erhalten.
+export const cursorModelScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Cursor CLI: /model — Modell in der Session wechseln',
+    lines: [
+      { kind: 'cmd', text: '/model opus' },
+      { kind: 'out', text: 'Modellauswahl (Fuzzy-Suche):' },
+      { kind: 'ok', text: '> Claude Opus 4.8' },
+      { kind: 'out', text: '  GPT-5.6 Sol' },
+      { kind: 'ok', text: 'Gewechselt zu Claude Opus 4.8 — Session läuft weiter.' },
+      { kind: 'note', text: 'Fast-Modus, Reasoning-Effort und Kontext bleiben erhalten.' },
+    ],
+  },
+  en: {
+    title: 'Cursor CLI: /model — switch model mid-session',
+    lines: [
+      { kind: 'cmd', text: '/model opus' },
+      { kind: 'out', text: 'Model picker (fuzzy search):' },
+      { kind: 'ok', text: '> Claude Opus 4.8' },
+      { kind: 'out', text: '  GPT-5.6 Sol' },
+      { kind: 'ok', text: 'Switched to Claude Opus 4.8 — session continues.' },
+      { kind: 'note', text: 'Fast mode, reasoning effort and context are preserved.' },
+    ],
+  },
+  es: {
+    title: 'Cursor CLI: /model — cambiar de modelo en la sesión',
+    lines: [
+      { kind: 'cmd', text: '/model opus' },
+      { kind: 'out', text: 'Selector de modelo (búsqueda difusa):' },
+      { kind: 'ok', text: '> Claude Opus 4.8' },
+      { kind: 'out', text: '  GPT-5.6 Sol' },
+      { kind: 'ok', text: 'Cambiado a Claude Opus 4.8 — la sesión continúa.' },
+      { kind: 'note', text: 'Se conservan modo rápido, esfuerzo de razonamiento y contexto.' },
+    ],
+  },
+  fr: {
+    title: 'Cursor CLI : /model — changer de modèle en session',
+    lines: [
+      { kind: 'cmd', text: '/model opus' },
+      { kind: 'out', text: 'Sélecteur de modèle (recherche floue) :' },
+      { kind: 'ok', text: '> Claude Opus 4.8' },
+      { kind: 'out', text: '  GPT-5.6 Sol' },
+      { kind: 'ok', text: 'Basculé vers Claude Opus 4.8 — la session continue.' },
+      { kind: 'note', text: 'Mode rapide, effort de raisonnement et contexte sont conservés.' },
+    ],
+  },
+  zh: {
+    title: 'Cursor CLI：/model——会话中切换模型',
+    lines: [
+      { kind: 'cmd', text: '/model opus' },
+      { kind: 'out', text: '模型选择器（模糊搜索）：' },
+      { kind: 'ok', text: '> Claude Opus 4.8' },
+      { kind: 'out', text: '  GPT-5.6 Sol' },
+      { kind: 'ok', text: '已切换到 Claude Opus 4.8——会话继续。' },
+      { kind: 'note', text: '快速模式、推理力度和上下文都会保留。' },
+    ],
+  },
+};
+
+export const CursorModelDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={cursorModelScripts[lang]} />;

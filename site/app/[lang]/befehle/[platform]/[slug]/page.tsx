@@ -16,6 +16,7 @@ const COMMAND_VIDEOS: Record<string, string> = {
   'claude-code/rewind': 'rewind-demo',
   'cursor-cli/sandbox-run': 'sandbox-demo',
   'cursor-cli/plan': 'cursor-plan-demo',
+  'cursor-cli/model': 'cursor-model-demo',
   'aider/add': 'aider-add-demo',
   'aider/architect': 'aider-architect-demo',
   'codex-cli/exec': 'codex-exec-demo',
