@@ -1443,3 +1443,39 @@ lesbar, Prod 200. Commit a07360b, Deploy b16a5eda.
 Merke: jede <pre> mit hellem background-Override braucht auch ein
 color-Override, sonst greift die globale color:var(--bg) und macht den Text
 unsichtbar. Klasse „Override nur halb" - bei Farbpaaren immer beide setzen.
+
+## It. 192 — Feed 21.07 (Claude Code 2.1.216, 40→41 News)
+
+UTC-date erreichte 21.07 → Feed-Bau ausgeloest. Poll: newsletter_count=1,
+keine Notes/Forum/Feedback. Smoke 10/10 grün (promptgarTen.com).
+
+Research-Agent (Sonnet) scheiterte an Cyber-Safety-Flag; parallel liefen dessen
+Vorschlaege ohnehin auf 5 exakte Dubletten der 40 Bestands-ids hinaus. Statt
+Auffuellen: selbst recherchiert. Ein echtes frisches Item gefunden+SELBST am
+Quell-Ort geprueft: Claude Code 2.1.216 (Release 20.07). GitHub-Release-Seite
+v2.1.216 HTTP 200 + „2.1.216" (22x) + „sandbox.filesystem.disabled" (4x) +
+„symlink at" belegt; CHANGELOG.md raw enthaelt Sektion „## 2.1.216".
+
+GLM 5.2 geprueft, aber Release 13.06 = zu alt (raus). Codex-CLI 0.144.6 (18.07)
+geprueft: nur Kontextfenster-Metadaten-Korrektur, zu duenn + GPT-5.6 existiert
+schon als id → kein zweites Item (Qualitaet vor Menge).
+
+Item: id claude-code-2-1-216-symlink-network-path-fixes, tag security,
+date 2026-07-20. Kern: Symlink-Write-Escapes (.claude-Symlink bei Workflow-
+Saves/Scheduled-Tasks, /rewind ueber Symlinks/Hardlinks, Worktree-Subagenten
+git-Redirect via git -C/--git-dir/GIT_DIR/GIT_WORK_TREE), Windows-Netzwerkpfad
+ohne Permission-Prompt, neue Einstellung sandbox.filesystem.disabled,
+quadratische Verlangsamung in langen Sessions behoben.
+
+DE+EN selbst geschrieben (Quelle direkt gelesen), 3 Uebersetzer es/fr/zh
+(md5-gepinnt, kein Drift). Merge feed-merge-2107.mjs: 40→41 paritaetisch ×5,
+date-desc, neuestes Item ueberall == 2.1.216. Build BUILD_EXIT=0. Deploy
+4fdb6e28.promptgarden.pages.dev. Live-Verify: DE-Feed 200 + Titel
+„Symlink-Schreibpfade" + Filter „Alle (41)"; ZH-Feed 200 + 符号链接;
+feed.de.xml enthaelt 2.1.216. Timeline bewusst NICHT ergaenzt (Security-Patch =
+Feed-Stream, kein kuratierter Meilenstein — konsistent mit 2.1.214).
+
+Merke: an duennen News-Tagen kein Auffuellen mit Marginalien (Codex-
+Patch-Notes, zu alte Modelle). Ein sauber am Quell-Ort belegtes Item schlaegt
+drei halbgare. Research-Agent-Output NIE ungeprueft uebernehmen (hier: 5/5
+Dubletten trotz Dubletten-Bann im Prompt).
