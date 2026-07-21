@@ -12,6 +12,7 @@ const COMMAND_VIDEOS: Record<string, string> = {
   'claude-code/goal': 'goal-demo',
   'claude-code/loop': 'claude-loop-demo',
   'claude-code/compact': 'compact-demo',
+  'claude-code/context': 'context-cmd-demo',
   'cursor-cli/sandbox-run': 'sandbox-demo',
   'cursor-cli/plan': 'cursor-plan-demo',
   'aider/add': 'aider-add-demo',

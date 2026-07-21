@@ -602,3 +602,71 @@ export const agyPrintScripts: Record<Lang, TermScript> = {
 };
 
 export const AgyPrintDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={agyPrintScripts[lang]} />;
+
+// ---------- Demo 10: /context (Claude Code) — Fakten aus commands.de.json claude-code/context ----------
+// Beispielwerte illustrativ (wie bei den anderen Demos). Verhalten faktentreu:
+// farbiges Raster der Kontextnutzung + Optimierungsvorschlag + Argument 'all'.
+export const contextScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Claude Code: /context — Kontextnutzung sehen',
+    lines: [
+      { kind: 'cmd', text: '/context' },
+      { kind: 'out', text: 'Kontextnutzung — farbiges Raster:' },
+      { kind: 'out', text: 'Tools        █░░░░░░░░░  14 %' },
+      { kind: 'out', text: 'Nachrichten  ███░░░░░░░  33 %' },
+      { kind: 'out', text: 'Memory       █░░░░░░░░░   6 %' },
+      { kind: 'ok', text: 'Frei █████░░░░░ 47 % — Vorschlag: alte Anhänge lösen.' },
+      { kind: 'note', text: 'Detailaufschlüsselung ausklappen: /context all' },
+    ],
+  },
+  en: {
+    title: 'Claude Code: /context — see context usage',
+    lines: [
+      { kind: 'cmd', text: '/context' },
+      { kind: 'out', text: 'Context usage — colored grid:' },
+      { kind: 'out', text: 'Tools      █░░░░░░░░░  14 %' },
+      { kind: 'out', text: 'Messages   ███░░░░░░░  33 %' },
+      { kind: 'out', text: 'Memory     █░░░░░░░░░   6 %' },
+      { kind: 'ok', text: 'Free █████░░░░░ 47 % — suggestion: drop old attachments.' },
+      { kind: 'note', text: 'Expand the full breakdown: /context all' },
+    ],
+  },
+  es: {
+    title: 'Claude Code: /context — ver el uso del contexto',
+    lines: [
+      { kind: 'cmd', text: '/context' },
+      { kind: 'out', text: 'Uso del contexto — rejilla de colores:' },
+      { kind: 'out', text: 'Tools      █░░░░░░░░░  14 %' },
+      { kind: 'out', text: 'Mensajes   ███░░░░░░░  33 %' },
+      { kind: 'out', text: 'Memory     █░░░░░░░░░   6 %' },
+      { kind: 'ok', text: 'Libre █████░░░░░ 47 % — sugerencia: soltar adjuntos viejos.' },
+      { kind: 'note', text: 'Desplegar el detalle completo: /context all' },
+    ],
+  },
+  fr: {
+    title: 'Claude Code : /context — voir l’usage du contexte',
+    lines: [
+      { kind: 'cmd', text: '/context' },
+      { kind: 'out', text: 'Usage du contexte — grille colorée :' },
+      { kind: 'out', text: 'Tools      █░░░░░░░░░  14 %' },
+      { kind: 'out', text: 'Messages   ███░░░░░░░  33 %' },
+      { kind: 'out', text: 'Memory     █░░░░░░░░░   6 %' },
+      { kind: 'ok', text: 'Libre █████░░░░░ 47 % — suggestion : retirer les vieilles pièces jointes.' },
+      { kind: 'note', text: 'Déplier le détail complet : /context all' },
+    ],
+  },
+  zh: {
+    title: 'Claude Code：/context——查看上下文占用',
+    lines: [
+      { kind: 'cmd', text: '/context' },
+      { kind: 'out', text: '上下文占用——彩色栅格：' },
+      { kind: 'out', text: '工具      █░░░░░░░░░  14 %' },
+      { kind: 'out', text: '消息      ███░░░░░░░  33 %' },
+      { kind: 'out', text: '记忆      █░░░░░░░░░   6 %' },
+      { kind: 'ok', text: '空闲 █████░░░░░ 47 %——建议：移除旧附件。' },
+      { kind: 'note', text: '展开完整明细：/context all' },
+    ],
+  },
+};
+
+export const ContextCmdDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={contextScripts[lang]} />;

@@ -1559,3 +1559,29 @@ Merke: additive Structured-Data ist regressionsarm (kein Content-Churn, nur
 Maschinenlesbarkeit) und passt exakt zum Datensignal (Google-Traffic). headline
 auf <110 Zeichen kappen (Google-Limit). TechArticle ist der sichere Typ fuer
 Doku-Seiten (Article-Rich-Results-faehig).
+
+## It. 202-203 — Lexikon-Schema-Check + Remotion /context-Clip (Direktive 12)
+
+It. 202: geprueft ob Lexikon-Seiten TechArticle brauchen — nein, sie haben
+schon Article-JSON-LD + citation + Breadcrumb. „Schon vorhanden" vor Bau
+pruefen. Kein Change.
+
+It. 203: Remotion-Clip Nr. 20 (Direktive 12, diese Session erstmals gefeuert).
+Terminal-FLOW-Befehl gewaehlt: /context (Claude Code) — visuell, dokumentiert
+(commands.json: „farbiges Raster der Kontextnutzung + Optimierungsvorschlag,
+Argument all klappt Details aus"), bislang ohne Video. GUI-Befehle wie
+scroll-speed bewusst NICHT (kein Stumm-Clip-Narrativ). Pipeline: contextScripts
+×5 (de/en/es/fr/zh) + ContextCmdDemo in TerminalDemo.tsx (wiederverwendbare
+TerminalDemo-Komponente, gleiche wie 9 Bestandsclips) → Composition in Root.tsx
+(400 frames/30fps/720p) → npx remotion render ×5 → site/public/videos/
+context-cmd-demo.<lang>.mp4 (~0,8 MB je) → COMMAND_VIDEOS-Map claude-code/
+context. Build 0, Deploy 942a6ca4, live-verifiziert: /context-Seite 200 +
+Video-Tag, mp4 laedt (video/mp4, 5 Sprachen), prod 200; Standbild visuell
+geprueft (on-brand, faktentreu, Bars als farbiges Raster). Beispielwerte
+(14/33/6/47 %) illustrativ wie bei allen Demos.
+
+Merke: Remotion-Pipeline ist zuverlaessig+schnell (~30-60 s/Render) — ein neuer
+Clip pro Iteration gut machbar. Muster: Script-Record ×5 + Demo-Komponente +
+Composition-Block + render-Schleife + COMMAND_VIDEOS. Befehl fuer Stumm-Clip
+muss Terminal-Text-Narrativ haben (Ausgabe zeigen), nicht GUI-Dialog.
+20 Basis-Clips × 5 Sprachen = 100 mp4.
