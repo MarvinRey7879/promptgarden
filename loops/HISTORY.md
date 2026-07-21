@@ -1507,3 +1507,30 @@ Merke: Traffic-Daten (top_paths_7d) sind der beste Prioritaets-Kompass fuer
 Direktive 16 — die Seite mit dem meisten Suchtraffic zuerst haerten. Template-
 Ebene schlaegt Einzel-Eintrag: EIN Fix, 320 Seiten besser. Publikum ist real
 EN/US (nicht DE) — Sprachpflege darf EN nicht nachrangig behandeln.
+
+## It. 197-198 — Qualitaets-Audits (verifiziert sauber, kein Change noetig)
+
+It. 197: It.196-„Weitere Befehle" auf iPhone-390px verifiziert — 12 Chips
+wrappen sauber, kein Horizontal-Overflow, Screenshot ok.
+
+It. 198: zwei Audits.
+(a) Mobil-Overflow-Audit 11 Kernseiten (en/ vergleiche/ prompts/ lernpfade/
+feed/ befehle/ +claude-code/ rosetta/ lexikon/, de+zh vergleiche) @390px:
+0 Overflow-Seiten. Breite Inhalte (SVG 684/942px, Rosetta-Tabelle 1014px)
+sitzen korrekt in overflow-x:auto-Containern → document.scrollWidth == 390.
+Responsiveness plattformweit solide.
+(b) Duenne Befehls-`what` (what==summary): 17/320, ALLE claude-code (btw,
+chrome, cost, design-login, help, hooks, ide, insights, keybindings, login,
+logout, memory, powerup, remote-env, stats, stickers, tasks). Offizielle Docs
+geprueft (slash-commands/interactive-mode/cli-reference via r.jina.ai): KEINE
+grep-bare Built-in-Command-Referenztabelle mit Substanz. Entscheidung: NICHT
+anreichern. Die meisten (login/logout/help/cost/stats) sind bewusst
+selbsterklaerend — summary ist vollstaendig; Padding wuerde „simpel+faktisch"
++ „keine KI-Autorschaft" verletzen. Gleiche Anti-Padding-Disziplin wie beim
+Feed an duennen News-Tagen.
+
+Merke: In der Qualitaets-Phase ist ein sauberes Audit-Ergebnis („nichts kaputt,
+nichts billig verbesserbar") ein VALIDES Iterations-Ergebnis — nicht jede
+Stunde braucht einen Commit. Anti-Padding gilt fuer Content UEBERALL (Feed,
+Befehle, Kapitel), nicht nur beim Feed. Duenne Eintraege NUR mit belegter
+Quelle anreichern, sonst so lassen.
