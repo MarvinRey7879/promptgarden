@@ -1534,3 +1534,28 @@ nichts billig verbesserbar") ein VALIDES Iterations-Ergebnis — nicht jede
 Stunde braucht einen Commit. Anti-Padding gilt fuer Content UEBERALL (Feed,
 Befehle, Kapitel), nicht nur beim Feed. Duenne Eintraege NUR mit belegter
 Quelle anreichern, sonst so lassen.
+
+## It. 199-201 — Vergleiche verifiziert + TechArticle-Structured-Data (SEO)
+
+It. 199: Vergleiche-Seite faktenverifiziert — updated 19.07, Fable-5-Preis +
+20.07-Detail, DeepSeek/Kimi/GLM aktuell; GLM-5.2 (Release 13.06) KORREKT nicht
+in der Intelligenz/Preis-Ratio, da Z.ai keinen offiziellen Benchmark/Preis
+publiziert hat → Ausschlussregel „offenes Modell ohne Preis nicht in Ratio"
+greift. Kein Change.
+
+It. 200: sauberer Check (alles gruen).
+
+It. 201: additives SEO-Deliverable. Poll bestaetigt Akquise-Kanal =
+Google-Suche (top_ref www.google.com n=38, Publikum US/EN). Auf allen 320
+Befehls-Detailseiten zweites JSON-LD ergaenzt: TechArticle (headline
+„{/befehl} — {Plattform}", description=summary, inLanguage, url,
+mainEntityOfPage, author+publisher=Organization promptgarten, isAccessibleFor
+Free) neben der bestehenden BreadcrumbList. Autor/Publisher bewusst
+Organisation, keine Personen-Identitaet (konform „keine KI-Autorschaft").
+schema.ts:techArticleLd(). Build 0, Deploy 7860e1c9, live-verifiziert:
+EN scroll-speed + ZH beide 2 valide LD-Bloecke, prod 200. Commit + push.
+
+Merke: additive Structured-Data ist regressionsarm (kein Content-Churn, nur
+Maschinenlesbarkeit) und passt exakt zum Datensignal (Google-Traffic). headline
+auf <110 Zeichen kappen (Google-Limit). TechArticle ist der sichere Typ fuer
+Doku-Seiten (Article-Rich-Results-faehig).

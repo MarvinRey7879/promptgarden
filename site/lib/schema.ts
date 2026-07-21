@@ -19,3 +19,29 @@ export function breadcrumbLd(lang: Lang, items: { name: string; path: string }[]
     })),
   };
 }
+
+/**
+ * TechArticle-JSON-LD für Befehls-Detailseiten (SEO — Publikum kommt via Google-
+ * Suche, top_ref www.google.com). Additiv, ergänzt die Breadcrumb-LD. Autor/
+ * Publisher = Organisation promptgarten (keine Personen-Identität, konform mit
+ * „keine KI-Autorschaft"). headline kurz halten (<110 Zeichen, Google-Limit).
+ */
+export function techArticleLd(
+  lang: Lang,
+  opts: { headline: string; description: string; path: string },
+): object {
+  const url = `${BASE}/${lang}/${opts.path}`;
+  const org = { '@type': 'Organization', name: 'promptgarten', url: BASE };
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: opts.headline.slice(0, 110),
+    description: opts.description,
+    inLanguage: lang,
+    url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    author: org,
+    publisher: org,
+    isAccessibleForFree: true,
+  };
+}

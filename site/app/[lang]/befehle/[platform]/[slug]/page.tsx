@@ -5,7 +5,7 @@ import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 import ExampleVideo from '@/components/ExampleVideo';
 import RosettaHinweis from '@/components/RosettaHinweis';
 import ShareButtons from '@/components/ShareButtons';
-import { breadcrumbLd } from '@/lib/schema';
+import { breadcrumbLd, techArticleLd } from '@/lib/schema';
 
 // Remotion-Terminal-Demos (Direktive 12) für ausgewählte Befehle: platform/slug → Video-Basename
 const COMMAND_VIDEOS: Record<string, string> = {
@@ -59,6 +59,11 @@ export default async function CommandPage({
     { name: p.name, path: `befehle/${platform}/` },
     { name: c.name, path: `befehle/${platform}/${slug}/` },
   ]);
+  const article = techArticleLd(lang, {
+    headline: `${c.name} — ${p.name}`,
+    description: c.summary,
+    path: `befehle/${platform}/${slug}/`,
+  });
 
   // Verwandte Befehle derselben Plattform (Bounce senken + internes Linking auf
   // Top-Landing-Seiten). Fenster ab dem nächsten Geschwister, ringförmig, sodass
@@ -70,6 +75,7 @@ export default async function CommandPage({
   return (
     <article style={{ maxWidth: 720, margin: '0 auto', padding: '30px 0' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }} />
       <p className="kicker" style={{ margin: '0 0 4px' }}>
         <Link href={`/${lang}/befehle/`} style={{ textDecoration: 'underline' }}>{t.cmdTitle}</Link>
         {' · '}
