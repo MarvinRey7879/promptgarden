@@ -20,6 +20,7 @@ const COMMAND_VIDEOS: Record<string, string> = {
   'aider/architect': 'aider-architect-demo',
   'codex-cli/exec': 'codex-exec-demo',
   'codex-cli/review': 'codex-review-demo',
+  'codex-cli/diff': 'codex-diff-demo',
   'antigravity-cli/print': 'agy-print-demo',
 };
 

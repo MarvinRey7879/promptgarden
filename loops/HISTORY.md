@@ -1606,3 +1606,17 @@ aider-architect-demo.<lang>.mp4 → COMMAND_VIDEOS aider/architect. Build 0,
 Deploy 30ee089b, live+Standbild verifiziert, prod 200. 22 Basis-Clips × 5 =
 110 mp4. Video-Abdeckung jetzt: claude-code 5, cursor 2, aider 2, codex 2,
 antigravity 1.
+
+## It. 206-207 — Lexikon-Faktencheck + Remotion /diff-Clip (#23)
+
+It. 206: 4 trafficstaerkste ZH-Cluster-Lexikon-Eintraege (headless-non-
+interactive, ai-coding-ide-vs-cli, terminal-basics, embeddings) faktisch
+geprueft — alle korrekt, kein Change. Lexikon-Datei = entries.de.json.
+
+It. 207: Remotion-Clip #23 codex /diff. Faktentreu aus commands.json (zeigt die
+Aenderungen der laufenden Codex-Sitzung; ergaenzt /review). +/- Zeilen als
+ok/note-Kinds eingefaerbt (gruen/blau) → liest sich wie ein Diff.
+codexDiffScripts ×5 + CodexDiffDemo + Composition (400f/720p) →
+codex-diff-demo.<lang>.mp4 → COMMAND_VIDEOS codex-cli/diff. Build 0, Deploy
+76bc08e0, live+Standbild verifiziert, prod 200. 23 Basis-Clips × 5 = 115 mp4.
+Video-Abdeckung: claude-code 5, cursor 2, aider 2, codex 3, antigravity 1.

@@ -796,3 +796,70 @@ export const aiderArchitectScripts: Record<Lang, TermScript> = {
 };
 
 export const AiderArchitectDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={aiderArchitectScripts[lang]} />;
+
+// ---------- Demo 13: /diff (Codex CLI) — Fakten aus commands.de.json codex-cli/diff ----------
+// Faktentreu: zeigt die Aenderungen der laufenden Codex-Sitzung; ergaenzt /review.
+export const codexDiffScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Codex CLI: /diff — Sitzungs-Änderungen sehen',
+    lines: [
+      { kind: 'cmd', text: '/diff' },
+      { kind: 'out', text: 'auth.ts' },
+      { kind: 'ok', text: '+  if (Date.now() > token.exp) refresh()' },
+      { kind: 'out', text: 'api.ts' },
+      { kind: 'note', text: '-  clearTimeout(dupHandler)' },
+      { kind: 'out', text: '2 Dateien geändert — Diff der laufenden Sitzung.' },
+      { kind: 'note', text: 'Ergänzt /review, das die Änderungen zusätzlich bewertet.' },
+    ],
+  },
+  en: {
+    title: 'Codex CLI: /diff — see your session changes',
+    lines: [
+      { kind: 'cmd', text: '/diff' },
+      { kind: 'out', text: 'auth.ts' },
+      { kind: 'ok', text: '+  if (Date.now() > token.exp) refresh()' },
+      { kind: 'out', text: 'api.ts' },
+      { kind: 'note', text: '-  clearTimeout(dupHandler)' },
+      { kind: 'out', text: '2 files changed — diff for the current session.' },
+      { kind: 'note', text: 'Complements /review, which also evaluates the changes.' },
+    ],
+  },
+  es: {
+    title: 'Codex CLI: /diff — ver los cambios de la sesión',
+    lines: [
+      { kind: 'cmd', text: '/diff' },
+      { kind: 'out', text: 'auth.ts' },
+      { kind: 'ok', text: '+  if (Date.now() > token.exp) refresh()' },
+      { kind: 'out', text: 'api.ts' },
+      { kind: 'note', text: '-  clearTimeout(dupHandler)' },
+      { kind: 'out', text: '2 archivos cambiados — diff de la sesión actual.' },
+      { kind: 'note', text: 'Complementa a /review, que además evalúa los cambios.' },
+    ],
+  },
+  fr: {
+    title: 'Codex CLI : /diff — voir les changements de la session',
+    lines: [
+      { kind: 'cmd', text: '/diff' },
+      { kind: 'out', text: 'auth.ts' },
+      { kind: 'ok', text: '+  if (Date.now() > token.exp) refresh()' },
+      { kind: 'out', text: 'api.ts' },
+      { kind: 'note', text: '-  clearTimeout(dupHandler)' },
+      { kind: 'out', text: '2 fichiers modifiés — diff de la session en cours.' },
+      { kind: 'note', text: 'Complète /review, qui évalue en plus les changements.' },
+    ],
+  },
+  zh: {
+    title: 'Codex CLI：/diff——查看本次会话的改动',
+    lines: [
+      { kind: 'cmd', text: '/diff' },
+      { kind: 'out', text: 'auth.ts' },
+      { kind: 'ok', text: '+  if (Date.now() > token.exp) refresh()' },
+      { kind: 'out', text: 'api.ts' },
+      { kind: 'note', text: '-  clearTimeout(dupHandler)' },
+      { kind: 'out', text: '2 个文件已改动——当前会话的 diff。' },
+      { kind: 'note', text: '与 /review 互补，后者还会评估这些改动。' },
+    ],
+  },
+};
+
+export const CodexDiffDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={codexDiffScripts[lang]} />;
