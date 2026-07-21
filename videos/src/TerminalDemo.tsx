@@ -670,3 +670,66 @@ export const contextScripts: Record<Lang, TermScript> = {
 };
 
 export const ContextCmdDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={contextScripts[lang]} />;
+
+// ---------- Demo 11: /rewind (Claude Code) — Fakten aus commands.de.json claude-code/rewind ----------
+// Verhalten faktentreu: Checkpoint waehlen → Konversation und/oder Code
+// zuruecksetzen, oder ab einer Nachricht zusammenfassen. Aliase /checkpoint, /undo.
+export const rewindScripts: Record<Lang, TermScript> = {
+  de: {
+    title: 'Claude Code: /rewind — Stand zurücksetzen',
+    lines: [
+      { kind: 'cmd', text: '/rewind' },
+      { kind: 'out', text: 'Checkpoints wählen:' },
+      { kind: 'out', text: '1) vor „Login-Refactor"  — Konversation + Code' },
+      { kind: 'out', text: '2) vor „API-Fix" — fehlgeschlagen' },
+      { kind: 'ok', text: 'Zurück zu 1) — Konversation und Code wiederhergestellt.' },
+      { kind: 'note', text: 'Oder ab einer Nachricht zusammenfassen · Aliase: /checkpoint, /undo' },
+    ],
+  },
+  en: {
+    title: 'Claude Code: /rewind — roll back your state',
+    lines: [
+      { kind: 'cmd', text: '/rewind' },
+      { kind: 'out', text: 'Pick a checkpoint:' },
+      { kind: 'out', text: '1) before "login refactor" — conversation + code' },
+      { kind: 'out', text: '2) before "API fix" — failed' },
+      { kind: 'ok', text: 'Back to 1) — conversation and code restored.' },
+      { kind: 'note', text: 'Or summarize from a message onward · aliases: /checkpoint, /undo' },
+    ],
+  },
+  es: {
+    title: 'Claude Code: /rewind — volver a un estado anterior',
+    lines: [
+      { kind: 'cmd', text: '/rewind' },
+      { kind: 'out', text: 'Elige un checkpoint:' },
+      { kind: 'out', text: '1) antes de "refactor de login" — conversación + código' },
+      { kind: 'out', text: '2) antes de "fix de API" — falló' },
+      { kind: 'ok', text: 'Volver a 1) — conversación y código restaurados.' },
+      { kind: 'note', text: 'O resumir desde un mensaje · alias: /checkpoint, /undo' },
+    ],
+  },
+  fr: {
+    title: 'Claude Code : /rewind — revenir à un état antérieur',
+    lines: [
+      { kind: 'cmd', text: '/rewind' },
+      { kind: 'out', text: 'Choisis un checkpoint :' },
+      { kind: 'out', text: '1) avant « refactor du login » — conversation + code' },
+      { kind: 'out', text: "2) avant « fix de l'API » — échoué" },
+      { kind: 'ok', text: 'Retour à 1) — conversation et code restaurés.' },
+      { kind: 'note', text: "Ou résumer à partir d'un message · alias : /checkpoint, /undo" },
+    ],
+  },
+  zh: {
+    title: 'Claude Code：/rewind——回到之前的状态',
+    lines: [
+      { kind: 'cmd', text: '/rewind' },
+      { kind: 'out', text: '选择一个检查点：' },
+      { kind: 'out', text: '1) “登录重构”之前 — 对话 + 代码' },
+      { kind: 'out', text: '2) “API 修复”之前 — 已失败' },
+      { kind: 'ok', text: '回到 1) — 对话和代码已还原。' },
+      { kind: 'note', text: '或从某条消息起做总结 · 别名：/checkpoint、/undo' },
+    ],
+  },
+};
+
+export const RewindDemo = ({ lang }: { lang: Lang }) => <TerminalDemo script={rewindScripts[lang]} />;

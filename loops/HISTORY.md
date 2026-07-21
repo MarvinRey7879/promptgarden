@@ -1585,3 +1585,13 @@ Clip pro Iteration gut machbar. Muster: Script-Record ×5 + Demo-Komponente +
 Composition-Block + render-Schleife + COMMAND_VIDEOS. Befehl fuer Stumm-Clip
 muss Terminal-Text-Narrativ haben (Ausgabe zeigen), nicht GUI-Dialog.
 20 Basis-Clips × 5 Sprachen = 100 mp4.
+
+## It. 204 — Remotion /rewind-Clip (#21, Direktive 12)
+
+Zweiter Clip in Folge (Pipeline eingespielt). /rewind (Claude Code):
+Checkpoint-Undo, faktentreu aus commands.json (Konversation und/oder Code
+zuruecksetzen ODER ab Nachricht zusammenfassen; Aliase /checkpoint, /undo),
+topisch nach dem 2.1.216-Feed-Item. rewindScripts ×5 + RewindDemo +
+Composition (400f/720p) → rewind-demo.<lang>.mp4 → COMMAND_VIDEOS
+claude-code/rewind. Build 0, Deploy 5bd9e694, live+Standbild verifiziert,
+prod 200. 21 Basis-Clips × 5 = 105 mp4.
