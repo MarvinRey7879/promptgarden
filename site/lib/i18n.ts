@@ -24,6 +24,7 @@ type Dict = {
   cmdWhenBad: string;
   cmdAlternative: string;
   cmdAllCommands: string;
+  cmdMore: string;
   newsletter: string;
   newsletterSoonTitle: string;
   newsletterSoonBody: string;
@@ -117,6 +118,7 @@ export const ui: Record<Lang, Dict> = {
     cmdWhenBad: 'Wann eher nicht?',
     cmdAlternative: 'Besser',
     cmdAllCommands: 'Alle Befehle',
+    cmdMore: 'Weitere Befehle',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'Newsletter kommt bald 🌱',
     newsletterSoonBody: 'Wir bauen gerade den Versand. Schau in ein paar Tagen wieder vorbei — oder merk dir die Seite.',
@@ -221,6 +223,7 @@ export const ui: Record<Lang, Dict> = {
     cmdWhenBad: 'When not to?',
     cmdAlternative: 'Better',
     cmdAllCommands: 'All commands',
+    cmdMore: 'More commands',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'Newsletter coming soon 🌱',
     newsletterSoonBody: 'We are building the sending pipeline right now. Check back in a few days.',
@@ -325,6 +328,7 @@ export const ui: Record<Lang, Dict> = {
     cmdWhenBad: '¿Cuándo mejor no?',
     cmdAlternative: 'Mejor',
     cmdAllCommands: 'Todos los comandos',
+    cmdMore: 'Más comandos',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'El newsletter llega pronto 🌱',
     newsletterSoonBody: 'Estamos construyendo el envío ahora mismo. Vuelve a pasarte en unos días — o guarda esta página.',
@@ -429,6 +433,7 @@ export const ui: Record<Lang, Dict> = {
     cmdWhenBad: 'Quand éviter ?',
     cmdAlternative: 'Mieux',
     cmdAllCommands: 'Toutes les commandes',
+    cmdMore: 'Autres commandes',
     newsletter: 'Newsletter',
     newsletterSoonTitle: 'La newsletter arrive bientôt 🌱',
     newsletterSoonBody: "On est en train de construire l'envoi. Reviens dans quelques jours — ou garde cette page en favori.",
@@ -533,6 +538,7 @@ export const ui: Record<Lang, Dict> = {
     cmdWhenBad: '什么时候不该用？',
     cmdAlternative: '更好的选择',
     cmdAllCommands: '全部命令',
+    cmdMore: '更多命令',
     newsletter: '订阅',
     newsletterSoonTitle: '订阅邮件即将上线 🌱',
     newsletterSoonBody: '我们正在搭建发送系统。过几天再回来看看——或者先收藏这个页面。',

@@ -1479,3 +1479,31 @@ Merke: an duennen News-Tagen kein Auffuellen mit Marginalien (Codex-
 Patch-Notes, zu alte Modelle). Ein sauber am Quell-Ort belegtes Item schlaegt
 drei halbgare. Research-Agent-Output NIE ungeprueft uebernehmen (hier: 5/5
 Dubletten trotz Dubletten-Bann im Prompt).
+
+## It. 196 — Direktive-16-Qualitaet: verwandte Befehle auf allen 320 Befehlsseiten
+
+It. 193-195 waren Nacht-Check-only. It. 196 (~06:41 CEST, Tagbeginn):
+datengetriebene Qualitaetsarbeit. Admin-Summary top_paths_7d ausgewertet:
+groesster organischer Einstieg mit Abstand = /en/befehle/claude-code/
+scroll-speed/ (23 Views/23 unique, via www.google.com 38 Refs). Publikum
+EN-dominant (209 vs zh 86 / de 84), Land US 454. Diese Befehls-Detailseite
+endete bisher nach den Quellen in einer Sackgasse (nur ShareButtons) → hohe
+Bounce fuer genau die Seite mit dem meisten Suchtraffic.
+
+Fix im Template (site/app/[lang]/befehle/[platform]/[slug]/page.tsx, EINE Datei
+→ wirkt auf ALLE 320 Befehlsseiten): neue Sektion „Weitere Befehle" mit bis zu
+12 Geschwister-Befehlen derselben Plattform. Auswahl ringfoermig ab dem
+naechsten Geschwister (slice(cur+1) ++ slice(0,cur)), deterministisch, kein
+Zufall (Date/Math.random im Loop eh verboten) → jede Seite zeigt eine ANDERE
+Link-Auswahl = breitere interne Verlinkung fuer SEO, plus „Alle Befehle ·
+{Plattform} →". Neuer i18n-Key cmdMore in 5 Sprachen (Weitere Befehle / More
+commands / Mas comandos / Autres commandes / 更多命令).
+
+Build 0. Deploy 8fdfdcfc. Live-Verify: EN scroll-speed 200 + „MORE COMMANDS" +
+12 Geschwister-Links; DE 200 + „WEITERE BEFEHLE"; ZH 更多命令; prod
+promptgarten.com 200.
+
+Merke: Traffic-Daten (top_paths_7d) sind der beste Prioritaets-Kompass fuer
+Direktive 16 — die Seite mit dem meisten Suchtraffic zuerst haerten. Template-
+Ebene schlaegt Einzel-Eintrag: EIN Fix, 320 Seiten besser. Publikum ist real
+EN/US (nicht DE) — Sprachpflege darf EN nicht nachrangig behandeln.

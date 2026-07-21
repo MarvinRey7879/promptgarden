@@ -60,6 +60,13 @@ export default async function CommandPage({
     { name: c.name, path: `befehle/${platform}/${slug}/` },
   ]);
 
+  // Verwandte Befehle derselben Plattform (Bounce senken + internes Linking auf
+  // Top-Landing-Seiten). Fenster ab dem nächsten Geschwister, ringförmig, sodass
+  // jede Seite eine andere Auswahl zeigt — deterministisch, ohne Zufall.
+  const siblings = getCommands(lang, platform);
+  const cur = siblings.findIndex((x) => x.slug === slug);
+  const related = [...siblings.slice(cur + 1), ...siblings.slice(0, Math.max(cur, 0))].slice(0, 12);
+
   return (
     <article style={{ maxWidth: 720, margin: '0 auto', padding: '30px 0' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
@@ -128,6 +135,33 @@ export default async function CommandPage({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {related.length > 0 && (
+        <div style={{ marginTop: 34, borderTop: '2px solid var(--ink)', paddingTop: 16 }}>
+          <p className="kicker">{t.cmdMore.toUpperCase()} · {p.name}</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+            {related.map((r) => (
+              <Link
+                key={r.slug}
+                href={`/${lang}/befehle/${platform}/${r.slug}/`}
+                className="mono"
+                style={{
+                  fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                  border: '2px solid var(--ink)', borderRadius: 8, padding: '4px 10px',
+                  background: 'var(--yellow)', color: 'var(--ink)',
+                }}
+              >
+                {r.name}
+              </Link>
+            ))}
+          </div>
+          <p style={{ marginTop: 12, fontSize: 13.5 }}>
+            <Link href={`/${lang}/befehle/${platform}/`} style={{ textDecoration: 'underline' }}>
+              {t.cmdAllCommands} · {p.name} →
+            </Link>
+          </p>
         </div>
       )}
 
