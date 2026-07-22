@@ -10,6 +10,17 @@ const EXTRA_LINKS: Record<Lang, { rosetta: string; fehler: string; fortschritt: 
   zh: { rosetta: '命令对照表', fehler: '错误图鉴', fortschritt: '你的进度' },
 };
 
+// Footer-Labels, die bisher hart auf Deutsch standen und auf allen 5 Sprachen
+// durchschlugen: „Impressum" (sichtbar in der Rechtszeile jeder Seite), das
+// aria-label der Sitemap-Nav und der „bald"-Zusatz beim Spenden-Fallback.
+const FOOTER_LABELS: Record<Lang, { imprint: string; sitemap: string; soon: string }> = {
+  de: { imprint: 'Impressum', sitemap: 'Seitenübersicht', soon: 'bald' },
+  en: { imprint: 'Legal notice', sitemap: 'Sitemap', soon: 'soon' },
+  es: { imprint: 'Aviso legal', sitemap: 'Mapa del sitio', soon: 'pronto' },
+  fr: { imprint: 'Mentions légales', sitemap: 'Plan du site', soon: 'bientôt' },
+  zh: { imprint: '法律声明', sitemap: '网站地图', soon: '即将上线' },
+};
+
 // Handles von Marvin (13.07.2026); GitHub Sponsors folgt nach Anmeldung
 const DONATE_LINKS: { label: string; href: string | null }[] = [
   { label: 'PayPal', href: 'https://paypal.me/Marv7879' },
@@ -47,7 +58,7 @@ export default function Footer({ lang }: { lang: Lang }) {
       }}
     >
       <nav
-        aria-label="Sitemap"
+        aria-label={FOOTER_LABELS[lang].sitemap}
         className="wrap"
         style={{ display: 'flex', gap: '4px 16px', flexWrap: 'wrap', paddingBottom: 20, marginBottom: 20, borderBottom: '1px solid rgba(43,33,24,.15)' }}
       >
@@ -69,7 +80,7 @@ export default function Footer({ lang }: { lang: Lang }) {
           <p style={{ margin: 0, lineHeight: 1.55 }}>
             {t.footerNote}{' '}
             <a href="/impressum/" style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}>
-              Impressum
+              {FOOTER_LABELS[lang].imprint}
             </a>
           </p>
           {/* Eigene Zeile statt Fließtext: als Nachschlage-Einstiege brauchen sie
@@ -106,8 +117,8 @@ export default function Footer({ lang }: { lang: Lang }) {
               </a>
             ))
           ) : (
-            <span className="chip" style={{ opacity: 0.5 }} title="Links folgen">
-              💛 {t.donate} — bald
+            <span className="chip" style={{ opacity: 0.5 }}>
+              💛 {t.donate} — {FOOTER_LABELS[lang].soon}
             </span>
           )}
         </div>

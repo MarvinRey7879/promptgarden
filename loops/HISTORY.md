@@ -1810,3 +1810,23 @@ Offset 2px, klar sichtbar; Mouse-First-Klick = matches(':focus-visible')===false
 kein Ring (Screenshot bestätigt, keine Maus-Regression). Prod grün.
 Merke: getComputedStyle.outlineWidth kann 3px melden obwohl kein Ring gemalt wird
 (initial outline-width=medium) — maßgeblich ist element.matches(':focus-visible').
+
+## Iteration 230 — 22.07.2026 ~21:17 UTC — i18n-Leak: Footer „Impressum" + Sitemap-aria + „bald"
+date 22.07 <24.07 → kein Feed. Poll grün (0/0/0, views_7d 268), Smoke 10/10.
+Screenshot-Audit Befehle-Hub + Command-Detail (scroll-speed, 23 echte Views) =
+poliert, kein Churn. Stattdessen Code-Audit auf i18n-Leaks (aria/title/Text-
+Literale in geteilten Komponenten).
+Fund (Footer.tsx, auf JEDER Seite gerendert): ① `Impressum` hart in der Rechts-
+zeile → sichtbar auf allen 5 Sprachen (EN/ES/FR/ZH-Nutzer sahen deutsches
+„Impressum"). ② `aria-label="Sitemap"` nicht lokalisiert (Screenreader hörten
+Englisch auf DE/ES/FR/ZH). ③ `title="Links folgen"` + „— bald" im Spenden-
+Fallback (toter Zweig, aber latenter DE-Leak).
+Fix: lokaler `FOOTER_LABELS: Record<Lang,{imprint,sitemap,soon}>` (Muster wie
+EXTRA_LINKS). imprint de „Impressum"/en „Legal notice"/es „Aviso legal"/fr
+„Mentions légales"/zh „法律声明"; sitemap-aria + soon ×5; verwirrendes
+title-Attribut entfernt (sichtbarer Text reicht). Link-Ziel /impressum/ bleibt.
+Build 0, Deploy 63e62234. Verifiziert: Footer-imprint pro Sprache korrekt
+(grep im HTML + Live FR „Mentions légales"), aria de „Seitenübersicht"/zh
+„网站地图". Prod grün.
+Merke: geteilte Komponenten auf aria-label/title/Text-Literale grepen — auch
+englische/deutsche Wörter ohne Umlaut lecken auf alle 5 Sprachen.
