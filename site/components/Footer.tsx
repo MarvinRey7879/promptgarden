@@ -21,6 +21,21 @@ export default function Footer({ lang }: { lang: Lang }) {
   const t = ui[lang];
   const live = DONATE_LINKS.filter((d) => d.href);
 
+  // Haupt-Sektionen im Footer (Sitemap): von jeder Seite aus erreichbar,
+  // verbessert Navigation + internes Linking. Gleiche Labels wie die Kopf-Nav.
+  const siteLinks: { href: string; label: string }[] = [
+    { href: `/${lang}/lexikon/`, label: t.nav.lexikon },
+    { href: `/${lang}/lernpfade/`, label: t.nav.lernpfade },
+    { href: `/${lang}/befehle/`, label: t.nav.befehle },
+    { href: `/${lang}/prompts/`, label: t.nav.prompts },
+    { href: `/${lang}/addons/`, label: t.nav.addons },
+    { href: `/${lang}/feed/`, label: t.nav.feed },
+    { href: `/${lang}/vergleiche/`, label: t.nav.vergleiche },
+    { href: `/${lang}/challenge/`, label: t.nav.challenge },
+    { href: `/${lang}/claude-md-generator/`, label: 'CLAUDE.md' },
+    { href: `/${lang}/forum/`, label: 'Forum' },
+  ];
+
   return (
     <footer
       style={{
@@ -31,6 +46,21 @@ export default function Footer({ lang }: { lang: Lang }) {
         color: 'var(--muted)',
       }}
     >
+      <nav
+        aria-label="Sitemap"
+        className="wrap"
+        style={{ display: 'flex', gap: '4px 16px', flexWrap: 'wrap', paddingBottom: 20, marginBottom: 20, borderBottom: '1px solid rgba(43,33,24,.15)' }}
+      >
+        {siteLinks.map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            style={{ display: 'inline-flex', alignItems: 'center', minHeight: 36, padding: '4px 6px', fontWeight: 600, color: 'var(--ink)' }}
+          >
+            {l.label}
+          </Link>
+        ))}
+      </nav>
       <div
         className="wrap"
         style={{ display: 'flex', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}

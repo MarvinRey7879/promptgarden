@@ -1729,3 +1729,18 @@ click + Esc schließen. Zyklus-Logik aus Header entfernt. Build 0, Deploy
 aria-current DE) + Screenshot, prod 200.
 Merke: pro Iteration jetzt bevorzugt echte UX/Text/Layout/Nav-Politur an
 Bestandsseiten (Playwright-Screenshot-Audit Desktop+Mobil), neue Features spärlich.
+
+## It. 225 — UX/Nav: Footer-Sitemap (Marvin-Direktive verschärft)
+
+Marvin verschärft 22.07: WEITERENTWICKLUNG GESTOPPT — nur noch kontinuierliche
+Verbesserung + Nutzerfreundlichkeit (Texte/Funktionen/Layout/UX). Memory
+aktualisiert. Homepage-Audit (Desktop 1200 + Mobil 390) = sehr poliert, kein
+Defekt → kein Churn. Stattdessen Navigations-Lücke: Footer hatte NUR 3 Extra-
+Links (Rosetta/Fehler/Fortschritt) + Spenden, KEINE Haupt-Sektionen. Footer.tsx
+um Sitemap-Nav erweitert: 10 Sektions-Links (Glossary/Learning paths/Commands/
+Prompts/Add-ons/Feed/Compare/Challenge/CLAUDE.md/Forum, gleiche Labels wie
+Kopf-Nav) → von jeder Seite unten erreichbar, besseres internes Linking (SEO).
+Tap-Targets minHeight 36. Build 0, Deploy 2e98bc1e, Playwright Desktop+Mobil
+(10 Links, kein Overflow) + Screenshot, prod 200.
+Merke: gute Seiten NICHT churnen — echte Lücken suchen (hier: fehlende
+Footer-Navigation). Footer-Sitemap = Standard-UX + SEO-Hebel.
