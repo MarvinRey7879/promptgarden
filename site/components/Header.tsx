@@ -7,6 +7,7 @@ import { type Lang, ui } from '@/lib/i18n';
 import { loadProgress, touchVisit, levelEmoji, PROGRESS_EVENT, type Progress } from '@/lib/progress';
 import { API_URL, apiPost } from '@/lib/api';
 import SearchModal from '@/components/SearchModal';
+import LangSwitcher from '@/components/LangSwitcher';
 
 export default function Header({ lang }: { lang: Lang }) {
   const t = ui[lang];
@@ -30,11 +31,6 @@ export default function Header({ lang }: { lang: Lang }) {
     window.addEventListener(PROGRESS_EVENT, onChange);
     return () => window.removeEventListener(PROGRESS_EVENT, onChange);
   }, [lang]);
-
-  // Sprachwechsel: zyklisch durch alle Sprachen (de → en → es → fr → zh → de)
-  const langCycle: Lang[] = ['de', 'en', 'es', 'fr', 'zh'];
-  const otherLang: Lang = langCycle[(langCycle.indexOf(lang) + 1) % langCycle.length];
-  const switchHref = pathname.replace(`/${lang}`, `/${otherLang}`) || `/${otherLang}/`;
 
   // Menü schließt sich, sobald ein Punkt angetippt wurde
   useEffect(() => setMenuOpen(false), [pathname]);
@@ -113,9 +109,7 @@ export default function Header({ lang }: { lang: Lang }) {
             </Link>
           )}
           <SearchModal lang={lang} />
-          <Link href={switchHref} className="pill" style={{ padding: '7px 10px' }}>
-            🌍 {otherLang.toUpperCase()}
-          </Link>
+          <LangSwitcher lang={lang} />
           <button className="btn hide-mobile" onClick={() => setShowNews(true)}>
             {t.newsletter}
           </button>

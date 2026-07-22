@@ -1711,3 +1711,21 @@ Overflow) + DE/ZH 200 + prod 200 (neue Route: prod erst nach Edge-Propagation
 Merke: neue Route braucht Eintrag in sitemap.ts (statische Liste) + Verlinkung
 für Discoverability; prod-404 direkt nach Deploy neuer Pfade = Edge-Propagation,
 kein Fehler (Deploy-URL prüfen).
+
+## It. 224 — NEUER FOKUS (Marvin): BESTEHENDES verbessern (UX/Text/Layout/Nav)
+
+Marvin-Direktive 22.07: Loop soll sich auf Verbesserung von BESTEHENDEM
+fokussieren — Texte, Layout, Navigation, UX/UI — statt neue Features/Videos.
+Gespeichert als Memory feedback_promptgarten_focus_ux_existing. Ads: warten auf
+Google-Review (Technik komplett live mit pub-6850490267678365), nichts zu tun.
+
+Erste UX-Verbesserung: Sprach-Umschalter war ein ZYKLISCHER Button (de→en→es→
+fr→zh→de) — von DE nach ZH = 4 Klicks, unklar. Ersetzt durch echten Sprach-
+Picker (LangSwitcher.tsx): Dropdown mit allen 5 Sprachen (Deutsch/English/
+Español/Français/中文), aktuelle markiert (aria-current, gelb), 1 Klick zu jeder,
+verlinkt dieselbe Seite in Zielsprache (pathname ^/lang → /target). Outside-
+click + Esc schließen. Zyklus-Logik aus Header entfernt. Build 0, Deploy
+9ec8a9b1, Playwright-verifiziert (5 Items, korrekte hrefs je Sprache,
+aria-current DE) + Screenshot, prod 200.
+Merke: pro Iteration jetzt bevorzugt echte UX/Text/Layout/Nav-Politur an
+Bestandsseiten (Playwright-Screenshot-Audit Desktop+Mobil), neue Features spärlich.
