@@ -50,7 +50,7 @@ export default function BodyToggle({
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, margin: '0 0 16px' }} role="tablist" aria-label="Detail-Level">
+      <div style={{ display: 'flex', gap: 8, margin: '0 0 16px' }} role="tablist" aria-label={`${labelSimple} · ${labelDetail}`}>
         <button role="tab" aria-selected={level === 'simple'} style={btn(level === 'simple')} onClick={() => choose('simple')}>
           {labelSimple}
         </button>

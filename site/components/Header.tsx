@@ -43,6 +43,14 @@ export default function Header({ lang }: { lang: Lang }) {
     zh: '菜单',
   };
 
+  const newsError: Record<Lang, string> = {
+    de: ' — Fehler, versuch es nochmal.',
+    en: ' — Error, please try again.',
+    es: ' — Error, inténtalo de nuevo.',
+    fr: ' — Erreur, réessaie.',
+    zh: '——出错了，请重试。',
+  };
+
   const isActive = (href: string) => pathname.startsWith(href.replace(/\/$/, ''));
 
   const navItems = [
@@ -161,7 +169,7 @@ export default function Header({ lang }: { lang: Lang }) {
                 </div>
                 <p style={{ margin: '0 0 14px', color: 'var(--muted)', fontSize: 12.5 }}>
                   {t.newsHint}
-                  {newsState === 'error' && ' — Fehler, versuch es nochmal.'}
+                  {newsState === 'error' && newsError[lang]}
                 </p>
               </>
             )}

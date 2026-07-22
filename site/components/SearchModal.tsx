@@ -12,12 +12,12 @@ import type { Lang } from '@/lib/i18n';
  */
 type Doc = { id: string; g: 'k' | 'b' | 'a' | 'p' | 'f'; t: string; s: string; b: string; u: string };
 
-const TXT: Record<Lang, { placeholder: string; empty: string; hint: string; groups: Record<'k' | 'b' | 'a' | 'p' | 'f', string> }> = {
-  de: { placeholder: 'Suche in Kapiteln, Befehlen, Fehlern, Prompts …', empty: 'Nichts gefunden — anders formulieren?', hint: '↑↓ wählen · Enter öffnen · Esc schließen', groups: { k: 'Kapitel', b: 'Befehle', a: 'Addons', p: 'Prompt-Vorlagen', f: 'Fehler & Lösungen' } },
-  en: { placeholder: 'Search chapters, commands, errors, prompts …', empty: 'Nothing found — try different words?', hint: '↑↓ select · Enter open · Esc close', groups: { k: 'Chapters', b: 'Commands', a: 'Add-ons', p: 'Prompt templates', f: 'Errors & fixes' } },
-  es: { placeholder: 'Busca en capítulos, comandos, errores, prompts …', empty: 'Nada encontrado — ¿pruebas otras palabras?', hint: '↑↓ elegir · Enter abrir · Esc cerrar', groups: { k: 'Capítulos', b: 'Comandos', a: 'Add-ons', p: 'Plantillas de prompt', f: 'Errores y soluciones' } },
-  fr: { placeholder: 'Cherche dans les chapitres, commandes, erreurs, prompts …', empty: 'Rien trouvé — essaie d’autres mots ?', hint: '↑↓ choisir · Entrée ouvrir · Échap fermer', groups: { k: 'Chapitres', b: 'Commandes', a: 'Add-ons', p: 'Modèles de prompt', f: 'Erreurs et solutions' } },
-  zh: { placeholder: '搜索章节、命令、错误、提示词 …', empty: '没有找到——换个词试试？', hint: '↑↓ 选择 · Enter 打开 · Esc 关闭', groups: { k: '章节', b: '命令', a: '扩展', p: '提示词模板', f: '错误与解决' } },
+const TXT: Record<Lang, { placeholder: string; empty: string; hint: string; aria: string; groups: Record<'k' | 'b' | 'a' | 'p' | 'f', string> }> = {
+  de: { placeholder: 'Suche in Kapiteln, Befehlen, Fehlern, Prompts …', empty: 'Nichts gefunden — anders formulieren?', hint: '↑↓ wählen · Enter öffnen · Esc schließen', aria: 'Suche (Strg+K)', groups: { k: 'Kapitel', b: 'Befehle', a: 'Addons', p: 'Prompt-Vorlagen', f: 'Fehler & Lösungen' } },
+  en: { placeholder: 'Search chapters, commands, errors, prompts …', empty: 'Nothing found — try different words?', hint: '↑↓ select · Enter open · Esc close', aria: 'Search (Ctrl+K)', groups: { k: 'Chapters', b: 'Commands', a: 'Add-ons', p: 'Prompt templates', f: 'Errors & fixes' } },
+  es: { placeholder: 'Busca en capítulos, comandos, errores, prompts …', empty: 'Nada encontrado — ¿pruebas otras palabras?', hint: '↑↓ elegir · Enter abrir · Esc cerrar', aria: 'Buscar (Ctrl+K)', groups: { k: 'Capítulos', b: 'Comandos', a: 'Add-ons', p: 'Plantillas de prompt', f: 'Errores y soluciones' } },
+  fr: { placeholder: 'Cherche dans les chapitres, commandes, erreurs, prompts …', empty: 'Rien trouvé — essaie d’autres mots ?', hint: '↑↓ choisir · Entrée ouvrir · Échap fermer', aria: 'Rechercher (Ctrl+K)', groups: { k: 'Chapitres', b: 'Commandes', a: 'Add-ons', p: 'Modèles de prompt', f: 'Erreurs et solutions' } },
+  zh: { placeholder: '搜索章节、命令、错误、提示词 …', empty: '没有找到——换个词试试？', hint: '↑↓ 选择 · Enter 打开 · Esc 关闭', aria: '搜索（Ctrl+K）', groups: { k: '章节', b: '命令', a: '扩展', p: '提示词模板', f: '错误与解决' } },
 };
 
 const GROUP_ORDER: ('k' | 'b' | 'f' | 'p' | 'a')[] = ['k', 'b', 'f', 'p', 'a'];
@@ -111,7 +111,7 @@ export default function SearchModal({ lang }: { lang: Lang }) {
   return (
     <>
       <button
-        aria-label="Suche (Ctrl+K)"
+        aria-label={t.aria}
         onClick={() => setOpen(true)}
         className="pill"
         style={{ padding: '7px 12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, background: 'transparent' }}

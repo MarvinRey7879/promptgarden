@@ -1744,3 +1744,18 @@ Tap-Targets minHeight 36. Build 0, Deploy 2e98bc1e, Playwright Desktop+Mobil
 (10 Links, kein Overflow) + Screenshot, prod 200.
 Merke: gute Seiten NICHT churnen — echte Lücken suchen (hier: fehlende
 Footer-Navigation). Footer-Sitemap = Standard-UX + SEO-Hebel.
+
+## It. 226 — a11y/i18n-Fixes: hartcodierte dt. Strings lokalisiert
+
+UX-Audit /en/feed/ + Suche (SearchModal): beide exzellent (Feed=Farb-Filter+
+lesbare Karten; Suche=Cmd/Ctrl+K, gruppierte Treffer, „keine Treffer"-State
+existiert — mein Detektions-Regex war falsch-negativ) → kein Churn. STATTDESSEN
+echte Bug-Klasse gefunden: hartcodierte deutsche Strings, die auf ALLEN Sprachen
+liefen (Screenreader/EN-Nutzer hörten/sahen Deutsch). 3 gefixt: (1) Such-Button
+aria-label „Suche (Ctrl+K)" → lokalisiert (Search/Suche/Buscar/Rechercher/搜索).
+(2) BodyToggle tablist aria-label „Detail-Level" → aus den lokalisierten Labels
+(EN „🌱 Simple · 🔬 In depth", ZH „简明 · 深入"). (3) Header Newsletter-Fehler
+„— Fehler, versuch es nochmal." → inline-Map ×5. Build 0, Deploy e5573885,
+live-verifiziert EN/ES/ZH, prod 200. Committet.
+Merke: bei i18n auf hartcodierte Strings in KOMPONENTEN achten (aria-labels,
+Fehlertexte, inline-Ternäre) — die laufen sonst deutsch auf allen 5 Sprachen.
