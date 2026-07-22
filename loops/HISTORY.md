@@ -1792,3 +1792,21 @@ sauber. Prod 200.
 Merke: Skip-Link MUSS erstes DOM-Kind vor dem Header sein, sonst greift die
 Tab-Reihenfolge nicht; Sichtbarkeit rein über :focus (nicht display:none, sonst
 nicht fokussierbar).
+
+## Iteration 229 — 22.07.2026 ~20:06 UTC — a11y: konsistenter Tastatur-Fokus-Ring (WCAG 2.4.7)
+date 22.07 <24.07 → kein Feed. Poll grün (0 Bugs/Feedback/Notes, views_7d
+268), Smoke 10/10.
+Verbesserung: Fokus-Sichtbarkeit. Nur der Skip-Link (It.228) hatte Fokus-
+Styling; alle anderen interaktiven Elemente nutzten den 1px-UA-Default in
+--ink. Playwright-Audit belegt das Problem: auf Elementen mit eigenem Ink-Border
+(aktive Pill, Newsletter-.btn, Suchfeld, Formulare) verschwimmt der 1px-Ink-
+Outline mit dem Border → fokussiert nicht von nur-aktiv unterscheidbar
+(WCAG-2.4.7-Schwäche). Fix: globales `:focus-visible` für a/button/input/select/
+textarea/summary/[tabindex] → 3px --accent-Outline + 2px Offset, sitzt AUSSERHALB
+bestehender Borders, folgt border-radius (auch runde Pills). `:focus-visible` =
+nur Tastatur.
+Build 0, Deploy ba990a1d. Playwright-verifiziert: Keyboard = 3px rgb(232,97,60)
+Offset 2px, klar sichtbar; Mouse-First-Klick = matches(':focus-visible')===false,
+kein Ring (Screenshot bestätigt, keine Maus-Regression). Prod grün.
+Merke: getComputedStyle.outlineWidth kann 3px melden obwohl kein Ring gemalt wird
+(initial outline-width=medium) — maßgeblich ist element.matches(':focus-visible').
