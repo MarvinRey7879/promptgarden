@@ -1775,3 +1775,20 @@ Damit i18n-Leaks (It.226+227) komplett: Such-aria, tablist-aria, Newsletter-
 Fehler, XP-title. Prod grün.
 Merke: XP-Chip rendert nur client-seitig (progress.xp>0), NICHT im statischen
 HTML → Verify nur per Playwright mit simuliertem localStorage.
+
+## Iteration 228 — 22.07.2026 ~19:03 UTC — a11y: Skip-to-content-Link (WCAG 2.4.1)
+Barrierefreiheit-Audit: `<main>` existierte, aber KEIN Skip-Link und keine
+sr-only-Klasse → Tastatur-/Screenreader-Nutzer mussten auf JEDER Seite die
+volle Nav (9 Pills + Suche + Sprachwahl + Newsletter) durchtabben, bevor der
+Inhalt kam. Echte WCAG-2.4.1-Lücke (Bypass Blocks), kein Churn.
+Fix: `<a href="#main" class="skip-link">` als erstes fokussierbares Element in
+layout.tsx + `id="main"` auf `<main>`; Label ×5 lokalisiert (de „Zum Inhalt
+springen" / en „Skip to main content" / es „Saltar al contenido" / fr „Aller au
+contenu" / zh „跳到主要内容"). CSS in globals.css: off-screen (top:-48px) bis
+`:focus` → top:8px, dunkle Pille + Lime-Outline.
+Build 0, Deploy d2860398. Playwright-verifiziert: vor Fokus off-screen
+(top<0), auf Tab → fokussiert + sichtbar (top 8px, href=#main), Screenshot
+sauber. Prod 200.
+Merke: Skip-Link MUSS erstes DOM-Kind vor dem Header sein, sonst greift die
+Tab-Reihenfolge nicht; Sichtbarkeit rein über :focus (nicht display:none, sonst
+nicht fokussierbar).
