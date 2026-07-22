@@ -1759,3 +1759,19 @@ aria-label „Suche (Ctrl+K)" → lokalisiert (Search/Suche/Buscar/Rechercher/�
 live-verifiziert EN/ES/ZH, prod 200. Committet.
 Merke: bei i18n auf hartcodierte Strings in KOMPONENTEN achten (aria-labels,
 Fehlertexte, inline-Ternäre) — die laufen sonst deutsch auf allen 5 Sprachen.
+
+## It. 227 — i18n-Leak-Sweep abgeschlossen
+
+Systematischer grep über site/components + site/app nach hartcodierten dt.
+Strings (aria-label/title/placeholder + JSX-Text mit Umlauten/dt.Wörtern). Alle
+weiteren Treffer waren korrekte de:-Werte in lokalisierten T-Maps
+(ContextWindowDiagram/FehlerKatalog/Fortschritt/PriceCalculator/RosettaTable/
+TokenPlayground/WizardKit) oder die interne Admin-Seite (single-lang, egal).
+EINZIGER echter user-sichtbarer Leak: Header XP/Streak-Chip title „…nur in
+deinem Browser gespeichert" (auf allen 5 Sprachen dt.). Lokalisiert (inline-Map
+xpTitle ×5). Build 0, Deploy 9ede1088, Playwright-verifiziert (localStorage
+xp=120 simuliert, EN „only stored in your browser", ZH „仅保存在你的浏览器中").
+Damit i18n-Leaks (It.226+227) komplett: Such-aria, tablist-aria, Newsletter-
+Fehler, XP-title. Prod grün.
+Merke: XP-Chip rendert nur client-seitig (progress.xp>0), NICHT im statischen
+HTML → Verify nur per Playwright mit simuliertem localStorage.

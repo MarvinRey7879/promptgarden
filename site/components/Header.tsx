@@ -51,6 +51,14 @@ export default function Header({ lang }: { lang: Lang }) {
     zh: '——出错了，请重试。',
   };
 
+  const xpTitle: Record<Lang, string> = {
+    de: 'XP & Streak — nur in deinem Browser gespeichert',
+    en: 'XP & streak — only stored in your browser',
+    es: 'XP y racha — solo se guarda en tu navegador',
+    fr: 'XP & série — enregistré uniquement dans ton navigateur',
+    zh: 'XP 与连续天数——仅保存在你的浏览器中',
+  };
+
   const isActive = (href: string) => pathname.startsWith(href.replace(/\/$/, ''));
 
   const navItems = [
@@ -107,7 +115,7 @@ export default function Header({ lang }: { lang: Lang }) {
             <Link
               href={`/${lang}/fortschritt/`}
               className="chip"
-              title="XP & Streak — nur in deinem Browser gespeichert"
+              title={xpTitle[lang]}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               <span>{levelEmoji(progress.xp)}</span>
