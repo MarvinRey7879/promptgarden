@@ -130,6 +130,17 @@ export default async function EntryPage({
         {entry.teaser}
       </p>
 
+      {entry.slug === 'claude-md' && (
+        <div className="card" style={{ padding: '16px 20px', margin: '0 0 20px', background: 'var(--lime)', boxShadow: '4px 4px 0 var(--ink)' }}>
+          <p style={{ margin: '0 0 10px', fontSize: 14.5, fontWeight: 700 }}>
+            {lang === 'de' ? 'Erstelle deine eigene CLAUDE.md in 1 Minute:' : lang === 'zh' ? '1 分钟生成你自己的 CLAUDE.md：' : lang === 'es' ? 'Crea tu propia CLAUDE.md en 1 minuto:' : lang === 'fr' ? 'Crée ta propre CLAUDE.md en 1 minute :' : 'Build your own CLAUDE.md in 1 minute:'}
+          </p>
+          <Link href={`/${lang}/claude-md-generator/`} className="btn" style={{ fontSize: 13.5, display: 'inline-block' }}>
+            {lang === 'de' ? '🖥️ Zum CLAUDE.md-Generator' : lang === 'zh' ? '🖥️ 打开 CLAUDE.md 生成器' : lang === 'es' ? '🖥️ Abrir el generador de CLAUDE.md' : lang === 'fr' ? '🖥️ Ouvrir le générateur de CLAUDE.md' : '🖥️ Open the CLAUDE.md generator'}
+          </Link>
+        </div>
+      )}
+
       <ReadAloud lang={lang} text={readText} />
 
       <BodyToggle bodyHtml={bodyHtml} detailHtml={detailHtml} labelSimple={t.levelSimple} labelDetail={t.levelDetail} />

@@ -1691,3 +1691,23 @@ simuliert (localStorage) = Zertifikat-SVG + Download/Teilen-Buttons, kein
 Overflow; Screenshot bestätigt Optik. R5: ①②③ fertig, ④ CLAUDE.md-Generator offen.
 Merke: für rasterisierbare Zertifikate KEINE Emoji im SVG (Canvas-Emoji =
 System-abhängig/Tofu) → Formen/Pfade nutzen (Häkchen als path).
+
+## It. 223 — R5-Deliverable ④ CLAUDE.md-Generator (R5 KOMPLETT)
+
+Neue Route /[lang]/claude-md-generator/ (×5) + ClaudeMdBuilder.tsx: Felder
+(Projektname, Beschreibung, Stack-Preset TS/Python/Go/Rust/Java, Paketmanager,
+Build/Test/Run/Lint, Konventionen, Do, Don't, Notizen) → Live-Preview einer
+fertigen CLAUDE.md (englische Standard-Überschriften, agenten-lesbar) + Copy.
+Stack-Wechsel füllt Befehls-Presets. Best-Practice-Defaults vorbefüllt (Tests
+vor Fertigmeldung, keine Secrets committen …). Preview-<pre> dunkel (ink-bg,
+bg-Text — <pre>-color-Regel beachtet). Rein clientseitig. UI ×5 übersetzt.
+Höchster SEO-Wert (EN/US-Google, „CLAUDE.md generator/example"): Titel
+„CLAUDE.md generator (free, no signup)", in sitemap.ts aufgenommen (×5),
+CTA-Karte aus dem Lexikon-Eintrag claude-md verlinkt. Build 0, Deploy b9560548,
+Playwright-verifiziert EN (Preview aktualisiert live, Stack→pytest, kein
+Overflow) + DE/ZH 200 + prod 200 (neue Route: prod erst nach Edge-Propagation
+200, Deploy-URL sofort). i18n-Leak „uv (oder pip)"→„or" gefixt.
+🎉 IDEEN-RUNDE 5 KOMPLETT: ①Vorlesen ②Glossar-Tooltips ③Zertifikate ④Generator.
+Merke: neue Route braucht Eintrag in sitemap.ts (statische Liste) + Verlinkung
+für Discoverability; prod-404 direkt nach Deploy neuer Pfade = Edge-Propagation,
+kein Fehler (Deploy-URL prüfen).
