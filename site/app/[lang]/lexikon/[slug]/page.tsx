@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { marked } from 'marked';
 import BodyToggle from '@/components/BodyToggle';
 import ReadAloud from '@/components/ReadAloud';
+import GlossarTooltips from '@/components/GlossarTooltips';
 import ShareButtons from '@/components/ShareButtons';
 import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
@@ -56,6 +57,36 @@ export default async function EntryPage({
       .replace(/\s+/g, ' ').trim();
   const readText = [entry.title, entry.teaser, stripHtml(bodyHtml), detailHtml ? stripHtml(detailHtml) : '']
     .filter(Boolean).join('. ');
+  // Glossar für Inline-Tooltips: Titel sind meist beschreibende Phrasen und
+  // daher nicht eindeutig matchbar. Wir nehmen deshalb NUR hochpräzise Begriffe
+  // — Akronyme (LLM, API, MCP, RAG, CLI …) und .md-Dateien (CLAUDE.md) — und
+  // NUR, wenn genau EIN Eintrag den Begriff im Titel führt (keine Mehrdeutigkeit).
+  const allEntries = getEntries(lang);
+  const termToSlugs = new Map<string, Set<string>>();
+  const teaserBy = new Map<string, string>();
+  for (const e of allEntries) {
+    teaserBy.set(e.slug, e.teaser.length > 140 ? e.teaser.slice(0, 137) + '…' : e.teaser);
+    const terms = new Set<string>();
+    for (const m of e.title.match(/\b[A-Z]{2,5}\b/g) ?? []) terms.add(m);
+    for (const m of e.title.match(/\b[A-Za-z][A-Za-z0-9]*\.md\b/g) ?? []) terms.add(m);
+    for (const term of terms) {
+      if (!termToSlugs.has(term)) termToSlugs.set(term, new Set());
+      termToSlugs.get(term)!.add(e.slug);
+    }
+  }
+  const glossary = [...termToSlugs.entries()]
+    .filter(([term]) => term.toLowerCase() !== 'ki') // zu generisch
+    .map(([term, slugs]) => {
+      const arr = [...slugs];
+      let chosen: string | null = arr.length === 1 ? arr[0] : null;
+      if (!chosen) {
+        // kanonischer Eintrag: Slug enthält den Begriff (z. B. …-api…), genau einer
+        const canon = arr.filter((s) => s.includes(term.toLowerCase().replace('.md', '')));
+        if (canon.length === 1) chosen = canon[0];
+      }
+      return chosen ? { term, slug: chosen, teaser: teaserBy.get(chosen) ?? '' } : null;
+    })
+    .filter((g): g is { term: string; slug: string; teaser: string } => !!g && g.slug !== entry.slug);
   const related = entry.related
     .map((s) => getEntry(lang, s))
     .filter((e): e is NonNullable<typeof e> => Boolean(e));
@@ -102,6 +133,7 @@ export default async function EntryPage({
       <ReadAloud lang={lang} text={readText} />
 
       <BodyToggle bodyHtml={bodyHtml} detailHtml={detailHtml} labelSimple={t.levelSimple} labelDetail={t.levelDetail} />
+      <GlossarTooltips lang={lang} glossary={glossary} />
 
       {entry.example && (
         <div className="card" style={{ padding: '18px 22px', marginTop: 26, background: 'var(--blue)', boxShadow: '4px 4px 0 var(--ink)' }}>

@@ -1650,3 +1650,28 @@ body+detail. Build 0, Deploy e3550383, Playwright-verifiziert DE/EN/ZH
 (Play-Button + 3 Tempo-Buttons + speechSynthesis vorhanden), prod 200.
 Merke: Client-Komponente mit supported-Gate rendert SSR null → erscheint erst
 nach useEffect, NICHT per grep im statischen HTML prüfbar, nur per Playwright.
+
+## It. 221 — R5-Deliverable ② Inline-Glossar-Tooltips
+
+GlossarTooltips.tsx: markiert Fachbegriffe im .prose-Kapiteltext (DOM-Walk nach
+Hydration, MutationObserver für 🌱/🔬-Toggle) mit gepunkteter Unterstreichung +
+CSS-Popover (Definition + Link), rein clientseitig.
+
+WEG bis Qualität stimmte (3 Deploys): (a) Voll-Titel-Matching scheiterte —
+110/111 Titel sind beschreibende Phrasen ("Was ist ein LLM?"), stehen nie
+wörtlich im Fremdtext. (b) Schlüsselwort-Extraktion (Akronyme+Klammer+"Was ist
+X"+führender Begriff) → zu mehrdeutig/fragmentarisch: "Prompt"→3 Ziele,
+"Sicherheits"-Kompositum-Fragment, "Modell" über-verlinkt. (c) Entscheidung
+PRÄZISION VOR RECALL: nur eindeutige Akronyme + .md-Dateien, kanonischer
+Eintrag = Slug enthält den Begriff (…-api…), sonst verworfen (KI/API/MCP/RAG in
+mehreren Titeln → teils raus). Ergebnis: LLM, CLI, SDK, IDE, CI, CD, SWE,
+CLAUDE.md, AGENTS.md — je 100 % korrekt, keine Fragmente.
+🔴 BUG: Component-Filter term.length>=4 (Rest vom Voll-Titel-Ansatz) killte
+alle 2-3-Zeichen-Akronyme → 0 Tooltips trotz Treffern; Fix >=2. Beide
+Wortgrenzen verlangt (kein "Sicherheit"→"Sicherheitsaspekte"-Fragment, dafür
+keine Plurale). Build 0, Deploy e5557f9f, Playwright-verifiziert DE+EN
+(token→LLM, halluzination→LLM, headless→CI, je korrekter Link+Popover, kein
+Overflow), Popover-Screenshot ok, prod 200.
+Merke: bei Term-Matching Präzision vor Recall — wenige immer-korrekte Links
+schlagen viele halb-falsche. Deutsche Komposita erzwingen BEIDE Wortgrenzen.
+Längenfilter an den tatsächlichen Termlängen ausrichten (Akronyme = 2-5).
