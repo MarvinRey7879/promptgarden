@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { marked } from 'marked';
 import BodyToggle from '@/components/BodyToggle';
+import ReadAloud from '@/components/ReadAloud';
 import ShareButtons from '@/components/ShareButtons';
 import Quiz from '@/components/Quiz';
 import CompleteButton from '@/components/CompleteButton';
@@ -47,6 +48,14 @@ export default async function EntryPage({
 
   const bodyHtml = marked.parse(entry.body) as string;
   const detailHtml = entry.bodyDetail ? (marked.parse(entry.bodyDetail) as string) : null;
+  // Klartext für die Vorlesefunktion (HTML-Tags + Entities strippen).
+  const stripHtml = (h: string) =>
+    h.replace(/<[^>]+>/g, ' ')
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"').replace(/&#3?9;|&#x27;/g, "'").replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+  const readText = [entry.title, entry.teaser, stripHtml(bodyHtml), detailHtml ? stripHtml(detailHtml) : '']
+    .filter(Boolean).join('. ');
   const related = entry.related
     .map((s) => getEntry(lang, s))
     .filter((e): e is NonNullable<typeof e> => Boolean(e));
@@ -89,6 +98,8 @@ export default async function EntryPage({
       <p style={{ margin: '0 0 24px', fontSize: 17, color: 'var(--muted)', lineHeight: 1.5 }}>
         {entry.teaser}
       </p>
+
+      <ReadAloud lang={lang} text={readText} />
 
       <BodyToggle bodyHtml={bodyHtml} detailHtml={detailHtml} labelSimple={t.levelSimple} labelDetail={t.levelDetail} />
 

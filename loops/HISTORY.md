@@ -1631,3 +1631,22 @@ GPT-5.6 Sol). cursorModelScripts ×5 + CursorModelDemo + Composition (400f/720p)
 Deploy f9c97fe3, live+Standbild verifiziert, prod 200. 24 Basis-Clips × 5 =
 120 mp4. Video-Abdeckung: claude-code 5, cursor 3, aider 2, codex 3,
 antigravity 1.
+
+## It. 220 — Ideen-Pitch R5 + Deliverable ① Vorlesefunktion
+
+UTC 06:23 (~08:23 CEST DE-Tag) → Ideen-Pitch R5 gefeuert (Guard: Push nur
+DE-Tagzeit, nicht nachts). IDEEN.md gelesen (R1-R4 alle umgesetzt, 0 abgelehnt).
+4 NEUE distinkte Ideen via AskUserQuestion multiSelect + Push. Marvin wählt
+ALLE 4: 🖥️ CLAUDE.md-Generator, 🔤 Inline-Glossar-Tooltips, 🎓 Abschluss-
+Zertifikat, 🔊 Vorlesefunktion. Reihenfolge in IDEEN.md protokolliert
+(① Vorlesen ② Tooltips ③ Zertifikat ④ Generator).
+
+Deliverable ① 🔊 Vorlesefunktion: neue Client-Komponente ReadAloud.tsx — liest
+Kapiteltext per Browser-SpeechSynthesis-API (kostenlos, kein Server), Play/Stop
++ Tempo 0,75/1/1,25×, BCP-47-lang je Sprache, Satz-Chunking gegen Engine-
+Längenlimit, blendet sich aus wenn API fehlt. In Lexikon-Detailseite vor
+BodyToggle; readText = Klartext (HTML-Tags+Entities gestrippt) aus title+teaser+
+body+detail. Build 0, Deploy e3550383, Playwright-verifiziert DE/EN/ZH
+(Play-Button + 3 Tempo-Buttons + speechSynthesis vorhanden), prod 200.
+Merke: Client-Komponente mit supported-Gate rendert SSR null → erscheint erst
+nach useEffect, NICHT per grep im statischen HTML prüfbar, nur per Playwright.

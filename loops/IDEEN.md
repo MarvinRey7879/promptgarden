@@ -38,5 +38,14 @@ Regeln: Abgelehnte Ideen NIE erneut pitchen. Gewählte → Rotation/Umsetzung. O
 
 - 18.07.2026, Runde 4: Marvin wählt ALLE 4 (🔄 Rosetta-Tabelle, 🧭 Setup-Wizard, 📊 Lern-Statistik, 🩺 Fehler-Katalog). Reihenfolge nach Wert/Aufwand: ① 🔄 Rosetta (Daten liegen vor, SEO-Hebel) ② 🩺 Fehler-Katalog (Content-Recherche parallel per Agent startbar) ③ 🧭 Setup-Wizard ④ 📊 Lern-Statistik (nutzt bestehende localStorage-Keys).
 
+## Gepitcht 22.07.2026 (Runde 5) — ENTSCHIEDEN 22.07 ~08:23
+1. 🖥️ **CLAUDE.md-Generator** — interaktiver Baukasten für best-practice CLAUDE.md / AGENTS.md (Projekt-Typ, Sprache, Konventionen, Do/Don't, Befehle) → fertige Konfig-Datei zum Kopieren, ×5 Sprachen. SEO-Hebel („CLAUDE.md example"), rein clientseitig. Distinkt vom Setup-Wizard.
+2. 🔤 **Inline-Glossar-Tooltips** — Fachbegriffe in Kapiteln bekommen gepunktete Unterstreichung; Hover/Tap zeigt Lexikon-Definition als Popover + Link. Nutzt die 111 Lexikon-Einträge.
+3. 🎓 **Abschluss-Zertifikat** — teilbares SVG-Zertifikat/Badge nach Lernpfad-/Welt-Abschluss (localStorage), Download/Teilen. Retention + Reichweite.
+4. 🔊 **Kapitel-Vorlesefunktion** — „Vorlesen"-Button je Kapitel über Browser-SpeechSynthesis-API (kostenlos), Tempo wählbar, ×5 Sprachen. Barrierefreiheit + unterwegs.
+
+## Entschieden (Fortsetzung)
+- 22.07.2026, Runde 5: Marvin wählt ALLE 4 (🖥️ CLAUDE.md-Generator, 🔤 Inline-Glossar-Tooltips, 🎓 Abschluss-Zertifikat, 🔊 Vorlesefunktion). Umsetzungs-Reihenfolge nach Wert/Aufwand: ① 🔊 Vorlesefunktion (kleinster Aufwand, Quick-Win) ② 🔤 Inline-Glossar-Tooltips (nutzt vorhandene Lexikon-Einträge) ③ 🎓 Abschluss-Zertifikat (SVG+localStorage) ④ 🖥️ CLAUDE.md-Generator (größte, aber höchster SEO-Wert für EN/US-Google-Publikum).
+
 ## Abgelehnt (nie wieder pitchen)
 - (noch nichts)
