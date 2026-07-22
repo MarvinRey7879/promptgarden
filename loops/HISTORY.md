@@ -1675,3 +1675,19 @@ Overflow), Popover-Screenshot ok, prod 200.
 Merke: bei Term-Matching Präzision vor Recall — wenige immer-korrekte Links
 schlagen viele halb-falsche. Deutsche Komposita erzwingen BEIDE Wortgrenzen.
 Längenfilter an den tatsächlichen Termlängen ausrichten (Akronyme = 2-5).
+
+## It. 222 — R5-Deliverable ③ Abschluss-Zertifikat
+
+Certificates.tsx auf der Lernpfade-Seite: prüft je Welt (WORLD_0-3), ob alle
+Kapitel im localStorage-Fortschritt (pg_progress_v1) erledigt sind. Frisch →
+motivierender Hinweis „n/4 Welten abgeschlossen". Welt fertig → teilbares
+SVG-Zertifikat (Urkunden-Optik, serif, lime Siegel mit gezeichnetem Häkchen —
+emoji-FREI, damit die PNG-Rasterisierung via Canvas zuverlässig ist), zeigt
+Welt-Titel, Kapitelzahl, Summen-XP, Datum. Download = SVG→Image→Canvas→toBlob
+PNG; Teilen = navigator.share mit File (Fallback Download). ×5 Sprachen, rein
+clientseitig. Reagiert live auf PROGRESS_EVENT + storage. Build 0, Deploy
+8be47d36, Playwright-verifiziert: frisch=Hinweis „0/4", Welt-0-Abschluss
+simuliert (localStorage) = Zertifikat-SVG + Download/Teilen-Buttons, kein
+Overflow; Screenshot bestätigt Optik. R5: ①②③ fertig, ④ CLAUDE.md-Generator offen.
+Merke: für rasterisierbare Zertifikate KEINE Emoji im SVG (Canvas-Emoji =
+System-abhängig/Tofu) → Formen/Pfade nutzen (Häkchen als path).

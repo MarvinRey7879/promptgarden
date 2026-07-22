@@ -46,7 +46,7 @@ Regeln: Abgelehnte Ideen NIE erneut pitchen. Gewählte → Rotation/Umsetzung. O
 
 ## Entschieden (Fortsetzung)
 - 22.07.2026, Runde 5: Marvin wählt ALLE 4 (🖥️ CLAUDE.md-Generator, 🔤 Inline-Glossar-Tooltips, 🎓 Abschluss-Zertifikat, 🔊 Vorlesefunktion). Umsetzungs-Reihenfolge nach Wert/Aufwand: ① 🔊 Vorlesefunktion (kleinster Aufwand, Quick-Win) ② 🔤 Inline-Glossar-Tooltips (nutzt vorhandene Lexikon-Einträge) ③ 🎓 Abschluss-Zertifikat (SVG+localStorage) ④ 🖥️ CLAUDE.md-Generator (größte, aber höchster SEO-Wert für EN/US-Google-Publikum).
-  - ✅ ① Vorlesefunktion It.220 (ReadAloud.tsx). ✅ ② Inline-Glossar-Tooltips It.221 (GlossarTooltips.tsx, Präzision-vor-Recall: nur eindeutige Akronyme+.md). OFFEN: ③ Zertifikat, ④ CLAUDE.md-Generator.
+  - ✅ ① Vorlesefunktion It.220 (ReadAloud.tsx). ✅ ② Inline-Glossar-Tooltips It.221 (GlossarTooltips.tsx, Präzision-vor-Recall: nur eindeutige Akronyme+.md). ✅ ③ Abschluss-Zertifikat It.222 (Certificates.tsx, SVG-Urkunde je abgeschlossener Welt, PNG-Download+Teilen). OFFEN: ④ CLAUDE.md-Generator.
 
 ## Abgelehnt (nie wieder pitchen)
 - (noch nichts)

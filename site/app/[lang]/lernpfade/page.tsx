@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PathBoard from '@/components/PathBoard';
 import LearnMap from '@/components/LearnMap';
+import Certificates from '@/components/Certificates';
 import ExampleVideo from '@/components/ExampleVideo';
 import { WORLD_0, WORLD_1, WORLD_2, WORLD_3, getEntry } from '@/lib/content';
 import { isLang, langAlternates, ui } from '@/lib/i18n';
@@ -91,6 +92,16 @@ export default async function LernpfadePage({ params }: { params: Promise<{ lang
       />
 
       <ExampleVideo lang={lang} name="map-demo" label={MAP_LABEL[lang]} />
+
+      <Certificates
+        lang={lang}
+        worlds={[
+          { key: 'w0', name: t.pathWorld0, chapters: world0.map((e) => ({ slug: e.slug, xp: e.xp })) },
+          { key: 'w1', name: t.pathWorld, chapters: world1.map((e) => ({ slug: e.slug, xp: e.xp })) },
+          { key: 'w2', name: t.pathWorld2, chapters: world2.map((e) => ({ slug: e.slug, xp: e.xp })) },
+          { key: 'w3', name: t.pathWorld3, chapters: world3.map((e) => ({ slug: e.slug, xp: e.xp })) },
+        ]}
+      />
 
       {world0.length >= 4 && (
         <>
