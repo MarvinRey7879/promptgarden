@@ -1830,3 +1830,21 @@ Build 0, Deploy 63e62234. Verifiziert: Footer-imprint pro Sprache korrekt
 „网站地图". Prod grün.
 Merke: geteilte Komponenten auf aria-label/title/Text-Literale grepen — auch
 englische/deutsche Wörter ohne Umlaut lecken auf alle 5 Sprachen.
+
+## Iteration 239 — 23.07.2026 ~06:34 UTC — i18n-Leak: Vergleiche ✳-„Open Weights"-Tooltip
+Aktiv-Fenster (08:34 CEST). date <24.07 kein Feed. Poll grün (0/0/0, views_7d
+138), Smoke 10/10.
+i18n-Audit app/[lang]-Seiten: `vergleiche/page.tsx:203` hatte `title="Open
+Weights"` hart → EN-Tooltip auf allen 5 Sprachen am ✳-Marker der Ratio-Tabelle.
+Die Vergleiche-Daten hatten bereits ein lokalisiertes `quadrant.openLabel`
+(de „Open Weights (selbst hostbar)"/es „Pesos abiertos (autoalojable)"/fr „Poids
+ouverts (auto-hébergeable)"/zh „开源权重(可自行部署)"). Fix: `title={data.quadrant?.openLabel}`
+— wiederverwendet das bestehende Label (optional-chained, da quadrant im Typ
+optional; alle 5 Sprachen haben es, kein Verlust; fehlt es künftig → title
+undefined = kein Crash). Zusatznutzen: „selbst hostbar"-Kontext statt bloß „Open
+Weights". Zeile 346 „Open Source:" bewusst gelassen (universeller Term, Wert
+schon lokalisiert; Anti-Churn).
+Build 0, Deploy 649247de. Verifiziert: Tooltip pro Sprache im HTML (de/zh/fr) +
+Live ZH „开源权重(可自行部署)". Prod grün.
+Merke: bestehende lokalisierte Daten-Felder für Tooltips wiederverwenden statt
+neue Strings anlegen; bei optionalen Feldern ?. nutzen (title=undefined ist ok).

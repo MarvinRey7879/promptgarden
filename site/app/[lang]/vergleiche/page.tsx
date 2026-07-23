@@ -200,7 +200,7 @@ export default async function VergleichePage({ params }: { params: Promise<{ lan
                   <tr key={r.name} style={{ background: i < 3 ? 'var(--lime)' : i % 2 ? 'var(--bg)' : '#fff' }}>
                     <td style={{ padding: '7px 10px', fontWeight: 800 }}>{r.platz}</td>
                     <td style={{ padding: '7px 10px', fontWeight: 700 }}>
-                      {r.name} {r.open && <span title="Open Weights">✳</span>}
+                      {r.name} {r.open && <span title={data.quadrant?.openLabel}>✳</span>}
                       <span style={{ color: 'var(--muted)', fontWeight: 500 }}> · {r.anbieter}</span>
                     </td>
                     <td style={{ padding: '7px 10px', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{r.ratio.toFixed(1)}</td>
