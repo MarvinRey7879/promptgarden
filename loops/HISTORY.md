@@ -1866,3 +1866,23 @@ Build 0, Deploy cb47d0df. Playwright-verifiziert: Tap-Targets jetzt 25×25px
 Merke: SVG-Knoten mit kleinem sichtbaren r + großer transparenter Hit-Circle =
 saubere Tap-Target-Vergrößerung ohne Layout-Änderung; transparent (nicht none)
 für Hit-Testing.
+
+## Iteration 241 — 23.07.2026 ~08:0x UTC — Addons: Mobil-Diagramme vertikal stapeln (Marvin-Wunsch)
+Marvin direkt: Addons-Seite auf Mobil „sehr eng". Befund: die zwei oberen
+Fluss-Diagramme (Graphify, Obsidian↔Claude) sind 720px-viewBox mit minWidth:600
+→ auf 390px abgeschnitten, horizontales Wischen nötig. Sein Card→Detail-Modell
+existiert bereits (12 Addons inkl. ruflo + 4× Obsidian). Marvin wählte (AskUser):
+Diagramme mobil vertikal stapeln; + superpowers & Vorschläge (folgt); Logos wo
+lizenz-ok sonst Favicon (folgt).
+Fix (AddonDiagrams.tsx): Desktop-SVG unverändert in `hide-mobile`; neuer
+`MobileFlow`-HTML-Stack (Boxen untereinander, ↓/↕-Pfeile, gleiche 1d-Optik) in
+neuer CSS-Klasse `.show-mobile` (display:none, ≤760px block). Swipe-Hint
+entfernt (kein Scroll mehr). Obsidian-SVG bekam eigenen Marker `aarr2`+defs
+(war vorher auf Graphify-Marker angewiesen).
+Build 0, Deploy b8d83524. Playwright-verifiziert: Mobil show-mobile=block/
+hide-mobile=none/kein Body-H-Scroll; Desktop umgekehrt; Screenshot = alle 4
+Graphify-Boxen vertikal sichtbar, lesbar. Prod grün.
+OFFEN (Marvin-Auftrag): superpowers + 2-3 neue Addons (mit Quellen, Card→Detail
+×5 Sprachen); Logos/Favicons auf Cards.
+Merke: `.show-mobile` als Gegenstück zu `.hide-mobile` (beide @760px); geteilte
+SVG-Marker-IDs brechen wenn ein SVG display:none wird → je SVG eigener Marker.
