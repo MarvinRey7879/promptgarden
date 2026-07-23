@@ -37,6 +37,14 @@ const byLang: Record<Lang, { items: Addon[] }> = {
 
 const LANG_KEYS = ['de', 'en', 'es', 'fr', 'zh'] as const;
 
+// Addons mit lokalem Logo/Favicon (siehe /public/addon-icons/). Whitelist, weil
+// die Server-Component kein onError-Fallback für fehlende Bilder hat.
+const ADDON_ICONS = new Set([
+  'graphify', 'mcp-servers', 'claude-flow', 'context7', 'playwright-mcp', 'github-mcp',
+  'claude-code-vscode', 'claude-chrome', 'obsidian-local-rest', 'obsidian-copilot',
+  'obsidian-smart-connections', 'obsidian-graph-context', 'superpowers', 'serena', 'cline', 'repomix',
+]);
+
 export function generateStaticParams() {
   // Nur Addons mit Detail-Inhalt bekommen eine Seite
   return LANG_KEYS.flatMap((lang) =>
@@ -83,9 +91,20 @@ export default async function AddonDetailPage({
         <Link href={`/${lang}/addons/`} style={{ textDecoration: 'underline' }}>{t.addonsTitle}</Link>
         {' · '}{a.category}
       </p>
-      <h1 style={{ margin: '0 0 6px', fontSize: 38, fontWeight: 800, letterSpacing: '-.03em', lineHeight: 1.1 }}>
-        {a.name}
-      </h1>
+      <div style={{ display: 'flex', gap: 14, alignItems: 'center', margin: '0 0 6px' }}>
+        {ADDON_ICONS.has(a.id) && (
+          <img
+            src={`/addon-icons/${a.id}.png`}
+            alt=""
+            width={48}
+            height={48}
+            style={{ flexShrink: 0, borderRadius: 10, border: '2px solid var(--ink)', background: '#fff' }}
+          />
+        )}
+        <h1 style={{ margin: 0, fontSize: 38, fontWeight: 800, letterSpacing: '-.03em', lineHeight: 1.1 }}>
+          {a.name}
+        </h1>
+      </div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', margin: '0 0 14px' }}>
         {a.official && <span className="chip" style={{ fontSize: 11.5, fontWeight: 800 }}>✓ {t.addonsOfficial}</span>}
         {a.stars && <span className="mono" style={{ fontSize: 12.5, color: 'var(--muted)' }}>★ {a.stars}</span>}

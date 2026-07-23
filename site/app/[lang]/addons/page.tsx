@@ -35,6 +35,15 @@ const CAT_COLORS: Record<string, string> = {
   Browser: 'var(--pink)',
 };
 
+// Addons mit eigenem Logo/Favicon unter /public/addon-icons/<id>.png (offizielle
+// Domain-Favicons bzw. GitHub-Owner-Avatare, lokal gehostet — keine Fremd-Calls).
+// Server-Component kann kein onError, daher explizite Whitelist.
+const ADDON_ICONS = new Set([
+  'graphify', 'mcp-servers', 'claude-flow', 'context7', 'playwright-mcp', 'github-mcp',
+  'claude-code-vscode', 'claude-chrome', 'obsidian-local-rest', 'obsidian-copilot',
+  'obsidian-smart-connections', 'obsidian-graph-context', 'superpowers', 'serena', 'cline', 'repomix',
+]);
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLang(lang)) return {};
@@ -104,9 +113,21 @@ export default async function AddonsPage({ params }: { params: Promise<{ lang: s
                 </span>
               )}
             </div>
-            <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 800, letterSpacing: '-.02em', lineHeight: 1.2 }}>
-              {a.name}
-            </h2>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '0 0 8px' }}>
+              {ADDON_ICONS.has(a.id) && (
+                <img
+                  src={`/addon-icons/${a.id}.png`}
+                  alt=""
+                  width={30}
+                  height={30}
+                  loading="lazy"
+                  style={{ flexShrink: 0, borderRadius: 7, border: '1.5px solid var(--ink)', background: '#fff' }}
+                />
+              )}
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.02em', lineHeight: 1.2 }}>
+                {a.name}
+              </h2>
+            </div>
             <p style={{ margin: '0 0 8px', fontSize: 14, lineHeight: 1.55 }}>{a.what}</p>
             <p style={{ margin: '0 0 12px', fontSize: 13.5, lineHeight: 1.55, color: 'var(--muted)' }}>{a.why}</p>
             <p style={{ margin: 'auto 0 0', fontSize: 12.5, display: 'flex', gap: 14, flexWrap: 'wrap' }}>

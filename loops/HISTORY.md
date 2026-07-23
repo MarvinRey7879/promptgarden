@@ -1904,3 +1904,22 @@ Screenshots Card-Grid + superpowers-Detail sauber. Prod superpowers 200.
 OFFEN (Marvin): Logos/Favicons auf Cards (wo lizenz-ok Logo, sonst Favicon).
 Merke: neue Addons brauchen nur Eintrag in addons.<lang>.json items (mit detail)
 — Seiten+Sitemap automatisch; Sterne immer 2. Quelle (shields.io) gegenprüfen.
+
+## Iteration 241c — 23.07.2026 — Addons: Logos/Favicons auf Cards + Detail (Marvin-Wunsch)
+Marvin: „Logos wo lizenz-ok, sonst Favicon". Umsetzung: je Addon das offizielle
+Icon von seiner eigenen Quelle — Produkt-Domain-Favicon (obsidian.md, cline.bot,
+repomix.com, context7.com, playwright.dev, modelcontextprotocol.io, claude.ai,
+github.com) bzw. GitHub-Owner-Avatar (Graphify-Labs, ruvnet, obra, oraios) —
+via Google-s2-Favicon (sz=128) und github.com/<owner>.png geladen. Alle 16 mit
+sharp auf 128×128-PNG normalisiert (4 Obsidian + superpowers waren JPEG-Bytes in
+.png, github-mcp/context7 zu klein), lokal unter site/public/addon-icons/<id>.png
+gespeichert → KEINE Laufzeit-Fremdcalls (Privacy-konform).
+Rendering: Hub-Card 30px-Icon neben dem Titel, Detail-Header 48px neben H1, je
+mit Ink-Border+rund; ADDON_ICONS-Whitelist (Server-Component kein onError).
+Build 0, Deploy 58fb63db. Playwright: 16/16 Icons geladen, 0 broken; Screenshot
+= echte Marken-Logos (Anthropic-Sunburst, GitHub-Octocat, Obsidian-Kristall,
+Playwright-Masken, repomix-Box, serena-Lotus). Prod addons 200.
+Marvin-Auftrag Addons damit komplett: (1) Mobil-Diagramme vertikal, (2) 4 neue
+Addons ×5, (3) Logos/Favicons.
+Merke: Google-s2-Favicon liefert teils JPEG-in-.png → mit sharp (Buffer lesen,
+nicht in-place, sonst Windows-Lock) zu echtem PNG normalisieren.
