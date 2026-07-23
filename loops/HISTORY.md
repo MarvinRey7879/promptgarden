@@ -1886,3 +1886,21 @@ OFFEN (Marvin-Auftrag): superpowers + 2-3 neue Addons (mit Quellen, Card→Detai
 ×5 Sprachen); Logos/Favicons auf Cards.
 Merke: `.show-mobile` als Gegenstück zu `.hide-mobile` (beide @760px); geteilte
 SVG-Marker-IDs brechen wenn ein SVG display:none wird → je SVG eigener Marker.
+
+## Iteration 241b — 23.07.2026 — Addons: 4 neue (superpowers/Serena/Cline/Repomix) ×5 Sprachen
+Marvin-Auftrag (Fortsetzung). Recherche mit Quellenpflicht (curl 200 + Inhalt,
+Sterne 2. Quelle via shields.io): superpowers (obra/superpowers, 259.667⭐/MIT,
+Skills-Framework+TDD-Methodik, Anthropic-Marketplace), Serena (oraios/serena,
+26.767⭐/MIT, semantisches MCP/LSP-Toolkit), Cline (cline/cline, 64.956⭐/
+Apache-2.0, autonomer Agent VS Code/CLI/SDK), Repomix (yamadashy/repomix,
+27.334⭐/MIT, Repo→1 AI-Datei). Merge-Script research/addons-merge-2307.mjs
+schreibt volle Card+Detail-Schemata (what/why/how/setup/whenGood/whenBad/links/
+source) in alle 5 addons.<lang>.json → 12→16 items je Sprache. Dedup per id.
+Neue Detail-Seiten + Sitemap-Einträge entstehen automatisch (generateStaticParams
++ sitemap.ts filtern auf detail).
+Build 0, Deploy af115322. Verifiziert: 4 Detail-Seiten gebaut, Hub zeigt alle 4
+mit korrekten Sternen/Kategorie-Chips (SKILLS & METHODIK/MCP/EDITOR/KONTEXT),
+Screenshots Card-Grid + superpowers-Detail sauber. Prod superpowers 200.
+OFFEN (Marvin): Logos/Favicons auf Cards (wo lizenz-ok Logo, sonst Favicon).
+Merke: neue Addons brauchen nur Eintrag in addons.<lang>.json items (mit detail)
+— Seiten+Sitemap automatisch; Sterne immer 2. Quelle (shields.io) gegenprüfen.

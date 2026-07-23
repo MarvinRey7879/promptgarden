@@ -663,6 +663,206 @@
           }
         ]
       }
+    },
+    {
+      "id": "superpowers",
+      "name": "Superpowers",
+      "category": "Skills & Methodik",
+      "official": false,
+      "stars": "259.667",
+      "what": "Ein Skills-Framework plus komplette Entwicklungs-Methodik für Coding-Agenten: Der Agent plant erst, schreibt Tests zuerst (TDD) und arbeitet Aufgaben über Subagenten ab — die passenden Skills lösen automatisch aus.",
+      "why": "Eines der meistgesternten Coding-Agent-Projekte auf GitHub (~260k ⭐, seit Oktober 2025), von Jesse Vincent (obra). Läuft mit Claude Code, Codex, Cursor, Antigravity, GitHub Copilot CLI u.a. und ist als Plugin aus Anthropics offiziellem Marketplace installierbar. Open Source (MIT).",
+      "source": {
+        "title": "GitHub: obra/superpowers",
+        "url": "https://github.com/obra/superpowers"
+      },
+      "detail": {
+        "how": "Superpowers ist keine einzelne Funktion, sondern eine Sammlung zusammensetzbarer „Skills\" plus eine Methodik, die dafür sorgt, dass der Agent sie auch nutzt. Statt sofort Code zu schreiben, tritt der Agent einen Schritt zurück und klärt zuerst, was du eigentlich bauen willst. Nach deiner Design-Freigabe erstellt er einen Umsetzungsplan, der bewusst so klar ist, dass ihn auch ein unerfahrener Entwickler abarbeiten könnte, und betont dabei echtes Rot/Grün-TDD, YAGNI und DRY. Danach läuft ein „subagenten-getriebener\" Prozess: Mehrere Agenten arbeiten die einzelnen Aufgaben ab, prüfen und reviewen ihre Arbeit und machen weiter — oft über längere Zeit autonom. Weil die Skills automatisch auslösen, musst du nichts Besonderes tun.",
+        "setup": [
+          "Claude Code (offiziell): `/plugin install superpowers@claude-plugins-official`",
+          "Alternativ Superpowers-Marketplace: `/plugin marketplace add obra/superpowers-marketplace`, dann das Plugin von dort installieren",
+          "Andere Harnesses (Codex, Cursor, Antigravity, Copilot CLI, OpenCode, Pi …): eigene Installationswege im README",
+          "Nach der Installation triggern die Skills automatisch — kein weiterer Handgriff nötig"
+        ],
+        "whenGood": [
+          {
+            "title": "Größere Features sauber durchziehen",
+            "example": "Statt sofort loszucoden erzwingt Superpowers Brainstorming → Design-Freigabe → Plan → TDD — gut für Aufgaben, bei denen Struktur zählt."
+          },
+          {
+            "title": "Lange autonome Läufe",
+            "example": "Der Subagenten-Prozess arbeitet einen abgesegneten Plan teils stundenlang ab, mit Zwischen-Reviews."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Schnelle Einzeiler / Wegwerf-Skripte",
+            "why": "Der Methodik-Overhead (Design, Plan, TDD) lohnt sich für triviale Änderungen nicht.",
+            "alternative": "Den Agenten direkt ohne Framework fragen."
+          },
+          {
+            "title": "Team will keine erzwungene Methodik",
+            "why": "Superpowers legt einen bestimmten TDD/YAGNI/DRY-Stil nahe — das passt nicht zu jedem Workflow.",
+            "alternative": "Einzelne Skills gezielt statt des ganzen Frameworks nutzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "Installations-Anleitung (README)",
+            "url": "https://github.com/obra/superpowers#claude-code"
+          }
+        ]
+      }
+    },
+    {
+      "id": "serena",
+      "name": "Serena",
+      "category": "MCP",
+      "official": false,
+      "stars": "26.767",
+      "what": "Ein MCP-Toolkit, das deinem Agenten IDE-artige, semantische Code-Werkzeuge gibt — Symbol-genaues Finden, Editieren und Refactoring über Language-Server (LSP) statt blindem Text-Grep.",
+      "why": "„Die IDE für deinen Agenten\": arbeitet auf Symbol-Ebene (Funktionen, Klassen, Referenzen) statt zeilenweise. Das spart Tokens auf großen Codebasen und läuft mit jedem MCP-Client (Claude Code, Codex, Cursor …). Open Source (MIT).",
+      "source": {
+        "title": "GitHub: oraios/serena",
+        "url": "https://github.com/oraios/serena"
+      },
+      "detail": {
+        "how": "Serena hängt sich als MCP-Server an deinen Agenten und stellt Werkzeuge bereit, die eher einer IDE als einer Textsuche gleichen: Symbole finden (`find_symbol`), Referenzen auflösen (`find_referencing_symbols`), einen Symbol-Körper ersetzen (`replace_symbol_body`) und mehr. Grundlage sind Language-Server (LSP), also dieselbe Technik, die auch VS Code für „Gehe zu Definition\" nutzt — dadurch arbeitet der Agent auf der relationalen Struktur des Codes statt blind zu grepen. Serena ist modell- und client-agnostisch, läuft im Stdio- oder HTTP-Modus und ist quelloffen. Für agentische Harnesses gibt es passende Kontext-Profile (z.B. `--context claude-code`).",
+        "setup": [
+          "Installieren (via uv): `uv tool install -p 3.13 serena-agent`",
+          "Bei Claude Code registrieren: `claude mcp add serena -- serena start-mcp-server --context claude-code --project \"$(pwd)\"`",
+          "Ohne feste Installation auch per uvx möglich; alternativ HTTP-Modus starten und dem Client die URL geben",
+          "Die passenden Sprach-Server werden je nach Projektsprache automatisch genutzt (LSP)"
+        ],
+        "whenGood": [
+          {
+            "title": "Große Codebasen navigieren und refactoren",
+            "example": "„Finde alle Aufrufer von X und benenne sie um\" läuft symbol-genau über den Language-Server statt über Grep."
+          },
+          {
+            "title": "Token bei der Kontext-Suche sparen",
+            "example": "Serena liest gezielt einzelne Symbole, statt ganze Dateien in den Kontext zu laden."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Winzige Projekte / eine Datei",
+            "why": "Der LSP- und MCP-Setup-Overhead lohnt sich bei sehr kleinen Projekten kaum.",
+            "alternative": "Die eingebaute Grep/Glob-Suche des Agenten nutzen."
+          },
+          {
+            "title": "Sprache ohne guten Language-Server",
+            "why": "Serenas Stärke hängt am Language-Server der jeweiligen Sprache — für exotische Sprachen kann sie schwächer sein.",
+            "alternative": "Auf gut unterstützte Sprachen (Python, TypeScript, Go, Rust, Java …) setzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "Doku: Clients einrichten",
+            "url": "https://oraios.github.io/serena/02-usage/030_clients.html"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "category": "Editor",
+      "official": false,
+      "stars": "64.956",
+      "what": "Ein quelloffener, autonomer Coding-Agent — als VS-Code-Erweiterung, CLI und SDK. Er führt Befehle direkt im Terminal aus, beobachtet die Ausgabe live und reagiert auf Fehler.",
+      "why": "Eine der populärsten Open-Source-Optionen für agentisches Coden in der IDE (Apache-2.0). Bring-your-own-Key (Anthropic, OpenAI, lokale Modelle …), getrennter Plan/Act-Modus und MCP-Unterstützung. Früher als „Claude Dev\" bekannt.",
+      "source": {
+        "title": "GitHub: cline/cline",
+        "url": "https://github.com/cline/cline"
+      },
+      "detail": {
+        "how": "Cline ist ein autonomer Coding-Agent, der primär in VS Code lebt, aber auch als CLI und SDK verfügbar ist. Er trennt einen Plan-Modus (Vorgehen abstimmen) vom Act-Modus (umsetzen), editiert Dateien, führt Terminal-Befehle aus und beobachtet deren Ausgabe in Echtzeit — er fängt also Compile-Fehler, fehlgeschlagene Tests oder Server-Abstürze auf, während sie passieren. Cline bringt keinen eigenen Modell-Zugang mit, sondern nutzt deinen API-Key (Anthropic, OpenAI, OpenRouter oder lokale Modelle) und unterstützt MCP-Server für zusätzliche Werkzeuge. Für Automatisierung lässt er sich per CLI auch headless in CI/CD betreiben.",
+        "setup": [
+          "VS Code: Erweiterung „Cline\" aus dem Marketplace installieren (Item-ID `saoudrizwan.claude-dev`)",
+          "CLI: `npm i -g cline` — interaktiv oder headless für CI/CD",
+          "SDK: `npm install @cline/sdk`",
+          "Eigenen API-Key hinterlegen (Anthropic, OpenAI, OpenRouter oder ein lokales Modell)"
+        ],
+        "whenGood": [
+          {
+            "title": "Agentisches Coden direkt in VS Code",
+            "example": "Cline plant, editiert Dateien, führt Tests/Builds aus und liest die Terminal-Ausgabe live — mit klarer Plan/Act-Trennung."
+          },
+          {
+            "title": "Volle Kontrolle über Modell und Kosten",
+            "example": "Bring-your-own-Key statt Abo — freie Modellwahl inklusive lokaler Modelle."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Kein API-Budget / kein eigener Key",
+            "why": "Cline braucht einen eigenen Modell-Zugang; ohne Key oder Guthaben läuft nichts.",
+            "alternative": "Ein Tool mit eigenem Abo/Kontingent nutzen."
+          },
+          {
+            "title": "Rein terminal-basierter Workflow ohne IDE",
+            "why": "Die Stärke liegt in der VS-Code-Integration; die CLI ist jünger.",
+            "alternative": "Einen dedizierten CLI-Agenten (z.B. Claude Code, Codex) nutzen."
+          }
+        ],
+        "links": [
+          {
+            "title": "VS Code Marketplace: Cline",
+            "url": "https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev"
+          }
+        ]
+      }
+    },
+    {
+      "id": "repomix",
+      "name": "Repomix",
+      "category": "Kontext",
+      "official": false,
+      "stars": "27.334",
+      "what": "Packt dein ganzes Repository in eine einzige, KI-freundliche Datei — ideal, um einer LLM oder einem Chat-Modell die komplette Codebasis am Stück zu geben.",
+      "why": "Praktisch, wenn du Code außerhalb eines Agenten in ChatGPT, Claude, Gemini & Co. einfügen willst. Zählt Tokens, respektiert .gitignore, kann komprimieren und auf Secrets prüfen. Läuft ohne Installation per npx und auch als Web-Tool (repomix.com). Open Source (MIT).",
+      "source": {
+        "title": "GitHub: yamadashy/repomix",
+        "url": "https://github.com/yamadashy/repomix"
+      },
+      "detail": {
+        "how": "Repomix durchläuft dein Repository und schreibt es in eine einzige, für KI gut lesbare Datei (XML, Markdown oder Klartext). Dabei respektiert es `.gitignore`, zählt die Tokens pro Datei und insgesamt und kann den Code optional per Tree-sitter komprimieren, um Platz zu sparen. Eine eingebaute Secret-Prüfung (Secretlint) warnt vor versehentlich mitgepackten Zugangsdaten. Neben lokalen Ordnern kann es auch Remote-Repos verarbeiten, läuft ohne Installation per `npx`, gibt es als Web-Tool auf repomix.com und lässt sich als MCP-Server an Agenten anbinden.",
+        "setup": [
+          "Ohne Installation: im Projektordner `npx repomix@latest`",
+          "Global installieren: `npm install -g repomix` (oder `yarn global add repomix`)",
+          "Ergebnis: eine Datei (z.B. `repomix-output.xml`) — komplett in ChatGPT/Claude/Gemini einfügen",
+          "Online ohne Setup: repomix.com; optional als MCP-Server für Agenten"
+        ],
+        "whenGood": [
+          {
+            "title": "Ganze Codebasis in ein Chat-Modell geben",
+            "example": "Ein `npx repomix` erzeugt eine Datei, die du komplett in Claude/ChatGPT einfügst — statt Datei für Datei zu kopieren."
+          },
+          {
+            "title": "Token-Budget im Blick behalten",
+            "example": "Repomix zählt Tokens pro Datei und gesamt und respektiert .gitignore, damit nur Relevantes reinkommt."
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "Agent mit eigener Datei-Suche",
+            "why": "Ein Coding-Agent (Claude Code, Cursor) liest Dateien selbst gezielt — ein gepacktes Gesamt-File ist dann oft unnötig groß.",
+            "alternative": "Den Agenten direkt im Repo arbeiten lassen; für gezielten Kontext ggf. Serena oder Graphify."
+          },
+          {
+            "title": "Sehr großes Monorepo",
+            "why": "Das komplette Repo kann das Kontextfenster sprengen — trotz Kompression.",
+            "alternative": "Per Include-/Ignore-Filter nur die relevanten Ordner packen."
+          }
+        ],
+        "links": [
+          {
+            "title": "repomix.com (Web + Doku)",
+            "url": "https://repomix.com/"
+          }
+        ]
+      }
     }
   ],
   "diagrams": {

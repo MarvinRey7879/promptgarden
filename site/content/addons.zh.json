@@ -663,6 +663,206 @@
           }
         ]
       }
+    },
+    {
+      "id": "superpowers",
+      "name": "Superpowers",
+      "category": "技能与方法论",
+      "official": false,
+      "stars": "259.667",
+      "what": "一个技能框架，加上一整套面向编码智能体的开发方法论：智能体先规划、先写测试（TDD），并通过子智能体逐个完成任务——合适的技能会自动触发。",
+      "why": "GitHub 上收藏数最高的编码智能体项目之一（约 26 万 ⭐，自 2025 年 10 月起），作者 Jesse Vincent（obra）。可用于 Claude Code、Codex、Cursor、Antigravity、GitHub Copilot CLI 等，并可从 Anthropic 官方插件市场以插件方式安装。开源（MIT）。",
+      "source": {
+        "title": "GitHub: obra/superpowers",
+        "url": "https://github.com/obra/superpowers"
+      },
+      "detail": {
+        "how": "Superpowers 不是单一功能，而是一组可组合的「技能」，再加上一套确保智能体真正使用它们的方法论。智能体不会一上来就写代码，而是先退一步、弄清你到底想做什么。在你确认设计之后，它会产出一份清晰到连新手工程师都能照着做的实现计划，强调真正的红/绿 TDD、YAGNI 和 DRY。随后进入「子智能体驱动」的流程：多个智能体分头完成各项任务、检查并复审自己的工作再继续——常常能长时间自主运行。由于技能会自动触发，你无需做任何特别操作。",
+        "setup": [
+          "Claude Code（官方）：`/plugin install superpowers@claude-plugins-official`",
+          "或使用 Superpowers 市场：`/plugin marketplace add obra/superpowers-marketplace`，再从中安装插件",
+          "其他运行环境（Codex、Cursor、Antigravity、Copilot CLI、OpenCode、Pi 等）：README 中有各自的安装方式",
+          "安装后技能会自动触发——无需其他操作"
+        ],
+        "whenGood": [
+          {
+            "title": "把较大的功能干净地做完",
+            "example": "Superpowers 不让你立刻写代码，而是强制头脑风暴 → 确认设计 → 计划 → TDD——适合看重结构的任务。"
+          },
+          {
+            "title": "长时间自主运行",
+            "example": "子智能体流程会照着已批准的计划连续工作数小时，其间穿插复审。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "快速一行命令 / 一次性脚本",
+            "why": "对于微小改动，方法论开销（设计、计划、TDD）并不划算。",
+            "alternative": "直接让智能体去做，不用这个框架。"
+          },
+          {
+            "title": "团队不想被强加方法论",
+            "why": "Superpowers 会引导你走一套特定的 TDD/YAGNI/DRY 风格，并非适合所有工作流。",
+            "alternative": "有针对性地使用单个技能，而不是整套框架。"
+          }
+        ],
+        "links": [
+          {
+            "title": "安装指南（README）",
+            "url": "https://github.com/obra/superpowers#claude-code"
+          }
+        ]
+      }
+    },
+    {
+      "id": "serena",
+      "name": "Serena",
+      "category": "MCP",
+      "official": false,
+      "stars": "26.767",
+      "what": "一个 MCP 工具包，为你的智能体提供类似 IDE 的语义化代码工具——通过语言服务器（LSP）进行符号级的查找、编辑与重构，而不是盲目地做文本 grep。",
+      "why": "「你的智能体的 IDE」：在符号层面（函数、类、引用）而非逐行工作。在大型代码库上节省 token，并可配合任意 MCP 客户端（Claude Code、Codex、Cursor 等）。开源（MIT）。",
+      "source": {
+        "title": "GitHub: oraios/serena",
+        "url": "https://github.com/oraios/serena"
+      },
+      "detail": {
+        "how": "Serena 以 MCP 服务器的形式挂到你的智能体上，提供更像 IDE 而非文本搜索的工具：查找符号（`find_symbol`）、解析引用（`find_referencing_symbols`）、替换符号主体（`replace_symbol_body`）等。它基于语言服务器（LSP）——也就是 VS Code「转到定义」所用的同一套技术——因此智能体是在代码的关系结构上工作，而不是盲目 grep。Serena 与模型、客户端无关，可在 stdio 或 HTTP 模式下运行，且为开源。面向智能体运行环境提供了相应的上下文配置（如 `--context claude-code`）。",
+        "setup": [
+          "安装（通过 uv）：`uv tool install -p 3.13 serena-agent`",
+          "在 Claude Code 中注册：`claude mcp add serena -- serena start-mcp-server --context claude-code --project \"$(pwd)\"`",
+          "也可通过 uvx 免安装使用；或启动 HTTP 模式并把 URL 提供给客户端",
+          "会根据项目语言自动使用相应的语言服务器（LSP）"
+        ],
+        "whenGood": [
+          {
+            "title": "浏览与重构大型代码库",
+            "example": "「找出 X 的所有调用者并重命名」会通过语言服务器进行符号级操作，而不是 grep。"
+          },
+          {
+            "title": "在上下文检索时节省 token",
+            "example": "Serena 按需读取单个符号，而不是把整个文件加载进上下文。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "极小的项目 / 单个文件",
+            "why": "在很小的项目上，LSP 和 MCP 的搭建开销几乎不划算。",
+            "alternative": "使用智能体内置的 grep/glob 搜索。"
+          },
+          {
+            "title": "缺少良好语言服务器的语言",
+            "why": "Serena 的强项取决于各语言的语言服务器——对冷门语言可能较弱。",
+            "alternative": "选用支持良好的语言（Python、TypeScript、Go、Rust、Java 等）。"
+          }
+        ],
+        "links": [
+          {
+            "title": "文档：配置客户端",
+            "url": "https://oraios.github.io/serena/02-usage/030_clients.html"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "category": "Editor",
+      "official": false,
+      "stars": "64.956",
+      "what": "一个开源的自主编码智能体——以 VS Code 扩展、CLI 和 SDK 的形式提供。它直接在你的终端里执行命令、实时观察输出并对错误做出反应。",
+      "why": "在 IDE 中做智能体式编码最受欢迎的开源选择之一（Apache-2.0）。自带密钥（Anthropic、OpenAI、本地模型等）、独立的 plan/act 模式，并支持 MCP。旧称「Claude Dev」。",
+      "source": {
+        "title": "GitHub: cline/cline",
+        "url": "https://github.com/cline/cline"
+      },
+      "detail": {
+        "how": "Cline 是一个主要生活在 VS Code 中的自主编码智能体，同时也提供 CLI 和 SDK。它把 plan 模式（先商定方案）与 act 模式（再执行）分开，编辑文件、执行终端命令并实时观察其输出——从而在编译错误、测试失败或服务器崩溃发生时即时捕捉。Cline 自身不含模型访问，而是使用你的 API 密钥（Anthropic、OpenAI、OpenRouter 或本地模型），并支持 MCP 服务器以扩展工具。用于自动化时，可通过 CLI 在 CI/CD 中以无界面方式运行。",
+        "setup": [
+          "VS Code：从市场安装「Cline」扩展（条目 ID `saoudrizwan.claude-dev`）",
+          "CLI：`npm i -g cline`——交互式或用于 CI/CD 的无界面模式",
+          "SDK：`npm install @cline/sdk`",
+          "提供你自己的 API 密钥（Anthropic、OpenAI、OpenRouter 或本地模型）"
+        ],
+        "whenGood": [
+          {
+            "title": "直接在 VS Code 中做智能体式编码",
+            "example": "Cline 规划、编辑文件、执行测试/构建并实时读取终端输出——plan/act 分工清晰。"
+          },
+          {
+            "title": "完全掌控模型与成本",
+            "example": "自带密钥而非订阅——可自由选择模型，包括本地模型。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "没有 API 预算 / 没有自己的密钥",
+            "why": "Cline 需要自己的模型访问；没有密钥或额度就无法运行。",
+            "alternative": "使用自带订阅/额度的工具。"
+          },
+          {
+            "title": "不用 IDE 的纯终端工作流",
+            "why": "它的强项是 VS Code 集成；CLI 较为年轻。",
+            "alternative": "使用专门的 CLI 智能体（如 Claude Code、Codex）。"
+          }
+        ],
+        "links": [
+          {
+            "title": "VS Code 市场：Cline",
+            "url": "https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev"
+          }
+        ]
+      }
+    },
+    {
+      "id": "repomix",
+      "name": "Repomix",
+      "category": "上下文",
+      "official": false,
+      "stars": "27.334",
+      "what": "把你的整个仓库打包成一个对 AI 友好的单一文件——非常适合一次性把整套代码库交给某个 LLM 或聊天模型。",
+      "why": "当你想在智能体之外把代码粘贴到 ChatGPT、Claude、Gemini 等里时很方便。它会统计 token、遵守 .gitignore，可压缩并检测密钥。通过 npx 免安装运行，也提供网页工具（repomix.com）。开源（MIT）。",
+      "source": {
+        "title": "GitHub: yamadashy/repomix",
+        "url": "https://github.com/yamadashy/repomix"
+      },
+      "detail": {
+        "how": "Repomix 会遍历你的仓库，并将其写入一个便于 AI 阅读的单一文件（XML、Markdown 或纯文本）。它遵守 `.gitignore`，统计每个文件及总计的 token，并可选地通过 Tree-sitter 压缩代码以节省空间。内置的密钥检查（Secretlint）会对误打包进去的凭据发出警告。除了本地文件夹，它还能处理远程仓库，通过 `npx` 免安装运行，在 repomix.com 上提供网页工具，并可作为 MCP 服务器接入智能体。",
+        "setup": [
+          "免安装：在项目文件夹中运行 `npx repomix@latest`",
+          "全局安装：`npm install -g repomix`（或 `yarn global add repomix`）",
+          "结果：一个文件（如 `repomix-output.xml`）——整份粘贴进 ChatGPT/Claude/Gemini",
+          "在线免配置：repomix.com；也可作为面向智能体的 MCP 服务器"
+        ],
+        "whenGood": [
+          {
+            "title": "把整套代码库交给聊天模型",
+            "example": "一条 `npx repomix` 就能生成一个文件，整份粘贴进 Claude/ChatGPT——不必逐个文件复制。"
+          },
+          {
+            "title": "盯住 token 预算",
+            "example": "Repomix 会统计每个文件及总计的 token，并遵守 .gitignore，只纳入相关内容。"
+          }
+        ],
+        "whenBad": [
+          {
+            "title": "自带文件搜索的智能体",
+            "why": "编码智能体（Claude Code、Cursor）会按需读取文件——打包成的单一大文件往往没必要且过大。",
+            "alternative": "让智能体直接在仓库里工作；需要精准上下文时用 Serena 或 Graphify。"
+          },
+          {
+            "title": "超大型 monorepo",
+            "why": "整个仓库即便压缩也可能超出上下文窗口。",
+            "alternative": "用包含/忽略过滤器只打包相关文件夹。"
+          }
+        ],
+        "links": [
+          {
+            "title": "repomix.com（网页 + 文档）",
+            "url": "https://repomix.com/"
+          }
+        ]
+      }
     }
   ],
   "diagrams": {
