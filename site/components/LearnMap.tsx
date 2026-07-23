@@ -77,6 +77,10 @@ export default function LearnMap({ lang, worlds }: { lang: string; worlds: MapWo
                     <Link key={c.slug} href={`/${lang}/lexikon/${c.slug}/`}>
                       <g style={{ cursor: 'pointer' }}>
                         <title>{c.title}</title>
+                        {/* Unsichtbare, größere Tap-Fläche: die sichtbaren Knoten (r17)
+                            schrumpfen auf Mobil auf ~11px und lagen unter dem 24px-
+                            WCAG-Mindest-Tap-Target. r38 < STEP(84) → keine Überlappung. */}
+                        <circle cx={x} cy={y} r={38} fill="transparent" />
                         <circle cx={x} cy={y} r={17} fill={isDone ? 'var(--lime)' : '#fff'} stroke="var(--ink)" strokeWidth={3} />
                         {isDone ? (
                           <text x={x} y={y + 6} textAnchor="middle" fontSize={17} fontWeight={800} fill="var(--ink)">✓</text>

@@ -1848,3 +1848,21 @@ Build 0, Deploy 649247de. Verifiziert: Tooltip pro Sprache im HTML (de/zh/fr) +
 Live ZH „开源权重(可自行部署)". Prod grün.
 Merke: bestehende lokalisierte Daten-Felder für Tooltips wiederverwenden statt
 neue Strings anlegen; bei optionalen Feldern ?. nutzen (title=undefined ist ok).
+
+## Iteration 240 — 23.07.2026 ~07:40 UTC — a11y: Learn-Map-Knoten Tap-Target 24px (WCAG 2.5.8)
+Aktiv-Fenster (09:40 CEST). date <24.07 kein Feed. Poll grün (0/0/0), Smoke 10/10.
+i18n-Audit restliche Seiten/Komponenten = sauber (nur False-Positives; „Setup"
+ist projektweit Lehnwort, PriceCalculator behält es de/es/fr → kein Leak, nicht
+angefasst). Screenshot-Audit Addon-Detail + Lernpfade mobil = poliert.
+ECHTER Fund (Playwright-Messung): Lern-Landkarte-Knoten (LearnMap.tsx) sind
+`<Link>` zu Lexikon-Kapiteln, aber die sichtbaren SVG-Kreise (r17) schrumpfen
+auf 390px-Mobil auf 11×11px gerendert → weit unter dem 24px-WCAG-2.5.8-Mindest-
+Tap-Target. Auf dem Handy kaum treffbar, Fehltipps auf Nachbarknoten.
+Fix: unsichtbarer `<circle r=38 fill="transparent">` als erstes Kind je Knoten-
+Link → vergrößert die klickbare Fläche; r38 < STEP(84) → keine Überlappung
+benachbarter Knoten. Optik unverändert (nur Hit-Fläche wächst).
+Build 0, Deploy cb47d0df. Playwright-verifiziert: Tap-Targets jetzt 25×25px
+(war 11×11), Screenshot optisch identisch. Prod grün.
+Merke: SVG-Knoten mit kleinem sichtbaren r + großer transparenter Hit-Circle =
+saubere Tap-Target-Vergrößerung ohne Layout-Änderung; transparent (nicht none)
+für Hit-Testing.
