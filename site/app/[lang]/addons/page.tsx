@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { isLang, langAlternates, ui, type Lang } from '@/lib/i18n';
 import { GraphifyDiagram, ObsidianClaudeDiagram, type AddonDiagramLabels } from '@/components/AddonDiagrams';
+import AddonFilter from '@/components/AddonFilter';
 import de from '@/content/addons.de.json';
 import en from '@/content/addons.en.json';
 import es from '@/content/addons.es.json';
@@ -27,22 +27,6 @@ const byLang: Record<Lang, { items: Addon[] }> = {
   fr: fr as { items: Addon[] },
   zh: zh as { items: Addon[] },
 };
-
-const CAT_COLORS: Record<string, string> = {
-  MCP: 'var(--yellow)',
-  Obsidian: '#e0d4f7',
-  Editor: 'var(--blue)',
-  Browser: 'var(--pink)',
-};
-
-// Addons mit eigenem Logo/Favicon unter /public/addon-icons/<id>.png (offizielle
-// Domain-Favicons bzw. GitHub-Owner-Avatare, lokal gehostet — keine Fremd-Calls).
-// Server-Component kann kein onError, daher explizite Whitelist.
-const ADDON_ICONS = new Set([
-  'graphify', 'mcp-servers', 'claude-flow', 'context7', 'playwright-mcp', 'github-mcp',
-  'claude-code-vscode', 'claude-chrome', 'obsidian-local-rest', 'obsidian-copilot',
-  'obsidian-smart-connections', 'obsidian-graph-context', 'superpowers', 'serena', 'cline', 'repomix',
-]);
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -74,80 +58,7 @@ export default async function AddonsPage({ params }: { params: Promise<{ lang: s
         </>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 18 }}>
-        {items.map((a, i) => (
-          <article
-            key={a.id}
-            className="card"
-            style={{
-              padding: '18px 20px',
-              transform: `rotate(${i % 2 === 0 ? '-.25' : '.25'}deg)`,
-              boxShadow: '4px 4px 0 var(--ink)',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
-              <span
-                style={{
-                  background: CAT_COLORS[a.category] ?? 'var(--lime)',
-                  border: '2px solid var(--ink)',
-                  borderRadius: 8,
-                  padding: '1px 8px',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '.05em',
-                }}
-              >
-                {a.category}
-              </span>
-              {a.official && (
-                <span className="chip" style={{ fontSize: 11, fontWeight: 800 }}>
-                  ✓ {t.addonsOfficial}
-                </span>
-              )}
-              {a.stars && (
-                <span className="mono" style={{ fontSize: 11.5, color: 'var(--muted)' }}>
-                  ★ {a.stars}
-                </span>
-              )}
-            </div>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '0 0 8px' }}>
-              {ADDON_ICONS.has(a.id) && (
-                <img
-                  src={`/addon-icons/${a.id}.png`}
-                  alt=""
-                  width={30}
-                  height={30}
-                  loading="lazy"
-                  style={{ flexShrink: 0, borderRadius: 7, border: '1.5px solid var(--ink)', background: '#fff' }}
-                />
-              )}
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.02em', lineHeight: 1.2 }}>
-                {a.name}
-              </h2>
-            </div>
-            <p style={{ margin: '0 0 8px', fontSize: 14, lineHeight: 1.55 }}>{a.what}</p>
-            <p style={{ margin: '0 0 12px', fontSize: 13.5, lineHeight: 1.55, color: 'var(--muted)' }}>{a.why}</p>
-            <p style={{ margin: 'auto 0 0', fontSize: 12.5, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              {a.detail != null && (
-                <Link href={`/${lang}/addons/${a.id}/`} style={{ fontWeight: 800, textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                  → Details
-                </Link>
-              )}
-              <a
-                href={a.source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}
-              >
-                {a.source.title} ↗
-              </a>
-            </p>
-          </article>
-        ))}
-      </div>
+      <AddonFilter items={items} lang={lang} officialLabel={t.addonsOfficial} />
     </div>
   );
 }

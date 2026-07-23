@@ -1940,3 +1940,19 @@ Build 0, Deploy 20f06d6a. Playwright: 101 → „compact" 1 Treffer („1 von 10
 Unsinn → 0 + Leer-Zustand; Fokusring greift (Accent). Prod 200.
 Merke: Client-Komponente in Server-Seite rendert initial per SSR (Placeholder im
 HTML greifbar), Filter-Interaktion nur per Playwright testbar.
+
+## Iteration 243 — 23.07.2026 ~10:42 UTC — Addons: Kategorie-Filter (Usability)
+date <24.07 kein Feed. Poll grün (0/0/0), Smoke 10/10. Audit: Prompts-Hub
+(Baukasten+16) und Fehler-Katalog (Suche+Kategorie-Chips+Treffer) schon poliert
+— nicht angefasst. Addons-Hub aber seit 12→16 (8 Kategorien, u.a. 4× Obsidian)
+ohne Filter → „nur Obsidian/MCP zeigen" ging nicht.
+Fix: neue Client-Komponente components/AddonFilter.tsx — Kategorie-Chip-Filter
+(„Alle" + Kategorien nach erstem Vorkommen + Live-„N Treffer"), Muster wie
+FehlerKatalog. Kartenmarkup (inkl. Logo-Icon) + CAT_COLORS + ADDON_ICONS aus der
+Server-Seite in die Komponente gezogen; addons/page.tsx nutzt jetzt <AddonFilter>
+(ungenutzte Link/CAT_COLORS/ADDON_ICONS entfernt). „Alle"/„Treffer"/„Details" ×5
+lokalisiert; Kategorie-Labels kommen schon lokalisiert aus den Daten.
+Build 0, Deploy 5ff71cb0. Playwright: 16 → Obsidian-Klick = 4 Karten (alle
+Kategorie Obsidian, „4 Treffer"); Desktop-Diagramme intakt. Prod 200.
+Merke: Kartenmarkup nur EINMAL pflegen — Hub-Grid lebt jetzt in AddonFilter, die
+Server-Seite reicht nur items/lang/officialLabel durch.
