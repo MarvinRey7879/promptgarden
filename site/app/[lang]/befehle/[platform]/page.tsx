@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCommands, getPlatform, getPlatforms } from '@/lib/commands';
 import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
+import CommandFilter from '@/components/CommandFilter';
 
 export function generateStaticParams() {
   return LANGS.flatMap((lang) => getPlatforms(lang).map((p) => ({ lang, platform: p.id })));
@@ -53,19 +54,7 @@ export default async function PlatformPage({
       </p>
 
       <p className="kicker">{t.cmdAllCommands.toUpperCase()} · {commands.length}</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {commands.map((c) => (
-          <Link
-            key={c.slug}
-            href={`/${lang}/befehle/${platform}/${c.slug}/`}
-            className="card"
-            style={{ padding: '14px 18px', textDecoration: 'none', color: 'inherit', boxShadow: '3px 3px 0 var(--ink)' }}
-          >
-            <span className="mono" style={{ fontWeight: 800, fontSize: 16 }}>{c.name}</span>
-            <span style={{ marginLeft: 12, fontSize: 14, color: 'var(--muted)' }}>{c.summary}</span>
-          </Link>
-        ))}
-      </div>
+      <CommandFilter commands={commands} lang={lang} platform={platform} />
     </div>
   );
 }

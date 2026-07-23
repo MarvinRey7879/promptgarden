@@ -1923,3 +1923,20 @@ Marvin-Auftrag Addons damit komplett: (1) Mobil-Diagramme vertikal, (2) 4 neue
 Addons ×5, (3) Logos/Favicons.
 Merke: Google-s2-Favicon liefert teils JPEG-in-.png → mit sharp (Buffer lesen,
 nicht in-place, sonst Windows-Lock) zu echtem PNG normalisieren.
+
+## Iteration 242 — 23.07.2026 ~09:32 UTC — Befehle: Instant-Filter je Plattform (Usability)
+date <24.07 kein Feed. Poll grün (0/0/0, views_7d 138), Smoke 10/10.
+Fund (Screenshot+Code-Audit): Command-Listen je Plattform (Claude Code 101,
+Cursor 82, Antigravity 57, Aider 48, Codex 32) waren rein statisch, KEIN On-Page-
+Filter — einen bestimmten Befehl finden = 100 Karten scrollen (nur globale
+Cmd+K-Suche als Umweg). Backlog-Punkt „Befehle-Hub-Filter-Usability".
+Fix: neue Client-Komponente components/CommandFilter.tsx — Instant-Filter
+(type=search) blendet nicht passende Karten live aus (Name + Kurzbeschreibung,
+case-insensitiv), Live-Zähler „N von Total", lokalisierter Placeholder+Leer-
+Zustand ×5. In [platform]/page.tsx statische Liste ersetzt (Kicker bleibt).
+Bestehende Funktion nutzbarer gemacht, kein neues Feature. Gilt für ALLE 5
+Plattformen ×5 Sprachen automatisch.
+Build 0, Deploy 20f06d6a. Playwright: 101 → „compact" 1 Treffer („1 von 101"),
+Unsinn → 0 + Leer-Zustand; Fokusring greift (Accent). Prod 200.
+Merke: Client-Komponente in Server-Seite rendert initial per SSR (Placeholder im
+HTML greifbar), Filter-Interaktion nur per Playwright testbar.
