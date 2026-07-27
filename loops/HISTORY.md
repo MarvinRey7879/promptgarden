@@ -2364,3 +2364,54 @@ Playwright 6 Seiten × 2 Viewports in 4 Sprachen sauber.
 Merke: Quell-URLs nicht nur auf Status prüfen, sondern auf
 `url_effective` — ein 200 nach Redirect verdeckt, dass die zitierte Adresse
 faktisch tot ist.
+
+## It. 255 — 27.07.2026 ab 21:41 UTC — Batch 11 + Summary-Audit
+Poll sauber, Smoke 4/4.
+⚠️ Regelkonflikt bemerkt und aufgelöst: mein eigener /loop-Prompt trug
+„ruhige Stunden 22-06 UTC = Check-only", LOOP.md-Direktive 1 sagt aber
+„KEIN Nachtmodus … Checks-only nur wenn wirklich nichts ansteht, NIE
+zeitgesteuert" (geht auf Marvins Rüge vom 14.07. zurück). Marvins Direktive
+schlägt meine Prompt-Verkürzung → volle Iteration gefahren, Zeitregel aus
+dem Wakeup-Prompt entfernt.
+
+Batch 11: Verteilung claude-code 9 / antigravity 7 / codex 1 / cursor 1 →
+3 Agenten (cc, ag, rest mit `plattform::slug`). Ø92 → Ø228 Wörter, ×5.
+**198 von 320 fertig, Gesamt-Ø 177, nur noch 11 Seiten unter 100 W.**
+
+🔴 Schwerster Fehler bisher, weil INVERTIERT: `list-models` und `model`
+behaupteten, Claude- und GPT-OSS-120b-Modelle gebe es „nur auf Google AI
+Ultra". Die offizielle Tabelle (antigravity.google/docs/models, selbst per
+r.jina.ai geprüft) sagt das Gegenteil: Claude Sonnet 4.6, Claude Opus 4.6
+und GPT-OSS-120b laufen auf Free & Plus, Pro UND Ultra — und ausgerechnet
+auf Enterprise NICHT; Gemini läuft überall inkl. Enterprise. Ein Nutzer im
+Gratis-Plan hätte geglaubt, die Claude-Modelle seien für ihn gesperrt.
+Weitere Korrekturen: `/init` überschreibt KEINE bestehende CLAUDE.md (Doku
+wörtlich: „suggests improvements rather than overwriting it") — die alte
+Warnung war falsch, selbst am Original gegengeprüft. `/branch` verwies auf
+`/fork` für „Nebenaufgabe mit Rückmeldung"; seit v2.1.212 meldet `/fork`
+sich nicht mehr zurück, die Rolle hat `/subtask`. `/deep-research` startet
+seit v2.1.218 nur noch manuell (stand nur im Changelog, nicht in der
+Tabelle). Codex `/skills` zeigt nicht nur an, sondern wendet den gewählten
+Skill auf die nächste Anfrage an — vom Agenten im Quellcode verifiziert
+(skills.rs/slash_command.rs), nicht nur in der Doku.
+Nebenbei bestätigt: die Antigravity-Modi-Seite nennt den veralteten
+Referenz-Eintrag zu `/fast`+`/planning` selbst einen „Common mistake".
+
+**Neuer Audit-Blickwinkel (Summaries/Meta-Descriptions über alle 320×5):**
+Fund war ein EIGENER Fehler — in It.253 hatte ich `install-skip-aliases` und
+`install-skip-path` denselben summaryFix gegeben, also zwei URLs mit
+identischer Meta-Description. In allen 5 Sprachen differenziert, danach 0
+Dubletten je Sprache, live im HTML gegengeprüft. Nicht angefasst: 14 sehr
+kurze Summaries („Beendet die CLI.") — zutreffend, Seiten tragen den Inhalt,
+Anfassen wäre Padding. Und die „148 zu langen" ZH-Summaries waren mein
+Messfehler: dort zähle ich Han-Zeichen, 17 Zeichen sind kurz.
+
+MCP-Spec: weiterhin nur `2026-07-28-RC` (prerelease, published 2026-05-29).
+Muster aus dem Vorgängerzyklus: `2025-11-25-RC` erschien am 15.11., die
+finale `2025-11-25` dann exakt am Datum im Tag-Namen. Die finale
+`2026-07-28` ist also im Lauf des 28.07. UTC zu erwarten — nächste Iteration
+prüfen.
+
+Build 0, Deploy f426d07c, Live-Verify 6×200, Enterprise-Korrektur und die
+zwei nun verschiedenen Meta-Descriptions im HTML bestätigt.
+Playwright 6 Seiten × 2 Viewports in 4 Sprachen sauber.
