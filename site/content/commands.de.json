@@ -3854,17 +3854,21 @@
       "slug": "show-thinking",
       "name": "/show-thinking",
       "summary": "Schaltet die Anzeige der Denk-Blöcke (Thinking) des Modells um.",
-      "what": "/show-thinking schaltet an/aus, ob die internen Thinking-Blöcke des Modells in der Session sichtbar angezeigt werden.",
+      "what": "`/show-thinking` ist ein einfacher Umschalter (Toggle): Der Befehl blendet die internen Thinking-Blöcke des Modells in der laufenden CLI-Sitzung ein oder aus. Laut offizieller Referenztabelle lautet die Kurzbeschreibung schlicht „Toggle thinking block display\" — der Befehl nimmt keine weiteren Argumente entgegen.\n\nThinking-Blöcke zeigen den internen Zwischenschritt-Text, den manche Modelle vor der eigentlichen Antwort erzeugen. Nicht dokumentiert ist, ob die Anzeige standardmäßig an oder aus startet; der Befehl schaltet lediglich zwischen den beiden Zuständen um, ausgehend vom aktuellen Zustand der Sitzung.\n\n`/show-thinking` reiht sich neben `/vim`, `/line-numbers` und `/status-indicators` in die Gruppe der reinen Anzeige-Umschalter der CLI ein — sie verändern nur die Darstellung im Terminal, nicht das Verhalten des Modells selbst.",
       "whenGood": [
         {
           "title": "Nachvollziehen, warum der Agent eine bestimmte Entscheidung trifft",
-          "example": "/show-thinking — an, bevor eine komplexe Architekturentscheidung ansteht"
+          "example": "/show-thinking an, bevor eine komplexe Architekturentscheidung ansteht"
+        },
+        {
+          "title": "Beim Debuggen eines unerwarteten Agent-Verhaltens den Zwischenschritt-Text mitlesen",
+          "example": "/show-thinking einschalten, wenn eine Antwort nicht nachvollziehbar wirkt, und danach wieder ausschalten"
         }
       ],
       "whenBad": [
         {
           "title": "Nur das Endergebnis interessiert, nicht der Denkweg",
-          "why": "Thinking-Blöcke verlängern die sichtbare Ausgabe unnötig, wenn nur das Ergebnis zählt.",
+          "why": "Thinking-Blöcke verlängern die sichtbare Ausgabe im Terminal unnötig, wenn nur das Ergebnis zählt.",
           "alternative": "/show-thinking aus lassen für eine kompaktere Session"
         }
       ],
@@ -4170,17 +4174,21 @@
       "slug": "logout",
       "name": "/logout",
       "summary": "Meldet vom aktuellen Cursor-Account ab.",
-      "what": "/logout meldet die CLI vom aktuell angemeldeten Cursor-Account ab.",
+      "what": "`/logout` meldet dich in der Cursor CLI vom aktuell angemeldeten Account ab. Laut Referenztabelle lautet die Kurzbeschreibung „Sign out from Cursor\"; die separate Parameter-Dokumentation zum entsprechenden CLI-Unterbefehl (`agent logout`, außerhalb der interaktiven Sitzung aufrufbar) präzisiert das als „Sign out and clear stored authentication\" — der Befehl entfernt also auch die lokal gespeicherten Zugangsdaten, nicht nur die aktive Sitzung.\n\nNach `/logout` bist du nicht mehr angemeldet; für die nächste Nutzung der CLI ist ein erneuter Login-Vorgang nötig, bevor du wieder Anfragen an Modelle stellen kannst.\n\nDas macht `/logout` sinnvoll, wenn du den Account wechseln oder einen gemeinsam genutzten Rechner sauber hinterlassen willst — die gespeicherte Authentifizierung bleibt danach nicht bestehen.",
       "whenGood": [
         {
           "title": "Auf einem gemeinsam genutzten Rechner den Account entfernen",
-          "example": "/logout — vor dem Wechsel zu einem anderen Cursor-Account"
+          "example": "/logout — vor dem Wechsel zu einem anderen Cursor-Account, damit keine gespeicherte Authentifizierung zurückbleibt"
+        },
+        {
+          "title": "Vor einem Neustart mit anderem Konto oder API-Key sauber abmelden",
+          "example": "/logout, bevor du die CLI mit einem anderen Account neu einrichtest"
         }
       ],
       "whenBad": [
         {
           "title": "Man will nur kurz die Session beenden, nicht den Account abmelden",
-          "why": "/logout löscht die Anmeldung, danach ist ein erneuter Login-Flow nötig.",
+          "why": "/logout löscht die gespeicherte Anmeldung; danach ist ein erneuter Login-Vorgang nötig.",
           "alternative": "/quit oder /exit nutzen, um nur die Session zu beenden"
         }
       ],
@@ -4422,18 +4430,27 @@
       "slug": "bedrock",
       "name": "/bedrock",
       "summary": "Konfiguriert AWS Bedrock als Modell-Backend, sofern das Bedrock-Feature aktiviert ist.",
-      "what": "/bedrock konfiguriert AWS Bedrock als Modell-Backend, entweder mit eigenen AWS-Zugangsdaten oder einer Team-IAM-Rolle. Funktioniert nur, wenn das Bedrock-Feature für den Account freigeschaltet ist.",
+      "what": "`/bedrock [subcommand]` konfiguriert AWS Bedrock als Modell-Backend für die Cursor CLI. Laut Referenztabelle funktioniert der Befehl nur, wenn das Bedrock-Feature für deinen Account freigeschaltet ist — ist das nicht der Fall, hat er keine Wirkung.\n\nLaut Cursor-Changelog richtest du darüber Bedrock „mit deinen eigenen Zugangsdaten\" ein: entweder über klassische AWS-Access-Keys oder über eine Team-IAM-Rolle. Die Einrichtung gilt laut Changelog übergreifend — sie wirkt sowohl in interaktiven Sitzungen als auch im Headless-Modus und in Editor-Integrationen, du musst Bedrock also nicht pro Modus einzeln konfigurieren.\n\n`/bedrock` ist für Setups gedacht, bei denen Modellanfragen über die eigene AWS-Infrastruktur statt über Cursors Standard-Backend laufen sollen, etwa aus Compliance- oder Kostengründen im Unternehmensumfeld.",
       "whenGood": [
         {
-          "title": "Bedrock als Backend mit eigenen AWS-Keys einrichten",
-          "example": "/bedrock — eigene Zugangsdaten hinterlegen"
+          "title": "Bedrock mit eigenen AWS-Zugangsdaten einrichten",
+          "example": "/bedrock — eigene Access-Keys hinterlegen, damit Modellanfragen über die eigene AWS-Infrastruktur laufen"
+        },
+        {
+          "title": "Team-weite Bedrock-Anbindung über eine IAM-Rolle statt einzelner Keys",
+          "example": "/bedrock im Unternehmenskontext nutzen, um stattdessen eine Team-IAM-Rolle zu hinterlegen"
         }
       ],
       "whenBad": [
         {
-          "title": "Der Account nutzt gar kein AWS Bedrock",
-          "why": "Ohne aktiviertes Bedrock-Feature hat der Befehl keinen Effekt.",
-          "alternative": "Modell regulär über /model wählen"
+          "title": "Das Bedrock-Feature ist für den Account nicht freigeschaltet",
+          "why": "Laut Doku funktioniert /bedrock nur, wenn das Bedrock-Feature aktiviert ist.",
+          "alternative": "Modell regulär über /model wählen bzw. Bedrock-Zugang beim Cursor-Team anfragen"
+        },
+        {
+          "title": "Es reicht, kurzfristig ein anderes Standardmodell zu testen",
+          "why": "/bedrock ist für eine dauerhafte Backend-Konfiguration gedacht, nicht für einen schnellen Modellwechsel.",
+          "alternative": "/model oder einen Modell-Shortcut wie /composer nutzen"
         }
       ],
       "sources": [
@@ -4487,11 +4504,15 @@
       "slug": "save-workspace",
       "name": "/save-workspace",
       "summary": "Speichert die aktuell aktiven Multi-Root-Verzeichnisse als benanntes Workspace-Set.",
-      "what": "/save-workspace speichert die Menge der aktuell mit /add-dir hinzugefügten Verzeichnisse unter einem Namen, um sie später wieder zu laden. Dokumentiert im offiziellen Changelog, (noch) nicht in der Befehls-Referenztabelle.",
+      "what": "`/save-workspace` speichert die Menge der aktuell mit `/add-dir` hinzugefügten Verzeichnisse als benanntes Workspace-Set. Laut Cursor-Changelog gehört der Befehl zum Feature „Named multi-directory workspaces\": Du kannst den Agent damit über mehrere Repositories gleichzeitig arbeiten lassen, statt nur im aktuellen Verzeichnis.\n\nDen so gespeicherten Verzeichnis-Satz lädst du später über `/load-workspace` wieder — laut Changelog steht außerdem ein globaler `--workspace`-Parameter zur Verfügung, um eine CLI-Sitzung von vornherein gezielt zu starten, statt Verzeichnisse erst nachträglich per `/add-dir` zusammenzustellen.\n\n`/save-workspace` ist bislang nur im Changelog-Eintrag vom 22. Juni 2026 dokumentiert, nicht in der Haupt-Referenztabelle der Slash-Commands — dieselbe Lücke, die laut Aufgabenstellung bereits bei `/load-workspace` bestand.",
       "whenGood": [
         {
           "title": "Eine wiederkehrende Repo-Kombination benennen",
-          "example": "/save-workspace backend-plus-shared-lib"
+          "example": "/save-workspace backend-plus-shared-lib, nachdem beide Verzeichnisse per /add-dir hinzugefügt wurden"
+        },
+        {
+          "title": "Mehrere Repositories für eine Cross-Repo-Aufgabe dauerhaft bündeln",
+          "example": "Verzeichnisse mit /add-dir sammeln und anschließend mit /save-workspace sichern, um sie später per /load-workspace erneut zu laden"
         }
       ],
       "whenBad": [
@@ -4499,6 +4520,11 @@
           "title": "Die Verzeichnis-Kombination wird nur einmalig gebraucht",
           "why": "Für eine einmalige Session lohnt sich das Speichern als benanntes Set nicht.",
           "alternative": "Einfach /add-dir ohne /save-workspace nutzen"
+        },
+        {
+          "title": "Eine Sitzung soll von Anfang an mit einer festen Verzeichnis-Auswahl starten",
+          "why": "/save-workspace sichert nur eine bereits im Chat zusammengestellte Verzeichnis-Menge nachträglich.",
+          "alternative": "Die Sitzung direkt mit dem --workspace-Parameter starten"
         }
       ],
       "sources": [
@@ -4735,17 +4761,21 @@
       "slug": "commands",
       "name": "/commands",
       "summary": "Interaktiver Browser zum Ansehen und Bearbeiten eigener Custom-Commands.",
-      "what": "/commands öffnet einen interaktiven Browser für selbst definierte Custom-Commands, inklusive Inline-Bearbeitung. Dokumentiert im offiziellen Changelog, (noch) nicht in der Befehls-Referenztabelle.",
+      "what": "`/commands` öffnet in der Cursor CLI einen interaktiven Browser für deine selbst definierten Custom-Commands, inklusive Inline-Bearbeitung direkt im Terminal. Du musst dafür nicht in die zugrunde liegenden Dateien wechseln, um einen Befehl nachzuschlagen oder anzupassen.\n\nLaut Cursor-Changelog gehört `/commands` zusammen mit `/rules` zu einem eigenen Satz interaktiver Browser, getrennt von der `/skills`-Browsing-Funktion für (auch eingebaute) Skills. Commands sind damit die eigene, projektspezifische Befehls-Schicht, während Skills eher vorgefertigte Fähigkeiten bündeln.\n\nWichtig: `/commands` taucht bislang nicht in der offiziellen Slash-Commands-Referenztabelle auf (34 dort gelistete Einträge), sondern ist bisher nur über den Changelog-Eintrag von Januar 2026 dokumentiert — ähnlich wie z.B. `/save-workspace`.",
       "whenGood": [
         {
           "title": "Einen vorhandenen Custom-Command vor der Nutzung nachschlagen",
-          "example": "/commands — durchsuchen, welche eigenen Befehle im Projekt definiert sind"
+          "example": "/commands öffnen und durchsuchen, welche eigenen Befehle im Projekt definiert sind"
+        },
+        {
+          "title": "Einen Custom-Command direkt im Terminal anpassen",
+          "example": "/commands öffnen, den gewünschten Befehl auswählen und per Inline-Bearbeitung den Text ändern"
         }
       ],
       "whenBad": [
         {
-          "title": "Es geht um eingebaute Skills, nicht um selbst definierte Commands",
-          "why": "/commands zeigt nur die eigenen Custom-Commands.",
+          "title": "Es geht um eingebaute oder mitgelieferte Skills, nicht um selbst definierte Commands",
+          "why": "/commands zeigt laut Changelog nur den eigenen Commands-Browser, getrennt von der Skills-Funktion.",
           "alternative": "/skills nutzen"
         }
       ],
@@ -5922,18 +5952,22 @@
       "slug": "chat-mode",
       "name": "/chat-mode",
       "summary": "Wechselt dauerhaft (sticky) in einen beliebigen Chat-Modus über den Modusnamen als Argument.",
-      "what": "/chat-mode <mode> wechselt den aktiven Modus für alle folgenden Nachrichten, z.B. /chat-mode code oder /chat-mode architect. Dasselbe erreichen die Befehle /code, /ask und /architect, wenn sie ohne Prompt aufgerufen werden; /help ohne Prompt zeigt dagegen nur die Basis-Hilfe an und wechselt den Modus nicht.",
+      "what": "`/chat-mode <modus>` schaltet den aktiven Chat-Modus für alle folgenden Nachrichten dauerhaft (\"sticky\") um, zum Beispiel mit `/chat-mode ask` oder `/chat-mode architect`. Aider kennt vier Modi: `code` für Änderungen am Code, `ask` für Fragen ohne Bearbeitung, `architect` für einen zweistufigen Ansatz mit Vorschlag- und Editier-Modell sowie `help` für Fragen zur Nutzung von Aider selbst.\n\nDieselbe dauerhafte Umschaltung erreichst du kürzer über `/code`, `/ask` oder `/architect` ohne angehängten Prompt – laut Aiders Dokumentation zu den Chat-Modi wechseln diese drei Befehle ohne Argument ebenfalls den aktiven Modus. `/help` bildet dabei eine Ausnahme: ohne Prompt aufgerufen, zeigt es laut offizieller Befehlstabelle nur die allgemeine Hilfe an und wechselt den Modus nicht – nur bei `/code`, `/ask` und `/architect` steht dort der Hinweis auf den Moduswechsel ohne Prompt. Sticky auf help stellst du daher nur über `/chat-mode help`.",
       "whenGood": [
         {
-          "title": "Modus über eine geladene Befehlsdatei setzen",
-          "example": "/chat-mode ask in einer Datei, die per /load eingelesen wird, um den Modus vor weiteren Befehlen konsistent festzulegen"
+          "title": "Modus über Skript-Datei setzen",
+          "example": "`/chat-mode ask` in eine mit `/load` geladene Befehlsdatei schreiben, um den Modus vor weiteren Befehlen konsistent festzulegen."
+        },
+        {
+          "title": "Help-Modus dauerhaft aktivieren",
+          "example": "`/chat-mode help` aufrufen, um dauerhaft im help-Modus zu bleiben — anders als bei code/ask/architect wechselt `/help` ohne Prompt den aktiven Modus nicht."
         }
       ],
       "whenBad": [
         {
-          "title": "Einen der bekannten Modi direkt ansteuern",
-          "why": "Für code/ask/architect gibt es eigene, kürzere Befehle mit derselben Wirkung, wenn sie ohne Prompt aufgerufen werden.",
-          "alternative": "Direkt /code, /ask oder /architect nutzen"
+          "title": "Einen der drei Kurzbefehl-Modi direkt ansteuern",
+          "why": "Für code, ask und architect wechselt der jeweilige Kurzbefehl ohne Prompt ebenfalls dauerhaft den Modus – `/chat-mode` ist dort nicht nötig.",
+          "alternative": "Direkt `/code`, `/ask` oder `/architect` ohne Prompt aufrufen."
         }
       ],
       "sources": [
@@ -6104,18 +6138,22 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "Kopiert die letzte Antwort von Aider in die Zwischenablage.",
-      "what": "/copy kopiert die zuletzt vom Assistenten gesendete Nachricht in die System-Zwischenablage.",
+      "what": "`/copy` kopiert die letzte Antwort des Assistenten – also die zuletzt von Aider gesendete Chat-Nachricht – unverändert in deine System-Zwischenablage. Der Befehl wurde mit Aider-Version 0.58.0 eingeführt und arbeitet ohne Argumente: Du tippst `/copy` ein, und die komplette Nachricht liegt danach bereit zum Einfügen, etwa per `Strg+V`.\n\nWichtig ist die Abgrenzung zu `/copy-context`: Während `/copy` nur den reinen Antworttext überträgt, kopiert `/copy-context` den gesamten aktuellen Chat-Kontext als Markdown – inklusive der im Chat hinzugefügten Dateien und der Repo-Map – in einem Format, das sich direkt in einen Web-Chat wie ChatGPT oder Claude einfügen lässt. Für die reine Weiterverwendung einer Erklärung, eines Codeschnipsels oder einer Zusammenfassung aus der letzten Antwort reicht `/copy` völlig aus.",
       "whenGood": [
         {
-          "title": "Eine Erklärung oder einen Codeschnipsel aus der letzten Antwort weiterverwenden",
-          "example": "/copy — danach z.B. in eine Doku, ein Issue oder eine andere App einfügen"
+          "title": "Antwort für Doku weiterverwenden",
+          "example": "`/copy` nach einer Erklärung aufrufen und den Text direkt in ein Ticket oder eine Doku einfügen."
+        },
+        {
+          "title": "Codeschnipsel schnell teilen",
+          "example": "`/copy` nutzen, um einen von Aider vorgeschlagenen Codeausschnitt per `Strg+V` in eine Slack-Nachricht oder ein GitHub-Issue einzufügen."
         }
       ],
       "whenBad": [
         {
-          "title": "Den ganzen Code-Kontext für ein Web-Chat-LLM kopieren wollen",
-          "why": "/copy kopiert nur die letzte Antwort von Aider, nicht die im Chat hinzugefügten Dateien und die Repo-Map.",
-          "alternative": "/copy-context nutzen, um den vollständigen Code-Kontext zu kopieren"
+          "title": "Ganzen Code-Kontext für Web-LLM kopieren",
+          "why": "`/copy` überträgt nur die letzte Antwort, nicht die im Chat hinzugefügten Dateien oder die Repo-Map.",
+          "alternative": "`/copy-context` nutzen, das den vollständigen Chat-Kontext als Markdown kopiert."
         }
       ],
       "sources": [
@@ -6277,18 +6315,22 @@
       "slug": "editor",
       "name": "/editor",
       "summary": "Öffnet einen externen Texteditor, um dort die nächste Chat-Nachricht zu schreiben.",
-      "what": "/editor öffnet einen externen Editor zum Verfassen eines Prompts. Laut Doku ist dies alternativ auch über die Tastenkombination Ctrl-X Ctrl-E direkt im Terminal erreichbar. Welcher Editor sich öffnet, lässt sich über die Editor-Konfiguration einstellen.",
+      "what": "`/editor` öffnet einen externen Texteditor, in dem du deine nächste Chat-Nachricht in Ruhe verfassen kannst, statt sie direkt in die Terminal-Eingabezeile zu tippen. Sobald du den Editor schließt, wird der geschriebene Text als Prompt an Aider gesendet. Seit Version 0.79.0 existiert `/edit` als kurzer Alias mit identischer Funktion, seit Version 0.80.0 erreichst du dieselbe Funktion auch per Tastenkombination `Ctrl-X Ctrl-E` direkt im Terminal, ohne den Befehlsnamen einzutippen.\n\nWelcher Editor sich öffnet, bestimmt Aider über eine feste Reihenfolge: zuerst die Kommandozeilen-Option `--editor` bzw. der Eintrag `editor:` in der YAML-Konfiguration, dann die Umgebungsvariablen `AIDER_EDITOR`, `VISUAL` und `EDITOR`, sonst ein Plattform-Standard wie Notepad unter Windows. Der Editor muss dabei im „blockierenden\" Modus laufen, also warten, bis du ihn schließt.",
       "whenGood": [
         {
-          "title": "Mehrzeiligen Prompt mit genauer Formatierung schreiben",
-          "example": "/editor — z.B. um einen Prompt mit Codeblöcken oder Aufzählungen sauber zu formatieren, bevor er gesendet wird"
+          "title": "Mehrzeiligen Prompt sauber formatieren",
+          "example": "`/editor` aufrufen, um einen Prompt mit Aufzählungen und Codeblöcken bequem zu schreiben, bevor er an Aider gesendet wird."
+        },
+        {
+          "title": "Eingabe per Tastenkürzel weiterbearbeiten",
+          "example": "`Ctrl-X Ctrl-E` direkt im Terminal drücken, um den bereits getippten Eingabepuffer im konfigurierten Editor weiterzubearbeiten."
         }
       ],
       "whenBad": [
         {
           "title": "Kurze, spontane Nachricht senden",
           "why": "Für eine kurze Nachricht lohnt sich der Wechsel in einen externen Editor nicht.",
-          "alternative": "Nachricht direkt im Chat-Prompt eintippen, oder /paste nutzen, wenn der Text schon in der Zwischenablage liegt"
+          "alternative": "Nachricht direkt im Chat-Prompt eintippen, oder `/paste` nutzen, wenn der Text schon in der Zwischenablage liegt."
         }
       ],
       "sources": [
@@ -6515,18 +6557,22 @@
       "slug": "ls",
       "name": "/ls",
       "summary": "Listet alle bekannten Dateien auf und markiert, welche aktuell im Chat sind.",
-      "what": "/ls zeigt eine Liste aller bekannten Dateien und markiert, welche davon aktuell zur Chat-Session hinzugefügt sind.",
+      "what": "`/ls` zeigt dir eine vollständige Übersicht aller Dateien, die Aider im aktuellen Projekt kennt, und markiert dabei, welche davon gerade aktiv zur Chat-Session hinzugefügt sind. Das ist besonders in größeren Repositories nützlich, in denen du sonst schnell den Überblick verlierst, welche Dateien Aider gerade bearbeiten darf und welche nur als Repo-Kontext im Hintergrund existieren.\n\nDer Befehl selbst öffnet oder verändert nichts – er ist eine reine Anzeigefunktion. Um eine Datei tatsächlich zum Bearbeiten hinzuzufügen, brauchst du weiterhin `/add <datei>`, für reine Referenzdateien ohne Schreibrechte `/read-only <datei>`. `/ls` eignet sich daher gut als kurzer Zwischenstopp vor solchen Befehlen, etwa um zu prüfen, ob eine Datei versehentlich doppelt hinzugefügt wurde oder ob sie inzwischen wieder mit `/drop` entfernt wurde.",
       "whenGood": [
         {
-          "title": "Überblick verschaffen, welche Dateien gerade im Chat sind",
-          "example": "/ls — vor dem nächsten /drop oder /add kurz prüfen, was aktuell aktiv ist"
+          "title": "Vor /add Überblick verschaffen",
+          "example": "`/ls` aufrufen, um zu sehen, ob eine Datei schon im Chat ist, bevor du sie erneut mit `/add` hinzufügst."
+        },
+        {
+          "title": "Chat-Dateien nach langer Session prüfen",
+          "example": "`/ls` nutzen, um nach mehreren `/add`- und `/drop`-Befehlen nachzuvollziehen, welche Dateien aktuell wirklich im Kontext liegen."
         }
       ],
       "whenBad": [
         {
-          "title": "Den Inhalt einer Datei sehen wollen",
-          "why": "/ls listet nur Dateinamen und ihren Chat-Status, keine Inhalte.",
-          "alternative": "/add oder /read-only nutzen, um eine Datei tatsächlich mit Inhalt in den Chat zu holen"
+          "title": "Dateiinhalt einsehen wollen",
+          "why": "`/ls` listet nur Dateinamen und Chat-Status, keine Inhalte.",
+          "alternative": "Datei mit `/add` oder `/read-only` tatsächlich in den Chat holen, oder direkt im Editor öffnen."
         }
       ],
       "sources": [
@@ -6750,18 +6796,22 @@
       "slug": "paste",
       "name": "/paste",
       "summary": "Fügt Bild oder Text aus der Zwischenablage in den Chat ein.",
-      "what": "/paste liest den aktuellen Inhalt der Zwischenablage (Bild oder Text) und fügt ihn als Nachricht in den Chat ein. Bei Bildern kann optional ein Name für das Bild angegeben werden.",
+      "what": "`/paste` liest den aktuellen Inhalt deiner System-Zwischenablage aus und fügt ihn als neue Nachricht in den Chat ein – das funktioniert sowohl mit reinem Text als auch mit Bildern. Bei einem Bild kannst du optional einen Namen angeben, etwa `/paste screenshot.png`, damit es im Chat sinnvoll benannt ist.\n\nBesonders praktisch ist das für Screenshots: Laut Aiders Dokumentation zu Bildern und URLs eignet sich `/paste` dafür, ein Bild aus der Zwischenablage direkt an vision-fähige Modelle wie GPT-4o oder Claude 3.7 Sonnet weiterzugeben, etwa um einen Fehlerzustand in der UI zu zeigen. Alternativ lassen sich Bilder auch über `/add <bilddatei>` oder als Kommandozeilenargument beim Start von Aider hinzufügen, wenn sie bereits als Datei vorliegen statt nur in der Zwischenablage.",
       "whenGood": [
         {
-          "title": "Screenshot eines Fehlers oder UI-Zustands einfügen",
-          "example": "Screenshot kopieren, dann /paste bug.png — Aider erhält das Bild als Kontext"
+          "title": "Screenshot als Kontext einfügen",
+          "example": "Fehlermeldung als Screenshot kopieren, dann `/paste error.png` aufrufen, damit ein vision-fähiges Modell wie GPT-4o das Bild sieht."
+        },
+        {
+          "title": "Kopierten Text schnell übernehmen",
+          "example": "Langen Fehlertext aus einem anderen Fenster kopieren und mit `/paste` direkt als Chat-Nachricht einfügen."
         }
       ],
       "whenBad": [
         {
-          "title": "Der Zwischenablage-Inhalt ist einfacher Text, der sich auch direkt eintippen bzw. einfügen lässt",
-          "why": "/paste ist vor allem für Bilder gedacht bzw. wenn direktes Einfügen in die Terminal-Eingabe nicht funktioniert.",
-          "alternative": "Text direkt per normalem Copy-Paste in die Chat-Eingabezeile einfügen"
+          "title": "Kurzer Text ist einfach eintippbar",
+          "why": "`/paste` ist vor allem für Bilder gedacht; für reinen kurzen Text ist direktes Einfügen in die Eingabezeile meist genauso schnell.",
+          "alternative": "Text direkt per normalem Copy-Paste in die Chat-Eingabezeile einfügen."
         }
       ],
       "sources": [
@@ -6876,18 +6926,22 @@
       "slug": "report",
       "name": "/report",
       "summary": "Meldet ein Problem, indem automatisch ein GitHub-Issue im Aider-Repository vorbereitet wird.",
-      "what": "/report öffnet einen vorausgefüllten GitHub-Issue-Entwurf im Browser (Repo Aider-AI/aider), inklusive relevanter Kontextinformationen zum aufgetretenen Problem, damit Bugs einfacher gemeldet werden können.",
+      "what": "`/report` hilft dir, einen Fehler in Aider selbst zu melden. Der Befehl öffnet deinen Standardbrowser mit einem vorausgefüllten GitHub-Issue-Formular im offiziellen Repository `Aider-AI/aider` – laut Aiders Changelog (Version 0.56.0) inklusive relevanter Kontextinformationen zur laufenden Session, etwa der Aider-Version und dem verwendeten Modell.\n\nDadurch sparst du dir das manuelle Zusammensuchen dieser Angaben, wenn du zum Beispiel auf einen Absturz oder ein unerwartetes Verhalten stößt. Du musst das Issue im Browser trotzdem noch um eine Beschreibung des Problems ergänzen, bevor du es absendest – `/report` bereitet nur den Rahmen vor, schreibt aber nicht automatisch für dich. Der Befehl ist ausschließlich für Probleme mit Aider selbst gedacht, nicht für Bugs in deinem eigenen Projektcode.",
       "whenGood": [
         {
-          "title": "Reproduzierbarer Bug oder Absturz in Aider selbst",
-          "example": "/report nach einem Crash mitten in einer Session, um ihn den Aider-Maintainern zu melden"
+          "title": "Absturz von Aider melden",
+          "example": "`/report` direkt nach einem Crash aufrufen, um den vorausgefüllten Issue-Entwurf im Browser zu vervollständigen."
+        },
+        {
+          "title": "Unerwartetes Verhalten dokumentieren",
+          "example": "`/report` nutzen, wenn sich ein Befehl anders verhält als in der Doku beschrieben, um es den Maintainern zu melden."
         }
       ],
       "whenBad": [
         {
-          "title": "Es geht um ein Problem im eigenen Projektcode, nicht in Aider",
-          "why": "/report legt ein Issue im Aider-Repository an, nicht im eigenen Projekt-Repo.",
-          "alternative": "Für eigene Code-Probleme normal mit Aider weiterarbeiten bzw. ein Issue im eigenen Projekt-Repo anlegen"
+          "title": "Bug im eigenen Projektcode",
+          "why": "`/report` legt ein Issue im Aider-Repository `Aider-AI/aider` an, nicht im eigenen Projekt.",
+          "alternative": "Normal mit Aider weiterarbeiten bzw. ein Issue im eigenen Projekt-Repo anlegen."
         }
       ],
       "sources": [
@@ -7932,18 +7986,22 @@
       "slug": "plugin-enable",
       "name": "agy plugin enable <name>",
       "summary": "Reaktiviert ein zuvor deaktiviertes Plugin, ohne es neu zu installieren.",
-      "what": "agy plugin enable <plugin_name> aktiviert die Tools eines Plugins wieder, das zuvor mit agy plugin disable pausiert wurde, ohne dass eine erneute Installation nötig ist.",
+      "what": "`agy plugin enable <name>` ist ein Terminal-Subcommand des `agy`-Binaries, kein Slash-Befehl: Du tippst ihn in deiner normalen Shell, nicht in der Prompt-Box der interaktiven Session. Er gehört zur Plugin-Management-Pipeline der Antigravity CLI, die außerdem `agy plugin list`, `agy plugin install`, `agy plugin disable`, `agy plugin uninstall` und `agy plugin validate` umfasst.\n\nDer Befehl reaktiviert ein Plugin, das zuvor mit `agy plugin disable <name>` pausiert wurde. Laut Doku dient das Paar disable/enable dazu, die Tools eines Plugins zu suspendieren, ohne dessen Dateien zu löschen — enable macht diese Suspendierung rückgängig. Das Plugin muss also bereits installiert sein: enable installiert nichts neu und lädt keine Dateien nach, sondern schaltet nur bereits vorhandene Tools und Fähigkeiten wieder für den Agenten frei, ohne einen erneuten Installationsschritt.",
       "whenGood": [
         {
           "title": "Ein pausiertes Plugin wieder nutzbar machen",
-          "example": "agy plugin enable mein-plugin"
+          "example": "agy plugin enable mein-plugin — nachdem du es zuvor testweise mit agy plugin disable pausiert hattest"
+        },
+        {
+          "title": "Nach einer Bestandsaufnahme gezielt ein Plugin reaktivieren",
+          "example": "agy plugin list prüfen, welche Plugins deaktiviert sind, dann agy plugin enable <name> für eines davon ausführen"
         }
       ],
       "whenBad": [
         {
           "title": "Das Plugin ist noch gar nicht installiert",
-          "why": "enable schaltet nur ein bereits installiertes, deaktiviertes Plugin wieder frei.",
-          "alternative": "Erst agy plugin install <path> nutzen"
+          "why": "enable schaltet nur ein bereits installiertes, aber deaktiviertes Plugin wieder frei — für ein neues Plugin greift der Befehl nicht.",
+          "alternative": "Erst agy plugin install <path> nutzen, danach ist das Plugin aktiv"
         }
       ],
       "sources": [
@@ -8122,18 +8180,22 @@
       "slug": "shell-bang",
       "name": "!<shell-command>",
       "summary": "Führt einen Terminal-Befehl direkt aus der Prompt-Box aus.",
-      "what": "Ein ! am Anfang der Eingabe führt den nachfolgenden Text als Shell-Befehl direkt aus, ohne den Agent einzubeziehen.",
+      "what": "Ein `!` am Anfang der Eingabe in der Prompt-Box ist kein Slash-Befehl, sondern ein Präfix. Laut offizieller Doku nutzt du `!` am Anfang deines Prompts, um Terminal-Befehle direkt auszuführen. Der nachfolgende Text wird eins zu eins als Shell-Kommando ausgeführt, statt als Anweisung an den Agenten zu gehen — der Agent interpretiert oder plant hier nichts, sondern der Befehl wird direkt durchgereicht.\n\nDamit ist das Präfix vergleichbar mit anderen Kurzformen in der Prompt-Box, etwa `@` für Dateipfad-Vervollständigung. Getrennt davon existiert eine Tastenkombination (`e`), mit der du vom Agenten selbst vorgeschlagene Terminal-Befehle vor der Ausführung noch bearbeiten kannst — das betrifft aber Befehle, die der Agent zur Freigabe vorschlägt, nicht das manuell getippte !-Präfix, das ohne Rückfrage sofort ausführt.",
       "whenGood": [
         {
-          "title": "Schnell einen Terminal-Befehl ausführen, ohne die TUI zu verlassen",
-          "example": "!git status"
+          "title": "Schnell einen bekannten Terminal-Befehl ausführen, ohne die TUI zu verlassen",
+          "example": "!git status oder !ls, um kurz nachzusehen, ohne den Agenten einzubinden"
+        },
+        {
+          "title": "Ein Kommando testen, dessen rohe Ausgabe du selbst direkt lesen willst",
+          "example": "!npm run build, um das ungefilterte Terminal-Ergebnis zu sehen"
         }
       ],
       "whenBad": [
         {
-          "title": "Der Agent soll den Befehl selbst wählen oder das Ergebnis interpretieren",
-          "why": "! führt den Befehl direkt und unverändert aus, ohne Agent-Beteiligung.",
-          "alternative": "Den Wunsch normal als Prompt formulieren, damit der Agent den passenden Befehl selbst vorschlägt"
+          "title": "Der Agent soll den passenden Befehl selbst wählen oder das Ergebnis interpretieren",
+          "why": "! führt den Befehl direkt und unverändert aus, ohne dass der Agent ihn auswählt, anpasst oder das Ergebnis bewertet.",
+          "alternative": "Den Wunsch normal als Prompt formulieren, damit der Agent den passenden Befehl selbst vorschlägt und das Ergebnis einordnet"
         }
       ],
       "sources": [
@@ -8393,18 +8455,22 @@
       "slug": "config",
       "name": "/config",
       "summary": "Öffnet den interaktiven Settings-Editor. Alias: /settings.",
-      "what": "/config gehört zur Kategorie Configurations, Alias /settings. Der Befehl öffnet einen interaktiven Editor für die settings.json-Konfiguration der CLI, u.a. Rendering-Modus und Terminal-Verhalten.",
+      "what": "`/config` (Alias `/settings`) gehört laut offizieller Referenztabelle zur Kategorie „Configurations\" und öffnet die interaktive Settings-Editor-Overlay direkt in der Prompt-Box. Mit den Pfeiltasten navigierst du durch die Optionen, Enter wechselt Werte oder öffnet ein Eingabefeld, Esc speichert und schließt das Overlay.\n\nGesteuert werden darüber Anzeige- und Rendering-Optionen (Alt-Screen-Modus, Farbschema, Animationsgeschwindigkeit, Verbosity), Sicherheits- und Berechtigungs-Einstellungen (Freigabestufen für Terminal-Befehle, Review-Pflicht für geschriebene Dateien, Sandbox-Einschränkungen) sowie Editor- und Systemoptionen wie Standard-Texteditor, Desktop-Benachrichtigungen und Telemetrie. Die Werte landen in derselben settings.json wie bei manueller Bearbeitung — die CLI schreibt dabei laut Doku nur Werte, die vom Systemstandard abweichen (sparse persistence). Einzelne Start-Flags können Einstellungen temporär überschreiben; das Overlay markiert überschriebene Werte mit einem Warnhinweis.",
       "whenGood": [
         {
-          "title": "CLI-Einstellungen ohne manuelles Editieren der settings.json ändern",
-          "example": "/config öffnen und einen Einstellungswert direkt im Panel anpassen"
+          "title": "CLI-Einstellungen ändern, ohne die settings.json manuell zu bearbeiten",
+          "example": "/config öffnen und z.B. Farbschema oder Freigabestufe für Terminal-Befehle direkt im Panel anpassen"
+        },
+        {
+          "title": "Prüfen, ob ein Start-Flag gerade eine Einstellung temporär überschreibt",
+          "example": "/config öffnen — per Flag überschriebene Werte sind im Overlay mit einem Warnhinweis markiert"
         }
       ],
       "whenBad": [
         {
           "title": "Nur das Reasoning-Modell wechseln",
-          "why": "/config deckt die allgemeine Konfiguration ab; für die Modellwahl gibt es einen eigenen, gezielteren Befehl.",
-          "alternative": "/model"
+          "why": "/config deckt die gesamte Konfiguration ab; für die reine Modellwahl gibt es einen eigenen, direkteren Befehl.",
+          "alternative": "/model nutzen, um das bevorzugte Reasoning-Modell zu wählen"
         }
       ],
       "sources": [
@@ -8483,18 +8549,22 @@
       "slug": "credits",
       "name": "/credits",
       "summary": "Zeigt verbleibende G1-Credits und Kauf-Links an.",
-      "what": "/credits gehört zur Kategorie Account und zeigt das aktuelle G1-Credits-Guthaben der CLI-Nutzung sowie Links zum Nachkauf. Zusammen mit der Einstellung useG1Credits steuert das die Abrechnung von Anfragen jenseits des im Plan enthaltenen Kontingents.",
+      "what": "`/credits` gehört zur Kategorie „Account\" und öffnet laut offizieller Referenz das dedizierte Credits-Panel: Es zeigt verbleibende G1-Credits und Kauf-Links sowie detaillierte Nutzungsstatistiken. G1-Credits sind persönliche AI-Premium-Credits, die als Fallback-Abrechnung einspringen, wenn die Plan-Quota aufgebraucht ist. Über die Einstellung `useG1Credits` in der settings.json (umschaltbar per /config) legst du fest, ob die CLI bei erschöpfter Quota automatisch auf dein persönliches Credit-Guthaben zurückgreift oder das Fallback-Billing blockiert.\n\nDas Panel bietet zugleich direkte Links, um Credits nachzukaufen oder das Abo upzugraden. Damit ist /credits klar von `/usage` (Alias `/quota`) abzugrenzen: /usage zeigt die modellspezifische API-Quota deines Plans, /credits dagegen das separate, in Geld nachkaufbare G1-Guthaben — zwei unterschiedliche Abrechnungssysteme innerhalb derselben CLI.",
       "whenGood": [
         {
           "title": "Vor einer größeren Aufgabe das verbleibende Guthaben prüfen",
-          "example": "/credits aufrufen, bevor eine rechenintensive Session gestartet wird"
+          "example": "/credits aufrufen, bevor eine rechenintensive Session startet, um zu sehen ob G1-Fallback nötig wird"
+        },
+        {
+          "title": "Nachkaufen oder Abo-Upgrade direkt aus der CLI anstoßen",
+          "example": "/credits öffnen und den Kauf-Link im Panel nutzen, statt manuell im Browser nach der Abrechnungsseite zu suchen"
         }
       ],
       "whenBad": [
         {
-          "title": "Modell-Nutzungs-Quota statt Credits-Guthaben prüfen",
-          "why": "/credits zeigt das G1-Credits-Guthaben, /usage die generelle Modell-Quota des Plans.",
-          "alternative": "/usage"
+          "title": "Die modellspezifische Plan-Quota prüfen statt das Credit-Guthaben",
+          "why": "/credits zeigt nur das G1-Credits-Guthaben, nicht den Verbrauch der im Plan enthaltenen Modell-Quota.",
+          "alternative": "/usage (Alias /quota) nutzen"
         }
       ],
       "sources": [
@@ -8603,17 +8673,21 @@
       "slug": "feedback",
       "name": "/feedback",
       "summary": "Öffnet das Feedback-Panel.",
-      "what": "/feedback gehört zur Kategorie Utilities und öffnet ein Panel, über das sich Rückmeldungen zur CLI direkt an das Antigravity-Team senden lassen.",
+      "what": "`/feedback` gehört zur Kategorie „Utilities\" und öffnet laut offizieller Referenz das Feedback-Submission-Panel — ein Formular direkt in der CLI, über das du Rückmeldungen zur Antigravity-CLI-Nutzung an das Google-Team schickst. Der Befehl ist von der separaten Einstellung `showFeedbackSurvey` in der settings.json zu unterscheiden: Diese steuert, ob nach abgeschlossenen Aufgaben automatisch eine kurze Qualitätsumfrage eingeblendet wird (Standardwert: an). /feedback ist dagegen der aktive, jederzeit selbst auslösbare Weg, ein Anliegen zu melden, unabhängig von dieser automatischen Umfrage — du musst also nicht auf das Umfrage-Popup warten, um Feedback loszuwerden.\n\nDer Befehl dient reinem Feedback-Versand, nicht der Fehlerbehebung in der laufenden Session: Es gibt keine Rückmeldung oder Lösung innerhalb der CLI, das Anliegen geht als Nachricht an das Team.",
       "whenGood": [
         {
           "title": "Bug oder Verbesserungsvorschlag direkt aus der CLI melden",
-          "example": "/feedback öffnen und die Beobachtung eintragen"
+          "example": "/feedback öffnen und die Beobachtung eintragen, solange der Kontext noch frisch ist"
+        },
+        {
+          "title": "Ungefragt Feedback geben, ohne auf die automatische Umfrage zu warten",
+          "example": "/feedback selbst aufrufen, statt auf das showFeedbackSurvey-Popup nach Taskabschluss zu warten"
         }
       ],
       "whenBad": [
         {
-          "title": "Technisches Problem, das sofort gelöst werden muss",
-          "why": "/feedback sendet eine Rückmeldung an das Team, löst aber kein akutes Problem in der laufenden Session.",
+          "title": "Ein technisches Problem, das sofort gelöst werden muss",
+          "why": "/feedback sendet eine Nachricht ans Team, liefert aber keine Lösung oder Antwort innerhalb der laufenden Session.",
           "alternative": "/help oder die Troubleshooting-Doku konsultieren"
         }
       ],
@@ -8997,18 +9071,22 @@
       "slug": "rewind",
       "name": "/rewind",
       "summary": "Rollt die Konversationshistorie zu einem vorherigen Checkpoint zurück. Alias: /undo.",
-      "what": "/rewind gehört zur Kategorie Conversations, Alias /undo. Der Befehl setzt die Konversationshistorie auf einen früheren Stand innerhalb desselben Threads zurück, statt einen neuen Thread zu erzeugen.",
+      "what": "`/rewind` (Alias `/undo`) gehört zur Kategorie „Conversations\" und setzt deinen aktuellen Konversations-Thread auf einen früheren, stabilen Stand zurück. Laut Best-Practices-Doku ist der typische Anwendungsfall: Wenn ein Agent mehrere Änderungen nacheinander gemacht hat, die Build-Fehler verursachen, musst du die Session nicht verwerfen, sondern tippst /rewind (oder /undo), um zum letzten funktionierenden Checkpoint zurückzukehren. Der Verlauf danach wird dabei überschrieben, nicht parallel aufbewahrt.\n\nDamit unterscheidet sich der Befehl klar von `/fork` (Alias `/branch`): Fork klont die aktuelle Session an einem stabilen Punkt in eine parallele Session, um dort riskante Änderungen zu testen, ohne den Hauptverlauf zu verlieren — scheitert der Versuch, geht es per `/resume` zurück zum Hauptstrang. /rewind ist eine echte Rückwärtsbewegung im selben Thread, kein Abzweig.",
       "whenGood": [
         {
-          "title": "Einen fehlgeschlagenen Zwischenschritt rückgängig machen",
-          "example": "/rewind, um zum Stand vor einer fehlerhaften Änderung zurückzukehren"
+          "title": "Mehrere fehlerhafte Änderungen des Agenten in Folge rückgängig machen",
+          "example": "/rewind, nachdem der Agent drei Edits gemacht hat, die den Build brechen — zurück zum letzten stabilen Stand"
+        },
+        {
+          "title": "Session retten statt komplett neu starten",
+          "example": "/undo direkt nach einer missglückten Änderung, statt die Konversation zu verwerfen und neu zu beginnen"
         }
       ],
       "whenBad": [
         {
-          "title": "Alternativen Ansatz parallel zum bisherigen Verlauf ausprobieren",
-          "why": "/rewind überschreibt den bisherigen Verlauf ab dem gewählten Punkt, statt ihn parallel zu erhalten.",
-          "alternative": "/fork"
+          "title": "Einen alternativen Ansatz parallel zum bisherigen Verlauf ausprobieren",
+          "why": "/rewind überschreibt den Verlauf ab dem gewählten Punkt, statt ihn als Abzweig zu erhalten.",
+          "alternative": "/fork (Alias /branch) nutzen, um vom stabilen Stand aus eine parallele Session zu starten, und bei Misserfolg mit /resume zurückkehren"
         }
       ],
       "sources": [
@@ -10096,18 +10174,27 @@
       "slug": "composer",
       "name": "/composer",
       "summary": "Springt direkt zur Composer-Modellfamilie, ohne den Modell-Picker zu öffnen.",
-      "what": "Springt direkt zur Composer-Modellfamilie, ohne den Modell-Picker zu öffnen. Der Shortcut merkt sich die zuletzt gewählte Variante; Composer 2.5 ist das Standardmodell neuer CLI-Sitzungen. Abschaltbar unter \"Model slash commands\" in /config.",
+      "what": "`/composer` ist ein Modell-Shortcut: Der Befehl springt direkt zur Composer-Modellfamilie von Cursor, ohne dass sich der reguläre Modell-Picker öffnet. Du sparst dir damit den Zwischenschritt über `/model` und die Navigation durch die Liste aller verfügbaren Modelle.\n\nLaut Cursor-Changelog merkt sich der Shortcut deine zuletzt gewählte Variante innerhalb der Composer-Familie — rufst du `/composer` erneut auf, landest du wieder bei dieser Variante statt bei einem Standardwert. Neue CLI-Sitzungen starten ohnehin mit Composer 2.5 als Standardmodell.\n\nSolche Modell-Shortcuts (z.B. auch `/opus`) lassen sich bei Bedarf abschalten: Unter „Model slash commands\" in `/config` blendest du sie aus, falls sie dir beim Tippen von Prompts in die Quere kommen oder du sie schlicht nicht brauchst.\n\n`/composer` steht bisher nur im offiziellen Changelog, nicht in der Haupt-Referenztabelle der Slash-Commands.",
       "whenGood": [
         {
-          "title": "Schnell auf ein Composer-Modell wechseln",
-          "example": "/composer"
+          "title": "Schnell auf ein Composer-Modell wechseln, ohne den Picker zu durchsuchen",
+          "example": "/composer — direkt vor einem neuen Prompt, wenn du weißt, dass du mit Composer arbeiten willst"
+        },
+        {
+          "title": "Zur zuletzt genutzten Composer-Variante zurückkehren",
+          "example": "/composer erneut aufrufen, nachdem du zwischenzeitlich zu einem anderen Modell wie /opus gewechselt hattest"
         }
       ],
       "whenBad": [
         {
-          "title": "Ein Modell einer anderen Familie wählen",
-          "why": "/composer springt nur zur Composer-Familie.",
-          "alternative": "/model für die volle Auswahl"
+          "title": "Ein Modell aus einer anderen Familie wählen",
+          "why": "/composer springt ausschließlich innerhalb der Composer-Familie, nicht zu Modellen anderer Anbieter.",
+          "alternative": "/model nutzen für die vollständige Modellliste"
+        },
+        {
+          "title": "Die Shortcuts stören beim Tippen von Prompts, die zufällig mit einem Slash beginnen",
+          "why": "Modell-Shortcuts wie /composer sind standardmäßig aktiv und reagieren sofort auf die Eingabe.",
+          "alternative": "Shortcuts unter „Model slash commands\" in /config deaktivieren"
         }
       ],
       "sources": [

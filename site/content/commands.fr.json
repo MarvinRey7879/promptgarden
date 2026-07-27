@@ -3854,18 +3854,22 @@
       "slug": "show-thinking",
       "name": "/show-thinking",
       "summary": "Bascule l'affichage des blocs de réflexion (Thinking) du modèle.",
-      "what": "/show-thinking active/désactive l'affichage visible des blocs de réflexion internes du modèle dans la session.",
+      "what": "`/show-thinking` est un simple interrupteur (toggle) : la commande affiche ou masque les blocs de réflexion internes du modèle dans la session CLI en cours. Selon le tableau de référence officiel, la description courte est simplement « Toggle thinking block display » — la commande n'accepte aucun autre argument.\n\nLes blocs de réflexion affichent le texte d'étape intermédiaire interne que certains modèles génèrent avant la réponse proprement dite. Il n'est pas documenté si l'affichage démarre activé ou désactivé par défaut ; la commande ne fait que basculer entre les deux états, à partir de l'état actuel de la session.\n\n`/show-thinking` s'inscrit, aux côtés de `/vim`, `/line-numbers` et `/status-indicators`, dans le groupe des purs interrupteurs d'affichage de la CLI — ils ne modifient que la présentation dans le terminal, pas le comportement du modèle lui-même.",
       "whenGood": [
         {
-          "title": "Comprendre pourquoi l'agent prend une décision précise",
-          "example": "/show-thinking — activer avant une décision d'architecture complexe"
+          "title": "Comprendre pourquoi l'agent prend une décision donnée",
+          "example": "/show-thinking activé, avant une décision d'architecture complexe"
+        },
+        {
+          "title": "Lire le texte d'étape intermédiaire en déboguant un comportement d'agent inattendu",
+          "example": "Activer /show-thinking quand une réponse semble incompréhensible, puis le désactiver à nouveau"
         }
       ],
       "whenBad": [
         {
-          "title": "Seul le résultat final intéresse, pas le raisonnement",
-          "why": "les blocs de réflexion allongent inutilement la sortie visible quand seul le résultat compte",
-          "alternative": "laisser /show-thinking désactivé pour une session plus compacte"
+          "title": "Seul le résultat final intéresse, pas le cheminement de réflexion",
+          "why": "Les blocs de réflexion allongent inutilement la sortie visible dans le terminal quand seul le résultat compte.",
+          "alternative": "Laisser /show-thinking désactivé pour une session plus compacte"
         }
       ],
       "sources": [
@@ -4170,18 +4174,22 @@
       "slug": "logout",
       "name": "/logout",
       "summary": "Déconnecte le compte Cursor actuel.",
-      "what": "/logout déconnecte la CLI du compte Cursor actuellement connecté.",
+      "what": "`/logout` te déconnecte dans la Cursor CLI du compte actuellement connecté. Selon le tableau de référence, la description courte est « Sign out from Cursor » ; la documentation séparée des paramètres pour la sous-commande CLI correspondante (`agent logout`, appelable en dehors de la session interactive) précise cela par « Sign out and clear stored authentication » — la commande supprime donc aussi les identifiants stockés localement, pas seulement la session active.\n\nAprès `/logout`, tu n'es plus connecté ; pour la prochaine utilisation de la CLI, une nouvelle procédure de connexion est nécessaire avant de pouvoir à nouveau adresser des requêtes aux modèles.\n\nCela rend `/logout` utile si tu veux changer de compte ou laisser proprement un ordinateur partagé — l'authentification stockée ne subsiste pas ensuite.",
       "whenGood": [
         {
-          "title": "Retirer le compte sur une machine partagée",
-          "example": "/logout — avant de passer à un autre compte Cursor"
+          "title": "Retirer le compte sur un ordinateur partagé",
+          "example": "/logout — avant de passer à un autre compte Cursor, pour qu'aucune authentification stockée ne subsiste"
+        },
+        {
+          "title": "Se déconnecter proprement avant un redémarrage avec un autre compte ou une autre clé API",
+          "example": "/logout, avant de reconfigurer la CLI avec un autre compte"
         }
       ],
       "whenBad": [
         {
-          "title": "On veut juste terminer brièvement la session, pas déconnecter le compte",
-          "why": "/logout supprime la connexion, un nouveau flux de connexion est ensuite nécessaire",
-          "alternative": "utiliser /quit ou /exit pour juste terminer la session"
+          "title": "On veut seulement terminer brièvement la session, pas déconnecter le compte",
+          "why": "/logout supprime la connexion stockée ; une nouvelle procédure de connexion est ensuite nécessaire.",
+          "alternative": "Utiliser /quit ou /exit pour ne terminer que la session"
         }
       ],
       "sources": [
@@ -4422,18 +4430,27 @@
       "slug": "bedrock",
       "name": "/bedrock",
       "summary": "Configure AWS Bedrock comme backend de modèle, si la fonctionnalité Bedrock est activée.",
-      "what": "/bedrock configure AWS Bedrock comme backend de modèle, soit avec ses propres identifiants AWS, soit avec un rôle IAM d'équipe. Ne fonctionne que si la fonctionnalité Bedrock est activée pour le compte.",
+      "what": "`/bedrock [subcommand]` configure AWS Bedrock comme backend de modèle pour la Cursor CLI. Selon le tableau de référence, la commande ne fonctionne que si la fonctionnalité Bedrock est activée pour ton compte — si ce n'est pas le cas, elle n'a aucun effet.\n\nSelon le changelog de Cursor, tu configures ainsi Bedrock « avec tes propres identifiants » : soit via des clés d'accès AWS classiques, soit via un rôle IAM d'équipe. La configuration s'applique de manière transversale selon le changelog — elle agit aussi bien dans les sessions interactives qu'en mode headless et dans les intégrations éditeur, tu n'as donc pas besoin de configurer Bedrock séparément pour chaque mode.\n\n`/bedrock` est destiné aux configurations où les requêtes de modèle doivent passer par ta propre infrastructure AWS plutôt que par le backend standard de Cursor, par exemple pour des raisons de conformité ou de coûts en contexte d'entreprise.",
       "whenGood": [
         {
-          "title": "Configurer Bedrock comme backend avec ses propres clés AWS",
-          "example": "/bedrock — renseigner ses propres identifiants"
+          "title": "Configurer Bedrock avec ses propres identifiants AWS",
+          "example": "/bedrock — enregistrer ses propres clés d'accès, pour que les requêtes de modèle passent par sa propre infrastructure AWS"
+        },
+        {
+          "title": "Connexion Bedrock à l'échelle de l'équipe via un rôle IAM plutôt que des clés individuelles",
+          "example": "Utiliser /bedrock en contexte d'entreprise pour enregistrer à la place un rôle IAM d'équipe"
         }
       ],
       "whenBad": [
         {
-          "title": "Le compte n'utilise pas du tout AWS Bedrock",
-          "why": "sans la fonctionnalité Bedrock activée, la commande n'a aucun effet",
-          "alternative": "choisir un modèle normalement via /model"
+          "title": "La fonctionnalité Bedrock n'est pas activée pour le compte",
+          "why": "Selon la documentation, /bedrock ne fonctionne que si la fonctionnalité Bedrock est activée.",
+          "alternative": "Choisir un modèle normalement via /model, ou demander l'accès Bedrock à l'équipe Cursor"
+        },
+        {
+          "title": "Il suffit de tester brièvement un autre modèle par défaut",
+          "why": "/bedrock est destiné à une configuration de backend durable, pas à un changement rapide de modèle.",
+          "alternative": "Utiliser /model ou un raccourci de modèle comme /composer"
         }
       ],
       "sources": [
@@ -4487,18 +4504,27 @@
       "slug": "save-workspace",
       "name": "/save-workspace",
       "summary": "Enregistre les répertoires multi-racine actuellement actifs comme un ensemble de workspace nommé.",
-      "what": "/save-workspace enregistre sous un nom l'ensemble des répertoires actuellement ajoutés via /add-dir, pour pouvoir les recharger plus tard. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "what": "`/save-workspace` enregistre l'ensemble des répertoires actuellement ajoutés avec `/add-dir` comme un jeu de workspace nommé. Selon le changelog de Cursor, la commande fait partie de la fonctionnalité « Named multi-directory workspaces » : tu peux ainsi faire travailler l'agent simultanément sur plusieurs dépôts, au lieu de te limiter au répertoire actuel.\n\nTu recharges ensuite l'ensemble de répertoires ainsi enregistré via `/load-workspace` — selon le changelog, un paramètre global `--workspace` est en outre disponible pour démarrer directement une session CLI de manière ciblée, plutôt que de composer les répertoires après coup via `/add-dir`.\n\n`/save-workspace` n'est jusqu'à présent documenté que dans l'entrée de changelog du 22 juin 2026, pas dans le tableau de référence principal des commandes slash — la même lacune qui existait déjà, selon l'énoncé de la tâche, pour `/load-workspace`.",
       "whenGood": [
         {
           "title": "Nommer une combinaison de dépôts récurrente",
-          "example": "/save-workspace backend-plus-shared-lib"
+          "example": "/save-workspace backend-plus-shared-lib, après que les deux répertoires ont été ajoutés via /add-dir"
+        },
+        {
+          "title": "Regrouper durablement plusieurs dépôts pour une tâche cross-repo",
+          "example": "Rassembler des répertoires avec /add-dir puis les sauvegarder avec /save-workspace, pour les recharger plus tard via /load-workspace"
         }
       ],
       "whenBad": [
         {
           "title": "La combinaison de répertoires n'est nécessaire qu'une seule fois",
-          "why": "pour une session ponctuelle, enregistrer un ensemble nommé n'en vaut pas la peine",
-          "alternative": "utiliser simplement /add-dir sans /save-workspace"
+          "why": "Pour une session unique, l'enregistrement en tant que jeu nommé n'en vaut pas la peine.",
+          "alternative": "Utiliser simplement /add-dir sans /save-workspace"
+        },
+        {
+          "title": "Une session doit démarrer dès le début avec une sélection fixe de répertoires",
+          "why": "/save-workspace ne fait qu'enregistrer après coup un ensemble de répertoires déjà composé dans le chat.",
+          "alternative": "Démarrer la session directement avec le paramètre --workspace"
         }
       ],
       "sources": [
@@ -4735,18 +4761,22 @@
       "slug": "commands",
       "name": "/commands",
       "summary": "Navigateur interactif pour consulter et éditer ses propres commandes personnalisées.",
-      "what": "/commands ouvre un navigateur interactif pour les commandes personnalisées auto-définies, avec édition en ligne. Documenté dans le changelog officiel, pas (encore) dans le tableau de référence des commandes.",
+      "what": "`/commands` ouvre dans la Cursor CLI un navigateur interactif pour tes commandes personnalisées définies par toi-même, avec édition en ligne directement dans le terminal. Tu n'as pas besoin de passer par les fichiers sous-jacents pour consulter ou adapter une commande.\n\nSelon le changelog de Cursor, `/commands` appartient, avec `/rules`, à un ensemble propre de navigateurs interactifs, distinct de la fonction de navigation `/skills` pour les skills (y compris intégrés). Les commands constituent ainsi la couche de commandes propre au projet, tandis que les skills regroupent plutôt des capacités préconfectionnées.\n\nImportant : `/commands` ne figure pas encore dans le tableau de référence officiel des commandes slash (34 entrées répertoriées), mais n'est documenté jusqu'à présent que via l'entrée de changelog de janvier 2026 — comme par exemple `/save-workspace`.",
       "whenGood": [
         {
-          "title": "Consulter une commande personnalisée existante avant de l'utiliser",
-          "example": "/commands — parcourir les commandes personnalisées définies dans le projet"
+          "title": "Consulter une commande personnalisée existante avant utilisation",
+          "example": "Ouvrir /commands et parcourir les commandes propres définies dans le projet"
+        },
+        {
+          "title": "Adapter une commande personnalisée directement dans le terminal",
+          "example": "Ouvrir /commands, sélectionner la commande souhaitée et modifier le texte par édition en ligne"
         }
       ],
       "whenBad": [
         {
-          "title": "Il s'agit de skills intégrés, pas de commandes auto-définies",
-          "why": "/commands n'affiche que ses propres commandes personnalisées",
-          "alternative": "utiliser /skills"
+          "title": "Il s'agit de skills intégrés ou fournis, pas de commands définies soi-même",
+          "why": "/commands n'affiche, selon le changelog, que le navigateur de commands propre, distinct de la fonction skills.",
+          "alternative": "Utiliser /skills"
         }
       ],
       "sources": [
@@ -5922,18 +5952,22 @@
       "slug": "chat-mode",
       "name": "/chat-mode",
       "summary": "Bascule de façon durable (sticky) vers n'importe quel mode de chat, via le nom du mode en argument.",
-      "what": "/chat-mode <mode> change le mode actif pour tous les messages suivants, par ex. /chat-mode code ou /chat-mode architect. Les commandes /code, /ask et /architect font la même chose lorsqu'elles sont appelées sans prompt ; /help sans prompt, en revanche, affiche seulement l'aide de base et ne change pas de mode.",
+      "what": "`/chat-mode <mode>` change durablement (« sticky ») le mode de chat actif pour tous les messages suivants, par exemple avec `/chat-mode ask` ou `/chat-mode architect`. Aider connaît quatre modes : `code` pour les modifications de code, `ask` pour les questions sans édition, `architect` pour une approche en deux étapes avec un modèle de proposition et un modèle d'édition, ainsi que `help` pour les questions sur l'utilisation d'Aider lui-même.\n\nTu peux atteindre le même changement durable de manière plus courte via `/code`, `/ask` ou `/architect` sans prompt joint — selon la documentation d'Aider sur les modes de chat, ces trois commandes changent également le mode actif lorsqu'elles sont appelées sans argument. `/help` fait ici exception : appelé sans prompt, il affiche seulement l'aide générale selon le tableau officiel des commandes et ne change pas de mode — seuls `/code`, `/ask` et `/architect` comportent la mention du changement de mode sans prompt. Tu ne peux donc passer en mode sticky sur help qu'via `/chat-mode help`.",
       "whenGood": [
         {
-          "title": "Définir le mode via un fichier de commandes chargé",
-          "example": "/chat-mode ask dans un fichier lu via /load, pour fixer le mode de façon cohérente avant d'autres commandes"
+          "title": "Définir le mode via un fichier de script",
+          "example": "Écrire `/chat-mode ask` dans un fichier de commandes chargé avec `/load`, pour fixer le mode de manière cohérente avant les commandes suivantes."
+        },
+        {
+          "title": "Activer durablement le mode help",
+          "example": "Appeler `/chat-mode help` pour rester durablement en mode help — contrairement à code/ask/architect, `/help` sans prompt ne change pas le mode actif."
         }
       ],
       "whenBad": [
         {
-          "title": "Viser directement l'un des modes connus",
-          "why": "Pour code/ask/architect, il existe des commandes dédiées et plus courtes avec le même effet lorsqu'elles sont appelées sans prompt.",
-          "alternative": "Utiliser directement /code, /ask ou /architect"
+          "title": "Accéder directement à l'un des trois modes en commande courte",
+          "why": "Pour code, ask et architect, la commande courte correspondante sans prompt change également le mode de manière durable — `/chat-mode` n'y est pas nécessaire.",
+          "alternative": "Appeler directement `/code`, `/ask` ou `/architect` sans prompt."
         }
       ],
       "sources": [
@@ -6104,18 +6138,22 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "Copie la dernière réponse d'Aider dans le presse-papiers.",
-      "what": "/copy copie le dernier message envoyé par l'assistant dans le presse-papiers du système.",
+      "what": "`/copy` copie la dernière réponse de l'assistant — c'est-à-dire le dernier message de chat envoyé par Aider — telle quelle dans le presse-papiers système de ton ordinateur. La commande a été introduite avec la version 0.58.0 d'Aider et fonctionne sans argument : tu tapes `/copy`, et le message complet est ensuite prêt à être collé, par exemple avec `Ctrl+V`.\n\nIl est important de faire la distinction avec `/copy-context` : alors que `/copy` ne transfère que le texte pur de la réponse, `/copy-context` copie l'intégralité du contexte de chat actuel au format Markdown — y compris les fichiers ajoutés au chat et la repo-map — dans un format qui peut être collé directement dans un chat web comme ChatGPT ou Claude. Pour simplement réutiliser une explication, un extrait de code ou un résumé de la dernière réponse, `/copy` suffit amplement.",
       "whenGood": [
         {
-          "title": "Réutiliser une explication ou un extrait de code de la dernière réponse",
-          "example": "/copy — puis coller par ex. dans une documentation, une issue ou une autre application"
+          "title": "Réutiliser une réponse pour la documentation",
+          "example": "Appeler `/copy` après une explication et coller le texte directement dans un ticket ou une documentation."
+        },
+        {
+          "title": "Partager rapidement un extrait de code",
+          "example": "Utiliser `/copy` pour coller un extrait de code proposé par Aider avec `Ctrl+V` dans un message Slack ou une issue GitHub."
         }
       ],
       "whenBad": [
         {
-          "title": "Vouloir copier tout le contexte de code pour un LLM en chat web",
-          "why": "/copy ne copie que la dernière réponse d'Aider, pas les fichiers ajoutés au chat ni la carte du dépôt.",
-          "alternative": "Utiliser /copy-context pour copier le contexte de code complet"
+          "title": "Copier tout le contexte de code pour un LLM web",
+          "why": "`/copy` ne transfère que la dernière réponse, pas les fichiers ajoutés au chat ni la repo-map.",
+          "alternative": "Utiliser `/copy-context`, qui copie l'intégralité du contexte de chat au format Markdown."
         }
       ],
       "sources": [
@@ -6277,18 +6315,22 @@
       "slug": "editor",
       "name": "/editor",
       "summary": "Ouvre un éditeur de texte externe pour y écrire le prochain message du chat.",
-      "what": "/editor ouvre un éditeur externe pour rédiger un prompt. Selon la documentation, on peut aussi y accéder via le raccourci clavier Ctrl-X Ctrl-E directement dans le terminal. L'éditeur qui s'ouvre peut être configuré via les réglages d'éditeur.",
+      "what": "`/editor` ouvre un éditeur de texte externe dans lequel tu peux rédiger ton prochain message de chat tranquillement, au lieu de le taper directement dans la ligne de saisie du terminal. Dès que tu fermes l'éditeur, le texte écrit est envoyé à Aider comme prompt. Depuis la version 0.79.0, `/edit` existe comme alias court avec une fonction identique, et depuis la version 0.80.0, tu accèdes aussi à la même fonction via le raccourci clavier `Ctrl-X Ctrl-E` directement dans le terminal, sans taper le nom de la commande.\n\nQuel éditeur s'ouvre est déterminé par Aider selon un ordre fixe : d'abord l'option de ligne de commande `--editor` ou l'entrée `editor:` dans la configuration YAML, puis les variables d'environnement `AIDER_EDITOR`, `VISUAL` et `EDITOR`, sinon un éditeur par défaut de la plateforme comme Notepad sous Windows. L'éditeur doit alors fonctionner en mode « bloquant », c'est-à-dire attendre que tu le fermes.",
       "whenGood": [
         {
-          "title": "Écrire un prompt multiligne avec une mise en forme précise",
-          "example": "/editor — par ex. pour mettre en forme proprement un prompt avec des blocs de code ou des listes, avant de l'envoyer"
+          "title": "Formater proprement un prompt sur plusieurs lignes",
+          "example": "Appeler `/editor` pour écrire confortablement un prompt avec des listes et des blocs de code, avant qu'il soit envoyé à Aider."
+        },
+        {
+          "title": "Continuer la saisie via un raccourci clavier",
+          "example": "Appuyer sur `Ctrl-X Ctrl-E` directement dans le terminal pour continuer à modifier le tampon de saisie déjà tapé dans l'éditeur configuré."
         }
       ],
       "whenBad": [
         {
           "title": "Envoyer un message court et spontané",
-          "why": "Pour un message court, passer par un éditeur externe n'en vaut pas la peine.",
-          "alternative": "Taper le message directement dans le prompt du chat, ou utiliser /paste si le texte est déjà dans le presse-papiers"
+          "why": "Pour un message court, passer à un éditeur externe n'en vaut pas la peine.",
+          "alternative": "Taper le message directement dans le prompt du chat, ou utiliser `/paste` si le texte se trouve déjà dans le presse-papiers."
         }
       ],
       "sources": [
@@ -6515,18 +6557,22 @@
       "slug": "ls",
       "name": "/ls",
       "summary": "Liste tous les fichiers connus et indique lesquels sont actuellement dans le chat.",
-      "what": "/ls affiche une liste de tous les fichiers connus et indique lesquels sont actuellement ajoutés à la session de chat.",
+      "what": "`/ls` t'affiche une vue d'ensemble complète de tous les fichiers qu'Aider connaît dans le projet actuel, en indiquant lesquels sont actuellement ajoutés activement à la session de chat. C'est particulièrement utile dans les grands dépôts, où tu perds vite de vue quels fichiers Aider est autorisé à modifier et lesquels n'existent que comme contexte de dépôt en arrière-plan.\n\nLa commande elle-même n'ouvre ni ne modifie rien — c'est une fonction d'affichage pure. Pour ajouter réellement un fichier à l'édition, tu as toujours besoin de `/add <fichier>`, et pour de simples fichiers de référence sans droits d'écriture, de `/read-only <fichier>`. `/ls` convient donc bien comme courte étape intermédiaire avant ces commandes, par exemple pour vérifier si un fichier a été ajouté deux fois par erreur ou s'il a entre-temps été retiré avec `/drop`.",
       "whenGood": [
         {
-          "title": "Se faire une vue d'ensemble des fichiers actuellement dans le chat",
-          "example": "/ls — avant le prochain /drop ou /add, vérifier rapidement ce qui est actuellement actif"
+          "title": "Se faire une vue d'ensemble avant /add",
+          "example": "Appeler `/ls` pour voir si un fichier est déjà dans le chat avant de l'ajouter à nouveau avec `/add`."
+        },
+        {
+          "title": "Vérifier les fichiers du chat après une longue session",
+          "example": "Utiliser `/ls` pour savoir, après plusieurs commandes `/add` et `/drop`, quels fichiers se trouvent réellement dans le contexte actuel."
         }
       ],
       "whenBad": [
         {
-          "title": "Vouloir voir le contenu d'un fichier",
-          "why": "/ls ne liste que les noms de fichiers et leur statut dans le chat, pas leur contenu.",
-          "alternative": "Utiliser /add ou /read-only pour faire entrer réellement le contenu d'un fichier dans le chat"
+          "title": "Vouloir consulter le contenu d'un fichier",
+          "why": "`/ls` ne liste que les noms de fichiers et leur statut dans le chat, pas leur contenu.",
+          "alternative": "Ajouter réellement le fichier au chat avec `/add` ou `/read-only`, ou l'ouvrir directement dans l'éditeur."
         }
       ],
       "sources": [
@@ -6750,18 +6796,22 @@
       "slug": "paste",
       "name": "/paste",
       "summary": "Insère une image ou du texte du presse-papiers dans le chat.",
-      "what": "/paste lit le contenu actuel du presse-papiers (image ou texte) et l'insère comme message dans le chat. Pour les images, un nom peut être indiqué en option.",
+      "what": "`/paste` lit le contenu actuel de ton presse-papiers système et l'insère comme nouveau message dans le chat — cela fonctionne aussi bien avec du texte pur qu'avec des images. Pour une image, tu peux éventuellement indiquer un nom, par exemple `/paste screenshot.png`, pour qu'elle soit nommée de manière pertinente dans le chat.\n\nC'est particulièrement pratique pour les captures d'écran : selon la documentation d'Aider sur les images et les URL, `/paste` convient pour transmettre directement une image du presse-papiers à des modèles compatibles avec la vision comme GPT-4o ou Claude 3.7 Sonnet, par exemple pour montrer un état d'erreur dans l'interface. Autre possibilité, les images peuvent aussi être ajoutées via `/add <fichier-image>` ou comme argument en ligne de commande au démarrage d'Aider, si elles existent déjà en tant que fichier plutôt que seulement dans le presse-papiers.",
       "whenGood": [
         {
-          "title": "Insérer une capture d'écran d'une erreur ou d'un état d'interface",
-          "example": "Copier une capture d'écran, puis /paste bug.png — Aider reçoit l'image comme contexte"
+          "title": "Insérer une capture d'écran comme contexte",
+          "example": "Copier un message d'erreur sous forme de capture d'écran, puis appeler `/paste error.png` pour qu'un modèle compatible avec la vision comme GPT-4o voie l'image."
+        },
+        {
+          "title": "Reprendre rapidement un texte copié",
+          "example": "Copier un long texte d'erreur depuis une autre fenêtre et l'insérer directement comme message de chat avec `/paste`."
         }
       ],
       "whenBad": [
         {
-          "title": "Le contenu du presse-papiers est du simple texte qui peut aussi être tapé ou collé directement",
-          "why": "/paste est surtout prévu pour les images, ou quand le collage direct dans la saisie du terminal ne fonctionne pas.",
-          "alternative": "Coller le texte directement dans la ligne de saisie du chat par un copier-coller normal"
+          "title": "Un texte court est facile à taper directement",
+          "why": "`/paste` est surtout conçu pour les images ; pour un texte court, un collage direct dans la ligne de saisie est généralement tout aussi rapide.",
+          "alternative": "Coller le texte directement dans la ligne de saisie du chat par un copier-coller normal."
         }
       ],
       "sources": [
@@ -6876,18 +6926,22 @@
       "slug": "report",
       "name": "/report",
       "summary": "Signale un problème en préparant automatiquement une issue GitHub dans le dépôt Aider.",
-      "what": "/report ouvre dans le navigateur un brouillon d'issue GitHub pré-rempli (dépôt Aider-AI/aider), avec les informations de contexte pertinentes sur le problème rencontré, pour faciliter le signalement des bugs.",
+      "what": "`/report` t'aide à signaler un bug dans Aider lui-même. La commande ouvre ton navigateur par défaut avec un formulaire d'issue GitHub pré-rempli dans le dépôt officiel `Aider-AI/aider` — selon le changelog d'Aider (version 0.56.0), y compris des informations de contexte pertinentes sur la session en cours, comme la version d'Aider et le modèle utilisé.\n\nCela t'évite de rassembler manuellement ces informations lorsque tu rencontres par exemple un plantage ou un comportement inattendu. Tu dois tout de même compléter l'issue dans le navigateur avec une description du problème avant de l'envoyer — `/report` ne fait que préparer le cadre, il n'écrit pas automatiquement à ta place. La commande est exclusivement destinée aux problèmes liés à Aider lui-même, pas aux bugs dans le code de ton propre projet.",
       "whenGood": [
         {
-          "title": "Bug reproductible ou plantage dans Aider lui-même",
-          "example": "/report après un plantage en pleine session, pour le signaler aux mainteneurs d'Aider"
+          "title": "Signaler un plantage d'Aider",
+          "example": "Appeler `/report` directement après un plantage pour compléter le brouillon d'issue pré-rempli dans le navigateur."
+        },
+        {
+          "title": "Documenter un comportement inattendu",
+          "example": "Utiliser `/report` lorsqu'une commande se comporte différemment de ce qui est décrit dans la documentation, pour le signaler aux mainteneurs."
         }
       ],
       "whenBad": [
         {
-          "title": "Il s'agit d'un problème dans le code de son propre projet, pas dans Aider",
-          "why": "/report crée une issue dans le dépôt Aider, pas dans le dépôt de son propre projet.",
-          "alternative": "Pour les problèmes de son propre code, continuer normalement avec Aider ou créer une issue dans son propre dépôt de projet"
+          "title": "Bug dans le code de son propre projet",
+          "why": "`/report` crée une issue dans le dépôt Aider `Aider-AI/aider`, pas dans ton propre projet.",
+          "alternative": "Continuer normalement à travailler avec Aider, ou créer une issue dans le dépôt de ton propre projet."
         }
       ],
       "sources": [
@@ -7932,18 +7986,22 @@
       "slug": "plugin-enable",
       "name": "agy plugin enable <name>",
       "summary": "Réactive un plugin précédemment désactivé, sans le réinstaller.",
-      "what": "agy plugin enable <plugin_name> réactive les outils d'un plugin qui avait été mis en pause avec agy plugin disable, sans qu'une nouvelle installation soit nécessaire.",
+      "what": "`agy plugin enable <nom>` est une sous-commande de terminal du binaire `agy`, pas une commande slash : tu la tapes dans ton shell normal, pas dans la zone de prompt de la session interactive. Elle fait partie du pipeline de gestion des plugins de l'Antigravity CLI, qui comprend aussi `agy plugin list`, `agy plugin install`, `agy plugin disable`, `agy plugin uninstall` et `agy plugin validate`.\n\nLa commande réactive un plugin qui avait été mis en pause au préalable avec `agy plugin disable <nom>`. Selon la documentation, la paire disable/enable sert à suspendre les outils d'un plugin sans supprimer ses fichiers — enable annule cette suspension. Le plugin doit donc déjà être installé : enable n'installe rien de nouveau et ne recharge aucun fichier, il ne fait que libérer à nouveau des outils et des capacités déjà présents pour l'agent, sans étape d'installation supplémentaire.",
       "whenGood": [
         {
-          "title": "Rendre à nouveau utilisable un plugin mis en pause",
-          "example": "agy plugin enable mon-plugin"
+          "title": "Rendre à nouveau utilisable un plugin en pause",
+          "example": "agy plugin enable mon-plugin — après l'avoir mis en pause à titre de test avec agy plugin disable"
+        },
+        {
+          "title": "Réactiver un plugin de manière ciblée après un état des lieux",
+          "example": "Vérifier avec agy plugin list quels plugins sont désactivés, puis exécuter agy plugin enable <nom> pour l'un d'eux"
         }
       ],
       "whenBad": [
         {
           "title": "Le plugin n'est pas encore installé du tout",
-          "why": "enable ne fait que réactiver un plugin déjà installé et désactivé.",
-          "alternative": "Utiliser d'abord agy plugin install <path>"
+          "why": "enable ne libère à nouveau qu'un plugin déjà installé mais désactivé — pour un nouveau plugin, la commande n'a aucun effet.",
+          "alternative": "Utiliser d'abord agy plugin install <path>, après quoi le plugin est actif"
         }
       ],
       "sources": [
@@ -8122,18 +8180,22 @@
       "slug": "shell-bang",
       "name": "!<shell-command>",
       "summary": "Exécute une commande de terminal directement depuis la boîte de prompt.",
-      "what": "Un ! au début de la saisie exécute directement le texte qui suit comme commande shell, sans impliquer l'agent.",
+      "what": "Un `!` au début de la saisie dans la zone de prompt n'est pas une commande slash, mais un préfixe. Selon la documentation officielle, tu utilises `!` au début de ton prompt pour exécuter directement des commandes de terminal. Le texte qui suit est exécuté tel quel comme commande shell, au lieu d'être transmis comme instruction à l'agent — l'agent n'interprète ni ne planifie rien ici, la commande est directement transmise.\n\nCe préfixe est ainsi comparable à d'autres formes courtes dans la zone de prompt, comme `@` pour l'autocomplétion de chemins de fichiers. Il existe par ailleurs, séparément, un raccourci clavier (`e`) qui te permet de modifier avant exécution des commandes de terminal proposées par l'agent lui-même — mais cela concerne des commandes que l'agent propose pour validation, pas le préfixe ! tapé manuellement, qui s'exécute immédiatement sans confirmation.",
       "whenGood": [
         {
-          "title": "Exécuter rapidement une commande de terminal sans quitter la TUI",
-          "example": "!git status"
+          "title": "Exécuter rapidement une commande de terminal connue sans quitter la TUI",
+          "example": "!git status ou !ls, pour vérifier brièvement sans impliquer l'agent"
+        },
+        {
+          "title": "Tester une commande dont tu veux lire toi-même la sortie brute",
+          "example": "!npm run build, pour voir le résultat non filtré du terminal"
         }
       ],
       "whenBad": [
         {
-          "title": "L'agent doit choisir lui-même la commande ou interpréter le résultat",
-          "why": "! exécute la commande directement et sans modification, sans intervention de l'agent.",
-          "alternative": "Formuler le souhait normalement comme un prompt, pour que l'agent propose lui-même la commande adaptée"
+          "title": "L'agent doit choisir lui-même la commande adaptée ou interpréter le résultat",
+          "why": "! exécute la commande directement et sans modification, sans que l'agent la choisisse, l'adapte ou évalue le résultat.",
+          "alternative": "Formuler la demande normalement comme un prompt, pour que l'agent propose lui-même la commande adaptée et interprète le résultat"
         }
       ],
       "sources": [
@@ -8393,18 +8455,22 @@
       "slug": "config",
       "name": "/config",
       "summary": "Ouvre l'éditeur de réglages interactif. Alias : /settings.",
-      "what": "/config appartient à la catégorie Configurations, alias /settings. La commande ouvre un éditeur interactif pour la configuration settings.json de la CLI, notamment le mode de rendu et le comportement du terminal.",
+      "what": "`/config` (alias `/settings`) appartient, selon le tableau de référence officiel, à la catégorie « Configurations » et ouvre l'overlay interactif de l'éditeur de paramètres directement dans la zone de prompt. Avec les touches fléchées, tu navigues entre les options, Entrée change les valeurs ou ouvre un champ de saisie, Échap enregistre et ferme l'overlay.\n\nCela permet de contrôler les options d'affichage et de rendu (mode plein écran alternatif, thème de couleurs, vitesse d'animation, verbosité), les paramètres de sécurité et de permissions (niveaux d'autorisation pour les commandes de terminal, validation obligatoire pour les fichiers écrits, restrictions de sandbox) ainsi que les options d'éditeur et système comme l'éditeur de texte par défaut, les notifications de bureau et la télémétrie. Les valeurs sont enregistrées dans le même fichier settings.json qu'en cas de modification manuelle — la CLI n'écrit selon la documentation que les valeurs qui diffèrent de la valeur par défaut du système (persistance clairsemée). Certains flags de démarrage peuvent temporairement remplacer des paramètres ; l'overlay signale les valeurs ainsi remplacées par un avertissement.",
       "whenGood": [
         {
-          "title": "Modifier les réglages de la CLI sans éditer manuellement settings.json",
-          "example": "Ouvre /config et ajuste directement une valeur de réglage dans le panneau"
+          "title": "Modifier les paramètres de la CLI sans éditer manuellement settings.json",
+          "example": "Ouvrir /config et ajuster par exemple le thème de couleurs ou le niveau d'autorisation pour les commandes de terminal directement dans le panneau"
+        },
+        {
+          "title": "Vérifier si un flag de démarrage remplace temporairement un paramètre",
+          "example": "Ouvrir /config — les valeurs remplacées par un flag sont signalées dans l'overlay par un avertissement"
         }
       ],
       "whenBad": [
         {
-          "title": "Changer uniquement le modèle de raisonnement",
-          "why": "/config couvre la configuration générale ; il existe une commande dédiée, plus ciblée, pour le choix du modèle.",
-          "alternative": "/model"
+          "title": "Changer seulement le modèle de raisonnement",
+          "why": "/config couvre l'ensemble de la configuration ; pour le seul choix du modèle, il existe une commande dédiée plus directe.",
+          "alternative": "Utiliser /model pour choisir le modèle de raisonnement préféré"
         }
       ],
       "sources": [
@@ -8483,18 +8549,22 @@
       "slug": "credits",
       "name": "/credits",
       "summary": "Affiche les crédits G1 restants et les liens d'achat.",
-      "what": "/credits appartient à la catégorie Account et affiche le solde actuel de crédits G1 pour l'utilisation de la CLI, ainsi que des liens pour en racheter. Combiné au réglage useG1Credits, cela contrôle la facturation des requêtes au-delà du quota inclus dans le plan.",
+      "what": "`/credits` appartient à la catégorie « Account » et ouvre, selon la référence officielle, le panneau dédié aux crédits : il affiche les crédits G1 restants et des liens d'achat, ainsi que des statistiques d'utilisation détaillées. Les crédits G1 sont des crédits IA premium personnels qui servent de facturation de secours lorsque le quota du plan est épuisé. Le paramètre `useG1Credits` dans settings.json (modifiable via /config) détermine si la CLI puise automatiquement dans ton solde de crédits personnel une fois le quota épuisé, ou si elle bloque cette facturation de secours.\n\nLe panneau propose en même temps des liens directs pour racheter des crédits ou passer à un abonnement supérieur. /credits est ainsi clairement à distinguer de `/usage` (alias `/quota`) : /usage affiche le quota API spécifique au modèle de ton plan, /credits en revanche le solde G1 séparé, rachetable en argent — deux systèmes de facturation distincts au sein de la même CLI.",
       "whenGood": [
         {
-          "title": "Vérifier le solde restant avant une tâche plus importante",
-          "example": "Appelle /credits avant de démarrer une session gourmande en calcul"
+          "title": "Vérifier le solde restant avant une tâche importante",
+          "example": "Appeler /credits avant le démarrage d'une session gourmande en calcul, pour voir si un recours au fallback G1 sera nécessaire"
+        },
+        {
+          "title": "Déclencher un rachat ou une mise à niveau d'abonnement directement depuis la CLI",
+          "example": "Ouvrir /credits et utiliser le lien d'achat dans le panneau, plutôt que de chercher manuellement la page de facturation dans le navigateur"
         }
       ],
       "whenBad": [
         {
-          "title": "Vérifier le quota d'utilisation du modèle plutôt que le solde de crédits",
-          "why": "/credits affiche le solde de crédits G1, /usage le quota de modèle général du plan.",
-          "alternative": "/usage"
+          "title": "Vérifier le quota du plan spécifique au modèle plutôt que le solde de crédits",
+          "why": "/credits n'affiche que le solde de crédits G1, pas la consommation du quota de modèle inclus dans le plan.",
+          "alternative": "Utiliser /usage (alias /quota)"
         }
       ],
       "sources": [
@@ -8603,17 +8673,21 @@
       "slug": "feedback",
       "name": "/feedback",
       "summary": "Ouvre le panneau de feedback.",
-      "what": "/feedback appartient à la catégorie Utilities et ouvre un panneau permettant d'envoyer directement des retours sur la CLI à l'équipe d'Antigravity.",
+      "what": "`/feedback` appartient à la catégorie « Utilities » et ouvre, selon la référence officielle, le panneau de soumission de feedback — un formulaire directement dans la CLI, via lequel tu envoies des retours sur l'utilisation de l'Antigravity CLI à l'équipe Google. La commande est à distinguer du paramètre séparé `showFeedbackSurvey` dans settings.json : celui-ci contrôle si un court sondage qualité s'affiche automatiquement après les tâches terminées (valeur par défaut : activé). /feedback est en revanche le moyen actif, déclenchable à tout moment par toi-même, de signaler une remarque, indépendamment de ce sondage automatique — tu n'as donc pas besoin d'attendre la pop-up du sondage pour transmettre un feedback.\n\nLa commande sert uniquement à l'envoi de feedback, pas à la résolution de problèmes dans la session en cours : il n'y a ni retour ni solution au sein de la CLI, la remarque part comme message à l'équipe.",
       "whenGood": [
         {
-          "title": "Signaler un bug ou une suggestion directement depuis la CLI",
-          "example": "Ouvre /feedback et décris ce que tu as constaté"
+          "title": "Signaler un bug ou une suggestion d'amélioration directement depuis la CLI",
+          "example": "Ouvrir /feedback et noter l'observation tant que le contexte est encore frais"
+        },
+        {
+          "title": "Donner un feedback spontané, sans attendre le sondage automatique",
+          "example": "Appeler /feedback soi-même, plutôt que d'attendre la pop-up showFeedbackSurvey après la fin d'une tâche"
         }
       ],
       "whenBad": [
         {
           "title": "Un problème technique qui doit être résolu immédiatement",
-          "why": "/feedback envoie un message à l'équipe, mais ne résout pas un problème aigu dans la session en cours.",
+          "why": "/feedback envoie un message à l'équipe, mais ne fournit ni solution ni réponse dans la session en cours.",
           "alternative": "Consulter /help ou la documentation de dépannage"
         }
       ],
@@ -8997,18 +9071,22 @@
       "slug": "rewind",
       "name": "/rewind",
       "summary": "Ramène l'historique de conversation à un checkpoint antérieur. Alias : /undo.",
-      "what": "/rewind appartient à la catégorie Conversations, alias /undo. La commande ramène l'historique de conversation à un état antérieur au sein du même fil, au lieu de créer un nouveau fil.",
+      "what": "`/rewind` (alias `/undo`) appartient à la catégorie « Conversations » et ramène ton fil de conversation actuel à un état antérieur stable. Selon la documentation des bonnes pratiques, le cas d'usage typique est le suivant : lorsqu'un agent a effectué plusieurs modifications successives qui provoquent des erreurs de build, tu n'as pas besoin d'abandonner la session, il te suffit de taper /rewind (ou /undo) pour revenir au dernier point de contrôle fonctionnel. L'historique qui suit est alors écrasé, pas conservé en parallèle.\n\nCela distingue clairement la commande de `/fork` (alias `/branch`) : fork clone la session actuelle à un point stable dans une session parallèle, pour y tester des modifications risquées sans perdre le fil principal — si la tentative échoue, `/resume` permet de revenir au fil principal. /rewind est un véritable retour en arrière dans le même fil, pas une bifurcation.",
       "whenGood": [
         {
-          "title": "Annuler une étape intermédiaire ayant échoué",
-          "example": "/rewind pour revenir à l'état d'avant un changement erroné"
+          "title": "Annuler plusieurs modifications erronées successives de l'agent",
+          "example": "/rewind, après que l'agent a effectué trois modifications qui cassent le build — retour au dernier état stable"
+        },
+        {
+          "title": "Sauver la session au lieu de tout recommencer",
+          "example": "/undo directement après une modification ratée, plutôt que d'abandonner la conversation et de recommencer"
         }
       ],
       "whenBad": [
         {
-          "title": "Essayer une approche alternative en parallèle de l'historique actuel",
-          "why": "/rewind écrase l'historique existant à partir du point choisi, au lieu de le conserver en parallèle.",
-          "alternative": "/fork"
+          "title": "Essayer une approche alternative en parallèle de l'historique existant",
+          "why": "/rewind écrase l'historique à partir du point choisi, au lieu de le conserver comme bifurcation.",
+          "alternative": "Utiliser /fork (alias /branch) pour démarrer une session parallèle à partir de l'état stable, et revenir avec /resume en cas d'échec"
         }
       ],
       "sources": [
@@ -10096,18 +10174,27 @@
       "slug": "composer",
       "name": "/composer",
       "summary": "Passe directement à la famille de modèles Composer sans ouvrir le sélecteur.",
-      "what": "Passe directement à la famille de modèles Composer sans ouvrir le sélecteur de modèle. Le raccourci se souvient de votre dernier choix ; Composer 2.5 est le modèle par défaut pour les nouvelles sessions CLI. Désactivable sous « Model slash commands » dans /config.",
+      "what": "`/composer` est un raccourci de modèle : la commande saute directement à la famille de modèles Composer de Cursor, sans que le sélecteur de modèle habituel ne s'ouvre. Tu t'épargnes ainsi l'étape intermédiaire par `/model` et la navigation dans la liste de tous les modèles disponibles.\n\nSelon le changelog de Cursor, le raccourci mémorise la dernière variante choisie au sein de la famille Composer — si tu appelles `/composer` à nouveau, tu retombes sur cette variante plutôt que sur une valeur par défaut. Les nouvelles sessions CLI démarrent de toute façon avec Composer 2.5 comme modèle par défaut.\n\nDe tels raccourcis de modèle (par exemple aussi `/opus`) peuvent être désactivés au besoin : sous « Model slash commands » dans `/config`, tu peux les masquer s'ils te gênent en tapant des prompts ou si tu n'en as tout simplement pas besoin.\n\n`/composer` ne figure jusqu'à présent que dans le changelog officiel, pas dans le tableau de référence principal des commandes slash.",
       "whenGood": [
         {
-          "title": "Passer rapidement à un modèle Composer",
-          "example": "/composer"
+          "title": "Passer rapidement à un modèle Composer sans parcourir le sélecteur",
+          "example": "/composer — directement avant un nouveau prompt, quand tu sais que tu veux travailler avec Composer"
+        },
+        {
+          "title": "Revenir à la variante Composer utilisée en dernier",
+          "example": "Appeler à nouveau /composer, après être passé entre-temps à un autre modèle comme /opus"
         }
       ],
       "whenBad": [
         {
           "title": "Choisir un modèle d'une autre famille",
-          "why": "/composer ne bascule que vers la famille Composer.",
-          "alternative": "/model pour la liste complète"
+          "why": "/composer ne saute qu'au sein de la famille Composer, pas vers des modèles d'autres fournisseurs.",
+          "alternative": "Utiliser /model pour la liste complète des modèles"
+        },
+        {
+          "title": "Les raccourcis gênent la saisie de prompts qui commencent par hasard par une barre oblique",
+          "why": "Les raccourcis de modèle comme /composer sont actifs par défaut et réagissent immédiatement à la saisie.",
+          "alternative": "Désactiver les raccourcis sous « Model slash commands » dans /config"
         }
       ],
       "sources": [

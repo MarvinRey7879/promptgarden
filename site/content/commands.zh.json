@@ -3854,18 +3854,22 @@
       "slug": "show-thinking",
       "name": "/show-thinking",
       "summary": "切换是否显示模型的思考(Thinking)内容。",
-      "what": "/show-thinking 用于切换是否在会话中可见地展示模型内部的思考(Thinking)内容。",
+      "what": "`/show-thinking` 是一个简单的开关（Toggle）：该命令会在当前 CLI 会话中开启或关闭模型内部 thinking 块的显示。根据官方参考表，其简短说明就是“Toggle thinking block display”——该命令不接受其他参数。\n\nthinking 块显示的是部分模型在给出正式回答之前生成的内部中间步骤文本。文档中没有说明该显示默认是开启还是关闭；该命令只是在当前会话状态的基础上，在两种状态之间切换。\n\n`/show-thinking` 与 `/vim`、`/line-numbers` 和 `/status-indicators` 一起，同属该 CLI 中纯粹的显示开关一类——它们只改变终端中的呈现方式，不会改变模型本身的行为。",
       "whenGood": [
         {
-          "title": "想了解 Agent 为什么做出某个决定",
-          "example": "/show-thinking — 在面临复杂的架构决策之前打开"
+          "title": "理解智能体做出某个决策的原因",
+          "example": "在面临一次复杂的架构决策之前打开 /show-thinking"
+        },
+        {
+          "title": "在调试意外的智能体行为时，一并查看中间步骤文本",
+          "example": "当某个回答显得难以理解时打开 /show-thinking，之后再关闭它"
         }
       ],
       "whenBad": [
         {
-          "title": "只关心最终结果,不关心推理过程",
-          "why": "当只在意结果时,思考内容会不必要地拉长可见输出。",
-          "alternative": "关闭 /show-thinking,让会话更紧凑"
+          "title": "只关心最终结果，不关心思考过程",
+          "why": "如果只在意结果，thinking 块会不必要地拉长终端中可见的输出。",
+          "alternative": "让 /show-thinking 保持关闭，以获得更紧凑的会话"
         }
       ],
       "sources": [
@@ -4170,18 +4174,22 @@
       "slug": "logout",
       "name": "/logout",
       "summary": "退出当前 Cursor 账户的登录。",
-      "what": "/logout 会让 CLI 退出当前登录的 Cursor 账户。",
+      "what": "`/logout` 会在 Cursor CLI 中将你从当前登录的账户中登出。根据参考表，其简短说明是“Sign out from Cursor”；而对应 CLI 子命令（`agent logout`，可以在交互式会话之外调用）的单独参数文档则更精确地描述为“Sign out and clear stored authentication”——也就是说，该命令还会清除本地保存的登录凭证，而不仅仅是结束当前活动会话。\n\n执行 `/logout` 之后，你就不再处于登录状态；下次使用该 CLI 之前，需要重新完成一次登录流程，才能再次向模型发起请求。\n\n这使得 `/logout` 在你想切换账户，或想在共用电脑上干净地退出时非常实用——之后不会残留任何已保存的登录信息。",
       "whenGood": [
         {
-          "title": "在共用电脑上移除账户",
-          "example": "/logout — 在切换到另一个 Cursor 账户之前"
+          "title": "在共用电脑上清除账户信息",
+          "example": "/logout —— 在切换到另一个 Cursor 账户之前执行，确保不会残留已保存的登录信息"
+        },
+        {
+          "title": "在用另一个账户或 API Key 重新配置之前干净地登出",
+          "example": "在用另一个账户重新配置 CLI 之前执行 /logout"
         }
       ],
       "whenBad": [
         {
-          "title": "只想暂时结束会话,而不想退出账户登录",
-          "why": "/logout 会清除登录状态,之后需要重新走一遍登录流程。",
-          "alternative": "使用 /quit 或 /exit 只结束会话"
+          "title": "只是想短暂结束会话，而不是登出账户",
+          "why": "/logout 会删除已保存的登录信息；之后需要重新完成一次登录流程。",
+          "alternative": "使用 /quit 或 /exit，只结束当前会话"
         }
       ],
       "sources": [
@@ -4422,18 +4430,27 @@
       "slug": "bedrock",
       "name": "/bedrock",
       "summary": "在 Bedrock 功能已启用的前提下,配置 AWS Bedrock 作为模型后端。",
-      "what": "/bedrock 用于配置 AWS Bedrock 作为模型后端,可以使用自己的 AWS 凭证,也可以使用团队 IAM 角色。只有当账户开通了 Bedrock 功能时才生效。",
+      "what": "`/bedrock [subcommand]` 用于将 AWS Bedrock 配置为 Cursor CLI 的模型后端。根据参考表，该命令只有在你的账户已启用 Bedrock 功能时才会生效——如果未启用，该命令不会产生任何效果。\n\n根据 Cursor 更新日志，你可以借此“使用自己的凭证”配置 Bedrock：既可以使用传统的 AWS Access Key，也可以使用团队 IAM 角色。根据更新日志，这项配置是全局生效的——无论是在交互式会话中，还是在无头（headless）模式或编辑器集成中都会生效，因此你不需要针对每种模式分别配置 Bedrock。\n\n`/bedrock` 适用于希望模型请求通过自有 AWS 基础设施、而不是 Cursor 默认后端处理的场景，例如企业环境中出于合规或成本考虑的情况。",
       "whenGood": [
         {
-          "title": "用自己的 AWS Key 把 Bedrock 配置为后端",
-          "example": "/bedrock — 填入自己的凭证"
+          "title": "使用自己的 AWS 凭证配置 Bedrock",
+          "example": "/bedrock —— 填入自己的 Access Key，让模型请求通过自有 AWS 基础设施处理"
+        },
+        {
+          "title": "团队级的 Bedrock 接入，通过 IAM 角色而非单个 Key",
+          "example": "在企业场景中使用 /bedrock，改为配置一个团队 IAM 角色"
         }
       ],
       "whenBad": [
         {
-          "title": "该账户根本不使用 AWS Bedrock",
-          "why": "没有启用 Bedrock 功能时,该命令不会有任何效果。",
-          "alternative": "通过 /model 正常选择模型"
+          "title": "账户尚未启用 Bedrock 功能",
+          "why": "根据文档，/bedrock 只有在 Bedrock 功能被启用时才起作用。",
+          "alternative": "照常通过 /model 选择模型，或向 Cursor 团队申请 Bedrock 访问权限"
+        },
+        {
+          "title": "只是想临时测试一下另一个默认模型",
+          "why": "/bedrock 是为长期的后端配置设计的，而不是用于快速切换模型。",
+          "alternative": "使用 /model 或 /composer 这类模型快捷方式"
         }
       ],
       "sources": [
@@ -4487,18 +4504,27 @@
       "slug": "save-workspace",
       "name": "/save-workspace",
       "summary": "把当前激活的多根目录保存为一个具名的工作区(Workspace)集合。",
-      "what": "/save-workspace 会把当前用 /add-dir 添加的一组目录保存为一个名称,便于之后重新加载。记录于官方 Changelog,(暂)未列入命令参考表。",
+      "what": "`/save-workspace` 会把当前通过 `/add-dir` 添加的一组目录保存为一个命名的 workspace 集合。根据 Cursor 更新日志，该命令属于“Named multi-directory workspaces”功能：借此可以让智能体同时跨多个仓库工作，而不局限于当前目录。\n\n这样保存下来的目录集合，之后可以通过 `/load-workspace` 重新加载——根据更新日志，此外还提供了一个全局的 `--workspace` 参数，可以在启动 CLI 会话时就直接指定目标目录，而不必先通过 `/add-dir` 事后拼凑目录集合。\n\n`/save-workspace` 目前只在 2026 年 6 月 22 日的更新日志条目中有记录，尚未出现在斜杠命令的主参考表中——这与题目中提到的 `/load-workspace` 此前存在的情况是同一个缺口。",
       "whenGood": [
         {
-          "title": "给一个经常用到的仓库组合起个名字",
-          "example": "/save-workspace backend-plus-shared-lib"
+          "title": "为一个反复用到的仓库组合命名",
+          "example": "在通过 /add-dir 添加了两个目录之后，执行 /save-workspace backend-plus-shared-lib"
+        },
+        {
+          "title": "为跨仓库任务把多个仓库长期打包在一起",
+          "example": "先用 /add-dir 收集好目录，再用 /save-workspace 保存下来，以便之后通过 /load-workspace 重新加载"
         }
       ],
       "whenBad": [
         {
-          "title": "这个目录组合只会用一次",
-          "why": "对于一次性的会话,保存成具名集合不划算。",
-          "alternative": "直接使用 /add-dir,不必配合 /save-workspace"
+          "title": "这个目录组合只会用到一次",
+          "why": "对于只使用一次的会话，把它保存为命名集合并不划算。",
+          "alternative": "直接使用 /add-dir，不必配合 /save-workspace"
+        },
+        {
+          "title": "希望会话从一开始就以固定的目录选择启动",
+          "why": "/save-workspace 只是事后保存一个已经在聊天中组好的目录集合。",
+          "alternative": "直接用 --workspace 参数启动会话"
         }
       ],
       "sources": [
@@ -4735,17 +4761,21 @@
       "slug": "commands",
       "name": "/commands",
       "summary": "交互式浏览器,用于查看和编辑自己定义的自定义命令(Custom Commands)。",
-      "what": "/commands 打开一个交互式浏览器,用于查看自己定义的自定义命令,支持内联编辑。记录于官方 Changelog,(暂)未列入命令参考表。",
+      "what": "`/commands` 会在 Cursor CLI 中打开一个交互式浏览器，用于查看你自定义的 Custom Commands，并支持直接在终端中内联编辑。你不需要为了查阅或修改某个命令而切换到底层文件中去。\n\n根据 Cursor 更新日志，`/commands` 与 `/rules` 同属一组独立的交互式浏览器，与用于（包括内置）Skills 浏览功能的 `/skills` 是分开的。因此 Commands 是一套独立的、项目特定的命令层，而 Skills 则更偏向于打包好的预制能力。\n\n需要注意：`/commands` 目前尚未出现在官方的斜杠命令主参考表中（那里列出了 34 条条目），到目前为止只在 2026 年 1 月的更新日志条目中有记录——与例如 `/save-workspace` 的情况类似。",
       "whenGood": [
         {
-          "title": "在使用前查一下已有的自定义命令",
-          "example": "/commands — 浏览项目中定义了哪些自定义命令"
+          "title": "在使用前查阅已有的 Custom Command",
+          "example": "打开 /commands 并浏览，看看项目中定义了哪些自定义命令"
+        },
+        {
+          "title": "直接在终端中调整某个 Custom Command",
+          "example": "打开 /commands，选中想要的命令，并通过内联编辑修改其内容"
         }
       ],
       "whenBad": [
         {
-          "title": "涉及的是内置 Skill,而不是自定义命令",
-          "why": "/commands 只显示自己定义的自定义命令。",
+          "title": "涉及的是内置或随附的 Skills，而不是自定义 Commands",
+          "why": "根据更新日志，/commands 只显示自有的 Commands 浏览器，与 Skills 功能是分开的。",
           "alternative": "使用 /skills"
         }
       ],
@@ -5922,18 +5952,22 @@
       "slug": "chat-mode",
       "name": "/chat-mode",
       "summary": "以模式名称作为参数,持久(sticky)切换到任意聊天模式。",
-      "what": "/chat-mode <mode> 会为之后的所有消息切换活动模式,例如 /chat-mode code 或 /chat-mode architect。/code、/ask 和 /architect 在不带提示词调用时效果相同;而 /help 不带提示词时只显示基础帮助,不会切换模式。",
+      "what": "`/chat-mode <modus>` 会为之后的所有消息永久（“sticky”）切换当前激活的聊天模式，例如 `/chat-mode ask` 或 `/chat-mode architect`。Aider 支持四种模式：`code` 用于修改代码，`ask` 用于提问而不做修改，`architect` 采用两阶段方式，由建议模型和编辑模型协作完成，`help` 用于关于 Aider 本身使用方法的问题。\n\n同样的永久切换也可以通过更简短的方式实现：不带提示词直接输入 `/code`、`/ask` 或 `/architect`——根据 Aider 关于聊天模式的文档，这三个命令在不带参数调用时同样会切换当前激活模式。`/help` 是其中的例外：根据官方命令表，不带提示词调用时，它只会显示通用帮助信息，并不会切换模式——只有 `/code`、`/ask` 和 `/architect` 的说明中才提到“不带提示词时切换模式”这一点。因此要长期停留在 help 模式，只能通过 `/chat-mode help` 实现。",
       "whenGood": [
         {
-          "title": "通过加载的命令文件设置模式",
-          "example": "在一个用 /load 读入的文件里写上 /chat-mode ask,在执行后续命令之前统一设定模式"
+          "title": "通过脚本文件设置模式",
+          "example": "在通过 `/load` 加载的命令文件中写入 `/chat-mode ask`，以便在后续命令之前一致地设定好模式。"
+        },
+        {
+          "title": "永久启用 help 模式",
+          "example": "调用 `/chat-mode help` 以长期停留在 help 模式——与 code/ask/architect 不同，不带提示词的 `/help` 并不会切换当前激活模式。"
         }
       ],
       "whenBad": [
         {
-          "title": "直接切换到某个常用模式",
-          "why": "code/ask/architect 都有各自更短的命令,不带提示词调用时效果完全相同。",
-          "alternative": "直接用 /code、/ask 或 /architect"
+          "title": "直接使用三个简写命令中的某一个模式",
+          "why": "对于 code、ask 和 architect，各自的简写命令在不带提示词时同样会永久切换模式——这种情况下不需要用到 `/chat-mode`。",
+          "alternative": "直接调用不带提示词的 `/code`、`/ask` 或 `/architect`。"
         }
       ],
       "sources": [
@@ -6104,18 +6138,22 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "把 Aider 的最后一条回复复制到剪贴板。",
-      "what": "/copy 会把助手最近发送的一条消息复制到系统剪贴板。",
+      "what": "`/copy` 会将助手的最后一条回复——也就是 Aider 最近发送的那条聊天消息——原封不动地复制到你系统的剪贴板中。该命令是在 Aider 0.58.0 版本中引入的，使用时不需要任何参数：你只需输入 `/copy`，之后完整的消息内容就已经准备好，可以粘贴使用，比如通过 `Strg+V`。\n\n需要注意它与 `/copy-context` 的区别：`/copy` 只传输纯回复文本，而 `/copy-context` 会将整个当前聊天上下文以 Markdown 格式复制出来——包括聊天中添加的文件以及代码仓库地图（repo map）——其格式可以直接粘贴到 ChatGPT 或 Claude 这类网页聊天中使用。如果你只是想复用最后一条回复中的某段解释、代码片段或总结，`/copy` 就完全够用。",
       "whenGood": [
         {
-          "title": "复用最后一条回复中的解释或代码片段",
-          "example": "/copy — 然后粘贴到文档、issue 或其他应用中"
+          "title": "复用回复内容用于文档",
+          "example": "在得到一段解释后调用 `/copy`，将文本直接粘贴进工单或文档中。"
+        },
+        {
+          "title": "快速分享代码片段",
+          "example": "使用 `/copy` 将 Aider 建议的代码片段通过 `Strg+V` 粘贴到 Slack 消息或 GitHub Issue 中。"
         }
       ],
       "whenBad": [
         {
-          "title": "想为网页聊天 LLM 复制整个代码上下文",
-          "why": "/copy 只复制 Aider 的最后一条回复,不包括加入聊天的文件和仓库映射。",
-          "alternative": "用 /copy-context 复制完整的代码上下文"
+          "title": "复制整个代码上下文给网页版 LLM",
+          "why": "`/copy` 只传输最后一条回复，不包含聊天中添加的文件或代码仓库地图。",
+          "alternative": "使用 `/copy-context`，它会把完整的聊天上下文以 Markdown 格式复制出来。"
         }
       ],
       "sources": [
@@ -6277,18 +6315,22 @@
       "slug": "editor",
       "name": "/editor",
       "summary": "打开外部文本编辑器,在其中撰写下一条聊天消息。",
-      "what": "/editor 会打开一个外部编辑器来撰写提示词。文档提到,在终端里也可以通过快捷键 Ctrl-X Ctrl-E 直接触发。打开哪个编辑器可以通过编辑器配置来设定。",
+      "what": "`/editor` 会打开一个外部文本编辑器，让你从容地撰写下一条聊天消息，而不必直接在终端输入行里打字。一旦你关闭编辑器，写好的文本就会作为提示词发送给 Aider。自 0.79.0 版本起，`/edit` 是一个功能完全相同的简短别名；自 0.80.0 版本起，你也可以直接在终端中通过快捷键 `Ctrl-X Ctrl-E` 达到同样效果，无需输入命令名。\n\n至于会打开哪个编辑器，Aider 按照固定顺序决定：首先是命令行选项 `--editor`，或 YAML 配置中的 `editor:` 条目；其次是环境变量 `AIDER_EDITOR`、`VISUAL` 和 `EDITOR`；如果都没有设置，则使用平台默认编辑器，例如 Windows 下的 Notepad。该编辑器必须以“阻塞（blocking）”模式运行，也就是要等到你关闭它为止。",
       "whenGood": [
         {
-          "title": "撰写需要精确格式的多行提示词",
-          "example": "/editor — 例如在发送前,把包含代码块或列表的提示词排版整齐"
+          "title": "整洁地编写多行提示词",
+          "example": "在把包含列表和代码块的提示词发送给 Aider 之前，调用 `/editor` 从容地写好它。"
+        },
+        {
+          "title": "用快捷键继续编辑输入内容",
+          "example": "在终端中直接按下 `Ctrl-X Ctrl-E`，在配置好的编辑器中继续编辑已经输入的内容。"
         }
       ],
       "whenBad": [
         {
-          "title": "发送一条简短、随手的消息",
-          "why": "为一条短消息切换到外部编辑器不划算。",
-          "alternative": "直接在聊天提示符里输入消息,或者当文本已在剪贴板中时用 /paste"
+          "title": "发送简短、临时的消息",
+          "why": "对于一条简短消息，切换到外部编辑器并不划算。",
+          "alternative": "直接在聊天提示行中输入消息；如果文本已经在剪贴板中，也可以使用 `/paste`。"
         }
       ],
       "sources": [
@@ -6515,18 +6557,22 @@
       "slug": "ls",
       "name": "/ls",
       "summary": "列出所有已知文件,并标记哪些当前在聊天中。",
-      "what": "/ls 会显示所有已知文件的列表,并标记其中哪些当前已加入聊天会话。",
+      "what": "`/ls` 会显示 Aider 在当前项目中已知的全部文件列表，并标注其中哪些文件目前已被实际添加到聊天会话中。这在较大的代码仓库里特别有用，否则你很容易搞不清楚哪些文件当前允许 Aider 编辑，哪些只是作为仓库上下文在后台存在。\n\n该命令本身不会打开或修改任何内容——它纯粹是一个查看功能。要真正把某个文件加入编辑，你仍然需要 `/add <datei>`，如果只是作为不可写的纯参考文件，则需要 `/read-only <datei>`。因此 `/ls` 很适合在执行这些命令之前作为一个简短的中间检查步骤，比如确认某个文件是否被意外重复添加，或者是否已经通过 `/drop` 被重新移除。",
       "whenGood": [
         {
-          "title": "了解当前哪些文件在聊天里",
-          "example": "/ls — 在下一次 /drop 或 /add 之前,快速确认当前哪些文件是活动的"
+          "title": "在 /add 之前先了解现状",
+          "example": "在再次用 `/add` 添加某个文件之前，先调用 `/ls` 看看它是否已经在聊天中。"
+        },
+        {
+          "title": "长会话后检查聊天中的文件",
+          "example": "在多次执行 `/add` 和 `/drop` 命令之后，使用 `/ls` 弄清楚当前上下文中实际还有哪些文件。"
         }
       ],
       "whenBad": [
         {
           "title": "想查看文件内容",
-          "why": "/ls 只列出文件名和它们的聊天状态,不显示内容。",
-          "alternative": "用 /add 或 /read-only 把文件内容真正带入聊天"
+          "why": "`/ls` 只列出文件名和聊天状态，不显示文件内容。",
+          "alternative": "用 `/add` 或 `/read-only` 把文件真正加入聊天，或者直接在编辑器中打开它。"
         }
       ],
       "sources": [
@@ -6750,18 +6796,22 @@
       "slug": "paste",
       "name": "/paste",
       "summary": "把剪贴板中的图片或文本粘贴到聊天中。",
-      "what": "/paste 会读取剪贴板的当前内容(图片或文本),并把它作为消息加入聊天。对于图片,可以选择性地为图片指定一个名称。",
+      "what": "`/paste` 会读取你系统剪贴板中的当前内容，并将其作为一条新消息插入聊天——既支持纯文本，也支持图片。如果是图片，你可以选择指定一个名称，比如 `/paste screenshot.png`，让它在聊天中有一个有意义的名字。\n\n这对截图特别实用：根据 Aider 关于图片与 URL 的文档，`/paste` 适合把剪贴板中的图片直接传给支持视觉能力的模型，例如 GPT-4o 或 Claude 3.7 Sonnet，比如用来展示界面中的某个错误状态。如果图片已经以文件形式存在，而不只是保存在剪贴板中，也可以改用 `/add <bilddatei>` 添加，或者在启动 Aider 时作为命令行参数传入。",
       "whenGood": [
         {
-          "title": "插入 bug 或界面状态的截图",
-          "example": "复制截图,然后 /paste bug.png — Aider 会把图片作为上下文接收"
+          "title": "把截图作为上下文插入",
+          "example": "先把错误提示截图复制下来，然后调用 `/paste error.png`，让 GPT-4o 这类支持视觉能力的模型看到这张图片。"
+        },
+        {
+          "title": "快速采用已复制的文本",
+          "example": "从另一个窗口复制一段较长的错误文本，然后用 `/paste` 直接把它作为聊天消息插入。"
         }
       ],
       "whenBad": [
         {
-          "title": "剪贴板内容只是普通文本,直接输入或粘贴即可",
-          "why": "/paste 主要面向图片,或直接往终端输入框粘贴不起作用的情况。",
-          "alternative": "用普通的复制粘贴把文本直接贴进聊天输入行"
+          "title": "一小段文字直接打字就能输入",
+          "why": "`/paste` 主要是为图片设计的；对于纯粹的短文本，直接粘贴到输入行通常同样快。",
+          "alternative": "直接用普通的复制粘贴把文本放进聊天输入行。"
         }
       ],
       "sources": [
@@ -6876,18 +6926,22 @@
       "slug": "report",
       "name": "/report",
       "summary": "通过自动在 Aider 仓库中准备一个 GitHub Issue 来报告问题。",
-      "what": "/report 会在浏览器里打开一个预填好的 GitHub Issue 草稿(仓库 Aider-AI/aider),包含所遇问题的相关上下文信息,让报告 bug 更容易。",
+      "what": "`/report` 可以帮助你反馈 Aider 本身的问题。该命令会打开你的默认浏览器，并在官方仓库 `Aider-AI/aider` 中打开一个预先填好内容的 GitHub Issue 表单——根据 Aider 更新日志（0.56.0 版本），其中会包含与当前会话相关的上下文信息，例如 Aider 的版本号和所使用的模型。\n\n这样一来，当你遇到崩溃或异常行为时，就不必手动收集这些信息了。不过你仍然需要在浏览器中为这个 Issue 补充问题描述，然后才能提交——`/report` 只是准备好框架，并不会自动替你写内容。该命令仅用于反馈 Aider 自身的问题，而不是你自己项目代码中的 bug。",
       "whenGood": [
         {
-          "title": "Aider 自身出现可复现的 bug 或崩溃",
-          "example": "/report — 在会话中途崩溃后,把问题报告给 Aider 维护者"
+          "title": "报告 Aider 崩溃",
+          "example": "在 Aider 崩溃后立即调用 `/report`，在浏览器中补全预填好的 Issue 草稿。"
+        },
+        {
+          "title": "记录异常行为",
+          "example": "当某个命令的表现与文档描述不符时，使用 `/report` 反馈给维护者。"
         }
       ],
       "whenBad": [
         {
-          "title": "问题出在自己的项目代码里,而不是 Aider",
-          "why": "/report 是在 Aider 的仓库里建 issue,不是在你自己的项目仓库。",
-          "alternative": "自己代码的问题继续正常用 Aider 处理,或在自己的项目仓库里建 issue"
+          "title": "自己项目代码中的 bug",
+          "why": "`/report` 是在 Aider 自己的仓库 `Aider-AI/aider` 中创建 Issue，而不是在你自己的项目中。",
+          "alternative": "照常继续使用 Aider 工作，或在自己的项目仓库中创建 Issue。"
         }
       ],
       "sources": [
@@ -7932,18 +7986,22 @@
       "slug": "plugin-enable",
       "name": "agy plugin enable <name>",
       "summary": "重新启用之前停用的插件,无需重新安装。",
-      "what": "agy plugin enable <plugin_name> 会重新启用一个之前通过 agy plugin disable 暂停的插件的工具,无需重新安装。",
+      "what": "`agy plugin enable <name>` 是 `agy` 二进制程序的一个终端子命令，而不是斜杠命令：你需要在普通 shell 中输入它，而不是在交互式会话的提示框里。它属于 Antigravity CLI 的插件管理流程的一部分，该流程还包括 `agy plugin list`、`agy plugin install`、`agy plugin disable`、`agy plugin uninstall` 和 `agy plugin validate`。\n\n该命令会重新启用之前通过 `agy plugin disable <name>` 暂停的插件。根据文档，disable/enable 这一对命令的作用是暂停某个插件的工具，而不删除其文件——enable 会撤销这种暂停状态。因此该插件必须已经安装：enable 不会重新安装任何内容，也不会重新加载文件，而只是重新为智能体（agent）开放已经存在的工具和能力，不需要重新执行安装步骤。",
       "whenGood": [
         {
-          "title": "让暂停中的插件重新可用",
-          "example": "agy plugin enable my-plugin"
+          "title": "让暂停的插件重新可用",
+          "example": "agy plugin enable mein-plugin —— 在之前用 agy plugin disable 试验性地暂停过它之后"
+        },
+        {
+          "title": "在盘点之后有针对性地重新启用某个插件",
+          "example": "先用 agy plugin list 查看哪些插件被禁用，然后对其中某个执行 agy plugin enable <name>"
         }
       ],
       "whenBad": [
         {
-          "title": "该插件还没有安装",
-          "why": "enable 只能重新启用已安装但被停用的插件。",
-          "alternative": "先使用 agy plugin install <path>"
+          "title": "该插件根本还没有安装",
+          "why": "enable 只能重新开放一个已安装但被禁用的插件——对于一个全新的插件，该命令不起作用。",
+          "alternative": "先使用 agy plugin install <path>，之后该插件即为激活状态"
         }
       ],
       "sources": [
@@ -8122,18 +8180,22 @@
       "slug": "shell-bang",
       "name": "!<shell-command>",
       "summary": "直接在提示词输入框中执行一条终端命令。",
-      "what": "在输入内容开头加上 !,后面的文本会作为 shell 命令直接执行,不会经过 agent。",
+      "what": "提示框输入内容开头的 `!` 不是斜杠命令，而是一个前缀。根据官方文档，你可以在提示词开头使用 `!` 来直接执行终端命令。其后的文本会被原样当作 shell 命令执行，而不会作为指令传给智能体——此时智能体不做任何解释或规划，命令会被直接透传执行。\n\n这使得该前缀可以类比提示框中的其他简写形式，例如用于文件路径自动补全的 `@`。与此分开的是一个快捷键（`e`），你可以用它在执行前编辑智能体自己建议的终端命令——但这针对的是智能体提议、等待你授权的命令，而不是手动输入的 !前缀，后者会在不询问的情况下立即执行。",
       "whenGood": [
         {
-          "title": "无需离开 TUI,快速执行一条终端命令",
-          "example": "!git status"
+          "title": "快速执行一个已知的终端命令，而不必离开 TUI",
+          "example": "!git status 或 !ls，用来简单查看一下，而不需要牵动智能体"
+        },
+        {
+          "title": "测试一个你想亲自查看原始输出的命令",
+          "example": "!npm run build，用来查看未经过滤的终端结果"
         }
       ],
       "whenBad": [
         {
-          "title": "希望由 agent 自己选择命令或解读结果",
-          "why": "! 会原样直接执行命令,agent 不参与其中。",
-          "alternative": "把需求以正常提示词的形式提出,让 agent 自己给出合适的命令"
+          "title": "希望由智能体自己选择合适的命令或解读结果",
+          "why": "! 会直接、原样执行命令，智能体既不会选择或调整它，也不会评估结果。",
+          "alternative": "以正常提示词的形式表达需求，让智能体自己建议合适的命令并对结果进行解读"
         }
       ],
       "sources": [
@@ -8393,18 +8455,22 @@
       "slug": "config",
       "name": "/config",
       "summary": "打开交互式设置编辑器。别名:/settings。",
-      "what": "/config 属于 Configurations 分类,别名 /settings。该命令会打开一个交互式编辑器,用于编辑 CLI 的 settings.json 配置,包括渲染模式和终端行为等。",
+      "what": "`/config`（别名 `/settings`）根据官方参考表属于“Configurations”类别，会直接在提示框中打开交互式设置编辑器浮层。你用方向键在选项之间导航，按 Enter 切换数值或打开输入框，按 Esc 保存并关闭浮层。\n\n通过它可以控制显示与渲染选项（备用屏幕模式、配色方案、动画速度、详细程度）、安全与权限设置（终端命令的授权级别、写入文件是否需要审核、沙箱限制），以及编辑器与系统选项，例如默认文本编辑器、桌面通知和遥测。这些数值最终会写入与手动编辑时相同的 settings.json 文件中——根据文档，CLI 只会写入偏离系统默认值的数值（sparse persistence）。个别启动参数（flag）可以临时覆盖某些设置；浮层会用警告标记出被覆盖的数值。",
       "whenGood": [
         {
-          "title": "无需手动编辑 settings.json 即可修改 CLI 设置",
-          "example": "打开 /config,直接在面板中调整某个设置值"
+          "title": "修改 CLI 设置，而不必手动编辑 settings.json",
+          "example": "打开 /config，直接在面板中调整配色方案或终端命令的授权级别等设置"
+        },
+        {
+          "title": "检查某个启动参数是否临时覆盖了某项设置",
+          "example": "打开 /config —— 被参数临时覆盖的数值会在浮层中以警告标记显示"
         }
       ],
       "whenBad": [
         {
           "title": "只是想切换推理模型",
-          "why": "/config 涵盖的是通用配置;模型选择有专门更精准的命令。",
-          "alternative": "/model"
+          "why": "/config 涵盖整个配置，而单纯选择模型有专门、更直接的命令。",
+          "alternative": "使用 /model 来选择偏好的推理模型"
         }
       ],
       "sources": [
@@ -8483,18 +8549,22 @@
       "slug": "credits",
       "name": "/credits",
       "summary": "显示剩余的 G1 credits 以及购买链接。",
-      "what": "/credits 属于 Account 分类,显示当前 CLI 使用的 G1 credits 余额以及充值链接。它与 useG1Credits 设置配合,共同控制超出套餐额度部分请求的计费方式。",
+      "what": "`/credits` 属于“Account”类别，根据官方参考文档，它会打开专门的 Credits 面板：显示剩余的 G1-Credits 及购买链接，以及详细的使用统计信息。G1-Credits 是一种个人 AI 高级额度，当套餐配额用完时会作为后备计费方式启用。你可以通过 settings.json 中的 `useG1Credits` 设置（可在 /config 中切换）来决定：当配额耗尽时，CLI 是自动使用你的个人 credit 余额，还是直接阻止这种后备计费。\n\n该面板同时提供直接链接，方便你追加购买 credits 或升级订阅套餐。因此 /credits 要与 `/usage`（别名 `/quota`）明确区分开：/usage 显示的是你所在套餐中按模型划分的 API 配额，/credits 显示的是可以另外用金钱购买的独立 G1 余额——这是同一个 CLI 中两套不同的计费体系。",
       "whenGood": [
         {
-          "title": "在开始一项较大的任务前检查剩余额度",
-          "example": "在启动一个计算密集型会话之前运行 /credits"
+          "title": "在执行较大任务前检查剩余额度",
+          "example": "在启动一次计算密集型会话之前调用 /credits，查看是否需要用到 G1 后备额度"
+        },
+        {
+          "title": "直接从 CLI 发起追加购买或订阅升级",
+          "example": "打开 /credits 并使用面板中的购买链接，而不是手动在浏览器中查找账单页面"
         }
       ],
       "whenBad": [
         {
-          "title": "想查看的是模型使用配额,而不是 credits 余额",
-          "why": "/credits 显示的是 G1 credits 余额,/usage 显示的是套餐的整体模型配额。",
-          "alternative": "/usage"
+          "title": "想检查按模型划分的套餐配额，而不是 credit 余额",
+          "why": "/credits 只显示 G1-Credits 余额，不显示套餐内所含模型配额的使用情况。",
+          "alternative": "使用 /usage（别名 /quota）"
         }
       ],
       "sources": [
@@ -8603,17 +8673,21 @@
       "slug": "feedback",
       "name": "/feedback",
       "summary": "打开反馈面板。",
-      "what": "/feedback 属于 Utilities 分类,会打开一个面板,可以直接把关于 CLI 的反馈发送给 Antigravity 团队。",
+      "what": "`/feedback` 属于“Utilities”类别，根据官方参考文档，它会打开反馈提交面板——一个直接嵌在 CLI 中的表单，你可以通过它把关于 Antigravity CLI 使用体验的反馈发送给 Google 团队。该命令要与 settings.json 中单独的 `showFeedbackSurvey` 设置区分开：后者控制的是任务完成后是否会自动弹出一个简短的质量调查问卷（默认值：开启）。而 /feedback 则是一种主动的、随时可以自行触发的反馈渠道，与这个自动问卷无关——也就是说，你不需要等到问卷弹窗出现才能提交反馈。\n\n该命令仅用于发送反馈，不用于解决当前会话中的问题：CLI 内不会给出任何回复或解决方案，问题会作为一条消息发送给团队。",
       "whenGood": [
         {
-          "title": "直接在 CLI 中报告 bug 或提出改进建议",
-          "example": "打开 /feedback,填写观察到的问题"
+          "title": "直接从 CLI 报告 bug 或提出改进建议",
+          "example": "打开 /feedback，趁上下文还新鲜时把观察到的问题记录进去"
+        },
+        {
+          "title": "主动给出反馈，而不等待自动调查问卷",
+          "example": "自行调用 /feedback，而不是等待任务完成后的 showFeedbackSurvey 弹窗"
         }
       ],
       "whenBad": [
         {
-          "title": "需要立即解决的技术问题",
-          "why": "/feedback 只是把反馈发送给团队,并不能解决当前会话中的紧急问题。",
+          "title": "一个需要立即解决的技术问题",
+          "why": "/feedback 只是把消息发送给团队，并不会在当前会话中给出解决方案或回复。",
           "alternative": "查阅 /help 或故障排查文档"
         }
       ],
@@ -8997,18 +9071,22 @@
       "slug": "rewind",
       "name": "/rewind",
       "summary": "把对话历史回退到之前的某个检查点。别名:/undo。",
-      "what": "/rewind 属于 Conversations 分类,别名 /undo。该命令会把对话历史回退到同一线程内更早的一个状态,而不是新建一个线程。",
+      "what": "`/rewind`（别名 `/undo`）属于“Conversations”类别，会把当前对话线程重置到之前某个稳定状态。根据最佳实践文档，典型使用场景是：当某个智能体连续做了多处修改，导致构建报错时，你不需要放弃整个会话，只需输入 /rewind（或 /undo），即可回到最后一个可正常工作的检查点。此后的对话记录会被覆盖，而不是并行保留。\n\n这使该命令明显区别于 `/fork`（别名 `/branch`）：fork 会在一个稳定的节点上，把当前会话克隆到一个并行会话中，用于在那里测试有风险的修改，而不会丢失主线记录——如果尝试失败，可以通过 `/resume` 回到主线。/rewind 则是在同一线程内真正意义上的向后移动，而不是分支。",
       "whenGood": [
         {
-          "title": "撤销一个失败的中间步骤",
-          "example": "执行 /rewind,回到某次错误改动之前的状态"
+          "title": "撤销智能体连续做出的多处错误修改",
+          "example": "在智能体做了三处导致构建报错的编辑之后使用 /rewind —— 回到最后一个稳定状态"
+        },
+        {
+          "title": "挽救会话而不是彻底重新开始",
+          "example": "在一次失败的修改之后立即使用 /undo，而不是放弃整个对话重新开始"
         }
       ],
       "whenBad": [
         {
-          "title": "想在保留原有进展的同时并行尝试另一种方案",
-          "why": "/rewind 会从所选节点开始覆盖之前的历史,而不是并行保留它。",
-          "alternative": "/fork"
+          "title": "想在保留原有记录的同时并行尝试另一种方案",
+          "why": "/rewind 会覆盖所选节点之后的记录，而不是把它保留为一个分支。",
+          "alternative": "使用 /fork（别名 /branch）从稳定状态出发启动一个并行会话，如果失败再用 /resume 返回"
         }
       ],
       "sources": [
@@ -10096,18 +10174,27 @@
       "slug": "composer",
       "name": "/composer",
       "summary": "无需打开选择器，直接跳转到Composer模型系列。",
-      "what": "无需打开模型选择器，直接跳转到Composer模型系列。该快捷方式会记住你上次的选择；Composer 2.5是新CLI会话的默认模型。可在/config的「Model slash commands」下禁用。",
+      "what": "`/composer` 是一个模型快捷方式：该命令会直接跳转到 Cursor 的 Composer 模型家族，而不会打开常规的模型选择器（model picker）。这样你就省去了先经过 `/model`、再在完整模型列表中导航查找的中间步骤。\n\n根据 Cursor 更新日志，该快捷方式会记住你在 Composer 家族中最近一次选择的具体版本——再次调用 `/composer` 时，会回到这个版本，而不是某个默认值。新的 CLI 会话本身默认以 Composer 2.5 作为默认模型启动。\n\n这类模型快捷方式（例如还有 `/opus`）在需要时可以关闭：在 `/config` 中的“Model slash commands”下可以将它们隐藏，比如当它们在你输入提示词时造成干扰，或者你根本用不到它们。\n\n`/composer` 目前只出现在官方更新日志中，尚未列入斜杠命令的主参考表。",
       "whenGood": [
         {
-          "title": "快速切换到Composer模型",
-          "example": "/composer"
+          "title": "快速切换到某个 Composer 模型，而不用翻查选择器",
+          "example": "/composer —— 在你知道要用 Composer 工作时，直接在新提示词之前调用"
+        },
+        {
+          "title": "回到最近使用过的 Composer 版本",
+          "example": "在中途切换到 /opus 等其他模型之后，再次调用 /composer"
         }
       ],
       "whenBad": [
         {
-          "title": "想选择其他系列的模型",
-          "why": "/composer只会跳转到Composer系列。",
-          "alternative": "使用/model查看完整列表"
+          "title": "想选择另一个模型家族中的模型",
+          "why": "/composer 只在 Composer 家族内部跳转，不会切换到其他提供方的模型。",
+          "alternative": "使用 /model 获取完整模型列表"
+        },
+        {
+          "title": "快捷方式干扰了恰好以斜杠开头的提示词输入",
+          "why": "像 /composer 这样的模型快捷方式默认处于激活状态，会立即响应输入。",
+          "alternative": "在 /config 的“Model slash commands”下关闭这些快捷方式"
         }
       ],
       "sources": [

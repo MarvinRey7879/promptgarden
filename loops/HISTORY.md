@@ -2168,3 +2168,22 @@ Neuer Stolperstein: ein Übersetzer schrieb die Datei mit BOM → JSON.parse
 scheiterte. BOM entfernt; Merge-Scripts künftig BOM-tolerant lesen.
 Build 0, Deploy a512a6b8, Prod 200. Playwright über 5 Seiten in 3 Sprachen:
 kein H-Scroll auf 390px, keine sichtbaren Backticks, alle Texte >500 Zeichen.
+
+## Iteration 249 — 27.07.2026 ~12:50 UTC — Batch 5 (18 Befehle), erstmals ohne Faktenfehler
+Poll grün (0/0/0, views_7d 30, visitors 28, mail_clicks 0), Smoke grün.
+Batch 5: 18 dünnste Befehle aus Aider, Antigravity, Cursor CLI — Ø68 → Ø191
+Wörter, ×5 Sprachen. Gesamt-Ø 320 Befehle: 123 → **130** Wörter, Seiten unter
+100 Wörtern: 137 → **119** (Start: 209). **90 von 320 Befehlen fertig.**
+ERSTMALS KEINE Faktenfehler im Bestand — alle 18 Kurzbeschreibungen deckten sich
+mit der offiziellen Doku, kein summaryFix nötig. Die frühen Batches haben die
+Altlasten offenbar abgeräumt.
+Belegte Feinheiten ergänzt: Aider `/editor` hat seit v0.79.0 den Alias `/edit`;
+`/help` wechselt anders als /code//ask//architect NICHT den Modus. Antigravity:
+`agy plugin enable` = Terminal-Subcommand, `!<shell-command>` = Prompt-Präfix
+(beides klar als Nicht-Slash-Befehle beschrieben). Cursor: `/composer`,
+`/commands`, `/save-workspace` stehen nur im Changelog, nicht in der
+34-Zeilen-Referenztabelle — vermerkt.
+BOM-Prüfung vor dem Merge eingebaut (nach dem Vorfall in Batch 4) — diesmal
+schrieb kein Übersetzer mit BOM.
+Build 0, Deploy dc78cf1a, Prod 200. Playwright über 5 Seiten in 3 Sprachen:
+kein H-Scroll auf 390px, keine Backticks, alle Texte >500 Zeichen.
