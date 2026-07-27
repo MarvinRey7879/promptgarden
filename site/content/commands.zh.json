@@ -257,22 +257,27 @@
       "slug": "btw",
       "name": "/btw",
       "summary": "快速提出一个附带问题,而不将其加入主对话。",
-      "what": "快速提出一个附带问题,而不将其加入主对话。",
+      "what": "`/btw` 用于在不打断当前工作的情况下提出一个简短的附带问题,而不会把它加入对话历史。问题和回答会出现在一个独立的、可关闭的悬浮层中,不会影响主上下文。Claude 在回答时能看到之前的完整对话,但没有工具访问权限——在回答附带问题期间无法读取文件、执行命令或进行搜索;回答只能基于上下文中已有的信息。\n\n即使 Claude 仍在处理主回答,`/btw` 也可以使用,并会独立并行运行。不带问题执行该命令时,会重新打开本次会话中最近一次附带问题的悬浮层,并可以用方向键在其中翻阅(自 2.1.212 版本起支持;此前 `/btw` 必须带问题使用)。按下 `f` 键可以按需将某个回答分叉到一个拥有完整工具访问权限的独立会话中。\n\n这样一来,`/btw` 正好与子代理(subagent)互补:拥有完整的对话上下文,但没有工具;而子代理则拥有完整的工具,但上下文是空的。",
       "whenGood": [
         {
-          "title": "提出简短的附加问题,而不占用主上下文",
-          "example": "/btw what does the --frozen-lockfile flag do? — 在功能开发会话进行到一半时"
+          "title": "提出一个简短的附加问题,而不占用主上下文",
+          "example": "在功能开发会话进行到一半时执行 /btw what does the --frozen-lockfile flag do?"
         },
         {
-          "title": "澄清与主题无关的问题,而不使当前对话产生分支",
-          "example": "/btw is there a Windows equivalent for this bash command?"
+          "title": "重新查看同一会话中之前提出的附带问题",
+          "example": "不带文本执行 /btw,重新打开最近一次附带问题的悬浮层,并用方向键翻阅更早的回答"
         }
       ],
       "whenBad": [
         {
-          "title": "稍后在主上下文中还需要用到这个答案",
-          "why": "/btw 不会将问题和答案添加到主对话中",
-          "alternative": "在主聊天中发送普通消息;如果是完全不同的新话题,改用 /clear 重新开始"
+          "title": "回答需要读取文件、执行命令或进行搜索",
+          "why": "根据文档,附带问题没有工具访问权限,只能基于上下文中已有的信息作答",
+          "alternative": "在主对话中正常提问,或者按 f 键把回答分叉到一个拥有完整工具访问权限的独立会话中"
+        },
+        {
+          "title": "之后还需要在主上下文中用到这个回答",
+          "why": "/btw 不会把问题和回答加入对话历史",
+          "alternative": "在主对话中正常提问;如果是完全不同的新话题,则使用 /clear 重新开始"
         }
       ],
       "sources": [
@@ -382,22 +387,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "开启一个上下文为空的新对话;此前的对话仍可通过 /resume 访问。",
-      "what": "开启一个上下文为空的新对话;此前的对话仍可通过 /resume 访问。\n\n带上名称时,之前的对话会在 /resume 列表中以该名称标注。如果只是想在同一对话中释放上下文,应改用 /compact。别名:/reset、/new。",
+      "what": "`/clear` 会以空上下文开启一个全新对话——之前所有的消息、已读取的文件和工具执行结果都会从当前上下文窗口中消失。不过之前的对话并不会丢失:可以通过 `/resume` 重新调出,或者在同一个正在运行的 Claude Code 进程内,直接通过回退菜单(`/rewind`,自 2.1.191 版本起)顶部新增的条目调出。\n\n可选的名称参数用于给旧对话在 `/resume` 选择列表中打标签,方便日后识别,例如 `/clear Bugfix-Session`。\n\n`/clear` 与 `/compact` 的区别在于:`/compact` 只是把当前对话做摘要并继续下去,而 `/clear` 是真正地从零开始——适合切换话题时使用,而不适合在压缩上下文的同时继续同一项任务。该命令不会影响工作目录中的文件改动:它只重置对话上下文,不会重置已经写好的代码。别名:`/reset`、`/new`。",
       "whenGood": [
         {
-          "title": "开始一个话题完全不同的新对话",
+          "title": "针对一个完全不同的话题开启新对话",
           "example": "/clear"
         },
         {
-          "title": "给旧对话命名后将其归档",
-          "example": "/clear 缺陷修复会话"
+          "title": "给旧对话命名并搁置,方便日后轻松找回",
+          "example": "/clear Bugfix-Session"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想在继续当前工作时释放上下文",
-          "why": "/clear 会开启一个上下文完全清空的新对话——根据文档,在继续同一工作时若只想释放上下文,应使用 /compact。",
-          "alternative": "/compact"
+          "title": "只是想在持续进行的工作中释放上下文",
+          "why": "/clear 会以空上下文开启全新对话——根据文档,如果只是想在持续工作中释放上下文,应使用 /compact",
+          "alternative": "使用 /compact"
+        },
+        {
+          "title": "想在 Claude Code 进程已经关闭之后恢复被清除的对话",
+          "why": "根据文档,回退菜单中为上一个会话新增的条目,只有在 Claude Code 未关闭、且未打开其他会话之前才可用",
+          "alternative": "只要进程仍在运行,可使用 /resume 从列表中精确选择之前的会话"
         }
       ],
       "sources": [
@@ -537,22 +547,27 @@
       "slug": "context",
       "name": "/context",
       "summary": "以彩色网格可视化当前的上下文占用情况,并给出优化建议。",
-      "what": "以彩色网格可视化当前的上下文占用情况,并给出优化建议。\n\n会提示占用上下文较多的工具、Memory 膨胀情况以及容量预警。参数 'all' 会展开详细分解。",
+      "what": "`/context` 以彩色网格的形式显示当前上下文窗口的占用情况,并按类别细分,例如系统提示词、已加载的 MCP 工具和技能、CLAUDE.md 文件、自动记忆(auto-memory)条目以及对话历史。该命令还会给出优化建议,例如哪些工具特别消耗上下文、哪些记忆文件过于臃肿,并显示实际加载了哪些 CLAUDE.md 和自动记忆文件。\n\n在全屏渲染模式下,`/context` 默认会折叠详细细分,以保持网格简洁;加上参数 `all` 可以重新展开。如果对话超出了上下文窗口的限制,输出中还会额外显示一条警告,说明具体超出了多少,以及可以用来腾出空间的命令。\n\n该命令本身不会改变上下文——它只是一个纯诊断视图。要真正释放上下文,需要用 `/compact`(摘要压缩)或 `/clear`(重新开始)。",
       "whenGood": [
         {
-          "title": "在长时间的会话续接之前,检查还剩多少可用上下文",
-          "example": "/context all 查看详细明细"
+          "title": "在继续一个长会话之前,先检查还剩多少可用上下文",
+          "example": "执行 /context all 查看按类别细分的详细情况"
         },
         {
           "title": "查找上下文消耗异常高的原因",
-          "example": "/context,用于识别消耗上下文较多的工具或臃肿的 Memory"
+          "example": "执行 /context,找出消耗上下文特别多的工具或过于臃肿的记忆文件"
         }
       ],
       "whenBad": [
         {
           "title": "想要真正释放上下文",
-          "why": "/context 只显示使用情况,并不会改变上下文本身",
-          "alternative": "使用 /compact 对对话进行总结并释放上下文"
+          "why": "/context 只显示占用情况,不会改变上下文本身",
+          "alternative": "使用 /compact 对对话进行摘要压缩以释放上下文,或使用 /clear 彻底重新开始"
+        },
+        {
+          "title": "在任务还没开始之前,提前估算某项计划任务会消耗多少上下文",
+          "why": "/context 只显示当前会话已经产生的占用情况,不会对未来步骤做出预测",
+          "alternative": "把任务拆分成更小的步骤,并在过程中多次执行 /context 检查"
         }
       ],
       "sources": [
@@ -792,22 +807,27 @@
       "slug": "desktop",
       "name": "/desktop",
       "summary": "在 Claude Code 桌面应用中继续当前会话。",
-      "what": "在 Claude Code 桌面应用中继续当前会话。\n\n需要 macOS 或 Windows 系统,以及有效的 Claude 订阅。别名:/app。",
+      "what": "将正在运行的终端会话无缝转交给 Claude Code 桌面应用:对话和上下文原样迁移,而不是重新开始。会话会在桌面应用中继续运行,并附带并行会话、可视化差异对比、内置编辑器和终端,以及应用的实时预览。简写形式:`/app`。\n\n命令参考文档目前仍然只把 macOS 或 Windows 加上有效的 Claude 订阅列为前提条件;如果平台不符合要求,该命令根本不会出现在列表中。不过,根据另一份标记为 Beta 的独立文档页面,自 2026 年 6 月 29 日至 7 月 3 日那一周(版本 2.1.195-2.1.201)起,桌面应用也已支持 Linux(Ubuntu 22.04+ 或 Debian 12+),并包含面向 Claude Code 的 Code 标签页。但该页面并未明确更新 `/desktop` 本身的前提条件说明——会话转交功能是否因此在 Linux 上也能使用,现有资料无法给出明确结论。",
       "whenGood": [
         {
-          "title": "将正在运行的终端会话无缝转移到桌面应用(Desktop App)",
-          "example": "/desktop — 在会话进行到一半时执行,以便在更大的屏幕上继续工作"
+          "title": "把正在运行的终端会话转到更大的屏幕上、以图形界面继续操作",
+          "example": "在调试会话进行到一半时执行 /desktop,切换到桌面应用的并行差异对比视图和内置编辑器"
         },
         {
-          "title": "从 CLI 切换到以 GUI 为中心的工作方式,同时不丢失上下文",
-          "example": "/desktop — 从在外使用笔记本电脑切换到台式机时使用"
+          "title": "在外出时用笔记本电脑工作,之后切换到桌面电脑而不丢失上下文",
+          "example": "执行 /desktop,在主力电脑的应用中继续同一段对话"
         }
       ],
       "whenBad": [
         {
-          "title": "没有 Claude 订阅的 Linux 环境",
-          "why": "/desktop 需要 macOS 或 Windows,并且需要 Claude 订阅",
-          "alternative": "留在终端会话中,或使用 /remote-control 从 claude.ai 进行远程控制"
+          "title": "期望在 Linux 上也能像 macOS/Windows 一样顺畅地转交会话",
+          "why": "命令参考文档对 /desktop 列出的前提条件仍然只有 macOS/Windows;至于转交功能是否同样适用于另行记录的 Linux Beta 应用(Ubuntu 22.04+/Debian 12+,自 2026 年第 27 周起),现有资料并未证实",
+          "alternative": "直接启动 Linux Beta 应用,自行确认是否提供同等的转交功能,或者继续留在终端会话中操作"
+        },
+        {
+          "title": "没有有效的 Claude 订阅",
+          "why": "根据文档,没有相应订阅时,/desktop 根本不会显示出来",
+          "alternative": "先执行 /login 设置订阅,或者继续在终端会话中使用 API 密钥认证方式工作"
         }
       ],
       "sources": [
@@ -1252,22 +1272,27 @@
       "slug": "hooks",
       "name": "/hooks",
       "summary": "显示工具事件(Tool Events)对应的 Hook 配置。",
-      "what": "显示工具事件(Tool Events)对应的 Hook 配置。",
+      "what": "`/hooks` 打开一个纯只读浏览界面,展示当前所有已配置的钩子(hook)——这些是在 Claude Code 运行流程中的特定时刻触发的自动化 shell 命令、HTTP 调用、提示词、Agent 或 MCP 工具调用,例如在某个工具调用之前或之后。菜单会列出每个钩子事件及其已配置的钩子数量,可以展开单个匹配器(matcher),并为每个钩子显示完整细节:事件、匹配器、类型,以及具体的命令、提示词文本或 URL。\n\n每个条目还会标注其来源:`User`(来自 `~/.claude/settings.json`)、`Project`(`.claude/settings.json`)、`Local`(`.claude/settings.local.json`)、`Plugin`(来自已安装的插件)、`Session`(仅为当前会话注册)或 `Built-in`(Claude Code 内置)。\n\n该命令不接受任何参数,也不会改变任何内容——它仅用于查看概览,例如用来检查某个工具调用为什么被阻止或被修改。",
       "whenGood": [
         {
-          "title": "检查当前哪些 Hook 会对工具事件生效",
-          "example": "在添加新的 Pre-Tool Hook 之前先调用 /hooks，避免与现有 Hook 配置发生冲突。"
+          "title": "在添加新钩子之前先检查现有配置",
+          "example": "执行 /hooks,查看 PreToolUse 是否已经有匹配器作用于 Bash 命令"
         },
         {
-          "title": "追查某次工具调用为何被修改或阻止",
-          "example": "在某次 Bash 调用被意外拒绝后打开 /hooks，查看是否是某个现有 Hook 配置导致的。"
+          "title": "查明某个钩子来自哪个配置文件",
+          "example": "打开 /hooks,查看来源标注(User/Project/Local/Plugin),以确认某个钩子是否来自已安装的插件"
         }
       ],
       "whenBad": [
         {
-          "title": "编辑或重新配置 Hook 规则",
-          "why": "/hooks 只用于查看配置，并非编辑界面。",
-          "alternative": "直接在 settings.json 中调整 Hook 配置，或使用 update-config Skill。"
+          "title": "编辑或重新配置钩子规则",
+          "why": "根据文档,/hooks 只是一个纯只读浏览界面,不是编辑界面",
+          "alternative": "直接在 settings.json 中调整配置(或请人代为调整),或使用 update-config 技能"
+        },
+        {
+          "title": "查找某个已配置的钩子在运行时失败的原因",
+          "why": "/hooks 只显示配置内容(事件、匹配器、命令),不显示运行时错误——根据文档,这些错误会记录在调试日志中",
+          "alternative": "使用 /debug 查看包含钩子错误信息的会话调试日志"
         }
       ],
       "sources": [
@@ -1802,22 +1827,27 @@
       "slug": "plugin",
       "name": "/plugin",
       "summary": "管理 Claude Code 插件。",
-      "what": "管理 Claude Code 插件。\n\n不带参数时显示插件菜单。子命令 list/install/enable/disable 会直接生效。",
+      "what": "`/plugin` 用于管理 Claude Code 插件——这些插件打包了技能(skill)、子代理(subagent)、钩子(hook)或 MCP 服务器。不带参数执行时会打开一个交互式菜单,包含发现、安装和管理等标签页。子命令可以直接生效:`/plugin install <name>@<marketplace>` 安装插件,并可选择作用范围(User、Project 或 Local);`/plugin list` 列出已安装的插件(可用 `--enabled`/`--disabled` 筛选);`/plugin enable`/`/plugin disable` 用于切换插件的启用状态而不将其移除;`/plugin uninstall` 则彻底移除插件。\n\n此外,`/plugin marketplace add/list/update/remove` 用于管理插件的来源——GitHub 仓库、其他 Git 托管平台、本地路径或 URL;其中 `market` 和 `rm` 分别是 `marketplace` 和 `remove` 的简写形式。\n\n安装、启用或禁用插件之后,需要执行 `/reload-plugins`,才能让改动在不重启的情况下于当前会话中生效。",
       "whenGood": [
         {
-          "title": "直接安装新插件",
-          "example": "执行 /plugin install <name>，无需绕道菜单即可直接添加插件。"
+          "title": "从已知的插件市场安装新插件",
+          "example": "执行 /plugin install github@claude-plugins-official,再执行 /reload-plugins,使其在当前会话中生效"
         },
         {
-          "title": "查看所有已安装插件的概览",
-          "example": "不带参数调用 /plugin，在插件菜单中查看哪些插件处于启用或禁用状态。"
+          "title": "找出已安装但未使用的插件",
+          "example": "不带参数打开 /plugin,在 Installed 标签页中查找标注为“Not used recently”的插件"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想在文件修改后重新加载已启用的插件",
-          "why": "/plugin 用于管理（列表、安装、启用），而不是在修改后重新加载已启用的插件。",
-          "alternative": "使用 /reload-plugins，无需重启即可应用更改。"
+          "title": "只是想在文件改动后重新加载已启用的插件",
+          "why": "/plugin 用于管理(列出、安装、启用),而不是在改动后重新加载已启用的插件",
+          "alternative": "使用 /reload-plugins,无需重启即可让改动生效"
+        },
+        {
+          "title": "未经检查就安装不熟悉的第三方插件",
+          "why": "根据文档,Anthropic 并不控制插件市场中的插件包含哪些 MCP 服务器、文件或软件,也无法验证其功能",
+          "alternative": "安装前先查看该插件的主页或代码仓库"
         }
       ],
       "sources": [
@@ -1962,22 +1992,27 @@
       "slug": "release-notes",
       "name": "/release-notes",
       "summary": "在交互式版本选择界面中显示更新日志。",
-      "what": "在交互式版本选择界面中显示更新日志。\n\n可以选择特定版本,或查看全部版本。",
+      "what": "`/release-notes` 打开一个交互式版本选择界面,用于查看 Claude Code 的更新日志。选择某个具体版本后,会显示该版本的发布说明;也可以选择查看所有版本的完整更新日志。\n\n自 2.1.208 版本起,显示的说明只出现在可见的记录中,不会被纳入 Claude 作为上下文所看到的对话——因此调用该命令不会占用上下文空间。在 2.1.208 之前,显示的说明确实会进入对话,选择“显示所有版本”时甚至会把完整的更新日志都纳入其中。\n\n该命令只是读取信息——它不会更新 Claude Code,也不会更改任何设置。适合用来查看自上次更新以来有哪些变化,或者查阅某个具体修复是否包含在某个版本号中。同样的发布说明也可以直接在浏览器中通过官方文档查看,例如用于搜索内容或链接到某个条目。",
       "whenGood": [
         {
-          "title": "更新后查看具体改动了什么",
-          "example": "执行 /release-notes，查阅最近安装版本的新特性。"
+          "title": "在自动更新之后查看有哪些变化",
+          "example": "执行 /release-notes,从列表中选择最近安装的版本"
         },
         {
-          "title": "查阅某个特定版本的行为",
-          "example": "使用特定版本号调用 /release-notes，检查某个修复是否包含在该版本中。"
+          "title": "检查某个具体修复是否包含在特定版本中",
+          "example": "打开 /release-notes,从列表中精确选择对应的版本号"
         }
       ],
       "whenBad": [
         {
-          "title": "实际升级到最新版本",
-          "why": "/release-notes 只会显示变更日志，本身并不会执行更新。",
-          "alternative": "使用 /upgrade 真正执行更新。"
+          "title": "希望真正更新到最新版本",
+          "why": "/release-notes 只显示更新日志,本身并不执行更新操作",
+          "alternative": "使用 /upgrade 才能真正完成更新"
+        },
+        {
+          "title": "在较旧的 Claude Code 版本上查看完整历史记录,同时又不想占用对话上下文",
+          "why": "在 2.1.208 版本之前,显示的更新日志历史会进入对话——选择“所有版本”时甚至是完整的更新日志",
+          "alternative": "更新到 Claude Code 2.1.208 或更新版本,或者只精确选择单个版本,而不是选择全部"
         }
       ],
       "sources": [
@@ -2322,22 +2357,27 @@
       "slug": "sandbox",
       "name": "/sandbox",
       "summary": "切换沙箱(Sandbox)模式。",
-      "what": "切换沙箱(Sandbox)模式。\n\n仅在受支持的平台上可用。",
+      "what": "`/sandbox` 用于切换 Bash 工具的隔离执行模式。在沙箱模式下,shell 命令的文件和网络访问会受到限制——在 macOS 上通过内置的 Seatbelt 框架实现,在 Linux 和 WSL2 上通过 `bubblewrap` 实现。根据文档,原生 Windows 安装不受支持,此时 Claude Code 必须运行在 WSL2 发行版内部。\n\n执行该命令会打开一个面板,包含以下标签页:Mode(沙箱化命令的自动允许或常规权限提示)、Overrides(失败的命令是否允许回退到非沙箱执行)以及 Config(已解析的沙箱设置)——在 Linux 上,如果缺少 `bubblewrap` 之类的软件包或可选的 seccomp 过滤器,还会额外出现一个 Dependencies 标签页。\n\n需要注意:沙箱模式不是权限模式(permission mode)。权限模式决定一个工具调用是否会被执行以及是否需要事先询问;而沙箱则是限制一个已经启动的 Bash 命令能够访问什么。两者可以互相独立地组合使用。",
       "whenGood": [
         {
-          "title": "隔离测试有风险的命令",
-          "example": "在运行未知的生成代码之前启用 /sandbox,使其在隔离环境中运行(仅限受支持的平台)。"
+          "title": "对有风险的、由生成得到的 shell 命令进行隔离测试",
+          "example": "在执行未知代码之前先启用 /sandbox,让命令只在沙箱容器内运行(适用于 macOS、Linux 或 WSL2)"
         },
         {
-          "title": "任务完成后关闭沙箱",
-          "example": "在完成有风险的步骤后再次调用 /sandbox,切换回正常模式。"
+          "title": "检查是否有缺失的依赖项导致沙箱无法使用",
+          "example": "打开 /sandbox,如果只显示 Dependencies 标签页,就查看该标签页的内容"
         }
       ],
       "whenBad": [
         {
-          "title": "不受支持的平台",
-          "why": "根据文档,沙箱模式仅在受支持的平台上可用。",
-          "alternative": "在使用该命令前,先查阅沙箱文档确认自己的平台是否受支持。"
+          "title": "没有 WSL2 的原生 Windows 安装环境",
+          "why": "根据文档,沙箱只支持 macOS、Linux 和 WSL2——不支持原生 Windows",
+          "alternative": "在 WSL2 发行版内部运行 Claude Code,或不使用沙箱、改用常规的权限提示方式工作"
+        },
+        {
+          "title": "希望每次工具调用执行前都必须先确认",
+          "why": "沙箱并不能替代权限提示,它只是限制一个已经在运行的 Bash 命令能够访问什么",
+          "alternative": "使用权限模式(permission mode)来控制工具调用是否会被执行"
         }
       ],
       "sources": [
@@ -2637,22 +2677,27 @@
       "slug": "statusline",
       "name": "/statusline",
       "summary": "配置 Claude Code 的状态栏。",
-      "what": "配置 Claude Code 的状态栏。\n\n可以描述想要的效果,或者不带参数以根据 Shell 提示符自动配置。",
+      "what": "`/statusline` 通过自然语言描述来配置 Claude Code 可自定义的状态栏。只需描述想要显示的内容——比如模型名称、当前 Git 分支、以进度条形式展示的上下文占用情况,或本次会话的花费——Claude Code 就会自动在 `~/.claude/` 下生成一个脚本,并在设置中添加相应的条目。不带参数执行时,该命令会自动从现有的 shell 提示符中推导出配置。\n\n状态栏可以是多行的,除了文本之外还能显示颜色、可点击的链接,以及诸如上下文百分比、会话时长或速率限制占用情况等动态数值。底层脚本可以用任意语言编写(Bash、Python、JavaScript,在 Windows 上也可以是 PowerShell),并且每次更新时都会重新执行。\n\n要移除状态栏,只需再次执行该命令并给出相应指令,例如 `/statusline delete`,或者手动删除设置中的 `statusLine` 字段。",
       "whenGood": [
         {
-          "title": "在状态栏显示自定义信息",
-          "example": "让 /statusline 按描述配置,例如“显示当前的 Git 分支和 Token 费用”,从而相应地配置状态栏。"
+          "title": "在状态栏中显示自定义信息",
+          "example": "执行 /statusline 显示当前 Git 分支和本次会话花费,以此配置状态栏"
         },
         {
-          "title": "从 Shell 提示符自动推导",
-          "example": "不带参数调用 /statusline,让配置自动从现有的 Shell 提示符中推导出来。"
+          "title": "让状态栏自动从现有的 shell 提示符中推导配置",
+          "example": "不带参数执行 /statusline,让配置自动从现有的提示符中生成"
         }
       ],
       "whenBad": [
         {
-          "title": "只想更改提示栏的颜色",
-          "why": "/statusline 配置的是状态栏的内容/结构,不是颜色。",
-          "alternative": "使用 /color 仅设置颜色。"
+          "title": "只是想改变输入框提示行的颜色",
+          "why": "/statusline 配置的是状态栏的内容和结构,不是输入行的颜色",
+          "alternative": "使用 /color,只设置颜色"
+        },
+        {
+          "title": "希望把同一个状态栏集中部署到多台电脑上",
+          "why": "/statusline 是在自己的 ~/.claude/ 目录下交互式生成脚本,并写入个人设置中的",
+          "alternative": "把生成的脚本手动复制到项目或团队仓库中,并在那里的 settings.json 中引用"
         }
       ],
       "sources": [
@@ -4727,18 +4772,27 @@
       "slug": "full-conversation",
       "name": "/full-conversation",
       "summary": "关闭性能优化的精简渲染,显示完整的对话记录。",
-      "what": "长对话默认只会部分重绘(仅最近几轮),以保证调整窗口大小和继续会话(Resume)时的速度。/full-conversation 会关闭这一行为,重新显示完整历史。记录于官方 Changelog,(暂)未列入命令参考表。",
+      "what": "在长会话中,出于性能考虑,Cursor CLI 默认不再重新绘制完整的对话内容,而只重绘最近的几轮(turn)——这样可以让终端窗口调整大小以及恢复旧会话(`agent resume`、`--continue`)时保持流畅。`/full-conversation` 会关闭这种精简渲染模式,让 CLI 重新绘制完整的历史记录。根据官方 CLI 更新日志,该功能于 2026 年 5 月与其他渲染优化一起引入,原文写道:“Long conversations redraw instantly. Full repaints render only recent turns (`/full-conversation` to opt out), keeping resizes and resumes fast in old sessions.”\n\n需要与其他显示类命令区分开,例如 `/line-numbers`(代码块中的行号)或 `/show-thinking`(思考过程块),它们控制的是其他显示细节,不会改变实际渲染出的历史记录范围。在官方斜杠命令参考表中,目前还没有收录 `/full-conversation`,该命令目前只能在更新日志中找到依据。",
       "whenGood": [
         {
-          "title": "想翻阅一个很长会话的完整对话记录",
-          "example": "/full-conversation — 打开后即可重新查看更早的几轮内容"
+          "title": "翻阅一个非常长的会话的完整对话历史",
+          "example": "执行 /full-conversation,然后用方向键向上滚动"
+        },
+        {
+          "title": "在为文档目的对整个讨论进行截图或复制粘贴之前",
+          "example": "/full-conversation"
         }
       ],
       "whenBad": [
         {
-          "title": "只需要在最近几轮继续工作,性能更重要",
-          "why": "完整历史会让长会话的窗口调整和继续会话明显变慢。",
-          "alternative": "保持 /full-conversation 关闭(默认状态)"
+          "title": "只需要在最近几轮上继续工作,性能更重要",
+          "why": "完整历史记录会让长会话中的窗口调整大小和恢复操作明显变慢。",
+          "alternative": "不要启用 /full-conversation(保持默认行为)"
+        },
+        {
+          "title": "在一个非常长的会话中,终端已经反应迟缓",
+          "why": "完整重绘所有轮次恰恰会加剧精简渲染原本要解决的性能问题。",
+          "alternative": "保持默认行为,仅在需要具体查找时短暂启用 /full-conversation"
         }
       ],
       "sources": [
@@ -5333,18 +5387,27 @@
       "slug": "agent-resume",
       "name": "agent resume",
       "summary": "直接继续最近使用的聊天会话,不显示选择列表。",
-      "what": "agent resume 会加载最近使用的会话(包括此前的上下文),并在那里继续对话。它等价于 --continue 或斜杠命令 /resume,两者都是 --resume=-1 的简写。",
+      "what": "agent resume 是 Cursor CLI 的一个子命令(通过 `agent` 命令调用),会直接加载最近一次使用的聊天会话,包括之前的对话上下文。根据官方参数参考文档,它与全局选项 `--continue` 含义相同,文档中明确将其记录为 `--resume=-1` 的简写形式。如果要加载某个特定的、并非最近使用的会话,则应使用带具体聊天 ID 的 `--resume [chatId]`。\n\n需要与之区分的是斜杠命令 `/resume`:它不会自动继续某个会话,而是根据参考文档打开一个最近使用的聊天列表供选择。如果想专门查找某个更早的会话,可使用同样会显示选择列表的 `agent ls`。根据更新日志,自 2026 年 7 月起,`agent ls` 和恢复选择器(`--resume`、`/resume`)默认都会显示所有工作区中的聊天,而不仅仅是当前目录中的;可以用左右方向键筛选出当前工作区。",
       "whenGood": [
         {
-          "title": "中断之后直接继续上一次的对话",
+          "title": "在被打断后直接继续上一次的对话",
           "example": "agent resume"
+        },
+        {
+          "title": "在脚本或终端别名中不经确认直接继续最近一次会话",
+          "example": "agent --continue"
         }
       ],
       "whenBad": [
         {
-          "title": "想继续的是更早的某个会话,而不是最近使用的那个",
-          "why": "agent resume 始终只加载最近使用的会话。",
-          "alternative": "用 agent ls 选择某个具体的更早会话,或用 --resume [chatId] 指定具体 ID"
+          "title": "想要继续一个更早的、而非最近使用的会话",
+          "why": "agent resume 始终只会加载最近使用的会话。",
+          "alternative": "使用 agent ls 选择某个特定的更早会话,或者用具体的 ID 设置 --resume [chatId]"
+        },
+        {
+          "title": "希望先从多个最近使用的聊天中精确挑选,而不是直接盲目继续最后一个",
+          "why": "agent resume 会跳过任何选择步骤,直接加载最近使用的会话,不会显示列表。",
+          "alternative": "使用 /resume,它会打开一个最近使用的聊天选择列表"
         }
       ],
       "sources": [
@@ -5700,18 +5763,27 @@
       "slug": "sandbox-enable",
       "name": "agent sandbox enable",
       "summary": "为命令执行启用沙箱模式。",
-      "what": "agent sandbox enable 会开启沙箱模式:此后命令在拥有工作区读写权限的同时,与系统其余部分隔离运行(默认关闭网络访问)。该设置会跨会话保留。",
+      "what": "agent sandbox enable 是 `agent sandbox` 的一个子命令,用于永久开启沙箱模式。开启后,代理执行的终端命令对工作区拥有读写权限,但与系统其余部分相隔离;默认情况下禁用网络访问。根据官方 CLI 概览文档,该设置会跨会话持久保存,并存储在配置文件中(全局为 `~/.cursor/sandbox.json`,项目级为 `.cursor/sandbox.json`,通过 SSH 连接时同样生效)。与之等价的是全局选项 `--sandbox enabled`。\n\n需要与 `agent sandbox run <cmd>` 区分开:后者只对单个命令进行隔离执行,不会改变持久化设置。如果想通过交互式菜单逐步配置(包括网络访问),应改用斜杠命令 `/sandbox`,根据更新日志,它可以在 Run Everything、Auto-Run in Sandbox 和 Ask Every Time 三种模式之间切换。要重置为默认值,可使用 `agent sandbox reset`。",
       "whenGood": [
         {
-          "title": "为所有未来的会话永久开启命令隔离执行",
+          "title": "为所有未来的会话永久开启命令的隔离执行",
+          "example": "agent sandbox enable"
+        },
+        {
+          "title": "在新电脑上设置 CLI 时,从一开始就强制使用安全的默认设置",
           "example": "agent sandbox enable"
         }
       ],
       "whenBad": [
         {
-          "title": "沙箱只应作用于单个命令,而不是永久设置",
-          "why": "agent sandbox enable 修改的是持久配置,会影响之后所有的运行。",
-          "alternative": "使用 agent sandbox run <cmd>,只隔离运行单个命令"
+          "title": "只想让沙箱作用于单个命令,而不是永久生效",
+          "why": "agent sandbox enable 会更改所有未来运行的持久化配置。",
+          "alternative": "使用 agent sandbox run <cmd>,只对单个命令进行隔离执行"
+        },
+        {
+          "title": "希望以交互方式精细设置模式和网络访问,而不是只是笼统地开启",
+          "why": "agent sandbox enable 只有启用/禁用这种二元状态,没有中间层级。",
+          "alternative": "使用 /sandbox 打开交互式菜单,在 Run Everything、Auto-Run in Sandbox 和 Ask Every Time 三种模式间选择"
         }
       ],
       "sources": [
@@ -5726,18 +5798,27 @@
       "slug": "sandbox-disable",
       "name": "agent sandbox disable",
       "summary": "关闭沙箱模式,改用白名单(Allowlist)模式。",
-      "what": "agent sandbox disable 会关闭沙箱模式。此后 CLI 会回退到白名单模式,单个命令需要手动授权,而不是自动隔离运行。",
+      "what": "agent sandbox disable 是 `agent sandbox` 的一个子命令,用于永久关闭沙箱模式。之后 CLI 会回退到白名单(allowlist)模式:诸如 shell 命令、文件访问、网络请求(web fetch)或 MCP 工具之类的单项操作,会通过项目级或全局配置中的权限令牌(例如 `Shell(git)`、`Read(src/**)`、`WebFetch(*.example.com)`、`Mcp(server:tool)`)来允许或拒绝,而不再是自动隔离运行;根据参考文档,拒绝规则(deny)的优先级高于允许规则(allow)。与之等价的是全局选项 `--sandbox disabled`。根据官方 CLI 概览文档,该设置会跨会话持久保存,包括通过 SSH 连接时。\n\n需要与 `agent sandbox run <cmd> --network` 区分开:后者只是为单个命令在沙箱内开放网络访问,并不会整体关闭沙箱。如果想在 Run Everything、Auto-Run in Sandbox 和 Ask Every Time 三种模式之间进行交互式精细控制,应改用斜杠命令 `/sandbox`。",
       "whenGood": [
         {
-          "title": "沙箱限制(例如没有网络)长期妨碍某个工作流",
+          "title": "沙箱的限制(例如无法访问网络)长期干扰某个特定工作流程",
           "example": "agent sandbox disable"
+        },
+        {
+          "title": "希望通过白名单对单个命令和路径进行精细控制,而不是笼统地隔离",
+          "example": "执行 agent sandbox disable,然后在配置中设置诸如 Shell(git) 或 Read(src/**) 之类的权限令牌"
         }
       ],
       "whenBad": [
         {
           "title": "只是某一次沙箱运行需要网络访问",
-          "why": "agent sandbox disable 会彻底关闭沙箱,而不只是放开网络。",
-          "alternative": "使用 agent sandbox run <cmd> --network,只为这一次运行放开网络访问"
+          "why": "agent sandbox disable 会完全关闭沙箱,而不是仅仅开放网络访问。",
+          "alternative": "使用 agent sandbox run <cmd> --network,只为这一次运行开放网络访问"
+        },
+        {
+          "title": "不想永久关闭沙箱,只是想临时调整一下",
+          "why": "agent sandbox disable 会永久更改所有未来会话的持久化配置。",
+          "alternative": "使用 /sandbox 交互式调整模式和网络访问,而不必完全关闭沙箱"
         }
       ],
       "sources": [
@@ -8299,19 +8380,28 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-aliases",
       "name": "install.sh --skip-aliases",
-      "summary": "安装时跳过对旧版 agy/antigravity shell 别名的清理。",
-      "what": "在运行安装脚本(install.sh/install.ps1/install.cmd)时传入 --skip-aliases 标志,可以阻止脚本清理或更新 shell 配置文件中已有的旧版 agy 或 antigravity shell 别名。",
+      "summary": "Shell 安装脚本会拒绝该参数,但在 Windows 上会未经检查直接传给二进制文件。",
+      "what": "antigravity.google/docs/cli/install 文档页面将 `--skip-aliases` 列为一个标志(flag),用于在安装时跳过对旧版 `agy`/`antigravity` shell 别名的清理。但实际部署在 antigravity.google/cli/install.sh 的引导脚本(239 行,已于 2026 年 7 月 27 日通过 curl 核实)并不认识这个标志:它的参数解析器只接受 `-d`/`--dir`(目标目录)和 `-h`/`--help`。任何其他参数,包括 `--skip-aliases`,都会落入 `*)` 兜底分支,产生 `[ERROR] Unknown parameter: --skip-aliases` 并随后以退出码 1 中止——这样一来安装根本不会发生。\n\n此外:在脚本中搜索“alias”没有任何匹配结果。该脚本没有在任何地方修改 shell 别名;它只是下载并校验二进制文件,最后在内部调用 `agy install`(在 Windows 上是 `agy.exe install`)。因此文档中描述的该标志的作用,目前无论传入什么参数值都是无效的。\n\n在 Windows 上情况有所不同:`install.cmd` 会把未知参数收集到 `FORWARD_ARGS` 中并附加到 `SETUP_FLAGS` 上,`install.ps1` 则通过 `$passthroughArgs` 做同样的事。因此在 Windows 上 `--skip-aliases` 不会导致中止,而是会被原样传递给 `agy.exe install`。至于该二进制文件之后是否会解析或忽略这个参数,从外部无法确认——能观察到的只是调用不会失败。",
       "whenGood": [
         {
-          "title": "保留自己手动维护的 agy/antigravity shell 别名",
-          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-aliases"
+          "title": "在安装前自行检查该脚本目前实际支持哪些标志",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --help"
+        },
+        {
+          "title": "只使用脚本实际支持的标志来调整安装目标;之后自行在 shell 配置文件中检查并清理旧的别名",
+          "example": "bash install.sh --dir ~/bin"
         }
       ],
       "whenBad": [
         {
-          "title": "shell 配置文件中还留有旧的、损坏的或指向错误二进制文件的别名",
-          "why": "使用 --skip-aliases 时,安装脚本恰恰不会自动清理这些旧别名。",
-          "alternative": "不带 --skip-aliases 运行安装脚本,让旧别名被自动清理"
+          "title": "在管道安装命令中加上 --skip-aliases,以为这样旧的别名就会被保留",
+          "why": "该脚本只认识 -d/--dir 和 -h/--help;--skip-aliases 会落入 *) 兜底分支,输出“[ERROR] Unknown parameter: --skip-aliases”,并以退出码 1 中止,根本还没开始安装。",
+          "alternative": "不加这个标志运行脚本,或者事先自己用 --help 检查当前支持哪些参数"
+        },
+        {
+          "title": "只依赖文档中对该标志的描述,而不去检查实际发布的脚本",
+          "why": "文档页面仍然列出了 --skip-aliases,但 antigravity.google/cli/install.sh 实际发布的脚本并不支持它(截至 2026 年 7 月 27 日)。",
+          "alternative": "使用前自己通过 curl 和 --help 核实脚本,而不是盲目相信文档中的表格"
         }
       ],
       "sources": [
@@ -8325,19 +8415,28 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-path",
       "name": "install.sh --skip-path",
-      "summary": "安装时跳过在 shell 配置文件中自动添加 PATH 的步骤。",
-      "what": "在运行安装脚本时传入 --skip-path 标志,可以阻止脚本自动把二进制文件目录(~/.local/bin 或 %LOCALAPPDATA%\\agy\\bin)添加到 shell 配置文件的 PATH 环境变量中。",
+      "summary": "Shell 安装脚本会拒绝该参数,但在 Windows 上会未经检查直接传给二进制文件。",
+      "what": "antigravity.google/docs/cli/install 文档页面将 `--skip-path` 列为一个标志(flag),用于在安装时阻止自动向 shell 配置文件追加 PATH。但实际部署在 antigravity.google/cli/install.sh 的引导脚本(239 行,已于 2026 年 7 月 27 日通过 curl 核实)并不认识这个标志:它的参数解析器只接受 `-d`/`--dir`(目标目录)和 `-h`/`--help`。任何其他参数,包括 `--skip-path`,都会落入 `*)` 兜底分支,产生 `[ERROR] Unknown parameter: --skip-path` 并随后以退出码 1 中止——这样一来安装根本不会发生。\n\n此外:在脚本中搜索“PATH=”只有一处匹配,是用于表示二进制文件安装位置的内部变量 `BINARY_PATH`。该脚本没有在任何地方写入 shell 配置文件,也不会设置 PATH 变量;它只是下载并校验二进制文件,最后在内部调用 `agy install`。因此文档中描述的该标志的作用,目前无论传入什么参数值都是无效的。\n\n在 Windows 上情况有所不同:`install.cmd` 会把未知参数收集到 `FORWARD_ARGS` 中并附加到 `SETUP_FLAGS` 上,`install.ps1` 则通过 `$passthroughArgs` 做同样的事。因此在 Windows 上 `--skip-path` 不会导致中止,而是会被原样传递给 `agy.exe install`。至于该二进制文件之后是否会解析或忽略这个参数,从外部无法确认——能观察到的只是调用不会失败。",
       "whenGood": [
         {
-          "title": "自己手动管理 PATH 条目,例如已有一套 dotfiles 配置",
-          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-path"
+          "title": "在安装前自行检查该脚本目前实际支持哪些标志",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --help"
+        },
+        {
+          "title": "只使用脚本实际支持的标志来调整安装目标,之后自行手动管理 PATH",
+          "example": "bash install.sh --dir ~/bin"
         }
       ],
       "whenBad": [
         {
-          "title": "希望安装完成后无需任何手动步骤,就能在任意终端直接调用 agy",
-          "why": "没有自动添加的 PATH 条目,shell 就无法找到 agy 的二进制文件,除非手动调整 PATH。",
-          "alternative": "不带 --skip-path 运行安装脚本"
+          "title": "在管道安装命令中加上 --skip-path,以为这样 PATH 就不会被改动",
+          "why": "该脚本只认识 -d/--dir 和 -h/--help;--skip-path 会落入 *) 兜底分支,输出“[ERROR] Unknown parameter: --skip-path”,并以退出码 1 中止,根本还没开始安装。",
+          "alternative": "不加这个标志运行脚本,或者事先自己用 --help 检查当前支持哪些参数"
+        },
+        {
+          "title": "只依赖文档中对该标志的描述,而不去检查实际发布的脚本",
+          "why": "文档页面仍然列出了 --skip-path,但 antigravity.google/cli/install.sh 实际发布的脚本并不支持它(截至 2026 年 7 月 27 日)。",
+          "alternative": "使用前自己通过 curl 和 --help 核实脚本,而不是盲目相信文档中的表格"
         }
       ],
       "sources": [
@@ -8515,22 +8614,27 @@
       "slug": "add-dir",
       "name": "/add-dir",
       "summary": "为当前活动工作区添加一个额外目录。",
-      "what": "/add-dir 属于 Antigravity CLI 斜杠命令总参考中的 Utilities 分类。该命令会为当前活动工作区添加一个额外目录,使 agent 也能访问启动目录之外的文件。它接受一个路径作为参数。",
+      "what": "`/add-dir <路径>` 属于 Antigravity CLI 斜杠命令中的 Utilities(工具)类别,用于给当前活跃的工作区(workspace)增加一个额外目录。默认情况下,代理只能看到会话的起始目录;使用 `/add-dir` 后,代理还会获得对另一个文件夹的读写权限,比如第二个代码仓库或文件系统中的一个同级目录。\n\n该命令接受一个路径作为必填参数,输入时支持类似 shell 的路径自动补全。新增加的目录会立即被纳入文件搜索和自动补全范围,无需重启会话。此外,`/add-dir` 还会对新加入的文件夹进行定制内容发现(customization discovery):其中存放的技能、规则和钩子会被自动识别,并像主目录中的一样供代理使用。\n\n需要区分的是:`/add-dir` 会把某个目录长期纳入本次对话的剩余部分,并授予对其全部内容的访问权限。如果只是想临时引用单个文件,使用提示词中的 `@` 提及即可,无需长期扩展工作区。",
       "whenGood": [
         {
-          "title": "引入第二个仓库或文件夹中的代码",
+          "title": "把第二个代码仓库或文件夹中的代码纳入进来",
           "example": "/add-dir ../shared-lib"
         },
         {
-          "title": "把 monorepo 中的一个子项目加入会话",
+          "title": "把单体仓库(monorepo)中的某个子项目额外加入会话",
           "example": "/add-dir packages/api"
         }
       ],
       "whenBad": [
         {
-          "title": "只想引用一次文件",
-          "why": "/add-dir 会把整个目录长期纳入工作区,而一次性引用只需要在提示词中给出文件路径即可。",
+          "title": "只是想临时引用一次某个文件",
+          "why": "/add-dir 会把整个目录长期纳入工作区,对于一次性的引用来说这样做没有必要、也过于繁重。",
           "alternative": "直接在提示词中使用 @<路径>"
+        },
+        {
+          "title": "目录中包含敏感数据,不希望代理长期拥有访问权限",
+          "why": "/add-dir 会授予对整个文件夹内容的读写权限,并在本次对话剩余部分中纳入其中的技能/规则/钩子——这比单纯引用一个文件所需的权限要大得多。",
+          "alternative": "只通过 @<路径> 引用实际需要的那个文件,而不是开放整个文件夹"
         }
       ],
       "sources": [
@@ -8609,18 +8713,27 @@
       "slug": "btw",
       "name": "/btw",
       "summary": "在后台提出一个附带问题,而不打断主对话。",
-      "what": "/btw 属于 Utilities 分类。该命令会把一个附加问题作为后台任务发出,而当前进行中的主对话不受干扰地继续——适合用于不希望占用主线程当前上下文的简短附带问题。",
+      "what": "`/btw <问题>` 属于 Antigravity CLI 斜杠命令中的 Utilities(工具)类别。该命令会把一个附带问题发送给一个独立的、临时的单次响应代理(single-response agent),这个代理虽然知道当前对话的上下文,但运行在主线程之外。与此同时,主对话不受干扰地继续进行,附带问题不会影响主对话的上下文或 token 消耗。\n\n该命令最初是为了在不打断对话主线的情况下提出简短的旁支问题而引入的;此后经过多次改进,包括让回答支持流式输出、显示代理的思考过程,以及让回答在切换对话后依然保留。\n\n需要区分的是:`/btw` 会在主流程之外生成一个独立的、一次性的回答。对于需要影响主任务后续走向、或需要纳入主任务上下文的问题,这个命令并不适用——这类问题应该直接放进主提示词中。",
       "whenGood": [
         {
-          "title": "在不打断主任务的情况下提出一个简短的附带问题",
-          "example": "/btw utils.py 里的这个函数是做什么的?"
+          "title": "提出一个简短的附加问题,而不打断主任务",
+          "example": "/btw utils.py 中的这个函数是做什么的?"
+        },
+        {
+          "title": "提出一个问题后切换到另一个对话,而不丢失这个回答",
+          "example": "/btw 文档中哪里描述了缓存(caching)行为?"
         }
       ],
       "whenBad": [
         {
-          "title": "这个问题其实是主任务的一部分",
-          "why": "/btw 在后台独立于主线程运行——如果问题会影响主任务后续的走向,就不适合用它。",
+          "title": "问题实际上是主任务的一部分",
+          "why": "/btw 是独立于主线程运行的一次性回答——对于需要影响主任务后续走向的问题,这样并不合适。",
           "alternative": "直接在主提示词中提出问题"
+        },
+        {
+          "title": "希望进行包含追问和多轮迭代的多步对话",
+          "why": "/btw 启动的是一个临时的单次响应代理,只用于给出一个回答,而不是用于持续的对话。",
+          "alternative": "使用常规对话,例如通过 /fork 从当前状态分叉出一个新对话"
         }
       ],
       "sources": [
@@ -8635,18 +8748,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "清空终端和当前活动的对话上下文。别名:/new。",
-      "what": "/clear 属于 Utilities 分类,别名 /new。该命令会同时重置终端显示和当前活动的对话上下文——用于在同一会话内进行一次干净的重新开始。",
+      "what": "`/clear` 属于 Antigravity CLI 斜杠命令中的 Utilities(工具)类别,别名 `/new`。该命令会清空提示词,并在同一个终端会话内开启一个新的对话会话:终端显示和当前活跃的对话上下文都会被重置,使代理在完全不了解之前对话内容的情况下重新开始工作。\n\n`/clear` 与仅仅通过 `Strg+L`(`Clear TUI Screen`)重置屏幕不同:后者只清理终端输出,对话上下文保持不变,当前对话会继续进行。`/clear` 也不应与 `Esc Esc` 混淆——只要当前没有正在流式输出,该按键只会清空提示词输入框中当前的一行内容,不会结束对话本身。\n\n`/clear` 并不会让之前的对话历史彻底消失:该会话会被结束并归档,之后可以通过对话选择器(`/resume`,别名 `/switch` 和 `/conversation`)重新调出并继续。",
       "whenGood": [
         {
-          "title": "在同一会话中开始一个新话题",
-          "example": "完成一项任务后、开始全新话题之前执行 /clear"
+          "title": "在同一个会话中开始一个新话题",
+          "example": "在完成一项任务后、开始一个完全不同的新话题之前执行 /clear"
+        },
+        {
+          "title": "经过一次漫长且已完成的调试会话后上下文窗口已满,而接下来的任务也不再需要这些历史记录",
+          "example": "在 bug 修复并验证完成后、开始一项独立的新任务之前执行 /clear"
         }
       ],
       "whenBad": [
         {
-          "title": "想保留之前的对话,以便之后再次查看",
-          "why": "/clear 会清空当前活动的上下文——如果在任务进行中执行,会丢失该线程的工作进度。",
-          "alternative": "使用 /resume 在多个线程之间切换,而不是直接清空"
+          "title": "只是想清理终端输出,同时保留对话上下文",
+          "why": "/clear 除了重置显示内容之外,还会重置当前活跃的对话上下文,并开启一个新会话。",
+          "alternative": "使用 Strg+L,只清空终端输出,而不结束对话"
+        },
+        {
+          "title": "希望在任务进行到一半时保留当前对话,以便之后继续",
+          "why": "/clear 会结束当前活跃的线程并开启一个新会话——如果是在任务进行到一半时使用,会直接失去与之前上下文的连贯性。",
+          "alternative": "使用 /resume 在现有对话之间切换,而不是清空对话"
         }
       ],
       "sources": [

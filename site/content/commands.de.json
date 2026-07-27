@@ -257,21 +257,26 @@
       "slug": "btw",
       "name": "/btw",
       "summary": "Stellt eine schnelle Nebenfrage, ohne sie der Hauptkonversation hinzuzufügen.",
-      "what": "Stellt eine schnelle Nebenfrage, ohne sie der Hauptkonversation hinzuzufügen.",
+      "what": "`/btw` stellt eine kurze Nebenfrage zur laufenden Arbeit, ohne sie der Konversationshistorie hinzuzufügen. Frage und Antwort erscheinen in einem eigenen, schließbaren Overlay und wirken sich nicht auf den Hauptkontext aus. Claude sieht dabei die komplette bisherige Konversation, hat für die Antwort aber keinen Werkzeugzugriff - Dateien lesen, Befehle ausführen oder suchen ist während einer Nebenfrage nicht möglich; die Antwort stützt sich nur auf das, was bereits im Kontext steht.\n\n`/btw` funktioniert auch, während Claude noch an der Hauptantwort arbeitet, und läuft dann unabhängig davon weiter. Ohne Frage öffnet der Befehl erneut das Overlay der letzten Nebenfrage dieser Session, durch das sich mit den Pfeiltasten blättern lässt (seit Version 2.1.212; davor verlangte `/btw` immer eine Frage). Mit der Taste `f` lässt sich eine Antwort bei Bedarf in eine eigene Session mit vollem Werkzeugzugriff verzweigen.\n\nDamit ist `/btw` das Gegenstück zu einem Subagent: voller Konversationskontext, aber keine Tools - ein Subagent hat volle Tools, aber leeren Kontext.",
       "whenGood": [
         {
           "title": "Kurze Zusatzfrage stellen, ohne den Hauptkontext zu belasten",
-          "example": "/btw what does the --frozen-lockfile flag do? — während man mitten in einer Feature-Session ist"
+          "example": "/btw what does the --frozen-lockfile flag do? - während man mitten in einer Feature-Session steckt"
         },
         {
-          "title": "Themenfremde Rückfrage klären, ohne die laufende Konversation zu verzweigen",
-          "example": "/btw is there a Windows equivalent for this bash command?"
+          "title": "Frühere Nebenfrage aus derselben Session nochmal nachlesen",
+          "example": "/btw ohne Text aufrufen, um das Overlay der letzten Nebenfrage erneut zu öffnen und mit den Pfeiltasten durch ältere Antworten zu blättern"
         }
       ],
       "whenBad": [
         {
+          "title": "Antwort erfordert Datei-Lesen, Befehle oder Suche",
+          "why": "Nebenfragen haben laut Doku keinen Werkzeugzugriff und beantworten nur aus dem, was bereits im Kontext steht",
+          "alternative": "normale Nachricht im Hauptchat stellen, oder die Antwort mit der Taste f in eine eigene Session mit vollem Werkzeugzugriff verzweigen"
+        },
+        {
           "title": "Antwort wird später im Hauptkontext gebraucht",
-          "why": "/btw fügt Frage und Antwort nicht der Hauptkonversation hinzu",
+          "why": "/btw fügt Frage und Antwort nicht der Konversationshistorie hinzu",
           "alternative": "normale Nachricht im Hauptchat stellen; bei komplett neuem Thema stattdessen /clear für einen frischen Start"
         }
       ],
@@ -382,22 +387,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Startet eine neue Konversation mit leerem Kontext; die vorherige bleibt über /resume verfügbar.",
-      "what": "Startet eine neue Konversation mit leerem Kontext; die vorherige bleibt über /resume verfügbar.\n\nMit Namen wird die vorherige Konversation in der /resume-Auswahl entsprechend beschriftet. Zum reinen Kontext-Freigeben bei fortlaufender Konversation stattdessen /compact nutzen. Aliase: /reset, /new.",
+      "what": "`/clear` startet eine komplett neue Konversation mit leerem Kontext - alle bisherigen Nachrichten, gelesenen Dateien und Tool-Ergebnisse fallen aus dem aktiven Kontextfenster. Die vorherige Konversation geht dabei nicht verloren: Sie lässt sich über `/resume` wieder aufrufen, oder, innerhalb desselben laufenden Claude-Code-Prozesses, direkt über einen zusätzlichen Eintrag oben im Rewind-Menü (`/rewind`, seit Version 2.1.191).\n\nEin optionaler Name beschriftet die alte Konversation in der `/resume`-Auswahl, damit sie später wiedererkennbar bleibt, etwa `/clear Bugfix-Session`.\n\nVon `/compact` unterscheidet sich `/clear` dadurch, dass `/compact` die laufende Konversation lediglich zusammenfasst und fortsetzt, während `/clear` tatsächlich bei null neu beginnt - sinnvoll bei einem Themenwechsel, nicht beim Fortsetzen derselben Aufgabe mit weniger Kontext. Von Datei-Änderungen im Arbeitsverzeichnis bleibt der Befehl unberührt: Er setzt ausschließlich den Konversationskontext zurück, nicht den bereits geschriebenen Code. Aliase: `/reset`, `/new`.",
       "whenGood": [
         {
           "title": "Neue Konversation zu einem komplett anderen Thema starten",
           "example": "/clear"
         },
         {
-          "title": "Alte Konversation benannt beiseitelegen",
+          "title": "Alte Konversation benannt beiseitelegen, um sie später leicht wiederzufinden",
           "example": "/clear Bugfix-Session"
         }
       ],
       "whenBad": [
         {
           "title": "Nur Kontext freigeben bei fortlaufender Arbeit",
-          "why": "/clear startet eine komplett neue Konversation mit leerem Kontext - laut Doku ist zum reinen Kontext-Freigeben bei fortlaufender Arbeit stattdessen /compact vorgesehen.",
-          "alternative": "/compact"
+          "why": "/clear startet eine komplett neue Konversation mit leerem Kontext - für reines Kontext-Freigeben bei fortlaufender Arbeit ist laut Doku /compact vorgesehen",
+          "alternative": "/compact nutzen"
+        },
+        {
+          "title": "Eine gelöschte Konversation wiederherstellen wollen, nachdem der Claude-Code-Prozess bereits beendet wurde",
+          "why": "der zusätzliche Rewind-Eintrag für die vorherige Session ist laut Doku nur verfügbar, bis man Claude Code beendet oder eine andere Session öffnet",
+          "alternative": "/resume nutzen und die vorherige Session gezielt aus der Liste wählen, solange der Prozess noch läuft"
         }
       ],
       "sources": [
@@ -537,22 +547,27 @@
       "slug": "context",
       "name": "/context",
       "summary": "Visualisiert die aktuelle Kontextnutzung als farbiges Raster mit Optimierungsvorschlägen.",
-      "what": "Visualisiert die aktuelle Kontextnutzung als farbiges Raster mit Optimierungsvorschlägen.\n\nZeigt Hinweise zu kontext-intensiven Tools, Memory-Aufblähung und Kapazitätswarnungen. Argument 'all' klappt die Detailaufschlüsselung aus.",
+      "what": "`/context` zeigt die aktuelle Auslastung des Kontextfensters als farbiges Raster, aufgeschlüsselt nach Kategorien wie Systemprompt, geladenen MCP-Tools und Skills, CLAUDE.md-Dateien, Auto-Memory-Einträgen und Konversationsverlauf. Dazu liefert der Befehl Optimierungsvorschläge, etwa welche Tools besonders viel Kontext verbrauchen oder wo Memory-Dateien aufgebläht sind, und zeigt, welche CLAUDE.md- und Auto-Memory-Dateien tatsächlich geladen wurden.\n\nIm Fullscreen-Rendering-Modus klappt `/context` die Detailaufschlüsselung standardmäßig ein, um das Raster übersichtlich zu halten; das Argument `all` klappt sie wieder aus. Überschreitet die Konversation das Limit des Kontextfensters, zeigt die Ausgabe zusätzlich eine Warnung mit dem genauen Umfang der Überschreitung und dem Befehl, der wieder Platz schafft.\n\nDer Befehl selbst verändert nichts am Kontext - er ist eine reine Diagnoseansicht. Für die tatsächliche Freigabe von Kontext sind `/compact` (zusammenfassen) oder `/clear` (neu starten) zuständig.",
       "whenGood": [
         {
           "title": "Vor einer langen Session-Fortsetzung prüfen, wie viel Kontext noch frei ist",
-          "example": "/context all für die detaillierte Aufschlüsselung"
+          "example": "/context all für die detaillierte Aufschlüsselung nach Kategorien"
         },
         {
           "title": "Ursache für ungewöhnlich hohen Kontextverbrauch finden",
-          "example": "/context, um kontext-intensive Tools oder aufgeblähtes Memory zu identifizieren"
+          "example": "/context, um kontext-intensive Tools oder aufgeblähte Memory-Dateien zu identifizieren"
         }
       ],
       "whenBad": [
         {
           "title": "Kontext tatsächlich freigeben wollen",
           "why": "/context zeigt die Nutzung nur an, ändert aber nichts am Kontext selbst",
-          "alternative": "/compact nutzen, um die Konversation zusammenzufassen und Kontext freizugeben"
+          "alternative": "/compact nutzen, um die Konversation zusammenzufassen und Kontext freizugeben, oder /clear für einen kompletten Neustart"
+        },
+        {
+          "title": "Kontextverbrauch einer geplanten Aufgabe im Voraus abschätzen, bevor sie überhaupt begonnen wurde",
+          "why": "/context zeigt ausschließlich die bereits angefallene Nutzung der laufenden Session, keine Prognose für künftige Schritte",
+          "alternative": "die Aufgabe in kleinere Schritte teilen und zwischendurch erneut /context prüfen"
         }
       ],
       "sources": [
@@ -792,22 +807,27 @@
       "slug": "desktop",
       "name": "/desktop",
       "summary": "Setzt die aktuelle Session in der Claude-Code-Desktop-App fort.",
-      "what": "Setzt die aktuelle Session in der Claude-Code-Desktop-App fort.\n\nBenötigt macOS oder Windows sowie ein Claude-Abo. Alias: /app.",
+      "what": "Übergibt die laufende Terminal-Session nahtlos an die Claude-Code-Desktop-App: Konversation und Kontext werden unverändert übertragen statt neu zu starten. Dort läuft die Session weiter, mit parallelen Sessions, visueller Diff-Ansicht, integriertem Editor und Terminal sowie Live-Vorschau von Apps. Kurzform: `/app`.\n\nDie Commands-Referenz nennt als Voraussetzung weiterhin ausschließlich macOS oder Windows plus ein aktives Claude-Abo; ohne passende Plattform erscheint der Befehl gar nicht erst in der Liste. Seit der Woche vom 29. Juni bis 3. Juli 2026 (Versionen 2.1.195-2.1.201) gibt es die Desktop-App laut einer separaten, als Beta gekennzeichneten Doku-Seite jedoch auch für Linux (Ubuntu 22.04+ oder Debian 12+), inklusive des Code-Tabs für Claude Code. Die Voraussetzungs-Zeile für `/desktop` selbst wurde dort nicht sichtbar aktualisiert - ob die Session-Übergabe damit inzwischen auch unter Linux funktioniert, lässt sich aus den Quellen nicht eindeutig klären.",
       "whenGood": [
         {
-          "title": "Laufende Terminal-Session nahtlos in die Desktop-App übernehmen",
-          "example": "/desktop mitten in einer Session, um auf größerem Bildschirm weiterzuarbeiten"
+          "title": "Laufende Terminal-Session auf größerem Bildschirm mit grafischer Oberfläche fortsetzen",
+          "example": "/desktop mitten in einer Debug-Session ausführen, um zu paralleler Diff-Ansicht und integriertem Editor der Desktop-App zu wechseln"
         },
         {
-          "title": "Von CLI zu GUI-zentrierter Arbeitsweise wechseln, ohne Kontext zu verlieren",
-          "example": "/desktop, wenn man von unterwegs am Laptop auf den Desktop-Rechner wechselt"
+          "title": "Von unterwegs am Laptop auf den Desktop-Rechner wechseln, ohne Kontext zu verlieren",
+          "example": "/desktop, um dieselbe Konversation auf dem Hauptrechner in der App weiterzuführen"
         }
       ],
       "whenBad": [
         {
-          "title": "Linux ohne Claude-Abo",
-          "why": "/desktop benötigt macOS oder Windows sowie ein Claude-Abo",
-          "alternative": "in der Terminal-Session bleiben, oder /remote-control für Fernsteuerung von claude.ai aus nutzen"
+          "title": "Unter Linux reibungslose Session-Übergabe wie unter macOS/Windows erwarten",
+          "why": "die Commands-Referenz listet für /desktop nach wie vor nur macOS/Windows als Voraussetzung; ob die Übergabe zur separat dokumentierten Linux-Beta-App (Ubuntu 22.04+/Debian 12+, seit KW 27/2026) ebenso funktioniert, ist aus den Quellen nicht belegt",
+          "alternative": "die Linux-Beta-App direkt starten und dort prüfen, ob eine gleichwertige Übergabe angeboten wird, oder in der Terminal-Session bleiben"
+        },
+        {
+          "title": "Kein aktives Claude-Abo vorhanden",
+          "why": "ohne ein entsprechendes Abo wird /desktop laut Doku gar nicht erst angezeigt",
+          "alternative": "erst /login und ein Abo einrichten, oder in der Terminal-Session mit API-Key-Authentifizierung weiterarbeiten"
         }
       ],
       "sources": [
@@ -1252,22 +1272,27 @@
       "slug": "hooks",
       "name": "/hooks",
       "summary": "Zeigt Hook-Konfigurationen für Tool-Events.",
-      "what": "Zeigt Hook-Konfigurationen für Tool-Events.",
+      "what": "`/hooks` öffnet einen rein lesenden Browser für alle aktuell konfigurierten Hooks - automatisierte Shell-Befehle, HTTP-Aufrufe, Prompts, Agents oder MCP-Tool-Aufrufe, die zu bestimmten Zeitpunkten im Ablauf von Claude Code greifen, etwa vor oder nach einem Tool-Aufruf. Das Menü listet jedes Hook-Event mit der Anzahl konfigurierter Hooks auf, erlaubt das Aufklappen einzelner Matcher und zeigt zu jedem Hook die vollständigen Details: Event, Matcher, Typ und den genauen Befehl, Prompt-Text oder die URL.\n\nJeder Eintrag ist zusätzlich mit seiner Quelle markiert: `User` (aus `~/.claude/settings.json`), `Project` (`.claude/settings.json`), `Local` (`.claude/settings.local.json`), `Plugin` (aus einem installierten Plugin), `Session` (nur für die laufende Session registriert) oder `Built-in` (intern von Claude Code).\n\nDer Befehl nimmt kein Argument entgegen und verändert nichts - er dient ausschließlich der Übersicht, etwa um zu prüfen, warum ein Tool-Aufruf blockiert oder verändert wurde.",
       "whenGood": [
         {
-          "title": "Prüfen, welche Hooks aktuell für Tool-Events greifen",
-          "example": "Vor dem Hinzufügen eines neuen Pre-Tool-Hooks erst /hooks aufrufen, um Konflikte mit bestehenden Hook-Konfigurationen zu vermeiden."
+          "title": "Vor dem Hinzufügen eines neuen Hooks bestehende Konfiguration prüfen",
+          "example": "/hooks aufrufen, um zu sehen, ob für PreToolUse bereits ein Matcher auf Bash-Befehle greift"
         },
         {
-          "title": "Nachvollziehen, warum ein Tool-Aufruf verändert oder blockiert wurde",
-          "example": "Nach einem unerwartet abgelehnten Bash-Aufruf /hooks öffnen, um zu sehen, ob eine bestehende Hook-Konfiguration dafür verantwortlich ist."
+          "title": "Nachvollziehen, aus welcher Einstellungsdatei ein Hook stammt",
+          "example": "/hooks öffnen und die Quelle-Markierung (User/Project/Local/Plugin) prüfen, wenn ein Hook aus einem installierten Plugin kommt"
         }
       ],
       "whenBad": [
         {
           "title": "Hook-Regeln bearbeiten oder neu konfigurieren",
-          "why": "/hooks zeigt die Konfigurationen nur an, es ist keine Bearbeitungsoberfläche.",
-          "alternative": "Die Hook-Konfiguration direkt in settings.json anpassen (lassen) oder den update-config-Skill nutzen."
+          "why": "/hooks ist laut Doku ein reiner Read-only-Browser, keine Bearbeitungsoberfläche",
+          "alternative": "die Konfiguration direkt in settings.json anpassen (lassen) oder den update-config-Skill nutzen"
+        },
+        {
+          "title": "Herausfinden, warum ein konfigurierter Hook zur Laufzeit fehlschlägt",
+          "why": "/hooks zeigt nur die Konfiguration (Event, Matcher, Befehl), keine Laufzeit-Fehler - die landen laut Doku im Debug-Log",
+          "alternative": "/debug nutzen, um das Session-Debug-Log mit den Hook-Fehlermeldungen einzusehen"
         }
       ],
       "sources": [
@@ -1802,22 +1827,27 @@
       "slug": "plugin",
       "name": "/plugin",
       "summary": "Verwaltet Claude-Code-Plugins.",
-      "what": "Verwaltet Claude-Code-Plugins.\n\nOhne Argument Plugin-Menü. Subcommands list/install/enable/disable wirken direkt.",
+      "what": "`/plugin` verwaltet Claude-Code-Plugins - Erweiterungen, die Skills, Subagents, Hooks oder MCP-Server bündeln. Ohne Argument öffnet sich ein interaktives Menü mit Tabs zum Entdecken, Installieren und Verwalten. Subcommands wirken direkt: `/plugin install <name>@<marketplace>` installiert ein Plugin mit Wahl des Scopes (User, Project oder Local), `/plugin list` listet installierte Plugins auf (optional gefiltert mit `--enabled`/`--disabled`), `/plugin enable`/`/plugin disable` schaltet ein Plugin um, ohne es zu entfernen, und `/plugin uninstall` entfernt es vollständig.\n\nZusätzlich verwaltet `/plugin marketplace add/list/update/remove` die Quellen, aus denen Plugins installiert werden - GitHub-Repos, andere Git-Hosts, lokale Pfade oder URLs; `market` und `rm` funktionieren dabei als Kurzformen für `marketplace` und `remove`.\n\nNach Installation, Aktivierung oder Deaktivierung muss `/reload-plugins` laufen, damit die Änderung ohne Neustart in der laufenden Session wirksam wird.",
       "whenGood": [
         {
-          "title": "Neues Plugin direkt installieren",
-          "example": "/plugin install <name> ausführen, um ein Plugin ohne Umweg über das Menü hinzuzufügen."
+          "title": "Neues Plugin aus einem bekannten Marketplace installieren",
+          "example": "/plugin install github@claude-plugins-official gefolgt von /reload-plugins, um es in der laufenden Session zu aktivieren"
         },
         {
-          "title": "Übersicht aller installierten Plugins einsehen",
-          "example": "/plugin ohne Argument aufrufen, um im Plugin-Menü zu sehen, welche Plugins aktiv oder inaktiv sind."
+          "title": "Installierte, aber ungenutzte Plugins identifizieren",
+          "example": "/plugin ohne Argument öffnen und im Installed-Tab nach der Markierung „Not used recently“ schauen"
         }
       ],
       "whenBad": [
         {
           "title": "Nur bereits aktive Plugins nach einer Dateiänderung neu laden",
-          "why": "/plugin dient der Verwaltung (Liste, Installation, Aktivierung), nicht dem erneuten Laden bereits aktiver Plugins nach Änderungen.",
-          "alternative": "/reload-plugins nutzen, um Änderungen ohne Neustart zu übernehmen."
+          "why": "/plugin dient der Verwaltung (Liste, Installation, Aktivierung), nicht dem erneuten Laden bereits aktiver Plugins nach Änderungen",
+          "alternative": "/reload-plugins nutzen, um Änderungen ohne Neustart zu übernehmen"
+        },
+        {
+          "title": "Ein unbekanntes Drittanbieter-Plugin ungeprüft installieren",
+          "why": "Anthropic kontrolliert laut Doku nicht, welche MCP-Server, Dateien oder Software in Marketplace-Plugins enthalten sind, und kann ihre Funktion nicht verifizieren",
+          "alternative": "vor der Installation Homepage bzw. Repository des Plugins prüfen"
         }
       ],
       "sources": [
@@ -1962,22 +1992,27 @@
       "slug": "release-notes",
       "name": "/release-notes",
       "summary": "Zeigt den Changelog in einer interaktiven Versionsauswahl.",
-      "what": "Zeigt den Changelog in einer interaktiven Versionsauswahl.\n\nBestimmte Version wählbar oder alle anzeigen.",
+      "what": "`/release-notes` öffnet eine interaktive Versionsauswahl für den Claude-Code-Changelog. Wählt man eine bestimmte Version aus, erscheinen deren Release Notes; alternativ lässt sich der komplette Changelog aller Versionen anzeigen.\n\nSeit Version 2.1.208 erscheinen die angezeigten Notes nur im sichtbaren Transkript, ohne in die Konversation aufgenommen zu werden, die Claude als Kontext sieht - der Aufruf kostet also keinen Kontext-Speicherplatz. Vor 2.1.208 wanderten die angezeigten Notes tatsächlich in die Konversation, bei „alle Versionen anzeigen“ sogar der komplette Changelog.\n\nDer Befehl liest nur - er aktualisiert Claude Code nicht und ändert keine Einstellungen. Er eignet sich für die Frage, was sich seit dem letzten Update geändert hat, oder um nachzuschlagen, ob ein bestimmter Fix in einer konkreten Versionsnummer enthalten ist. Dieselben Release Notes lassen sich auch direkt im Browser über die offizielle Doku nachlesen, etwa um darin zu suchen oder einen Eintrag zu verlinken.",
       "whenGood": [
         {
-          "title": "Nach einem Update herausfinden, was sich geändert hat",
-          "example": "/release-notes ausführen, um die Neuerungen der zuletzt installierten Version nachzulesen."
+          "title": "Nach einem automatischen Update herausfinden, was sich geändert hat",
+          "example": "/release-notes ausführen und die zuletzt installierte Version aus der Liste wählen"
         },
         {
-          "title": "Verhalten einer bestimmten Version nachschlagen",
-          "example": "/release-notes mit einer bestimmten Versionsnummer aufrufen, um zu prüfen, ob ein Fix in genau dieser Version enthalten ist."
+          "title": "Prüfen, ob ein bestimmter Fix in einer konkreten Version enthalten ist",
+          "example": "/release-notes öffnen und gezielt die betreffende Versionsnummer aus der Liste auswählen"
         }
       ],
       "whenBad": [
         {
           "title": "Tatsächlich auf die neueste Version aktualisieren",
-          "why": "/release-notes zeigt nur den Changelog an, führt aber selbst kein Update durch.",
-          "alternative": "/upgrade nutzen, um wirklich zu aktualisieren."
+          "why": "/release-notes zeigt nur den Changelog an, führt aber selbst kein Update durch",
+          "alternative": "/upgrade nutzen, um wirklich zu aktualisieren"
+        },
+        {
+          "title": "Auf älteren Claude-Code-Versionen die komplette Historie anzeigen, ohne den Gesprächskontext zu belasten",
+          "why": "vor Version 2.1.208 landete die angezeigte Changelog-Historie in der Konversation - bei „alle Versionen“ der komplette Changelog",
+          "alternative": "auf Claude Code 2.1.208 oder neuer aktualisieren, oder gezielt eine einzelne Version statt aller auswählen"
         }
       ],
       "sources": [
@@ -2322,22 +2357,27 @@
       "slug": "sandbox",
       "name": "/sandbox",
       "summary": "Schaltet den Sandbox-Modus um.",
-      "what": "Schaltet den Sandbox-Modus um.\n\nNur auf unterstützten Plattformen verfügbar.",
+      "what": "`/sandbox` schaltet den isolierten Ausführungsmodus für das Bash-Tool um. Im Sandbox-Modus laufen Shell-Befehle mit eingeschränktem Datei- und Netzwerkzugriff - auf macOS über das eingebaute Seatbelt-Framework, auf Linux und WSL2 über `bubblewrap`. Native Windows-Installationen werden laut Doku nicht unterstützt; dort muss Claude Code innerhalb einer WSL2-Distribution laufen.\n\nDer Aufruf öffnet ein Panel mit den Tabs Mode (automatisches Erlauben oder reguläre Permission-Prompts für sandboxed Befehle), Overrides (ob fehlschlagende Befehle unsandboxed zurückfallen dürfen) und Config (aufgelöste Sandbox-Einstellungen) - auf Linux zusätzlich ein Dependencies-Tab, falls ein Paket wie `bubblewrap` oder der optionale seccomp-Filter fehlt.\n\nWichtig: Der Sandbox-Modus ist kein Permission-Mode. Permission-Modes entscheiden, ob ein Tool-Aufruf überhaupt läuft und ob vorher nachgefragt wird; die Sandbox schränkt dagegen ein, worauf ein bereits gestarteter Bash-Befehl zugreifen darf. Beide lassen sich unabhängig voneinander kombinieren.",
       "whenGood": [
         {
-          "title": "Risikobehaftete Kommandos isoliert testen",
-          "example": "Vor dem Ausführen von unbekanntem, generiertem Code /sandbox aktivieren, um ihn isoliert laufen zu lassen (auf unterstützten Plattformen)."
+          "title": "Risikobehaftete, generierte Shell-Befehle isoliert testen",
+          "example": "vor dem Ausführen von unbekanntem Code /sandbox aktivieren, damit der Befehl nur im Sandbox-Container läuft (auf macOS, Linux oder WSL2)"
         },
         {
-          "title": "Sandbox nach dem Task wieder deaktivieren",
-          "example": "Nach Abschluss des riskanten Schritts /sandbox erneut aufrufen, um zurück in den normalen Modus zu wechseln."
+          "title": "Prüfen, ob eine fehlende Abhängigkeit die Sandbox blockiert",
+          "example": "/sandbox öffnen und den Dependencies-Tab prüfen, falls nur dieser Tab angezeigt wird"
         }
       ],
       "whenBad": [
         {
-          "title": "Nicht unterstützte Plattform",
-          "why": "Sandbox-Modus ist laut Doku nur auf unterstützten Plattformen verfügbar.",
-          "alternative": "In der Sandboxing-Doku prüfen, ob die eigene Plattform unterstützt wird, bevor man den Befehl erwartet."
+          "title": "Native Windows-Installation ohne WSL2",
+          "why": "die Sandbox läuft laut Doku auf macOS, Linux und WSL2 - natives Windows wird nicht unterstützt",
+          "alternative": "Claude Code innerhalb einer WSL2-Distribution ausführen, oder ohne Sandbox mit den regulären Permission-Prompts arbeiten"
+        },
+        {
+          "title": "Tool-Aufrufe grundsätzlich vor jeder Ausführung bestätigen lassen",
+          "why": "die Sandbox ersetzt keine Permission-Prompts, sondern schränkt nur ein, worauf ein bereits laufender Bash-Befehl zugreifen darf",
+          "alternative": "Permission-Modes nutzen, um zu steuern, ob ein Tool-Aufruf überhaupt ausgeführt wird"
         }
       ],
       "sources": [
@@ -2637,22 +2677,27 @@
       "slug": "statusline",
       "name": "/statusline",
       "summary": "Konfiguriert die Statuszeile von Claude Code.",
-      "what": "Konfiguriert die Statuszeile von Claude Code.\n\nBeschreiben, was gewünscht ist, oder ohne Argument für Auto-Konfiguration aus dem Shell-Prompt.",
+      "what": "`/statusline` konfiguriert die anpassbare Statuszeile von Claude Code per natürlichsprachlicher Beschreibung. Man beschreibt, was angezeigt werden soll - etwa Modellname, aktueller Git-Branch, Kontextauslastung als Fortschrittsbalken oder Sitzungskosten -, und Claude Code erzeugt daraus automatisch ein Skript unter `~/.claude/` sowie den passenden Eintrag in den Einstellungen. Ohne Argument leitet der Befehl eine Konfiguration automatisch aus dem bestehenden Shell-Prompt ab.\n\nDie Statuszeile kann mehrzeilig sein und neben Text auch Farben, klickbare Links und dynamische Werte wie Kontext-Prozentsatz, Sitzungsdauer oder Rate-Limit-Auslastung anzeigen. Das zugrunde liegende Skript kann in beliebiger Sprache geschrieben sein (Bash, Python, JavaScript, unter Windows auch PowerShell) und wird bei jeder Aktualisierung neu ausgeführt.\n\nZum Entfernen genügt ein erneuter Aufruf mit entsprechender Anweisung, etwa `/statusline delete`, oder das manuelle Löschen des `statusLine`-Felds in den Einstellungen.",
       "whenGood": [
         {
-          "title": "Eigene Infos in der Statuszeile",
-          "example": "/statusline beschreiben lassen, z.B. 'zeig mir den aktuellen Git-Branch und die Token-Kosten', um die Statuszeile entsprechend zu konfigurieren."
+          "title": "Eigene Infos in der Statuszeile anzeigen lassen",
+          "example": "/statusline zeig mir den aktuellen Git-Branch und die Session-Kosten, um die Statuszeile entsprechend zu konfigurieren"
         },
         {
-          "title": "Automatisch aus Shell-Prompt ableiten",
-          "example": "/statusline ohne Argument aufrufen, damit die Konfiguration automatisch aus dem bestehenden Shell-Prompt abgeleitet wird."
+          "title": "Statuszeile automatisch aus dem bestehenden Shell-Prompt ableiten",
+          "example": "/statusline ohne Argument aufrufen, damit die Konfiguration automatisch aus dem vorhandenen Prompt übernommen wird"
         }
       ],
       "whenBad": [
         {
           "title": "Nur die Farbe der Prompt-Leiste ändern",
-          "why": "/statusline konfiguriert Inhalt/Aufbau der Statuszeile, nicht ihre Farbe.",
-          "alternative": "/color nutzen, um nur die Farbe zu setzen."
+          "why": "/statusline konfiguriert Inhalt und Aufbau der Statuszeile, nicht die Farbe der Eingabezeile",
+          "alternative": "/color nutzen, um nur die Farbe zu setzen"
+        },
+        {
+          "title": "Dieselbe Statuszeile zentral auf vielen Rechnern ausrollen",
+          "why": "/statusline generiert das Skript interaktiv in der eigenen ~/.claude/-Ablage und trägt es in die persönlichen Einstellungen ein",
+          "alternative": "das erzeugte Skript manuell in ein Projekt- oder Team-Repository kopieren und dort in settings.json referenzieren"
         }
       ],
       "sources": [
@@ -4727,18 +4772,27 @@
       "slug": "full-conversation",
       "name": "/full-conversation",
       "summary": "Deaktiviert das performance-optimierte Kurz-Rendering und zeigt den vollen Gesprächsverlauf.",
-      "what": "Lange Konversationen werden standardmäßig nur teilweise neu gezeichnet (nur die letzten Turns), damit Resizes und Resumes schnell bleiben. /full-conversation schaltet dieses Verhalten aus und zeigt wieder den vollständigen Verlauf. Dokumentiert im offiziellen Changelog, (noch) nicht in der Befehls-Referenztabelle.",
+      "what": "Bei langen Sessions zeichnet die Cursor CLI aus Performance-Gründen standardmäßig nicht mehr das komplette Gespräch neu, sondern nur noch die letzten Turns – das hält Terminal-Resizes und das Fortsetzen alter Sessions (`agent resume`, `--continue`) flüssig. `/full-conversation` schaltet dieses Kurz-Rendering aus und lässt die CLI wieder den kompletten bisherigen Verlauf zeichnen. Laut offiziellem CLI-Changelog wurde die Funktion im Mai 2026 zusammen mit weiteren Rendering-Optimierungen eingeführt: „Long conversations redraw instantly. Full repaints render only recent turns (`/full-conversation` to opt out), keeping resizes and resumes fast in old sessions.“\n\nAbzugrenzen von anderen Anzeige-Befehlen wie `/line-numbers` (Zeilennummern in Codeblöcken) oder `/show-thinking` (Denk-Blöcke), die andere Darstellungsdetails steuern, aber nichts am Umfang des sichtbar gerenderten Verlaufs ändern. In der offiziellen Befehls-Referenztabelle der Slash-Commands taucht `/full-conversation` bislang nicht auf, nachweisbar ist der Befehl nur im Changelog.",
       "whenGood": [
         {
           "title": "Den kompletten Gesprächsverlauf einer sehr langen Session durchscrollen",
-          "example": "/full-conversation — an, um ältere Turns wieder einsehen zu können"
+          "example": "/full-conversation, danach mit den Pfeiltasten nach oben scrollen"
+        },
+        {
+          "title": "Vor einem Screenshot oder Copy-Paste der gesamten Diskussion für Dokumentationszwecke",
+          "example": "/full-conversation"
         }
       ],
       "whenBad": [
         {
           "title": "Nur an aktuellen Turns weiterarbeiten, Performance ist wichtiger",
           "why": "Der volle Verlauf macht Resizes und Resumes bei langen Sessions spürbar langsamer.",
-          "alternative": "/full-conversation aus lassen (Standard)"
+          "alternative": "/full-conversation aus lassen (Standardverhalten)"
+        },
+        {
+          "title": "Terminal reagiert bei einer sehr langen Session bereits träge",
+          "why": "Volles Neuzeichnen aller Turns verstärkt genau das Performance-Problem, das das Kurz-Rendering eigentlich löst.",
+          "alternative": "Beim Standardverhalten bleiben und /full-conversation nur kurz für die konkrete Suche aktivieren"
         }
       ],
       "sources": [
@@ -5333,11 +5387,15 @@
       "slug": "agent-resume",
       "name": "agent resume",
       "summary": "Setzt die zuletzt genutzte Chat-Session direkt fort, ohne eine Auswahlliste zu zeigen.",
-      "what": "agent resume lädt die zuletzt genutzte Session inklusive vorherigem Kontext und setzt die Konversation dort fort. Es entspricht --continue bzw. dem Slash-Befehl /resume, jeweils als Kurzform für --resume=-1.",
+      "what": "agent resume ist ein Subcommand der Cursor CLI (aufgerufen über den Befehl `agent`) und lädt die zuletzt genutzte Chat-Session direkt, inklusive des bisherigen Gesprächskontexts. Es ist laut offizieller Parameter-Referenz gleichbedeutend mit der globalen Option `--continue`, die dort explizit als Kurzform für `--resume=-1` dokumentiert ist. Für eine bestimmte, nicht zuletzt genutzte Session dient stattdessen `--resume [chatId]` mit konkreter Chat-ID.\n\nAbzugrenzen ist der Slash-Befehl `/resume`: Er setzt keine Session automatisch fort, sondern öffnet laut Referenz eine Liste zuletzt genutzter Chats zur Auswahl. Wer gezielt eine ältere Session suchen will, nutzt `agent ls`, das ebenfalls eine Auswahlliste anzeigt. Seit Juli 2026 zeigen laut Changelog sowohl `agent ls` als auch der Resume-Picker (`--resume`, `/resume`) standardmäßig Chats aus allen Workspaces, nicht nur aus dem aktuellen Verzeichnis; mit den Pfeiltasten links/rechts lässt sich auf den aktuellen Workspace filtern.",
       "whenGood": [
         {
           "title": "Nach einer Unterbrechung direkt an der letzten Konversation weiterarbeiten",
           "example": "agent resume"
+        },
+        {
+          "title": "In einem Skript oder Terminal-Alias ohne Rückfrage die letzte Session fortsetzen",
+          "example": "agent --continue"
         }
       ],
       "whenBad": [
@@ -5345,6 +5403,11 @@
           "title": "Es soll eine ältere, nicht die zuletzt genutzte Session fortgesetzt werden",
           "why": "agent resume lädt immer nur die zuletzt genutzte Session.",
           "alternative": "agent ls nutzen, um eine bestimmte frühere Session auszuwählen, oder --resume [chatId] mit konkreter ID setzen"
+        },
+        {
+          "title": "Aus mehreren zuletzt genutzten Chats erst gezielt auswählen, statt blind die letzte fortzusetzen",
+          "why": "agent resume überspringt jede Auswahl und lädt sofort die zuletzt genutzte Session, ohne eine Liste anzuzeigen.",
+          "alternative": "/resume nutzen, das eine Auswahlliste zuletzt genutzter Chats öffnet"
         }
       ],
       "sources": [
@@ -5700,10 +5763,14 @@
       "slug": "sandbox-enable",
       "name": "agent sandbox enable",
       "summary": "Aktiviert den Sandbox-Modus für Befehlsausführung.",
-      "what": "agent sandbox enable schaltet den Sandbox-Modus ein: Befehle laufen dann mit Lese-/Schreibzugriff auf den Workspace, aber isoliert von übrigen Systemressourcen (Netzwerk standardmäßig deaktiviert). Die Einstellung persistiert über Sessions hinweg.",
+      "what": "agent sandbox enable ist ein Subcommand von `agent sandbox` und schaltet den Sandbox-Modus dauerhaft ein. Danach laufen Terminalbefehle des Agents mit Lese-/Schreibzugriff auf den Workspace, aber isoliert vom übrigen System; Netzwerkzugriff ist standardmäßig deaktiviert. Laut offizieller CLI-Übersicht persistiert die Einstellung über Sessions hinweg und wird in einer Konfigurationsdatei (`~/.cursor/sandbox.json` global bzw. `.cursor/sandbox.json` projektbezogen, auch über SSH gültig) gespeichert. Gleichbedeutend ist die globale Option `--sandbox enabled`.\n\nAbzugrenzen von `agent sandbox run <cmd>`, das nur einen einzelnen Befehl isoliert ausführt, ohne die dauerhafte Einstellung zu ändern. Für eine schrittweise Konfiguration über ein interaktives Menü, inklusive Netzwerkzugriff, dient stattdessen der Slash-Befehl `/sandbox`, der laut Changelog zwischen den drei Modi Run Everything, Auto-Run in Sandbox und Ask Every Time wechselt. Zum Zurücksetzen auf Standardwerte existiert `agent sandbox reset`.",
       "whenGood": [
         {
           "title": "Dauerhaft isolierte Ausführung von Befehlen für alle künftigen Sessions einschalten",
+          "example": "agent sandbox enable"
+        },
+        {
+          "title": "Beim Einrichten der CLI auf einem neuen Rechner von Anfang an eine sichere Standardeinstellung erzwingen",
           "example": "agent sandbox enable"
         }
       ],
@@ -5712,6 +5779,11 @@
           "title": "Sandbox soll nur für einen einzelnen Befehl gelten, nicht dauerhaft",
           "why": "agent sandbox enable ändert die persistente Konfiguration für alle künftigen Läufe.",
           "alternative": "agent sandbox run <cmd> nutzen, um nur einen einzelnen Befehl isoliert auszuführen"
+        },
+        {
+          "title": "Modus und Netzwerkzugriff sollen interaktiv und feingranular eingestellt werden, nicht nur pauschal an",
+          "why": "agent sandbox enable kennt nur den binären Zustand aktiviert/deaktiviert, keine Zwischenstufen.",
+          "alternative": "/sandbox nutzen für das interaktive Menü mit den drei Modi Run Everything, Auto-Run in Sandbox und Ask Every Time"
         }
       ],
       "sources": [
@@ -5726,11 +5798,15 @@
       "slug": "sandbox-disable",
       "name": "agent sandbox disable",
       "summary": "Deaktiviert den Sandbox-Modus und nutzt stattdessen den Allowlist-Modus.",
-      "what": "agent sandbox disable schaltet den Sandbox-Modus aus. Die CLI fällt dann auf den Allowlist-Modus zurück, bei dem einzelne Befehle manuell freigegeben werden müssen statt automatisch isoliert zu laufen.",
+      "what": "agent sandbox disable ist ein Subcommand von `agent sandbox` und schaltet den Sandbox-Modus dauerhaft aus. Die CLI fällt danach auf den Allowlist-Modus zurück: Einzelne Aktionen wie Shell-Befehle, Datei-Zugriffe, Web-Fetches oder MCP-Tools werden über Permission-Token (z.B. `Shell(git)`, `Read(src/**)`, `WebFetch(*.example.com)`, `Mcp(server:tool)`) in der Projekt- oder globalen Konfiguration freigegeben oder abgelehnt, statt automatisch isoliert zu laufen; Deny-Regeln haben dabei laut Referenz Vorrang vor Allow-Regeln. Gleichbedeutend ist die globale Option `--sandbox disabled`. Laut offizieller CLI-Übersicht persistiert die Einstellung über Sessions hinweg, auch über SSH.\n\nAbzugrenzen von `agent sandbox run <cmd> --network`, das nur für einen einzelnen Befehl Netzwerkzugriff innerhalb der Sandbox erlaubt, ohne die Sandbox insgesamt abzuschalten. Für eine interaktive Feinsteuerung zwischen den drei Modi Run Everything, Auto-Run in Sandbox und Ask Every Time dient stattdessen der Slash-Befehl `/sandbox`.",
       "whenGood": [
         {
           "title": "Sandbox-Einschränkungen (z.B. kein Netzwerk) stören einen bestimmten Workflow dauerhaft",
           "example": "agent sandbox disable"
+        },
+        {
+          "title": "Feingranulare Kontrolle über einzelne Befehle und Pfade per Allowlist statt pauschaler Isolation gewünscht",
+          "example": "agent sandbox disable, danach Permission-Token wie Shell(git) oder Read(src/**) in der Konfiguration setzen"
         }
       ],
       "whenBad": [
@@ -5738,6 +5814,11 @@
           "title": "Netzwerkzugriff wird nur für einen einzelnen Sandbox-Lauf gebraucht",
           "why": "agent sandbox disable schaltet die Sandbox komplett ab statt nur Netzwerk zu erlauben.",
           "alternative": "agent sandbox run <cmd> --network nutzen, um Netzwerk gezielt für einen Lauf zu erlauben"
+        },
+        {
+          "title": "Die Sandbox soll nicht dauerhaft abgeschaltet, sondern nur vorübergehend angepasst werden",
+          "why": "agent sandbox disable ändert die persistente Konfiguration dauerhaft für alle künftigen Sessions.",
+          "alternative": "/sandbox nutzen, um Modus und Netzwerkzugriff interaktiv anzupassen, ohne die Sandbox komplett zu deaktivieren"
         }
       ],
       "sources": [
@@ -8299,19 +8380,28 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-aliases",
       "name": "install.sh --skip-aliases",
-      "summary": "Überspringt beim Installieren die Bereinigung alter agy-/antigravity-Shell-Aliase.",
-      "what": "Das Flag --skip-aliases wird beim Ausführen des Install-Scripts (install.sh/install.ps1/install.cmd) übergeben und verhindert, dass das Script bestehende Legacy-agy- oder antigravity-Shell-Aliase im Shell-Profil bereinigt bzw. aktualisiert.",
+      "summary": "Vom Shell-Installer abgelehnt, unter Windows ungeprüft an die Binary durchgereicht.",
+      "what": "Die Doku-Seite antigravity.google/docs/cli/install listet `--skip-aliases` als Flag, das die Bereinigung alter `agy`-/`antigravity`-Shell-Aliase beim Installieren überspringen soll. Das tatsächlich unter antigravity.google/cli/install.sh ausgelieferte Bootstrapper-Script (239 Zeilen, per curl geprüft am 27.07.2026) kennt dieses Flag jedoch nicht: Sein Argument-Parser akzeptiert ausschließlich `-d`/`--dir` (Zielverzeichnis) und `-h`/`--help`. Jeder andere Parameter, auch `--skip-aliases`, fällt in den `*)`-Fallback-Zweig und erzeugt `[ERROR] Unknown parameter: --skip-aliases` mit anschließendem Abbruch bei Exit-Code 1 — die Installation findet dann gar nicht statt.\n\nHinzu kommt: Eine Suche nach „alias\" im Script liefert keinen Treffer. Das Script nimmt an keiner Stelle Änderungen an Shell-Aliasen vor; es lädt und prüft nur die Binary und übergibt am Ende intern an `agy install` (bzw. `agy.exe install` unter Windows). Der in der Doku beschriebene Zweck des Flags ist damit derzeit gegenstandslos, unabhängig vom übergebenen Parameterwert.\n\nUnter Windows verhält es sich anders: `install.cmd` sammelt unbekannte Parameter in `FORWARD_ARGS` und hängt sie an `SETUP_FLAGS` an, `install.ps1` macht dasselbe über `$passthroughArgs`. Dort führt `--skip-aliases` also nicht zum Abbruch, sondern wird ungeprüft an `agy.exe install` weitergereicht. Ob die Binary den Parameter dann auswertet oder ignoriert, lässt sich von außen nicht feststellen — beobachtbar ist nur, dass der Aufruf nicht scheitert.",
       "whenGood": [
         {
-          "title": "Eigene, manuell gepflegte Shell-Aliase für agy/antigravity behalten",
-          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-aliases"
+          "title": "Vor der Installation selbst prüfen, welche Flags das ausgelieferte Script aktuell tatsächlich akzeptiert",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --help"
+        },
+        {
+          "title": "Nur das tatsächlich unterstützte Flag zur Ziel-Anpassung nutzen; alte Aliase danach selbst im Shell-Profil prüfen und entfernen",
+          "example": "bash install.sh --dir ~/bin"
         }
       ],
       "whenBad": [
         {
-          "title": "Alte, kaputte oder auf eine falsche Binary zeigende Aliase liegen noch im Shell-Profil",
-          "why": "Mit --skip-aliases bereinigt das Installer-Script diese Alt-Aliase gerade nicht automatisch.",
-          "alternative": "Installer ohne --skip-aliases laufen lassen, damit alte Aliase automatisch bereinigt werden"
+          "title": "--skip-aliases im Pipe-Install mitgeben, in Erwartung, dass alte Aliase erhalten bleiben",
+          "why": "Das Script kennt nur -d/--dir und -h/--help; --skip-aliases landet im *)-Fallback, gibt „[ERROR] Unknown parameter: --skip-aliases\" aus und bricht mit Exit-Code 1 ab, bevor überhaupt installiert wird.",
+          "alternative": "Script ohne dieses Flag ausführen oder vorher per --help selbst prüfen, welche Parameter aktuell unterstützt werden"
+        },
+        {
+          "title": "Sich allein auf die Doku-Beschreibung des Flags verlassen, ohne das ausgelieferte Script zu prüfen",
+          "why": "Die Doku-Seite listet --skip-aliases weiterhin, das unter antigravity.google/cli/install.sh live ausgelieferte Script unterstützt es aber nicht (Stand 27.07.2026).",
+          "alternative": "Script vor der Nutzung selbst per curl und --help gegenprüfen, statt der Doku-Tabelle blind zu vertrauen"
         }
       ],
       "sources": [
@@ -8325,19 +8415,28 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-path",
       "name": "install.sh --skip-path",
-      "summary": "Überspringt beim Installieren das automatische Ergänzen des PATH im Shell-Profil.",
-      "what": "Das Flag --skip-path wird beim Ausführen des Install-Scripts übergeben und verhindert, dass die Umgebungsvariable PATH im Shell-Profil automatisch um das Binary-Verzeichnis (~/.local/bin bzw. %LOCALAPPDATA%\\agy\\bin) ergänzt wird.",
+      "summary": "Vom Shell-Installer abgelehnt, unter Windows ungeprüft an die Binary durchgereicht.",
+      "what": "Die Doku-Seite antigravity.google/docs/cli/install listet `--skip-path` als Flag, das die automatische PATH-Ergänzung im Shell-Profil beim Installieren verhindern soll. Das tatsächlich unter antigravity.google/cli/install.sh ausgelieferte Bootstrapper-Script (239 Zeilen, per curl geprüft am 27.07.2026) kennt dieses Flag jedoch nicht: Sein Argument-Parser akzeptiert ausschließlich `-d`/`--dir` (Zielverzeichnis) und `-h`/`--help`. Jeder andere Parameter, auch `--skip-path`, fällt in den `*)`-Fallback-Zweig und erzeugt `[ERROR] Unknown parameter: --skip-path` mit anschließendem Abbruch bei Exit-Code 1 — die Installation findet dann gar nicht statt.\n\nHinzu kommt: Eine Suche nach „PATH=\" im Script liefert nur einen Treffer, die interne Variable `BINARY_PATH` für den Installationsort der Binary. Das Script schreibt an keiner Stelle in ein Shell-Profil und setzt keine PATH-Variable; es lädt und prüft nur die Binary und übergibt am Ende intern an `agy install`. Der in der Doku beschriebene Zweck des Flags ist damit derzeit gegenstandslos, unabhängig vom übergebenen Parameterwert.\n\nUnter Windows verhält es sich anders: `install.cmd` sammelt unbekannte Parameter in `FORWARD_ARGS` und hängt sie an `SETUP_FLAGS` an, `install.ps1` macht dasselbe über `$passthroughArgs`. Dort führt `--skip-path` also nicht zum Abbruch, sondern wird ungeprüft an `agy.exe install` weitergereicht. Ob die Binary den Parameter dann auswertet oder ignoriert, lässt sich von außen nicht feststellen — beobachtbar ist nur, dass der Aufruf nicht scheitert.",
       "whenGood": [
         {
-          "title": "PATH-Eintrag manuell selbst verwalten, z.B. in einer bereits vorhandenen dotfiles-Konfiguration",
-          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-path"
+          "title": "Vor der Installation selbst prüfen, welche Flags das ausgelieferte Script aktuell tatsächlich akzeptiert",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --help"
+        },
+        {
+          "title": "Nur das tatsächlich unterstützte Flag zur Ziel-Anpassung nutzen und PATH danach selbst manuell verwalten",
+          "example": "bash install.sh --dir ~/bin"
         }
       ],
       "whenBad": [
         {
-          "title": "agy soll direkt nach der Installation ohne weiteren manuellen Schritt aus jedem Terminal aufrufbar sein",
-          "why": "Ohne den automatischen PATH-Eintrag findet die Shell das agy-Binary nicht ohne manuelle PATH-Anpassung.",
-          "alternative": "Installer ohne --skip-path laufen lassen"
+          "title": "--skip-path im Pipe-Install mitgeben, in Erwartung, dass PATH unverändert bleibt",
+          "why": "Das Script kennt nur -d/--dir und -h/--help; --skip-path landet im *)-Fallback, gibt „[ERROR] Unknown parameter: --skip-path\" aus und bricht mit Exit-Code 1 ab, bevor überhaupt installiert wird.",
+          "alternative": "Script ohne dieses Flag ausführen oder vorher per --help selbst prüfen, welche Parameter aktuell unterstützt werden"
+        },
+        {
+          "title": "Sich allein auf die Doku-Beschreibung des Flags verlassen, ohne das ausgelieferte Script zu prüfen",
+          "why": "Die Doku-Seite listet --skip-path weiterhin, das unter antigravity.google/cli/install.sh live ausgelieferte Script unterstützt es aber nicht (Stand 27.07.2026).",
+          "alternative": "Script vor der Nutzung selbst per curl und --help gegenprüfen, statt der Doku-Tabelle blind zu vertrauen"
         }
       ],
       "sources": [
@@ -8515,22 +8614,27 @@
       "slug": "add-dir",
       "name": "/add-dir",
       "summary": "Fügt ein zusätzliches Verzeichnis zum aktiven Workspace hinzu.",
-      "what": "/add-dir gehört zur Kategorie Utilities der zentralen Antigravity-CLI-Slash-Command-Referenz. Der Befehl erweitert den aktiven Workspace um ein weiteres Verzeichnis, sodass der Agent auch außerhalb des Start-Verzeichnisses auf Dateien zugreifen kann. Er nimmt einen Pfad als Argument entgegen.",
+      "what": "`/add-dir <pfad>` gehört zur Kategorie Utilities der Antigravity-CLI-Slash-Commands und erweitert den aktiven Workspace um ein zusätzliches Verzeichnis. Standardmäßig sieht der Agent nur das Startverzeichnis der Session; mit `/add-dir` bekommt er zusätzlich Lese- und Schreibzugriff auf einen weiteren Ordner, etwa ein zweites Repository oder ein Geschwister-Verzeichnis im Dateisystem.\n\nDer Befehl nimmt einen Pfad als Pflichtargument entgegen und unterstützt beim Eintippen Shell-artige Pfad-Autovervollständigung. Neu hinzugefügte Verzeichnisse werden sofort für Dateisuche und Autocomplete berücksichtigt, ohne dass die Session neu gestartet werden muss. Zusätzlich zieht `/add-dir` auch die Customization-Discovery des neuen Ordners mit ein: dort abgelegte Skills, Regeln und Hooks werden automatisch erkannt und stehen dem Agenten wie im Hauptverzeichnis zur Verfügung.\n\nAbgrenzung: `/add-dir` bindet ein Verzeichnis dauerhaft für die restliche Konversation ein und gewährt Zugriff auf dessen gesamten Inhalt. Für den einmaligen Verweis auf eine einzelne Datei genügt stattdessen eine `@`-Erwähnung im Prompt, ohne den Workspace dauerhaft zu erweitern.",
       "whenGood": [
         {
-          "title": "Code aus einem zweiten Repo oder Ordner einbeziehen",
+          "title": "Code aus einem zweiten Repository oder Ordner einbeziehen",
           "example": "/add-dir ../shared-lib"
         },
         {
-          "title": "Monorepo-Teilprojekt zur Session hinzufügen",
+          "title": "Monorepo-Teilprojekt zusätzlich zur Session hinzufügen",
           "example": "/add-dir packages/api"
         }
       ],
       "whenBad": [
         {
           "title": "Datei nur einmalig referenzieren",
-          "why": "/add-dir bindet ein ganzes Verzeichnis dauerhaft in den Workspace ein, für eine einmalige Referenz reicht ein Datei-Pfad im Prompt.",
+          "why": "/add-dir bindet ein ganzes Verzeichnis dauerhaft in den Workspace ein, für eine einmalige Referenz ist das unnötig aufwendig.",
           "alternative": "@<pfad> direkt im Prompt verwenden"
+        },
+        {
+          "title": "Verzeichnis enthält sensible Daten, auf die der Agent keinen dauerhaften Zugriff haben soll",
+          "why": "/add-dir gewährt Lese- und Schreibzugriff auf den kompletten Ordnerinhalt und bindet dessen Skills/Regeln/Hooks für den Rest der Konversation ein — mehr Zugriff, als für einen einzelnen Verweis nötig ist.",
+          "alternative": "Nur die konkret benötigte Datei per @<pfad> referenzieren, statt den ganzen Ordner freizugeben"
         }
       ],
       "sources": [
@@ -8609,18 +8713,27 @@
       "slug": "btw",
       "name": "/btw",
       "summary": "Stellt eine Seitenfrage im Hintergrund, ohne die Hauptkonversation zu unterbrechen.",
-      "what": "/btw gehört zur Kategorie Utilities. Der Befehl schickt eine Zusatzfrage als Hintergrund-Task los, während die laufende Hauptkonversation ungestört weiterläuft — praktisch für kurze Nebenfragen, die nicht den aktuellen Kontext des Hauptthreads verbrauchen sollen.",
+      "what": "`/btw <frage>` gehört zur Kategorie Utilities der Antigravity-CLI-Slash-Commands. Der Befehl schickt eine Nebenfrage an einen separaten, ephemeren Single-Response-Agenten, der zwar den Kontext der aktuellen Konversation kennt, aber getrennt vom Hauptthread arbeitet. Die Hauptkonversation läuft währenddessen ungestört weiter, ohne dass die Zusatzfrage deren Kontext oder Tokenverbrauch beeinflusst.\n\nDer Befehl wurde ursprünglich eingeführt, um kurze Seitenfragen zu ermöglichen, ohne den Gesprächsfaden zu unterbrechen; seither wurde er mehrfach überarbeitet, unter anderem um Antworten zu streamen, den Denkprozess des Agenten sichtbar zu machen und die Antwort über Konversationswechsel hinweg zu erhalten.\n\nAbgrenzung: `/btw` erzeugt eine eigenständige, einmalige Antwort außerhalb des Hauptverlaufs. Für Fragen, die den weiteren Verlauf der Hauptaufgabe beeinflussen oder in deren Kontext einfließen sollen, ist der Befehl ungeeignet — dafür gehört die Frage direkt in den Hauptprompt.",
       "whenGood": [
         {
           "title": "Kurze Zusatzfrage stellen, ohne den Haupt-Task zu unterbrechen",
           "example": "/btw was macht diese Funktion in utils.py?"
+        },
+        {
+          "title": "Rückfrage stellen und danach zu einer anderen Konversation wechseln, ohne die Antwort zu verlieren",
+          "example": "/btw wo in der Doku wird das Caching-Verhalten beschrieben?"
         }
       ],
       "whenBad": [
         {
           "title": "Frage ist eigentlich Teil der Hauptaufgabe",
-          "why": "/btw läuft getrennt vom Hauptthread im Hintergrund — für Fragen, die den weiteren Verlauf der Hauptaufgabe beeinflussen sollen, ist das ungeeignet.",
+          "why": "/btw läuft als eigenständige Einmal-Antwort getrennt vom Hauptthread — für Fragen, die den weiteren Verlauf der Hauptaufgabe beeinflussen sollen, ist das ungeeignet.",
           "alternative": "Frage direkt im Hauptprompt stellen"
+        },
+        {
+          "title": "Mehrschrittiger Dialog mit Rückfragen und Iterationen gewünscht",
+          "why": "/btw startet einen ephemeren Single-Response-Agenten für genau eine Antwort, nicht für einen fortlaufenden Dialog.",
+          "alternative": "Eine reguläre Konversation nutzen, z.B. per /fork vom aktuellen Stand abzweigen"
         }
       ],
       "sources": [
@@ -8635,18 +8748,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Leert Terminal und aktive Konversationskontexte. Alias: /new.",
-      "what": "/clear gehört zur Kategorie Utilities, Alias /new. Der Befehl setzt sowohl das Terminal-Display als auch die aktiven Konversationskontexte zurück — für einen sauberen Neustart innerhalb derselben Session.",
+      "what": "`/clear` gehört zur Kategorie Utilities der Antigravity-CLI-Slash-Commands, Alias `/new`. Der Befehl leert den Prompt und startet eine neue Konversationssitzung innerhalb derselben Terminal-Session: sowohl das Terminal-Display als auch der aktive Konversationskontext werden zurückgesetzt, sodass der Agent ohne Vorwissen aus dem vorherigen Gesprächsverlauf weiterarbeitet.\n\nDamit unterscheidet sich `/clear` vom reinen Bildschirm-Reset per `Strg+L` (`Clear TUI Screen`), das nur die Terminalausgabe säubert, den Konversationskontext aber unangetastet lässt und die laufende Konversation fortsetzt. `/clear` ist außerdem nicht mit `Esc Esc` zu verwechseln, das lediglich die aktuelle Eingabezeile im Prompt-Feld leert, sofern gerade kein Streaming aktiv ist, ohne die Konversation selbst zu beenden.\n\nDer bisherige Konversationsverlauf geht bei `/clear` nicht endgültig verloren: Die Sitzung wird beendet und archiviert und lässt sich über den Konversations-Picker (`/resume`, Aliase `/switch` und `/conversation`) später wieder aufrufen und fortsetzen.",
       "whenGood": [
         {
           "title": "Neues Thema in derselben Session beginnen",
           "example": "/clear nach Abschluss einer Aufgabe, bevor ein völlig neues Thema startet"
+        },
+        {
+          "title": "Kontextfenster ist nach einer langen, abgeschlossenen Debugging-Session voll und die Historie wird für die nächste Aufgabe nicht mehr gebraucht",
+          "example": "/clear, sobald der Bug gefixt und verifiziert ist, bevor eine unabhängige neue Aufgabe beginnt"
         }
       ],
       "whenBad": [
         {
-          "title": "Bisherige Konversation soll erhalten bleiben und später wieder aufgerufen werden",
-          "why": "/clear leert den aktiven Kontext — mitten in einer Aufgabe verlierst du damit den Arbeitsstand des Threads.",
-          "alternative": "/resume nutzen, um zwischen Threads zu wechseln, statt zu leeren"
+          "title": "Nur die Terminalausgabe soll gesäubert werden, der Konversationskontext aber erhalten bleiben",
+          "why": "/clear setzt zusätzlich zur Anzeige auch den aktiven Konversationskontext zurück und startet eine neue Sitzung.",
+          "alternative": "Strg+L nutzen, um nur die Terminalausgabe zu leeren, ohne die Konversation zu beenden"
+        },
+        {
+          "title": "Bisherige Konversation soll mitten in der Aufgabe erhalten bleiben und später weitergeführt werden",
+          "why": "/clear beendet den aktiven Thread und startet eine neue Sitzung — mitten in einer Aufgabe geht damit der direkte Anschluss an den bisherigen Kontext verloren.",
+          "alternative": "/resume nutzen, um zwischen bestehenden Konversationen zu wechseln, statt zu leeren"
         }
       ],
       "sources": [

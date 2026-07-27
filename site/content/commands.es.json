@@ -257,22 +257,27 @@
       "slug": "btw",
       "name": "/btw",
       "summary": "Plantea una pregunta secundaria rápida sin añadirla a la conversación principal.",
-      "what": "Plantea una pregunta secundaria rápida sin añadirla a la conversación principal.",
+      "what": "`/btw` plantea una pregunta secundaria breve sobre el trabajo en curso, sin añadirla al historial de la conversación. La pregunta y la respuesta aparecen en una superposición propia que se puede cerrar y no afectan al contexto principal. Claude ve la conversación completa hasta ese momento, pero no tiene acceso a herramientas para responder - leer archivos, ejecutar comandos o buscar no es posible durante una pregunta secundaria; la respuesta se basa solo en lo que ya está en el contexto.\n\n`/btw` funciona también mientras Claude sigue trabajando en la respuesta principal, y en ese caso avanza de forma independiente. Sin una pregunta, el comando vuelve a abrir la superposición de la última pregunta secundaria de esta sesión, por la que se puede navegar con las teclas de flecha (desde la versión 2.1.212; antes, `/btw` siempre requería una pregunta). Con la tecla `f` se puede, si es necesario, derivar una respuesta a una sesión propia con acceso completo a herramientas.\n\nAsí, `/btw` es el equivalente inverso de un subagente: contexto de conversación completo, pero sin herramientas - un subagente tiene herramientas completas, pero el contexto vacío.",
       "whenGood": [
         {
-          "title": "Hacer una pregunta adicional breve sin cargar el contexto principal",
-          "example": "/btw what does the --frozen-lockfile flag do? — estando en medio de una sesión de feature"
+          "title": "Plantear una pregunta adicional breve sin sobrecargar el contexto principal",
+          "example": "/btw what does the --frozen-lockfile flag do? - mientras se está en medio de una sesión de desarrollo de una función"
         },
         {
-          "title": "Aclarar una pregunta ajena al tema sin ramificar la conversación en curso",
-          "example": "/btw is there a Windows equivalent for this bash command?"
+          "title": "Volver a consultar una pregunta secundaria anterior de la misma sesión",
+          "example": "ejecutar /btw sin texto para volver a abrir la superposición de la última pregunta secundaria y navegar por respuestas anteriores con las teclas de flecha"
         }
       ],
       "whenBad": [
         {
-          "title": "La respuesta se necesitará más adelante en el contexto principal",
-          "why": "/btw no añade la pregunta ni la respuesta a la conversación principal",
-          "alternative": "hacer una pregunta normal en el chat principal; si es un tema completamente nuevo, usar /clear para empezar de cero"
+          "title": "La respuesta requiere leer archivos, ejecutar comandos o buscar",
+          "why": "según la documentación, las preguntas secundarias no tienen acceso a herramientas y solo responden con lo que ya está en el contexto",
+          "alternative": "plantear un mensaje normal en el chat principal, o derivar la respuesta con la tecla f a una sesión propia con acceso completo a herramientas"
+        },
+        {
+          "title": "La respuesta se necesitará después en el contexto principal",
+          "why": "/btw no añade la pregunta ni la respuesta al historial de la conversación",
+          "alternative": "plantear un mensaje normal en el chat principal; si el tema es completamente nuevo, usar /clear para empezar de cero"
         }
       ],
       "sources": [
@@ -382,22 +387,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Inicia una nueva conversación con el contexto vacío; la anterior sigue disponible mediante /resume.",
-      "what": "Inicia una nueva conversación con el contexto vacío; la anterior sigue disponible mediante /resume.\n\nCon un nombre, la conversación anterior queda etiquetada en consecuencia en el selector de /resume. Para simplemente liberar contexto en una conversación que continúa, usar /compact en su lugar. Alias: /reset, /new.",
+      "what": "`/clear` inicia una conversación completamente nueva con el contexto vacío - todos los mensajes anteriores, archivos leídos y resultados de herramientas desaparecen de la ventana de contexto activa. La conversación anterior no se pierde: se puede volver a abrir con `/resume`, o, dentro del mismo proceso de Claude Code en curso, directamente mediante una entrada adicional en la parte superior del menú de retroceso (`/rewind`, desde la versión 2.1.191).\n\nUn nombre opcional etiqueta la conversación antigua en el selector de `/resume`, para que siga siendo reconocible más adelante, por ejemplo `/clear Bugfix-Session`.\n\n`/clear` se diferencia de `/compact` en que `/compact` solo resume y continúa la conversación en curso, mientras que `/clear` realmente empieza de cero - útil al cambiar de tema, no al continuar la misma tarea con menos contexto. El comando no afecta a los cambios de archivos en el directorio de trabajo: solo restablece el contexto de la conversación, no el código ya escrito. Alias: `/reset`, `/new`.",
       "whenGood": [
         {
           "title": "Iniciar una nueva conversación sobre un tema completamente distinto",
           "example": "/clear"
         },
         {
-          "title": "Dejar de lado la conversación anterior con un nombre",
-          "example": "/clear sesión de bugfix"
+          "title": "Guardar una conversación antigua con un nombre para volver a encontrarla fácilmente más adelante",
+          "example": "/clear Bugfix-Session"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo se quiere liberar contexto mientras el trabajo continúa",
-          "why": "/clear inicia una conversación completamente nueva con el contexto vacío - según la documentación, para simplemente liberar contexto en un trabajo que continúa está pensado /compact en su lugar.",
-          "alternative": "/compact"
+          "title": "Solo liberar contexto durante un trabajo en curso",
+          "why": "/clear inicia una conversación completamente nueva con el contexto vacío - según la documentación, para liberar contexto sin más durante un trabajo en curso está previsto /compact",
+          "alternative": "usar /compact"
+        },
+        {
+          "title": "Querer restaurar una conversación eliminada después de que el proceso de Claude Code ya haya finalizado",
+          "why": "según la documentación, la entrada adicional de retroceso para la sesión anterior solo está disponible hasta que se cierra Claude Code o se abre otra sesión",
+          "alternative": "usar /resume y elegir específicamente la sesión anterior de la lista, mientras el proceso siga en ejecución"
         }
       ],
       "sources": [
@@ -537,22 +547,27 @@
       "slug": "context",
       "name": "/context",
       "summary": "Visualiza el uso actual del contexto como una cuadrícula en color con sugerencias de optimización.",
-      "what": "Visualiza el uso actual del contexto como una cuadrícula en color con sugerencias de optimización.\n\nMuestra indicaciones sobre tools que consumen mucho contexto, hinchazón de memory y avisos de capacidad. El argumento 'all' despliega el desglose detallado.",
+      "what": "`/context` muestra el uso actual de la ventana de contexto como una cuadrícula en color, desglosada por categorías como el system prompt, las herramientas MCP y skills cargadas, los archivos CLAUDE.md, las entradas de auto-memoria y el historial de la conversación. Además, el comando ofrece sugerencias de optimización, por ejemplo qué herramientas consumen especialmente mucho contexto o dónde los archivos de memoria están sobrecargados, y muestra qué archivos CLAUDE.md y de auto-memoria se cargaron realmente.\n\nEn el modo de renderizado a pantalla completa, `/context` colapsa el desglose detallado por defecto para mantener la cuadrícula ordenada; el argumento `all` vuelve a expandirlo. Si la conversación supera el límite de la ventana de contexto, la salida muestra además una advertencia con el alcance exacto del exceso y el comando que vuelve a liberar espacio.\n\nEl comando en sí no modifica nada del contexto - es solo una vista de diagnóstico. Para liberar contexto de verdad están `/compact` (resumir) o `/clear` (reiniciar).",
       "whenGood": [
         {
-          "title": "Comprobar antes de continuar una sesión larga cuánto contexto queda libre",
-          "example": "/context all para el desglose detallado"
+          "title": "Comprobar cuánto contexto queda libre antes de continuar una sesión larga",
+          "example": "/context all para el desglose detallado por categorías"
         },
         {
           "title": "Encontrar la causa de un consumo de contexto inusualmente alto",
-          "example": "/context, para identificar tools que consumen mucho contexto o memory hinchado"
+          "example": "/context, para identificar herramientas que consumen mucho contexto o archivos de memoria sobrecargados"
         }
       ],
       "whenBad": [
         {
           "title": "Querer liberar contexto de verdad",
           "why": "/context solo muestra el uso, pero no cambia nada del contexto en sí",
-          "alternative": "usar /compact para resumir la conversación y liberar contexto"
+          "alternative": "usar /compact para resumir la conversación y liberar contexto, o /clear para reiniciar por completo"
+        },
+        {
+          "title": "Estimar de antemano el consumo de contexto de una tarea planeada antes incluso de empezarla",
+          "why": "/context muestra exclusivamente el uso ya generado en la sesión en curso, no una previsión de pasos futuros",
+          "alternative": "dividir la tarea en pasos más pequeños y comprobar /context de nuevo entre medias"
         }
       ],
       "sources": [
@@ -792,22 +807,27 @@
       "slug": "desktop",
       "name": "/desktop",
       "summary": "Continúa la sesión actual en la app de escritorio de Claude Code.",
-      "what": "Continúa la sesión actual en la app de escritorio de Claude Code.\n\nRequiere macOS o Windows, además de una suscripción a Claude. Alias: /app.",
+      "what": "Transfiere la sesión de terminal en curso a la aplicación de escritorio Claude Code sin interrupciones: la conversación y el contexto se transfieren sin cambios en lugar de reiniciar. Allí la sesión continúa, con sesiones en paralelo, vista de diferencias visual, editor y terminal integrados, y vista previa en vivo de las aplicaciones. Forma abreviada: `/app`.\n\nLa referencia de comandos sigue indicando como único requisito macOS o Windows más una suscripción activa de Claude; sin una plataforma compatible, el comando ni siquiera aparece en la lista. Desde la semana del 29 de junio al 3 de julio de 2026 (versiones 2.1.195-2.1.201), según una página de documentación aparte marcada como beta, la aplicación de escritorio también existe para Linux (Ubuntu 22.04+ o Debian 12+), incluida la pestaña Code para Claude Code. La línea de requisitos de `/desktop` en sí no se actualizó de forma visible allí - a partir de las fuentes no se puede determinar con claridad si la transferencia de sesión funciona ya también en Linux.",
       "whenGood": [
         {
-          "title": "Trasladar sin fisuras una sesión de terminal en curso a la app de escritorio",
-          "example": "/desktop en mitad de una sesión, para seguir trabajando en una pantalla más grande"
+          "title": "Continuar una sesión de terminal en curso en una pantalla más grande con interfaz gráfica",
+          "example": "Ejecutar /desktop en medio de una sesión de depuración para pasar a la vista de diferencias en paralelo y al editor integrado de la aplicación de escritorio"
         },
         {
-          "title": "Cambiar de la CLI a un flujo de trabajo centrado en GUI sin perder contexto",
-          "example": "/desktop al pasar del portátil en movimiento al equipo de escritorio"
+          "title": "Cambiar desde el portátil en movimiento al ordenador de escritorio sin perder el contexto",
+          "example": "/desktop, para continuar la misma conversación en el ordenador principal dentro de la aplicación"
         }
       ],
       "whenBad": [
         {
-          "title": "Linux sin suscripción a Claude",
-          "why": "/desktop requiere macOS o Windows, además de una suscripción a Claude",
-          "alternative": "quedarse en la sesión de terminal, o usar /remote-control para el control remoto desde claude.ai"
+          "title": "Esperar una transferencia de sesión tan fluida en Linux como en macOS/Windows",
+          "why": "la referencia de comandos sigue indicando solo macOS/Windows como requisito para /desktop; las fuentes no confirman si la transferencia funciona igual con la aplicación beta de Linux documentada por separado (Ubuntu 22.04+/Debian 12+, desde la semana 27/2026)",
+          "alternative": "iniciar directamente la aplicación beta de Linux y comprobar allí si se ofrece una transferencia equivalente, o permanecer en la sesión de terminal"
+        },
+        {
+          "title": "No hay una suscripción activa de Claude",
+          "why": "sin la suscripción correspondiente, /desktop ni siquiera se muestra, según la documentación",
+          "alternative": "primero ejecutar /login y configurar una suscripción, o seguir trabajando en la sesión de terminal con autenticación mediante clave de API"
         }
       ],
       "sources": [
@@ -1252,22 +1272,27 @@
       "slug": "hooks",
       "name": "/hooks",
       "summary": "Muestra las configuraciones de hooks para eventos de herramientas.",
-      "what": "Muestra las configuraciones de hooks para eventos de herramientas.",
+      "what": "`/hooks` abre un navegador de solo lectura para todos los hooks configurados actualmente: comandos de shell automatizados, llamadas HTTP, prompts, agentes o llamadas a herramientas MCP que se activan en momentos determinados del flujo de Claude Code, por ejemplo antes o después de una llamada a una herramienta. El menú lista cada evento de hook con el número de hooks configurados, permite desplegar matchers individuales y muestra para cada hook todos los detalles: evento, matcher, tipo y el comando, texto de prompt o URL exactos.\n\nCada entrada está además marcada con su origen: `User` (desde `~/.claude/settings.json`), `Project` (`.claude/settings.json`), `Local` (`.claude/settings.local.json`), `Plugin` (desde un plugin instalado), `Session` (registrado solo para la sesión en curso) o `Built-in` (interno de Claude Code).\n\nEl comando no admite ningún argumento y no modifica nada - sirve exclusivamente para obtener una visión general, por ejemplo para comprobar por qué se bloqueó o modificó una llamada a una herramienta.",
       "whenGood": [
         {
-          "title": "Comprobar qué hooks están activos actualmente para eventos de herramientas",
-          "example": "Antes de añadir un nuevo hook pre-tool, ejecutar /hooks para evitar conflictos con las configuraciones de hooks existentes."
+          "title": "Comprobar la configuración existente antes de añadir un nuevo hook",
+          "example": "Ejecutar /hooks para ver si ya existe un matcher para PreToolUse que actúe sobre comandos Bash"
         },
         {
-          "title": "Entender por qué se modificó o bloqueó una llamada a una herramienta",
-          "example": "Tras el rechazo inesperado de una llamada a Bash, abrir /hooks para ver si una configuración de hook existente es la responsable."
+          "title": "Averiguar de qué archivo de configuración proviene un hook",
+          "example": "Abrir /hooks y comprobar la marca de origen (User/Project/Local/Plugin) cuando un hook proviene de un plugin instalado"
         }
       ],
       "whenBad": [
         {
-          "title": "Editar o reconfigurar las reglas de los hooks",
-          "why": "/hooks solo muestra las configuraciones, no es una interfaz de edición.",
-          "alternative": "Ajustar (o pedir que se ajuste) la configuración de hooks directamente en settings.json, o usar el skill update-config."
+          "title": "Editar o reconfigurar reglas de hooks",
+          "why": "según la documentación, /hooks es solo un navegador de lectura, no una interfaz de edición",
+          "alternative": "ajustar la configuración directamente en settings.json (o pedir que se ajuste), o usar el skill update-config"
+        },
+        {
+          "title": "Averiguar por qué un hook configurado falla en tiempo de ejecución",
+          "why": "/hooks solo muestra la configuración (evento, matcher, comando), no los errores en tiempo de ejecución - según la documentación, esos quedan registrados en el log de depuración",
+          "alternative": "usar /debug para consultar el log de depuración de la sesión con los mensajes de error de los hooks"
         }
       ],
       "sources": [
@@ -1802,22 +1827,27 @@
       "slug": "plugin",
       "name": "/plugin",
       "summary": "Gestiona los plugins de Claude Code.",
-      "what": "Gestiona los plugins de Claude Code.\n\nSin argumento, abre el menú de plugins. Los subcomandos list/install/enable/disable actúan directamente.",
+      "what": "`/plugin` gestiona los plugins de Claude Code - extensiones que agrupan skills, subagentes, hooks o servidores MCP. Sin argumento se abre un menú interactivo con pestañas para descubrir, instalar y gestionar. Los subcomandos actúan directamente: `/plugin install <name>@<marketplace>` instala un plugin con elección del alcance (User, Project o Local), `/plugin list` lista los plugins instalados (opcionalmente filtrado con `--enabled`/`--disabled`), `/plugin enable`/`/plugin disable` activa o desactiva un plugin sin eliminarlo, y `/plugin uninstall` lo elimina por completo.\n\nAdemás, `/plugin marketplace add/list/update/remove` gestiona las fuentes desde las que se instalan los plugins - repositorios de GitHub, otros alojamientos Git, rutas locales o URLs; `market` y `rm` funcionan como formas abreviadas de `marketplace` y `remove`.\n\nTras instalar, activar o desactivar, hay que ejecutar `/reload-plugins` para que el cambio surta efecto en la sesión en curso sin reiniciar.",
       "whenGood": [
         {
-          "title": "Instalar un plugin nuevo directamente",
-          "example": "Ejecuta /plugin install <name> para añadir un plugin sin pasar por el menú."
+          "title": "Instalar un nuevo plugin desde un marketplace conocido",
+          "example": "/plugin install github@claude-plugins-official seguido de /reload-plugins, para activarlo en la sesión en curso"
         },
         {
-          "title": "Ver el resumen de todos los plugins instalados",
-          "example": "Ejecuta /plugin sin argumentos para ver en el menú de plugins cuáles están activos o inactivos."
+          "title": "Identificar plugins instalados pero sin usar",
+          "example": "Abrir /plugin sin argumento y buscar en la pestaña Installed la marca «Not used recently»"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo quieres recargar los plugins ya activos tras un cambio en un archivo",
-          "why": "/plugin sirve para la gestión (listar, instalar, activar), no para recargar plugins ya activos tras cambios.",
-          "alternative": "Usa /reload-plugins para aplicar los cambios sin reiniciar."
+          "title": "Recargar solo plugins ya activos tras un cambio de archivo",
+          "why": "/plugin sirve para la gestión (listado, instalación, activación), no para recargar plugins ya activos tras cambios",
+          "alternative": "usar /reload-plugins para aplicar los cambios sin reiniciar"
+        },
+        {
+          "title": "Instalar sin comprobar un plugin desconocido de terceros",
+          "why": "según la documentación, Anthropic no controla qué servidores MCP, archivos o software contienen los plugins del marketplace, ni puede verificar su funcionamiento",
+          "alternative": "comprobar la página web o el repositorio del plugin antes de instalarlo"
         }
       ],
       "sources": [
@@ -1962,22 +1992,27 @@
       "slug": "release-notes",
       "name": "/release-notes",
       "summary": "Muestra el changelog en un selector interactivo de versiones.",
-      "what": "Muestra el changelog en un selector interactivo de versiones.\n\nSe puede elegir una versión concreta o mostrarlas todas.",
+      "what": "`/release-notes` abre un selector interactivo de versiones para el registro de cambios de Claude Code. Al elegir una versión determinada aparecen sus notas de la versión; alternativamente se puede mostrar el registro de cambios completo de todas las versiones.\n\nDesde la versión 2.1.208, las notas mostradas aparecen solo en la transcripción visible, sin incorporarse a la conversación que Claude ve como contexto - por lo tanto, la llamada no consume espacio de contexto. Antes de la 2.1.208, las notas mostradas sí pasaban a la conversación, y al mostrar «todas las versiones» incluso el registro de cambios completo.\n\nEl comando solo lee - no actualiza Claude Code ni modifica ninguna configuración. Es útil para saber qué ha cambiado desde la última actualización, o para comprobar si una corrección concreta está incluida en un número de versión determinado. Las mismas notas de la versión también se pueden consultar directamente en el navegador a través de la documentación oficial, por ejemplo para buscar en ellas o enlazar una entrada.",
       "whenGood": [
         {
-          "title": "Descubrir qué ha cambiado tras una actualización",
-          "example": "Ejecuta /release-notes para repasar las novedades de la última versión instalada."
+          "title": "Averiguar qué ha cambiado tras una actualización automática",
+          "example": "Ejecutar /release-notes y elegir de la lista la versión instalada más reciente"
         },
         {
-          "title": "Consultar el comportamiento de una versión concreta",
-          "example": "Ejecuta /release-notes con un número de versión concreto para comprobar si un fix está incluido exactamente en esa versión."
+          "title": "Comprobar si una corrección concreta está incluida en una versión determinada",
+          "example": "Abrir /release-notes y seleccionar de forma específica el número de versión correspondiente de la lista"
         }
       ],
       "whenBad": [
         {
-          "title": "Actualizar realmente a la última versión",
-          "why": "/release-notes solo muestra el changelog, pero no realiza ninguna actualización por sí mismo.",
-          "alternative": "Usa /upgrade para actualizar de verdad."
+          "title": "Actualizar realmente a la versión más reciente",
+          "why": "/release-notes solo muestra el registro de cambios, pero no realiza ninguna actualización por sí mismo",
+          "alternative": "usar /upgrade para actualizar de verdad"
+        },
+        {
+          "title": "Mostrar el historial completo en versiones antiguas de Claude Code sin sobrecargar el contexto de la conversación",
+          "why": "antes de la versión 2.1.208, el historial de cambios mostrado pasaba a la conversación - con «todas las versiones», incluso el registro de cambios completo",
+          "alternative": "actualizar a Claude Code 2.1.208 o una versión posterior, o seleccionar específicamente una sola versión en lugar de todas"
         }
       ],
       "sources": [
@@ -2322,22 +2357,27 @@
       "slug": "sandbox",
       "name": "/sandbox",
       "summary": "Activa o desactiva el modo sandbox.",
-      "what": "Activa o desactiva el modo sandbox.\n\nSolo disponible en plataformas compatibles.",
+      "what": "`/sandbox` activa o desactiva el modo de ejecución aislado para la herramienta Bash. En modo sandbox, los comandos de shell se ejecutan con acceso restringido a archivos y red - en macOS mediante el framework integrado Seatbelt, en Linux y WSL2 mediante `bubblewrap`. Según la documentación, las instalaciones nativas de Windows no son compatibles; allí Claude Code debe ejecutarse dentro de una distribución WSL2.\n\nLa llamada abre un panel con las pestañas Mode (permitir automáticamente o solicitudes de permiso habituales para comandos en sandbox), Overrides (si los comandos que fallan pueden repetirse sin sandbox) y Config (configuración resuelta del sandbox) - en Linux, además, una pestaña Dependencies si falta un paquete como `bubblewrap` o el filtro seccomp opcional.\n\nImportante: el modo sandbox no es un modo de permisos. Los modos de permisos deciden si una llamada a una herramienta se ejecuta siquiera y si se pregunta antes; el sandbox, en cambio, restringe a qué puede acceder un comando Bash ya iniciado. Ambos se pueden combinar de forma independiente.",
       "whenGood": [
         {
-          "title": "Probar comandos de riesgo de forma aislada",
-          "example": "Antes de ejecutar código generado desconocido, activar /sandbox para que se ejecute de forma aislada (en plataformas compatibles)."
+          "title": "Probar de forma aislada comandos de shell generados y potencialmente riesgosos",
+          "example": "activar /sandbox antes de ejecutar código desconocido, para que el comando se ejecute solo dentro del contenedor sandbox (en macOS, Linux o WSL2)"
         },
         {
-          "title": "Desactivar de nuevo el sandbox tras la tarea",
-          "example": "Tras completar el paso de riesgo, volver a invocar /sandbox para regresar al modo normal."
+          "title": "Comprobar si una dependencia faltante bloquea el sandbox",
+          "example": "abrir /sandbox y revisar la pestaña Dependencies si es la única que se muestra"
         }
       ],
       "whenBad": [
         {
-          "title": "Plataforma no compatible",
-          "why": "Según la documentación, el modo sandbox solo está disponible en plataformas compatibles.",
-          "alternative": "Comprobar en la documentación de sandboxing si la propia plataforma es compatible antes de esperar que el comando funcione."
+          "title": "Instalación nativa de Windows sin WSL2",
+          "why": "según la documentación, el sandbox funciona en macOS, Linux y WSL2 - Windows nativo no es compatible",
+          "alternative": "ejecutar Claude Code dentro de una distribución WSL2, o trabajar sin sandbox con las solicitudes de permiso habituales"
+        },
+        {
+          "title": "Requerir confirmación de las llamadas a herramientas antes de cada ejecución, en general",
+          "why": "el sandbox no sustituye las solicitudes de permiso, solo restringe a qué puede acceder un comando Bash ya en ejecución",
+          "alternative": "usar los modos de permisos para controlar si una llamada a una herramienta se ejecuta siquiera"
         }
       ],
       "sources": [
@@ -2637,22 +2677,27 @@
       "slug": "statusline",
       "name": "/statusline",
       "summary": "Configura la línea de estado de Claude Code.",
-      "what": "Configura la línea de estado de Claude Code.\n\nDescribe lo que se desea, o úsalo sin argumento para una configuración automática a partir del prompt de la shell.",
+      "what": "`/statusline` configura la barra de estado personalizable de Claude Code mediante una descripción en lenguaje natural. Se describe lo que debe mostrarse - por ejemplo el nombre del modelo, la rama de Git actual, el uso de contexto como barra de progreso o el coste de la sesión -, y Claude Code genera automáticamente a partir de eso un script en `~/.claude/`, así como la entrada correspondiente en la configuración. Sin argumento, el comando deriva automáticamente una configuración a partir del prompt de shell existente.\n\nLa barra de estado puede tener varias líneas y mostrar, además de texto, colores, enlaces en los que se puede hacer clic y valores dinámicos como el porcentaje de contexto, la duración de la sesión o el uso del límite de solicitudes. El script subyacente puede escribirse en cualquier lenguaje (Bash, Python, JavaScript, y en Windows también PowerShell) y se vuelve a ejecutar en cada actualización.\n\nPara eliminarla basta con volver a ejecutar el comando con la instrucción correspondiente, por ejemplo `/statusline delete`, o borrar manualmente el campo `statusLine` en la configuración.",
       "whenGood": [
         {
-          "title": "Información propia en la línea de estado",
-          "example": "Describir a /statusline, por ejemplo 'muéstrame el branch de Git actual y el coste de tokens', para configurar la línea de estado en consecuencia."
+          "title": "Mostrar información propia en la barra de estado",
+          "example": "/statusline muéstrame la rama de Git actual y el coste de la sesión, para configurar la barra de estado en consecuencia"
         },
         {
-          "title": "Derivar automáticamente del prompt de la shell",
-          "example": "Invocar /statusline sin argumento para que la configuración se derive automáticamente del prompt de shell existente."
+          "title": "Derivar la barra de estado automáticamente a partir del prompt de shell existente",
+          "example": "ejecutar /statusline sin argumento, para que la configuración se tome automáticamente del prompt existente"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo cambiar el color de la barra del prompt",
-          "why": "/statusline configura el contenido/estructura de la línea de estado, no su color.",
-          "alternative": "Usar /color para fijar solo el color."
+          "title": "Cambiar solo el color de la barra de prompt",
+          "why": "/statusline configura el contenido y la estructura de la barra de estado, no el color de la línea de entrada",
+          "alternative": "usar /color para establecer solo el color"
+        },
+        {
+          "title": "Desplegar de forma centralizada la misma barra de estado en muchos ordenadores",
+          "why": "/statusline genera el script de forma interactiva en la propia carpeta ~/.claude/ y lo registra en la configuración personal",
+          "alternative": "copiar manualmente el script generado a un repositorio de proyecto o de equipo y referenciarlo allí en settings.json"
         }
       ],
       "sources": [
@@ -4727,18 +4772,27 @@
       "slug": "full-conversation",
       "name": "/full-conversation",
       "summary": "Desactiva el renderizado corto optimizado para el rendimiento y muestra el historial de conversación completo.",
-      "what": "Por defecto, las conversaciones largas solo se vuelven a dibujar parcialmente (solo los últimos turnos), para que los resizes y resumes sigan siendo rápidos. /full-conversation desactiva este comportamiento y vuelve a mostrar el historial completo. Documentado en el changelog oficial, (aún) no en la tabla de referencia de comandos.",
+      "what": "En sesiones largas, por motivos de rendimiento, la CLI de Cursor ya no vuelve a dibujar por defecto la conversación completa, sino solo los últimos turnos - esto mantiene fluidos los cambios de tamaño del terminal y la reanudación de sesiones antiguas (`agent resume`, `--continue`). `/full-conversation` desactiva este renderizado abreviado y hace que la CLI vuelva a dibujar todo el historial anterior. Según el registro de cambios oficial de la CLI, la función se introdujo en mayo de 2026 junto con otras optimizaciones de renderizado: «Long conversations redraw instantly. Full repaints render only recent turns (`/full-conversation` to opt out), keeping resizes and resumes fast in old sessions.»\n\nHay que distinguirlo de otros comandos de visualización como `/line-numbers` (números de línea en bloques de código) o `/show-thinking` (bloques de razonamiento), que controlan otros detalles de presentación pero no cambian el alcance del historial renderizado visible. En la tabla de referencia oficial de comandos slash, `/full-conversation` no aparece por el momento; el comando solo puede verificarse en el registro de cambios.",
       "whenGood": [
         {
-          "title": "Recorrer el historial de conversación completo de una sesión muy larga",
-          "example": "/full-conversation — activarlo para poder volver a ver turnos antiguos"
+          "title": "Desplazarse por el historial completo de la conversación en una sesión muy larga",
+          "example": "/full-conversation, y después desplazarse hacia arriba con las teclas de flecha"
+        },
+        {
+          "title": "Antes de hacer una captura de pantalla o copiar y pegar toda la discusión con fines de documentación",
+          "example": "/full-conversation"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo seguir trabajando en los turnos actuales, el rendimiento importa más",
-          "why": "El historial completo hace notablemente más lentos los resizes y resumes en sesiones largas.",
-          "alternative": "Dejar /full-conversation desactivado (por defecto)"
+          "title": "Seguir trabajando solo con los turnos actuales, cuando el rendimiento es más importante",
+          "why": "El historial completo hace que los cambios de tamaño y las reanudaciones sean notablemente más lentos en sesiones largas.",
+          "alternative": "dejar /full-conversation desactivado (comportamiento por defecto)"
+        },
+        {
+          "title": "El terminal ya responde con lentitud en una sesión muy larga",
+          "why": "Volver a dibujar todos los turnos por completo agrava justamente el problema de rendimiento que el renderizado abreviado pretende resolver.",
+          "alternative": "mantener el comportamiento por defecto y activar /full-conversation solo brevemente para la búsqueda concreta"
         }
       ],
       "sources": [
@@ -5333,18 +5387,27 @@
       "slug": "agent-resume",
       "name": "agent resume",
       "summary": "Retoma directamente la sesión de chat usada más recientemente, sin mostrar una lista de selección.",
-      "what": "agent resume carga la sesión usada más recientemente, junto con su contexto anterior, y continúa la conversación ahí. Equivale a --continue o al comando /resume, ambos como forma abreviada de --resume=-1.",
+      "what": "agent resume es un subcomando de la CLI de Cursor (invocado mediante el comando `agent`) y carga directamente la sesión de chat usada más recientemente, incluido el contexto de conversación anterior. Según la referencia oficial de parámetros, equivale a la opción global `--continue`, que allí se documenta explícitamente como forma abreviada de `--resume=-1`. Para una sesión determinada que no sea la usada más recientemente, se utiliza en su lugar `--resume [chatId]` con el ID de chat concreto.\n\nHay que distinguirlo del comando slash `/resume`: este no continúa automáticamente ninguna sesión, sino que, según la referencia, abre una lista de chats usados recientemente para elegir. Quien quiera buscar específicamente una sesión más antigua usa `agent ls`, que también muestra una lista de selección. Desde julio de 2026, según el registro de cambios, tanto `agent ls` como el selector de reanudación (`--resume`, `/resume`) muestran por defecto chats de todos los workspaces, no solo del directorio actual; con las teclas de flecha izquierda/derecha se puede filtrar por el workspace actual.",
       "whenGood": [
         {
-          "title": "Seguir directamente con la última conversación tras una interrupción",
+          "title": "Continuar directamente la última conversación tras una interrupción",
           "example": "agent resume"
+        },
+        {
+          "title": "Continuar la última sesión sin confirmación dentro de un script o alias de terminal",
+          "example": "agent --continue"
         }
       ],
       "whenBad": [
         {
-          "title": "Se quiere retomar una sesión más antigua, no la usada más recientemente",
-          "why": "agent resume siempre carga solo la sesión usada más recientemente.",
-          "alternative": "Usar agent ls para elegir una sesión anterior concreta, o establecer --resume [chatId] con un ID concreto"
+          "title": "Se quiere continuar una sesión más antigua, no la usada más recientemente",
+          "why": "agent resume siempre carga únicamente la sesión usada más recientemente.",
+          "alternative": "usar agent ls para seleccionar una sesión anterior concreta, o establecer --resume [chatId] con un ID específico"
+        },
+        {
+          "title": "Elegir específicamente entre varios chats usados recientemente, en lugar de continuar a ciegas el último",
+          "why": "agent resume omite cualquier selección y carga de inmediato la sesión usada más recientemente, sin mostrar ninguna lista.",
+          "alternative": "usar /resume, que abre una lista de selección de chats usados recientemente"
         }
       ],
       "sources": [
@@ -5700,18 +5763,27 @@
       "slug": "sandbox-enable",
       "name": "agent sandbox enable",
       "summary": "Activa el modo sandbox para la ejecución de comandos.",
-      "what": "agent sandbox enable activa el modo sandbox: a partir de entonces los comandos corren con acceso de lectura/escritura al workspace, pero aislados del resto de recursos del sistema (red desactivada por defecto). El ajuste persiste entre sesiones.",
+      "what": "agent sandbox enable es un subcomando de `agent sandbox` y activa el modo sandbox de forma permanente. A partir de entonces, los comandos de terminal del agente se ejecutan con acceso de lectura/escritura al workspace, pero aislados del resto del sistema; el acceso a red está desactivado por defecto. Según la visión general oficial de la CLI, esta configuración persiste entre sesiones y se guarda en un archivo de configuración (`~/.cursor/sandbox.json` a nivel global, o `.cursor/sandbox.json` a nivel de proyecto, válido también por SSH). Es equivalente a la opción global `--sandbox enabled`.\n\nHay que distinguirlo de `agent sandbox run <cmd>`, que solo ejecuta de forma aislada un único comando, sin cambiar la configuración permanente. Para una configuración paso a paso mediante un menú interactivo, incluido el acceso a red, se usa en su lugar el comando slash `/sandbox`, que según el registro de cambios alterna entre los tres modos Run Everything, Auto-Run in Sandbox y Ask Every Time. Para restablecer los valores por defecto existe `agent sandbox reset`.",
       "whenGood": [
         {
           "title": "Activar la ejecución aislada permanente de comandos para todas las sesiones futuras",
+          "example": "agent sandbox enable"
+        },
+        {
+          "title": "Forzar desde el principio una configuración por defecto segura al instalar la CLI en un ordenador nuevo",
           "example": "agent sandbox enable"
         }
       ],
       "whenBad": [
         {
-          "title": "La sandbox solo debe aplicarse a un único comando, no de forma permanente",
+          "title": "El sandbox debe aplicarse solo a un único comando, no de forma permanente",
           "why": "agent sandbox enable cambia la configuración persistente para todas las ejecuciones futuras.",
-          "alternative": "Usar agent sandbox run <cmd> para ejecutar de forma aislada solo un único comando"
+          "alternative": "usar agent sandbox run <cmd> para ejecutar de forma aislada solo un único comando"
+        },
+        {
+          "title": "Se quiere configurar el modo y el acceso a red de forma interactiva y detallada, no solo activarlo en bloque",
+          "why": "agent sandbox enable solo conoce el estado binario activado/desactivado, sin niveles intermedios.",
+          "alternative": "usar /sandbox para el menú interactivo con los tres modos Run Everything, Auto-Run in Sandbox y Ask Every Time"
         }
       ],
       "sources": [
@@ -5726,18 +5798,27 @@
       "slug": "sandbox-disable",
       "name": "agent sandbox disable",
       "summary": "Desactiva el modo sandbox y pasa a usar en su lugar el modo allowlist.",
-      "what": "agent sandbox disable desactiva el modo sandbox. La CLI recae entonces en el modo allowlist, en el que los comandos individuales deben aprobarse manualmente en lugar de correr aislados de forma automática.",
+      "what": "agent sandbox disable es un subcomando de `agent sandbox` y desactiva el modo sandbox de forma permanente. A partir de entonces, la CLI recurre al modo de lista de permitidos: acciones individuales como comandos de shell, accesos a archivos, peticiones web o herramientas MCP se autorizan o se rechazan mediante tokens de permiso (por ejemplo `Shell(git)`, `Read(src/**)`, `WebFetch(*.example.com)`, `Mcp(server:tool)`) en la configuración de proyecto o global, en lugar de ejecutarse automáticamente de forma aislada; según la referencia, las reglas de denegación tienen prioridad sobre las de permiso. Es equivalente a la opción global `--sandbox disabled`. Según la visión general oficial de la CLI, esta configuración persiste entre sesiones, también por SSH.\n\nHay que distinguirlo de `agent sandbox run <cmd> --network`, que solo permite acceso a red dentro del sandbox para un único comando, sin desactivar el sandbox por completo. Para un control interactivo y detallado entre los tres modos Run Everything, Auto-Run in Sandbox y Ask Every Time se usa en su lugar el comando slash `/sandbox`.",
       "whenGood": [
         {
-          "title": "Las restricciones de la sandbox (p. ej. sin red) estorban de forma permanente a un workflow concreto",
+          "title": "Las restricciones del sandbox (por ejemplo, sin red) interfieren de forma continua con un flujo de trabajo concreto",
           "example": "agent sandbox disable"
+        },
+        {
+          "title": "Se desea un control detallado sobre comandos y rutas concretos mediante una lista de permitidos, en lugar de un aislamiento general",
+          "example": "agent sandbox disable, y después establecer tokens de permiso como Shell(git) o Read(src/**) en la configuración"
         }
       ],
       "whenBad": [
         {
-          "title": "El acceso a la red solo hace falta para una única ejecución en sandbox",
-          "why": "agent sandbox disable apaga la sandbox por completo en lugar de solo permitir la red.",
-          "alternative": "Usar agent sandbox run <cmd> --network para permitir la red de forma selectiva en una ejecución"
+          "title": "Solo se necesita acceso a red para una única ejecución del sandbox",
+          "why": "agent sandbox disable desactiva el sandbox por completo, en lugar de permitir solo el acceso a red.",
+          "alternative": "usar agent sandbox run <cmd> --network para permitir la red de forma específica en una ejecución"
+        },
+        {
+          "title": "El sandbox no debe desactivarse de forma permanente, sino solo ajustarse temporalmente",
+          "why": "agent sandbox disable cambia la configuración persistente de forma permanente para todas las sesiones futuras.",
+          "alternative": "usar /sandbox para ajustar el modo y el acceso a red de forma interactiva, sin desactivar el sandbox por completo"
         }
       ],
       "sources": [
@@ -8299,19 +8380,28 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-aliases",
       "name": "install.sh --skip-aliases",
-      "summary": "Omite durante la instalación la limpieza de los alias de shell antiguos de agy/antigravity.",
-      "what": "El flag --skip-aliases se pasa al ejecutar el script de instalación (install.sh/install.ps1/install.cmd) e impide que el script limpie o actualice, en el perfil de shell, los alias antiguos de agy o antigravity.",
+      "summary": "Rechazado por el instalador; en Windows se reenvía sin comprobar.",
+      "what": "La página de documentación antigravity.google/docs/cli/install indica `--skip-aliases` como un flag que debería omitir la limpieza de los antiguos alias de shell `agy`/`antigravity` durante la instalación. Sin embargo, el script bootstrapper realmente distribuido en antigravity.google/cli/install.sh (239 líneas, comprobado con curl el 27.07.2026) no reconoce este flag: su analizador de argumentos acepta exclusivamente `-d`/`--dir` (directorio de destino) y `-h`/`--help`. Cualquier otro parámetro, incluido `--skip-aliases`, cae en la rama de reserva `*)` y genera `[ERROR] Unknown parameter: --skip-aliases`, seguido de una interrupción con código de salida 1 — la instalación entonces ni siquiera llega a producirse.\n\nA esto se suma que una búsqueda de «alias» en el script no arroja ningún resultado. El script no modifica en ningún momento los alias de shell; solo descarga y verifica el binario y al final lo delega internamente a `agy install` (o `agy.exe install` en Windows). El propósito del flag descrito en la documentación carece por tanto de efecto actualmente, independientemente del valor de parámetro que se pase.\n\nEn Windows el comportamiento es distinto: `install.cmd` recopila los parámetros desconocidos en `FORWARD_ARGS` y los añade a `SETUP_FLAGS`, y `install.ps1` hace lo mismo mediante `$passthroughArgs`. Allí, `--skip-aliases` no provoca una interrupción, sino que se reenvía sin comprobar a `agy.exe install`. No se puede determinar desde fuera si el binario interpreta o ignora ese parámetro — lo único observable es que la llamada no falla.",
       "whenGood": [
         {
-          "title": "Conservar tus propios alias de shell para agy/antigravity, mantenidos manualmente",
-          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-aliases"
+          "title": "Comprobar uno mismo, antes de instalar, qué flags acepta realmente el script distribuido en ese momento",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --help"
+        },
+        {
+          "title": "Usar solo el flag realmente compatible para ajustar el destino; después comprobar y eliminar uno mismo los alias antiguos en el perfil de shell",
+          "example": "bash install.sh --dir ~/bin"
         }
       ],
       "whenBad": [
         {
-          "title": "Todavía quedan en el perfil de shell alias antiguos, rotos o que apuntan a un binario incorrecto",
-          "why": "Con --skip-aliases, el script de instalación precisamente no limpia esos alias antiguos de forma automática.",
-          "alternative": "Ejecuta el instalador sin --skip-aliases para que los alias antiguos se limpien automáticamente"
+          "title": "Incluir --skip-aliases en la instalación por pipe, esperando que se conserven los alias antiguos",
+          "why": "El script solo reconoce -d/--dir y -h/--help; --skip-aliases cae en la rama de reserva *), muestra «[ERROR] Unknown parameter: --skip-aliases» y se interrumpe con código de salida 1, antes incluso de instalar nada.",
+          "alternative": "ejecutar el script sin este flag, o comprobar antes con --help qué parámetros se admiten actualmente"
+        },
+        {
+          "title": "Confiar únicamente en la descripción del flag en la documentación, sin comprobar el script distribuido",
+          "why": "La página de documentación sigue listando --skip-aliases, pero el script distribuido en vivo en antigravity.google/cli/install.sh no lo admite (a fecha de 27.07.2026).",
+          "alternative": "verificar el script uno mismo con curl y --help antes de usarlo, en lugar de confiar ciegamente en la tabla de la documentación"
         }
       ],
       "sources": [
@@ -8325,19 +8415,28 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-path",
       "name": "install.sh --skip-path",
-      "summary": "Omite durante la instalación la adición automática al PATH en el perfil de shell.",
-      "what": "El flag --skip-path se pasa al ejecutar el script de instalación e impide que la variable de entorno PATH del perfil de shell se amplíe automáticamente con el directorio del binario (~/.local/bin o %LOCALAPPDATA%\\agy\\bin).",
+      "summary": "Rechazado por el instalador; en Windows se reenvía sin comprobar.",
+      "what": "La página de documentación antigravity.google/docs/cli/install indica `--skip-path` como un flag que debería impedir la adición automática al PATH en el perfil de shell durante la instalación. Sin embargo, el script bootstrapper realmente distribuido en antigravity.google/cli/install.sh (239 líneas, comprobado con curl el 27.07.2026) no reconoce este flag: su analizador de argumentos acepta exclusivamente `-d`/`--dir` (directorio de destino) y `-h`/`--help`. Cualquier otro parámetro, incluido `--skip-path`, cae en la rama de reserva `*)` y genera `[ERROR] Unknown parameter: --skip-path`, seguido de una interrupción con código de salida 1 — la instalación entonces ni siquiera llega a producirse.\n\nA esto se suma que una búsqueda de «PATH=» en el script arroja solo un resultado, la variable interna `BINARY_PATH` para la ubicación de instalación del binario. El script no escribe en ningún momento en un perfil de shell ni establece ninguna variable PATH; solo descarga y verifica el binario y al final lo delega internamente a `agy install`. El propósito del flag descrito en la documentación carece por tanto de efecto actualmente, independientemente del valor de parámetro que se pase.\n\nEn Windows el comportamiento es distinto: `install.cmd` recopila los parámetros desconocidos en `FORWARD_ARGS` y los añade a `SETUP_FLAGS`, y `install.ps1` hace lo mismo mediante `$passthroughArgs`. Allí, `--skip-path` no provoca una interrupción, sino que se reenvía sin comprobar a `agy.exe install`. No se puede determinar desde fuera si el binario interpreta o ignora ese parámetro — lo único observable es que la llamada no falla.",
       "whenGood": [
         {
-          "title": "Gestionar tú mismo la entrada del PATH manualmente, por ejemplo en una configuración de dotfiles ya existente",
-          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --skip-path"
+          "title": "Comprobar uno mismo, antes de instalar, qué flags acepta realmente el script distribuido en ese momento",
+          "example": "curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --help"
+        },
+        {
+          "title": "Usar solo el flag realmente compatible para ajustar el destino y gestionar el PATH manualmente después",
+          "example": "bash install.sh --dir ~/bin"
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres poder invocar agy desde cualquier terminal justo después de instalarlo, sin pasos manuales adicionales",
-          "why": "Sin la entrada automática al PATH, la shell no encuentra el binario de agy sin un ajuste manual del PATH.",
-          "alternative": "Ejecuta el instalador sin --skip-path"
+          "title": "Incluir --skip-path en la instalación por pipe, esperando que el PATH permanezca sin cambios",
+          "why": "El script solo reconoce -d/--dir y -h/--help; --skip-path cae en la rama de reserva *), muestra «[ERROR] Unknown parameter: --skip-path» y se interrumpe con código de salida 1, antes incluso de instalar nada.",
+          "alternative": "ejecutar el script sin este flag, o comprobar antes con --help qué parámetros se admiten actualmente"
+        },
+        {
+          "title": "Confiar únicamente en la descripción del flag en la documentación, sin comprobar el script distribuido",
+          "why": "La página de documentación sigue listando --skip-path, pero el script distribuido en vivo en antigravity.google/cli/install.sh no lo admite (a fecha de 27.07.2026).",
+          "alternative": "verificar el script uno mismo con curl y --help antes de usarlo, en lugar de confiar ciegamente en la tabla de la documentación"
         }
       ],
       "sources": [
@@ -8515,7 +8614,7 @@
       "slug": "add-dir",
       "name": "/add-dir",
       "summary": "Añade un directorio adicional al workspace activo.",
-      "what": "/add-dir pertenece a la categoría Utilities de la referencia central de slash commands de Antigravity CLI. El comando amplía el workspace activo con otro directorio, de modo que el agente también pueda acceder a archivos fuera del directorio de inicio. Recibe una ruta como argumento.",
+      "what": "`/add-dir <pfad>` pertenece a la categoría Utilities de los comandos slash de la CLI de Antigravity y amplía el workspace activo con un directorio adicional. Por defecto, el agente solo ve el directorio de inicio de la sesión; con `/add-dir` obtiene además acceso de lectura y escritura a otra carpeta, por ejemplo un segundo repositorio o un directorio hermano en el sistema de archivos.\n\nEl comando recibe una ruta como argumento obligatorio y admite autocompletado de rutas al estilo de shell mientras se escribe. Los directorios añadidos recién se tienen en cuenta de inmediato para la búsqueda de archivos y el autocompletado, sin necesidad de reiniciar la sesión. Además, `/add-dir` también incorpora el descubrimiento de personalizaciones de la nueva carpeta: los skills, reglas y hooks que haya allí se reconocen automáticamente y quedan disponibles para el agente igual que en el directorio principal.\n\nDistinción: `/add-dir` incorpora un directorio de forma permanente para el resto de la conversación y concede acceso a todo su contenido. Para hacer referencia puntual a un único archivo basta en cambio con una mención `@` en el prompt, sin ampliar el workspace de forma permanente.",
       "whenGood": [
         {
           "title": "Incluir código de un segundo repositorio o carpeta",
@@ -8528,9 +8627,14 @@
       ],
       "whenBad": [
         {
-          "title": "Solo necesitas referenciar un archivo una vez",
-          "why": "/add-dir incorpora todo un directorio de forma permanente al workspace; para una referencia puntual basta con una ruta de archivo en el prompt.",
-          "alternative": "Usa @<ruta> directamente en el prompt"
+          "title": "Hacer referencia a un archivo solo una vez",
+          "why": "/add-dir incorpora todo un directorio de forma permanente en el workspace; para una referencia puntual es innecesariamente costoso.",
+          "alternative": "usar @<pfad> directamente en el prompt"
+        },
+        {
+          "title": "El directorio contiene datos sensibles a los que el agente no debe tener acceso permanente",
+          "why": "/add-dir concede acceso de lectura y escritura a todo el contenido de la carpeta e incorpora sus skills/reglas/hooks durante el resto de la conversación — más acceso del necesario para una única referencia.",
+          "alternative": "hacer referencia solo al archivo concreto necesario mediante @<pfad>, en lugar de dar acceso a toda la carpeta"
         }
       ],
       "sources": [
@@ -8609,18 +8713,27 @@
       "slug": "btw",
       "name": "/btw",
       "summary": "Hace una pregunta secundaria en segundo plano, sin interrumpir la conversación principal.",
-      "what": "/btw pertenece a la categoría Utilities. El comando lanza una pregunta adicional como tarea en segundo plano mientras la conversación principal en curso continúa sin interrupciones; resulta práctico para preguntas secundarias breves que no deben consumir el contexto actual del hilo principal.",
+      "what": "`/btw <frage>` pertenece a la categoría Utilities de los comandos slash de la CLI de Antigravity. El comando envía una pregunta secundaria a un agente aparte, efímero y de respuesta única, que sí conoce el contexto de la conversación actual pero trabaja separado del hilo principal. Mientras tanto, la conversación principal continúa sin interrupciones, sin que la pregunta adicional afecte a su contexto ni a su consumo de tokens.\n\nEl comando se introdujo originalmente para permitir preguntas secundarias breves sin interrumpir el hilo de la conversación; desde entonces se ha revisado varias veces, entre otras cosas para transmitir las respuestas en streaming, hacer visible el proceso de razonamiento del agente y conservar la respuesta a través de cambios de conversación.\n\nDistinción: `/btw` genera una respuesta independiente y única fuera del hilo principal. Para preguntas que deban influir en el desarrollo posterior de la tarea principal o incorporarse a su contexto, el comando no es adecuado — esas preguntas deben ir directamente en el prompt principal.",
       "whenGood": [
         {
-          "title": "Hacer una pregunta adicional breve sin interrumpir la tarea principal",
+          "title": "Plantear una pregunta adicional breve sin interrumpir la tarea principal",
           "example": "/btw ¿qué hace esta función en utils.py?"
+        },
+        {
+          "title": "Hacer una pregunta y después cambiar a otra conversación sin perder la respuesta",
+          "example": "/btw ¿dónde se describe en la documentación el comportamiento de caché?"
         }
       ],
       "whenBad": [
         {
           "title": "La pregunta en realidad forma parte de la tarea principal",
-          "why": "/btw se ejecuta en segundo plano, separado del hilo principal; no es adecuado para preguntas que deban influir en cómo continúa la tarea principal.",
-          "alternative": "Haz la pregunta directamente en el prompt principal"
+          "why": "/btw se ejecuta como una respuesta única e independiente, separada del hilo principal — no es adecuado para preguntas que deban influir en el desarrollo posterior de la tarea principal.",
+          "alternative": "plantear la pregunta directamente en el prompt principal"
+        },
+        {
+          "title": "Se desea un diálogo de varios pasos con preguntas de seguimiento e iteraciones",
+          "why": "/btw inicia un agente efímero de respuesta única para exactamente una respuesta, no para un diálogo continuo.",
+          "alternative": "usar una conversación normal, por ejemplo bifurcando con /fork desde el estado actual"
         }
       ],
       "sources": [
@@ -8635,18 +8748,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Vacía la terminal y los contextos de conversación activos. Alias: /new.",
-      "what": "/clear pertenece a la categoría Utilities, alias /new. El comando restablece tanto la pantalla de la terminal como los contextos de conversación activos, para un reinicio limpio dentro de la misma sesión.",
+      "what": "`/clear` pertenece a la categoría Utilities de los comandos slash de la CLI de Antigravity, alias `/new`. El comando vacía el prompt e inicia una nueva sesión de conversación dentro de la misma sesión de terminal: se restablecen tanto la pantalla del terminal como el contexto de conversación activo, de modo que el agente continúa sin conocimiento previo del hilo de conversación anterior.\n\nCon esto, `/clear` se diferencia del simple restablecimiento de pantalla mediante `Strg+L` (`Clear TUI Screen`), que solo limpia la salida del terminal mientras deja intacto el contexto de la conversación y continúa la conversación en curso. `/clear` tampoco debe confundirse con `Esc Esc`, que solo vacía la línea de entrada actual en el campo de prompt, siempre que no haya streaming activo en ese momento, sin finalizar la conversación en sí.\n\nCon `/clear`, el historial de conversación anterior no se pierde definitivamente: la sesión se cierra y se archiva, y se puede volver a abrir y continuar más adelante a través del selector de conversaciones (`/resume`, alias `/switch` y `/conversation`).",
       "whenGood": [
         {
           "title": "Empezar un tema nuevo dentro de la misma sesión",
           "example": "/clear al terminar una tarea, antes de empezar un tema completamente nuevo"
+        },
+        {
+          "title": "La ventana de contexto está llena tras una sesión de depuración larga y finalizada, y el historial ya no se necesita para la siguiente tarea",
+          "example": "/clear en cuanto el bug esté corregido y verificado, antes de empezar una tarea nueva e independiente"
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres conservar la conversación actual para retomarla más tarde",
-          "why": "/clear vacía el contexto activo; en medio de una tarea, pierdes con ello el estado de trabajo del hilo.",
-          "alternative": "Usa /resume para cambiar entre hilos en lugar de vaciar"
+          "title": "Se quiere limpiar solo la salida del terminal, manteniendo el contexto de la conversación",
+          "why": "/clear, además de la pantalla, también restablece el contexto de conversación activo e inicia una nueva sesión.",
+          "alternative": "usar Strg+L para vaciar solo la salida del terminal, sin finalizar la conversación"
+        },
+        {
+          "title": "Se quiere conservar la conversación actual en medio de la tarea y continuarla más adelante",
+          "why": "/clear finaliza el hilo activo e inicia una nueva sesión — en medio de una tarea, esto hace que se pierda la continuidad directa con el contexto anterior.",
+          "alternative": "usar /resume para cambiar entre conversaciones existentes, en lugar de vaciar"
         }
       ],
       "sources": [
