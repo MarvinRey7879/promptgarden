@@ -2082,3 +2082,36 @@ Screenshot Desktop + Mobil geprüft, kein H-Scroll. Worker deployed
 (Version f84eca93), Cron-Trigger unverändert `0 8 * * 1`, Poll danach grün.
 Merke: Worker-Template-Funktionen exportieren → Preview lokal renderbar, ohne
 eine echte Test-Mail zu verschicken.
+
+## Iteration 246c — 27.07.2026 — Digest v2: CTAs, Klick-Tracking, Cron-Rätsel gelöst
+Marvin zeigte die empfangene Mail: **Sonntag 26.07., 10:01 CEST = 08:01 UTC**.
+🔴 URSACHE GEFUNDEN: wrangler.toml hatte `0 8 * * 1` (Montag), der LIVE deployte
+Worker lief aber noch mit einem älteren Zeitplan (Sonntag). Mein Deploy in It.246b
+hat den Trigger neu gesetzt — Deploy-Ausgabe bestätigt jetzt `schedule: 0 8 * * 1`.
+Ab sofort also wirklich Montag. Lektion: der Cron in der .toml gilt erst nach
+einem Deploy; Konfigurationsdatei ≠ Live-Zustand.
+Marvin-Kritik am Design („bessere Call-to-Action-Links und Zeilen") + Wunsch:
+„tracken, wer durch die Mails kommt". Umgesetzt:
+① CTAs: Meldungstitel ist jetzt ein Link auf die eigene Seite (Feed-Anker je
+   Meldung existiert bereits). Jede Karte hat eine abgesetzte Aktionszeile mit
+   Trennlinie: „Auf promptgarten lesen →" (Accent, fett) links, „Quelle ↗"
+   (dezent) rechts. Haupt-CTA-Button größer + Unterzeile. Primärziel ist bewusst
+   die eigene Seite, nicht die Fremdquelle — das ist der Traffic-Hebel.
+② KLICK-TRACKING: neue D1-Tabelle mail_clicks (day, campaign, item, lang, kind)
+   — bewusst OHNE Personenbezug: kein Empfänger, keine Adresse, kein Öffnungs-
+   Pixel. Neuer Endpunkt GET /v1/r zählt und leitet weiter. 26 von 27 Mail-Links
+   sind getrackt (Abmelde-Link absichtlich nicht).
+   🔒 SICHERHEIT: /v1/r ist KEIN offener Redirect — jedes Ziel wird beim Mailbau
+   mit env.IP_SALT signiert (linkSig, SHA-256), der Redirect prüft die Signatur
+   und lässt nur https zu. Live getestet: gefälschte Signatur → 403.
+③ Admin-Summary um mail_clicks_30d + mail_clicks_top erweitert.
+🔴 EIGENEN BUG GEFUNDEN UND GEFIXT: die zwei neuen Queries hatte ich mitten in
+die Promise.all-Liste eingefügt, die Destructuring-Namen standen aber am Ende →
+alle Werte ab Position 17 waren verschoben (visitors_7d zeigte Klicks, mail_clicks
+zeigte Besucher). Aufgefallen, weil eine frisch angelegte Tabelle 28 Klicks
+meldete. Queries ans Listenende verschoben, gegen D1 direkt verifiziert:
+visitors_7d=28, internal_7d=3654, mail_clicks=0 — stimmt jetzt exakt.
+Worker deployed (a71c693a). Preview mit echten Daten gerendert, Desktop+Mobil
+geprüft, kein H-Scroll.
+Merke: bei Promise.all IMMER Query-Reihenfolge gegen Destructuring-Reihenfolge
+prüfen — ein Einschub in der Mitte verschiebt lautlos alle Folgewerte.
