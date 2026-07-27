@@ -1956,3 +1956,38 @@ Build 0, Deploy 5ff71cb0. Playwright: 16 → Obsidian-Klick = 4 Karten (alle
 Kategorie Obsidian, „4 Treffer"); Desktop-Diagramme intakt. Prod 200.
 Merke: Kartenmarkup nur EINMAL pflegen — Hub-Grid lebt jetzt in AddonFilter, die
 Server-Seite reicht nur items/lang/officialLabel durch.
+
+## Iteration 244 — 27.07.2026 ~06:00 UTC — AdSense-Absage analysiert + „Über"-Seite (Marvin-Auftrag)
+Loop nach Pause wieder aufgenommen. Poll grün (0/0/0), Smoke grün, aber Traffic
+auf **30 Aufrufe/7 Tage** gefallen (vorher 138).
+🔴 NEUE LAGE: Google AdSense hat promptgarten ABGELEHNT — Grund „mangelnder
+Content". Marvin bat um Bewertung der Alternativen (deep-research).
+RECHERCHE (4 parallele Sonnet-Agenten, ~30 Quellen) + eigene Messung:
+- Eigene Messung: 320 Befehlsseiten Ø **90 Wörter** (Median 84), 65 % <100 Wörter;
+  ×5 Sprachen = 1600 URLs ≈ **68 % aller 2350 Sitemap-URLs** sind dünn. Lexikon
+  (~470 W.) und Addons (~400 W.) sind ok. → Absage ist berechtigt und hausgemacht.
+- Google nennt KEINE Traffic-Mindestmenge; dünne Seiten sind das Kriterium.
+  5 Sprachen sind KEIN Duplicate Content. Programmatisch ≠ verboten (Maßstab:
+  Zweck+Sorgfalt). Keine offizielle Sperrfrist für Neuantrag.
+- Wirtschaftlich: bei ~130 Aufrufen/Monat zahlt JEDES Netzwerk 0–2 €/Monat. Die
+  4 ohne Hürde (A-ADS/Monetag/Infolinks/Adsterra-DirectLink) = Centbeträge +
+  Ruf-/DSGVO-Risiko. Erstes realistisches Ziel: **1.000 Sessions/Mon → Mediavine
+  Journey** (Schwelle seit Jan 2026 gesenkt, 70 % Rev-Share); 25k → Raptive;
+  50k → EthicalAds (cookie-frei, bester Dev-Fit).
+- Affiliate ohne Hürde + DE-Zahlung: DigitalOcean, Namecheap, Raycast, O'Reilly,
+  Manning, Coursera, Amazon DE. Nicht existent: Anthropic, Cursor, Copilot,
+  Obsidian, Cloudflare, Kagi, Frontend Masters.
+Bericht als Artifact b2c049c8. Memory project_promptgarten_adsense_abgelehnt_0727.
+MARVIN ENTSCHIED (AskUserQuestion): beides — Befehlsseiten anreichern UND
+Über-mich-Seite mit Klarnamen + Foto von takemeto.ai; Affiliate erst später.
+GELIEFERT diese It.: neue Route `/[lang]/ueber/` ×5 Sprachen (DE+EN selbst,
+es/fr/zh via Sonnet-Übersetzer): Foto (takemeto.ai/landing/team/marvin.webp,
+lokal auf 320px/8,8 KB verkleinert), Marvin Mez als Macher, Arbeitsweise
+(Quellenpflicht, zwei Detailtiefen), Kontakt, AboutPage+Person-JSON-LD für
+E-E-A-T. Footer-Link + sitemap.ts ergänzt. Fix nach Screenshot-Audit:
+Zurück-Link zeigte „← Lexikon", führte aber zur Startseite → eigene HOME-Map ×5.
+Build 0, Deploy 9bb6d19a, Prod 200. Playwright: Foto lädt, kein H-Scroll
+Desktop+Mobil, Titel/Link pro Sprache korrekt.
+NÄCHSTE LOOP-ARBEIT: die 320 Befehlsseiten anreichern (Syntax-Varianten, echtes
+Beispiel, typische Fehler, verwandte Befehle) — behebt den Ablehnungsgrund.
+Merke: ui[lang].nav hat KEIN „Startseite"-Label → eigene Map nötig.

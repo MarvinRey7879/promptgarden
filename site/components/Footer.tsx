@@ -13,12 +13,12 @@ const EXTRA_LINKS: Record<Lang, { rosetta: string; fehler: string; fortschritt: 
 // Footer-Labels, die bisher hart auf Deutsch standen und auf allen 5 Sprachen
 // durchschlugen: „Impressum" (sichtbar in der Rechtszeile jeder Seite), das
 // aria-label der Sitemap-Nav und der „bald"-Zusatz beim Spenden-Fallback.
-const FOOTER_LABELS: Record<Lang, { imprint: string; sitemap: string; soon: string }> = {
-  de: { imprint: 'Impressum', sitemap: 'Seitenübersicht', soon: 'bald' },
-  en: { imprint: 'Legal notice', sitemap: 'Sitemap', soon: 'soon' },
-  es: { imprint: 'Aviso legal', sitemap: 'Mapa del sitio', soon: 'pronto' },
-  fr: { imprint: 'Mentions légales', sitemap: 'Plan du site', soon: 'bientôt' },
-  zh: { imprint: '法律声明', sitemap: '网站地图', soon: '即将上线' },
+const FOOTER_LABELS: Record<Lang, { imprint: string; sitemap: string; soon: string; about: string }> = {
+  de: { imprint: 'Impressum', sitemap: 'Seitenübersicht', soon: 'bald', about: 'Über' },
+  en: { imprint: 'Legal notice', sitemap: 'Sitemap', soon: 'soon', about: 'About' },
+  es: { imprint: 'Aviso legal', sitemap: 'Mapa del sitio', soon: 'pronto', about: 'Sobre' },
+  fr: { imprint: 'Mentions légales', sitemap: 'Plan du site', soon: 'bientôt', about: 'À propos' },
+  zh: { imprint: '法律声明', sitemap: '网站地图', soon: '即将上线', about: '关于' },
 };
 
 // Handles von Marvin (13.07.2026); GitHub Sponsors folgt nach Anmeldung
@@ -45,6 +45,7 @@ export default function Footer({ lang }: { lang: Lang }) {
     { href: `/${lang}/challenge/`, label: t.nav.challenge },
     { href: `/${lang}/claude-md-generator/`, label: 'CLAUDE.md' },
     { href: `/${lang}/forum/`, label: 'Forum' },
+    { href: `/${lang}/ueber/`, label: FOOTER_LABELS[lang].about },
   ];
 
   return (
