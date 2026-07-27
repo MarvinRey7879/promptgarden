@@ -317,22 +317,27 @@
       "slug": "chrome",
       "name": "/chrome",
       "summary": "Abre los ajustes de 'Claude in Chrome'.",
-      "what": "Abre los ajustes de 'Claude in Chrome'.",
+      "what": "/chrome abre la configuración de la conexión entre Claude Code y la extensión de navegador \"Claude in Chrome\". Desde ahí compruebas el estado de la conexión, reconectas la extensión, eliges entre varios navegadores conectados o activas Chrome por defecto para futuras sesiones.\n\nSegún la documentación, es requisito tener una suscripción directa de Anthropic (Pro, Max, Team o Enterprise) además de haber iniciado sesión con /login; con una API key pura o un token de larga duración de claude setup-token, la integración permanece desactivada. A través de proveedores externos como Amazon Bedrock, Google Cloud o Microsoft Foundry la función no está disponible, tampoco bajo Windows Subsystem for Linux (WSL). Se soportan Google Chrome, Microsoft Edge y otros navegadores basados en Chromium como Brave, Arc, Vivaldi y Opera.\n\nEl control real del navegador lo inicias con el flag --chrome o pidiéndoselo directamente a Claude en el prompt.",
       "whenGood": [
         {
-          "title": "Configurar la extensión Claude in Chrome antes de que Claude ejecute acciones en el navegador",
-          "example": "/chrome — activar la extensión/comprobar permisos antes de una tarea de automatización del navegador"
+          "title": "Comprobar el estado de la conexión antes de una tarea con navegador",
+          "example": "Ejecutar /chrome y comprobar que se muestran 'Status: Enabled' y 'Extension: Installed' antes de que Claude haga pruebas en el navegador."
         },
         {
-          "title": "Revisar los ajustes existentes de la integración con Chrome",
-          "example": "/chrome, para comprobar qué páginas/permisos tiene actualmente la extensión"
+          "title": "Activar Chrome de forma permanente",
+          "example": "Abrir /chrome y elegir 'Enabled by default', para que el flag --chrome ya no sea necesario en el futuro."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo se quiere leer o buscar en una página web, sin necesidad de control del navegador",
-          "why": "/chrome solo abre los ajustes de la extensión de Chrome, no una función de búsqueda",
-          "alternative": "/web o /web-search para lectura/búsqueda pura en la web"
+          "title": "Cuenta de plan gratuito sin suscripción directa",
+          "why": "/chrome requiere, según la documentación, una suscripción directa de Anthropic (Pro, Max, Team o Enterprise); con una API key pura o un proveedor externo la integración permanece desactivada.",
+          "alternative": "Cambiar a un plan Pro, Max, Team o Enterprise e iniciar sesión con /login."
+        },
+        {
+          "title": "Solo quieres que se lea o resuma una página web",
+          "why": "/chrome solo abre la configuración de la extensión; para simplemente leer o buscar en la web no hace falta un control visible del navegador.",
+          "alternative": "Pedirle a Claude directamente en el prompt que lea una URL o busque en la web — para eso Claude usa herramientas web integradas sin un slash command propio."
         }
       ],
       "sources": [
@@ -947,22 +952,27 @@
       "slug": "export",
       "name": "/export",
       "summary": "Exporta la conversación actual como texto plano.",
-      "what": "Exporta la conversación actual como texto plano.\n\nCon un nombre de archivo, va directo al archivo; sin él, aparece un diálogo para elegir entre portapapeles o archivo.",
+      "what": "/export abre un menú desde el que puedes copiar la conversación actual al portapapeles o guardarla como archivo de texto plano. Los mensajes y las salidas de herramientas se renderizan como texto legible — pensado para que lo lea una persona, no como datos en bruto o formato estructurado.\n\nSi indicas directamente un nombre de archivo, por ejemplo /export session-notes.txt, el comando se salta el menú y escribe de inmediato en ese archivo. Sin argumento, se abre la selección entre portapapeles y archivo.\n\nSi en cambio quieres procesar la conversación de forma automatizada, /export no es, según la documentación, la herramienta adecuada: para datos estructurados destinados a scripts hay otras vías, por ejemplo una ejecución no interactiva con salida JSON o el acceso al archivo de transcripción guardado localmente de la sesión.",
       "whenGood": [
         {
-          "title": "Guardar o compartir toda la conversación como texto",
-          "example": "/export session-notes.txt"
+          "title": "Guardar toda la conversación como archivo de texto",
+          "example": "Ejecutar /export projekt-review.txt para escribir la conversación completa directamente en un archivo."
         },
         {
-          "title": "Elegir entre portapapeles y archivo mediante el diálogo",
-          "example": "/export sin argumento abre la selección"
+          "title": "Copiar la conversación rápidamente al portapapeles",
+          "example": "Invocar /export sin argumento y elegir en el diálogo la opción de copiar al portapapeles."
         }
       ],
       "whenBad": [
         {
-          "title": "Querer copiar solo la última respuesta",
-          "why": "/export exporta toda la conversación, no solo una respuesta",
-          "alternative": "usar /copy para solo la última respuesta (o, con un número, la N-ésima desde el final)"
+          "title": "La conversación como datos estructurados para un script",
+          "why": "/export entrega, según la documentación, un formato de texto legible para personas, no datos estructurados para scripts.",
+          "alternative": "Usar claude -p con --output-format json o stream-json, para obtener resultado, ID de sesión y coste de forma legible por máquina."
+        },
+        {
+          "title": "Solo quieres copiar la última respuesta",
+          "why": "/export exporta toda la conversación, no una única respuesta.",
+          "alternative": "Usar /copy, para copiar solo la última respuesta (o, con un número, la N-ésima anterior)."
         }
       ],
       "sources": [
@@ -1006,23 +1016,28 @@
       "platform": "claude-code",
       "slug": "feedback",
       "name": "/feedback",
-      "summary": "Envía feedback, reporta un bug o comparte la conversación.",
-      "what": "Envía feedback, reporta un bug o comparte la conversación.\n\nAlias: /bug, /share.",
+      "summary": "Ya no son alias: /share es alias de /bug, no de /feedback.",
+      "what": "/feedback abre el diálogo para enviar feedback de producto sobre Claude Code en sí — no sobre tu propio código de proyecto. Antes eliges cuánto historial de sesión se envía: solo la sesión actual, o además otras sesiones del mismo proyecto de las últimas 24 horas o 7 días. Solo después de confirmar en una pantalla de consentimiento se envía realmente algo.\n\nEl mismo diálogo también lo abren /bug y su alias /share; los tres envían por la misma vía. Si has iniciado sesión directamente con Anthropic, el reporte va a Anthropic y las transcripciones se conservan 5 años; a través de un proveedor externo o sin credenciales de Anthropic, el reporte se guarda en cambio localmente en ~/.claude/feedback-bundles/ y hay que reenviarlo tú mismo. Con la variable de entorno DISABLE_FEEDBACK_COMMAND=1 se puede desactivar por completo el envío.",
       "whenGood": [
         {
           "title": "Reportar un bug en el propio Claude Code",
-          "example": "/feedback o /bug tras encontrar un error reproducible en la herramienta"
+          "example": "Ejecutar /feedback tras un error reproducible en la herramienta y elegir en el diálogo el historial de sesión adecuado para el reporte."
         },
         {
-          "title": "Compartir una conversación con alguien",
-          "example": "/share para compartir una conversación útil"
+          "title": "Incluir varias sesiones de un proyecto",
+          "example": "Invocar /feedback e incluir, además de la sesión actual, también las últimas 24 horas del mismo proyecto."
         }
       ],
       "whenBad": [
         {
           "title": "Querer reportar un bug en el propio código del proyecto",
-          "why": "/feedback está pensado para problemas con el propio Claude Code, no con la aplicación propia",
-          "alternative": "usar un prompt normal de corrección de bugs o crear un issue en el propio repo"
+          "why": "/feedback aborda, según la documentación, problemas con Claude Code en sí, no con tu propia aplicación.",
+          "alternative": "Plantear un prompt normal de corrección de bugs o crear un issue en tu propio repositorio."
+        },
+        {
+          "title": "No querer enviar datos a Anthropic",
+          "why": "/feedback envía, según la documentación, por defecto una copia del historial de conversación incluyendo código a Anthropic (o localmente en el caso de proveedores externos).",
+          "alternative": "Definir antes DISABLE_FEEDBACK_COMMAND=1, para desactivar el comando."
         }
       ],
       "sources": [
@@ -1197,22 +1212,27 @@
       "slug": "help",
       "name": "/help",
       "summary": "Muestra ayuda y los comandos disponibles.",
-      "what": "Muestra ayuda y los comandos disponibles.",
+      "what": "/help te muestra una vista general de la ayuda y de todos los comandos disponibles directamente en la terminal. En la referencia oficial de comandos está documentado únicamente con esta única frase y no está marcado ni como skill ni como workflow, sino integrado de forma fija en la CLI — funciona por tanto igual independientemente del plan y la plataforma.\n\nComo alternativa, también puedes simplemente escribir /: esto también abre una lista de comandos para recorrer, y si después escribes más letras, Claude Code filtra la lista en vivo según los nombres de comando que coincidan. /help es útil sobre todo para una primera orientación o para consultar la lista completa, mientras que / más letras es más adecuado para encontrar rápidamente y de forma específica un nombre de comando ya conocido de forma vaga.",
       "whenGood": [
         {
-          "title": "Primera toma de contacto con Claude Code",
-          "example": "Escribir /help justo después de la instalación para ver la lista de comandos disponibles."
+          "title": "Primera orientación tras la instalación",
+          "example": "Escribir /help justo después de la instalación, para ver la lista de comandos disponibles."
         },
         {
-          "title": "Buscar el nombre de un comando olvidado",
-          "example": "Solo se recuerda vagamente el nombre de un comando → /help muestra el listado completo para consultarlo."
+          "title": "Consultar un nombre de comando olvidado",
+          "example": "Ante un nombre de comando recordado solo vagamente, invocar /help para consultarlo en la vista general completa."
         }
       ],
       "whenBad": [
         {
-          "title": "Resolver dudas detalladas sobre una función concreta",
-          "why": "/help solo ofrece un resumen breve de los comandos, no una explicación detallada de funciones individuales.",
-          "alternative": "Consultar la documentación oficial (code.claude.com/docs) o preguntar directamente."
+          "title": "Filtrar de forma específica por un comando conocido",
+          "why": "/help muestra, según la documentación, solo la vista general genérica; escribir directamente después de la barra filtra la lista en vivo y es por tanto más específico.",
+          "alternative": "Escribir / y luego añadir letras, para filtrar la lista en vivo."
+        },
+        {
+          "title": "Aclarar preguntas de detalle sobre una función concreta",
+          "why": "/help ofrece, según la documentación, solo una vista general breve de los comandos, no una explicación detallada de funciones individuales.",
+          "alternative": "Consultar la documentación oficial en code.claude.com/docs o preguntar de forma específica."
         }
       ],
       "sources": [
@@ -1607,18 +1627,27 @@
       "slug": "mobile",
       "name": "/mobile",
       "summary": "Muestra un código QR para descargar la app móvil de Claude.",
-      "what": "Muestra un código QR para descargar la app móvil de Claude.\n\nAlias: /ios, /android.",
+      "what": "/mobile te muestra directamente en la terminal un código QR con el que puedes descargar la app de Claude para iOS o Android. Los alias /ios y /android activan el mismo comando.\n\nLa app de Claude en sí no ejecuta código, sino que funciona como cliente: a través de ella accedes a sesiones en la nube de Claude Code en la Web, a una sesión ejecutándose localmente mediante Remote Control, o a la app de escritorio mediante Dispatch. Para sesiones en la nube y Remote Control necesitas la misma cuenta de claude.ai que en Claude Code — con una API key pura de Anthropic Console o a través de un proveedor externo como Amazon Bedrock, la app no es accesible según la documentación.\n\nDespués de la instalación, inicias sesión con la misma cuenta y encuentras tus sesiones en la pestaña \"Code\".",
       "whenGood": [
         {
-          "title": "Instalar la app móvil de Claude",
-          "example": "Ejecuta /mobile para escanear el código QR y descargar la app en el móvil."
+          "title": "Instalar la app por primera vez",
+          "example": "Ejecutar /mobile y escanear el código QR mostrado con el móvil para cargar la app de Claude."
+        },
+        {
+          "title": "Acceso rápido sin buscar en la App Store",
+          "example": "Invocar /mobile en una sesión en marcha, en lugar de buscar manualmente 'Claude' en la App Store."
         }
       ],
       "whenBad": [
         {
-          "title": "Seguir controlando la sesión de terminal en curso desde fuera, sin reinstalar la app",
-          "why": "/mobile solo muestra un código QR de instalación de la app, no transfiere una sesión en curso.",
-          "alternative": "Activa /remote-control para controlar la sesión de forma remota desde claude.ai o la app."
+          "title": "Controlar una sesión de terminal en marcha desde el móvil",
+          "why": "/mobile, según la documentación, solo muestra un código QR de instalación, no una conexión a una sesión en marcha.",
+          "alternative": "Ejecutar /remote-control o iniciar claude remote-control, para controlar la sesión local de forma remota desde el móvil."
+        },
+        {
+          "title": "Solo API key o proveedor externo, sin cuenta de claude.ai",
+          "why": "Las sesiones en la nube y Remote Control necesitan, según la documentación, la misma cuenta de claude.ai que Claude Code; una API key pura de Anthropic Console o un proveedor externo como Amazon Bedrock no son suficientes.",
+          "alternative": "Iniciar sesión con /login usando una cuenta de claude.ai; de lo contrario solo queda la sesión local de terminal o de escritorio."
         }
       ],
       "sources": [
@@ -1814,22 +1843,27 @@
       "slug": "privacy-settings",
       "name": "/privacy-settings",
       "summary": "Muestra y modifica tus propios ajustes de privacidad.",
-      "what": "Muestra y modifica tus propios ajustes de privacidad.\n\nSolo disponible para suscriptores de los planes Pro y Max.",
+      "what": "/privacy-settings abre directamente desde Claude Code tu configuración de privacidad para editarla. Según la documentación, el comando solo es visible para suscriptores de los planes Pro y Max — no para el plan gratuito Free.\n\nEn cuanto al contenido, se trata sobre todo del consentimiento sobre si tus datos pueden usarse para entrenar futuros modelos de Claude. Este ajuste también afecta al tiempo de conservación: con el consentimiento activado, Anthropic guarda tus datos durante 5 años; con el consentimiento desactivado, solo 30 días. El mismo ajuste también se puede cambiar directamente en el navegador en claude.ai/settings/data-privacy-controls.\n\nPara usuarios de Team, Enterprise y API rigen de todos modos otras condiciones de privacidad reguladas contractualmente (Commercial Terms, opcionalmente Zero Data Retention), por lo que para ellos no hay previsto un interruptor personal a través de este comando.",
       "whenGood": [
         {
-          "title": "Comprobar tus propios ajustes de privacidad",
-          "example": "Abre /privacy-settings para comprobar qué opciones de privacidad están activas actualmente."
+          "title": "Comprobar el consentimiento de entrenamiento como usuario Pro/Max",
+          "example": "Abrir /privacy-settings y comprobar si el uso de tus propios datos para el entrenamiento del modelo está activado."
         },
         {
-          "title": "Ajustar los ajustes de privacidad a las políticas internas",
-          "example": "Como usuario Pro o Max, recorre /privacy-settings para modificar los ajustes de forma puntual."
+          "title": "Reducir el tiempo de conservación de tus propios datos",
+          "example": "Invocar /privacy-settings y desactivar el consentimiento, para reducir la conservación de 5 años a 30 días."
         }
       ],
       "whenBad": [
         {
-          "title": "Cuenta del plan Free sin suscripción Pro o Max",
-          "why": "Según la documentación, /privacy-settings solo es visible para suscriptores de los planes Pro y Max.",
-          "alternative": "Primero actualiza a Pro/Max (/upgrade) o comprueba los ajustes generales de la cuenta con /status."
+          "title": "Cuenta de plan Free sin suscripción Pro o Max",
+          "why": "/privacy-settings solo es visible, según la documentación, para suscriptores de los planes Pro y Max.",
+          "alternative": "Abrir la configuración directamente en el navegador en claude.ai/settings/data-privacy-controls."
+        },
+        {
+          "title": "Cuenta Team o Enterprise",
+          "why": "Para usuarios de Team, Enterprise y API rigen, según la documentación, reglas de privacidad separadas y reguladas contractualmente, en lugar de un interruptor de entrenamiento personal.",
+          "alternative": "Preguntar a la administración de la organización por los Commercial Terms vigentes o por Zero Data Retention."
         }
       ],
       "sources": [
@@ -3586,16 +3620,20 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Inicia una nueva sesión de chat vacía.",
-      "what": "/clear inicia una nueva sesión de chat. /new, /new-chat y /newchat son alias.",
+      "what": "`/clear` termina la sesión de chat actual e inicia una nueva sesión vacía. El historial de conversación anterior ya no está disponible como contexto dentro de la nueva sesión. `/new`, `/new-chat` y `/newchat` son, según la documentación, alias equivalentes del mismo comando.\n\nEl comando es útil para empezar de nuevo con una ventana de contexto limpia y vacía al cambiar de tema, por ejemplo cuando una tarea ha finalizado y la siguiente ya no tiene relación con ella. Esto evita que el contexto antiguo influya innecesariamente en la calidad de las respuestas o en el coste en tokens de la nueva tarea.\n\nEs importante tener en cuenta que `/clear` descarta el historial en lugar de comprimirlo. Si sigues necesitando acceso a mensajes anteriores, por ejemplo porque solo quieres liberar espacio en la ventana de contexto, `/summarize` (alias `/compress`) es la mejor opción, ya que en ese caso se conserva un resumen del historial anterior. A través de `agent ls` o `/resume` se pueden volver a abrir sesiones antiguas más adelante de todos modos.",
       "whenGood": [
         {
           "title": "Liberar la ventana de contexto para un tema completamente nuevo",
-          "example": "/clear — después de terminar la tarea anterior"
+          "example": "/clear — después de que la tarea anterior haya finalizado"
+        },
+        {
+          "title": "Terminar deliberadamente una sesión antigua sin formalidades, sin necesitarla más",
+          "example": "/clear tras completar una tarea, cuando la sesión ya no necesita referenciarse después"
         }
       ],
       "whenBad": [
         {
-          "title": "El contexto anterior todavía hace falta",
+          "title": "El contexto anterior todavía se necesita",
           "why": "/clear descarta por completo el historial de conversación de la sesión actual.",
           "alternative": "Usar /summarize para liberar espacio sin perder el contexto por completo"
         }
@@ -3907,17 +3945,21 @@
       "slug": "about",
       "name": "/about",
       "summary": "Muestra la versión de la CLI e información del sistema y de la cuenta, y la copia al portapapeles.",
-      "what": "/about muestra información de versión, sistema y cuenta, y además la copia al portapapeles.",
+      "what": "`/about` te muestra dentro de una sesión de chat en marcha la versión de Cursor CLI, información del sistema y datos de la cuenta. Además, el comando copia automáticamente este bloque de información al portapapeles, para que puedas reutilizarlo sin seleccionarlo manualmente.\n\nJunto a esto también existe el subcomando de terminal homónimo `agent about`, que ofrece la misma información fuera de una sesión de chat — según la documentación, sin embargo, sin la mención de una copia automática al portapapeles, que solo se menciona explícitamente para el slash command `/about`.\n\nEl uso típico es la preparación de un reporte de bug o una solicitud de soporte: en lugar de consultar versión, sistema operativo y cuenta por separado, obtienes con un solo comando el bloque completo y lo insertas directamente en el ticket. Si realmente solo necesitas el número de versión puro, el comando ofrece más información de la necesaria.",
       "whenGood": [
         {
-          "title": "Reunir información de diagnóstico para un informe de bug",
-          "example": "/about — pegar la salida directamente en un ticket de soporte"
+          "title": "Reunir información de diagnóstico para un reporte de bug",
+          "example": "/about — insertar la salida directamente en el ticket de soporte"
+        },
+        {
+          "title": "Comprobar rápidamente con qué cuenta y sistema estás trabajando",
+          "example": "Invocar /about para confirmar el contexto de cuenta y sistema antes de reportar un problema"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo se necesita el número de versión, sin más",
-          "why": "/about da todo un bloque de información, más de lo necesario para una simple comprobación de versión.",
+          "title": "Solo se necesita el número de versión puro",
+          "why": "/about entrega un bloque de información completo, más de lo necesario para una simple comprobación de versión.",
           "alternative": "Ejecutar agent --version en la terminal"
         }
       ],
@@ -4068,17 +4110,21 @@
       "slug": "copy-request-id",
       "name": "/copy-request-id",
       "summary": "Copia el ID de la última solicitud al portapapeles.",
-      "what": "/copy-request-id copia el ID de solicitud (request ID) de la última petición al portapapeles, útil para soporte y depuración.",
+      "what": "`/copy-request-id` copia al portapapeles el ID de la última solicitud enviada al modelo. A diferencia del Conversation ID, que identifica toda la sesión, este Request ID siempre se refiere solo a la última solicitud individual dentro de la sesión.\n\nEl comando está pensado sobre todo para casos de soporte y depuración: si surge un problema concreto en exactamente una respuesta, por ejemplo un error, un tiempo de respuesta inusualmente largo o un resultado inesperado, se puede reportar con precisión al equipo de Cursor mediante el Request ID, sin tener que revisar toda la sesión.\n\nComo con los demás comandos de copia, no hay salida visible en la terminal; el ID va directamente al portapapeles del sistema. Si en cambio se trata de un problema que se repite a lo largo de varios mensajes o que afecta a toda la sesión, `/copy-conversation-id` es la opción más adecuada.",
       "whenGood": [
         {
           "title": "Reportar un problema concreto al soporte",
-          "example": "/copy-request-id — pegar el ID directamente en un ticket de soporte"
+          "example": "/copy-request-id — insertar el ID directamente en el ticket de soporte"
+        },
+        {
+          "title": "Hacer rastreable de inmediato una respuesta individual inusual",
+          "example": "Ejecutar /copy-request-id justo después de una respuesta errónea, para asegurar el ID de inmediato"
         }
       ],
       "whenBad": [
         {
           "title": "Se trata de toda la conversación, no de una única solicitud",
-          "why": "El request ID se refiere solo a la última petición individual.",
+          "why": "El Request ID se refiere solo a la última solicitud individual.",
           "alternative": "Usar /copy-conversation-id"
         }
       ],
@@ -4094,17 +4140,21 @@
       "slug": "copy-conversation-id",
       "name": "/copy-conversation-id",
       "summary": "Copia el ID de la conversación actual al portapapeles.",
-      "what": "/copy-conversation-id copia el ID de conversación de la sesión actual al portapapeles.",
+      "what": "`/copy-conversation-id` copia el ID único de la sesión de chat actual al portapapeles. Este ID identifica toda la conversación y se diferencia del Request ID, que solo identifica una única solicitud dentro de la sesión.\n\nEn la práctica, el comando se usa sobre todo para solicitudes de soporte y depuración: si reportas un problema que ocurre a lo largo de varios mensajes o que afecta a la sesión como conjunto, el Conversation ID ayuda al equipo de Cursor a rastrear tu sesión de forma específica. El ID también te resulta útil a ti mismo, por ejemplo para volver a encontrar una sesión más tarde de forma inequívoca, cuando tienes varias sesiones de `cursor-agent` abiertas en paralelo.\n\nEl comando no muestra ninguna salida visible en la terminal, sino que coloca el ID directamente en el portapapeles del sistema. Después tienes que pegarlo en otro lugar, por ejemplo en un ticket de soporte o una nota.",
       "whenGood": [
         {
-          "title": "Encontrar o referenciar una sesión más tarde de forma precisa mediante su ID",
-          "example": "/copy-conversation-id — guardar el ID en una nota"
+          "title": "Volver a encontrar o referenciar una sesión más tarde mediante su ID",
+          "example": "/copy-conversation-id — guardar el ID en una nota antes de cambiar a otra sesión"
+        },
+        {
+          "title": "Reportar un problema que abarca varias sesiones al soporte de Cursor",
+          "example": "Ejecutar /copy-conversation-id e insertar el ID en el ticket de soporte, cuando el error se repite a lo largo de varios mensajes"
         }
       ],
       "whenBad": [
         {
           "title": "Se trata de una única solicitud, no de toda la sesión",
-          "why": "El ID de conversación identifica toda la sesión, no una solicitud individual.",
+          "why": "El Conversation ID identifica toda la sesión, no una única solicitud.",
           "alternative": "Usar /copy-request-id"
         }
       ],
@@ -5223,18 +5273,27 @@
       "slug": "install-shell-integration",
       "name": "agent install-shell-integration",
       "summary": "Instala la integración de shell de la CLI en ~/.zshrc.",
-      "what": "agent install-shell-integration configura la integración de shell en ~/.zshrc. Según la documentación, esto se refiere explícitamente a zsh; para otras shells no hay documentada ninguna rutina de instalación aparte.",
+      "what": "`agent install-shell-integration` no es un slash command dentro de una sesión de chat en marcha, sino un subcomando de terminal independiente de Cursor CLI. Lo invocas directamente en la shell, independientemente de una sesión de `cursor-agent`, no como comando `/` en el chat.\n\nEl comando configura la integración con la shell añadiendo las entradas correspondientes en `~/.zshrc`. Según la documentación oficial, esto se refiere explícitamente a zsh; para otras shells como bash no hay documentada una rutina de integración específica, aunque la instalación regular de la CLI en sí, según la guía de configuración, soporta tanto bash como zsh.\n\nNormalmente ejecutas el comando una sola vez después de instalar la CLI, para que Cursor Agent quede bien integrado en tu entorno de shell, por ejemplo para autocompletado o funciones de contexto. Si más adelante quieres eliminar la integración de nuevo, usas la contraparte `agent uninstall-shell-integration`.",
       "whenGood": [
         {
-          "title": "Configurar la integración de shell una vez, tras instalar la CLI",
+          "title": "Configurar la integración con la shell una sola vez tras instalar la CLI",
           "example": "agent install-shell-integration"
+        },
+        {
+          "title": "Comprobar tras una actualización de la CLI si la integración sigue bien conectada",
+          "example": "Volver a ejecutar agent install-shell-integration si las funciones de shell ya no funcionan como se espera"
         }
       ],
       "whenBad": [
         {
-          "title": "Se quiere quitar de nuevo la integración de shell",
+          "title": "La integración con la shell debe eliminarse de nuevo",
           "why": "agent install-shell-integration solo instala, no elimina nada.",
           "alternative": "Usar agent uninstall-shell-integration"
+        },
+        {
+          "title": "No usas una shell zsh",
+          "why": "Según la documentación, el comando se refiere explícitamente a ~/.zshrc; para otras shells no hay documentada ninguna rutina de integración.",
+          "alternative": "Usar Cursor CLI con normalidad de todos modos — la integración con la shell es opcional, no un requisito para el funcionamiento"
         }
       ],
       "sources": [
@@ -5249,16 +5308,20 @@
       "slug": "uninstall-shell-integration",
       "name": "agent uninstall-shell-integration",
       "summary": "Quita de nuevo la integración de shell de la CLI de ~/.zshrc.",
-      "what": "agent uninstall-shell-integration deshace la configuración de agent install-shell-integration y elimina las entradas correspondientes de ~/.zshrc.",
+      "what": "`agent uninstall-shell-integration`, al igual que su contraparte `agent install-shell-integration`, no es un slash command dentro del chat, sino un subcomando de terminal independiente que invocas directamente en la shell, no dentro de una sesión de `cursor-agent` en marcha.\n\nEl comando deshace la configuración de la integración con la shell y elimina de nuevo las entradas creadas en `~/.zshrc`. Según la documentación, también aquí se menciona explícitamente solo zsh como shell soportada.\n\nEl comando tiene sentido cuando la integración con la shell causa problemas, por ejemplo conflictos con otras herramientas en tu `.zshrc`, o cuando quieres eliminar Cursor CLI por completo de tu sistema y también quieres restablecer limpiamente la configuración de la shell. Elimina la integración por completo en lugar de solo desactivarla — para una pausa temporal es la herramienta equivocada; para eso es más adecuado comentar manualmente el bloque correspondiente.",
       "whenGood": [
         {
-          "title": "Restablecer limpiamente la integración de shell en caso de problemas",
+          "title": "Restablecer limpiamente la integración con la shell en caso de problemas",
           "example": "agent uninstall-shell-integration"
+        },
+        {
+          "title": "Desinstalar Cursor CLI por completo y limpiar también la configuración de la shell",
+          "example": "Ejecutar agent uninstall-shell-integration antes de la desinstalación propiamente dicha de la CLI"
         }
       ],
       "whenBad": [
         {
-          "title": "La integración de shell solo debe pausarse un momento, no eliminarse",
+          "title": "La integración con la shell debe pausarse solo brevemente, no eliminarse",
           "why": "agent uninstall-shell-integration borra la configuración por completo en lugar de solo desactivarla.",
           "alternative": "Comentar manualmente el bloque correspondiente en ~/.zshrc"
         }
@@ -8248,18 +8311,22 @@
       "slug": "artifact",
       "name": "/artifact",
       "summary": "Abre el panel de revisión de artifacts.",
-      "what": "/artifact pertenece a la categoría Tools & Tasks de la referencia de slash commands y abre un panel dedicado para revisar los artifacts que el agente ha generado durante la sesión.",
+      "what": "/artifact pertenece a la categoría Tools & Tasks y abre el Artifact Review Panel — el lugar central donde la Antigravity CLI te presenta los deliverables del agente para revisión. Según la documentación, un Artifact es un resultado estructurado que el agente genera para completar su tarea y comunicarte el progreso y su razonamiento: planes de implementación en Markdown, diffs de código, diagramas de arquitectura y archivos multimedia.\n\nEn cuanto el agente genera o modifica archivos, aparece en la barra de estado el aviso \"/artifact to review\". El panel separa los archivos de código que requieren aprobación de un media drawer plegable para imágenes y videos. Con `↑`/`↓` navegas entre las entradas, con `y` apruebas un archivo, con `n` lo rechazas, `Shift+A` aprueba todos a la vez. En la vista de detalle añades comentarios línea por línea con `c` antes de que se escriba el cambio.\n\nAlternativamente, puedes abrir el panel en cualquier momento con el atajo `ctrl+r`, incluso mientras una pregunta del agente sigue abierta.",
       "whenGood": [
         {
-          "title": "Revisar los artifacts generados por el agente",
-          "example": "Abre /artifact después de una tarea para revisar los resultados generados"
+          "title": "Revisar archivos generados por el agente antes de escribirlos",
+          "example": "Abrir /artifact (o `ctrl+r`) y aprobar o rechazar con `y`/`n` archivos individuales generados por el agente antes de que se escriban en disco."
+        },
+        {
+          "title": "Revisar un plan de implementación o un diagrama",
+          "example": "Después de una tarea grande, invocar /artifact para leer en detalle el plan en Markdown o el diagrama de arquitectura generado por el agente y comentarlo con `c`."
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres revisar un diff de código puro, no artifacts",
-          "why": "/artifact muestra artifacts, no un diff línea por línea de los cambios de código.",
-          "alternative": "/diff"
+          "title": "Revisar un diff de código puro en lugar de artifacts",
+          "why": "/artifact muestra artifacts (planes, diagramas, archivos multimedia, archivos de código pendientes de aprobación), no un diff de líneas continuo a través de turns y commits.",
+          "alternative": "/diff — Interactive Diff Viewer para cambios, turns y commits"
         }
       ],
       "sources": [
@@ -8356,17 +8423,21 @@
       "slug": "context",
       "name": "/context",
       "summary": "Abre la visualización del uso del contexto.",
-      "what": "/context pertenece a la categoría Utilities y muestra de forma visual cuánto de la ventana de contexto disponible ya está ocupado.",
+      "what": "/context pertenece a la categoría Utilities y abre un panel que muestra visualmente cuánto de la ventana de contexto disponible de la sesión actual ya está ocupado — igual que el resto de comandos de utilidad, se puede invocar en cualquier momento, sin importar qué panel u overlay tenga el foco en ese momento.\n\nLa visualización te ayuda a calcular cuándo una conversación larga llega a su límite, por ejemplo antes de iniciar otra tarea extensa o de añadir muchos archivos con `/add-dir`. Si el espacio empieza a escasear, otros comandos de utilidad ayudan: `/clear` para una sesión completamente nueva, o `/rewind` o `/undo` para saltar de forma específica a un punto anterior del historial de la conversación, en lugar de seguir trabajando a ciegas con la ventana de contexto llena.\n\nSobre /context en sí, la documentación oficial actualmente solo documenta la descripción breve de la tabla de referencia de comandos; no existe una página de detalle propia ni entradas de changelog al respecto.",
       "whenGood": [
         {
           "title": "Comprobar la capacidad de contexto restante antes de una tarea larga",
-          "example": "Llama a /context para ver cuánto espacio queda libre en la ventana de contexto"
+          "example": "Invocar /context para ver cuánto espacio queda libre en la ventana de contexto"
+        },
+        {
+          "title": "Decidir si conviene reiniciar o retroceder",
+          "example": "Comprobar /context y, si la ventana de contexto está ajustada, reiniciar de forma específica con /clear o retroceder a un punto anterior del historial con /rewind."
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres comprobar la cuota del modelo (solicitudes por periodo), no la ventana de contexto",
-          "why": "/context muestra la ocupación de la ventana de contexto, no el cupo de uso del modelo.",
+          "title": "Comprobar la cuota de modelo (solicitudes por periodo) en lugar de la ventana de contexto",
+          "why": "/context muestra la ocupación de la ventana de contexto, no la cuota de uso del modelo.",
           "alternative": "/usage"
         }
       ],
@@ -8382,18 +8453,22 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "Copia la última respuesta del agente al portapapeles.",
-      "what": "/copy pertenece a la categoría Utilities y coloca el texto de la última respuesta dada por el agente en el portapapeles del sistema.",
+      "what": "/copy pertenece a la categoría Utilities y por defecto copia la última respuesta del agente al portapapeles del sistema — útil para pegar una explicación, un bloque de código o un resumen directamente en otra aplicación, sin tener que seleccionarlo manualmente.\n\nDesde la versión 1.1.6, el comando también acepta un argumento de índice opcional: `/copy <n>` no copia la última respuesta, sino la n-ésima respuesta anterior del historial de la conversación. Así puedes recuperar una respuesta más antigua de forma específica, sin tener que desplazarte por el historial o buscarla después.\n\n/copy copia texto de respuesta puro, no un cambio de código estructurado con referencia a archivo y línea a través de varios turns — para eso está pensado el Interactive Diff Viewer (`/diff`), que muestra y permite navegar cambios, turns y commits por separado.",
       "whenGood": [
         {
-          "title": "Pegar rápido la respuesta en otra aplicación",
-          "example": "/copy después de una explicación de código, para pegarla en una nota"
+          "title": "Incorporar la última respuesta a una nota",
+          "example": "/copy después de una explicación de código, para pegarla en una nota."
+        },
+        {
+          "title": "Copiar una respuesta más antigua de forma específica",
+          "example": "/copy 3 copia no la última, sino la antepenúltima respuesta del agente al portapapeles."
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres copiar todo el diff de código, no solo la respuesta en texto",
-          "why": "/copy copia la última respuesta en texto, no un diff de código estructurado.",
-          "alternative": "Abre /diff y revisa los cambios ahí"
+          "title": "Copiar un diff de código completo en lugar de una respuesta de texto pura",
+          "why": "/copy copia la respuesta de texto, no un diff de código estructurado a través de varios archivos y turns.",
+          "alternative": "Abrir /diff y ver los cambios ahí"
         }
       ],
       "sources": [
@@ -8584,18 +8659,22 @@
       "slug": "help",
       "name": "/help",
       "summary": "Abre el panel de ayuda con comandos y atajos.",
-      "what": "/help pertenece a la categoría Utilities y muestra, directamente en la terminal, una vista general de todos los slash commands disponibles y de los atajos de teclado.",
+      "what": "/help pertenece a la categoría Utilities y abre el panel de ayuda con una vista general de todos los slash commands disponibles y de los atajos de teclado activos, directamente en la terminal.\n\nLa pestaña de atajos está ordenada por combinación de teclas, así que puedes consultar directamente qué acción hay detrás de cada tecla, sin tener que recorrer toda la lista. Desde la versión 1.0.10, el panel también muestra la ruta al archivo de log de la CLI — útil cuando quieres reproducir un error y necesitas los logs correspondientes para un reporte de bug vía `/feedback`.\n\nSin embargo, /help no sustituye una explicación detallada de funciones individuales: ofrece una referencia compacta con nombre de comando, descripción breve y combinación de teclas, sin ejemplos ni contexto sobre el funcionamiento de paneles concretos.",
       "whenGood": [
         {
           "title": "Consultar los comandos disponibles",
-          "example": "Llama a /help para ver la lista de todos los slash commands"
+          "example": "Invocar /help para ver la lista de todos los slash commands"
+        },
+        {
+          "title": "Encontrar el archivo de log para un reporte de bug",
+          "example": "Abrir /help y copiar la ruta al archivo de log de la CLI que se muestra ahí, para enviarla junto con /feedback."
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres consultar los atajos de teclado específicos de un panel concreto, como /diff o /agents",
-          "why": "/help muestra una vista general, no los atajos de teclado específicos de cada panel.",
-          "alternative": "Abre el panel correspondiente, por ejemplo /diff o /agents"
+          "title": "Consultar los atajos de teclado detallados de un panel concreto como /diff o /agents",
+          "why": "/help muestra una vista general genérica, no los atajos de teclado detallados de paneles individuales.",
+          "alternative": "Abrir el panel correspondiente directamente, p. ej. /diff o /agents"
         }
       ],
       "sources": [
@@ -8764,18 +8843,22 @@
       "slug": "open",
       "name": "/open",
       "summary": "Abre una ruta en el editor predeterminado del sistema.",
-      "what": "/open pertenece a la categoría Utilities y abre el archivo o la ruta indicados en el editor predeterminado configurado en el sistema, fuera de la CLI.",
+      "what": "/open pertenece a la categoría Utilities y fuerza que una ruta indicada se abra en el editor predeterminado configurado en tu sistema — fuera de la CLI, en tu entorno habitual con resaltado de sintaxis, búsqueda y todas las funciones de editor que la vista de terminal por sí sola no ofrece.\n\nAl escribir, el comando soporta desde la versión 1.0.6 autocompletado de rutas al estilo de la shell, igual que `/add-dir` — así que no necesitas recordar el nombre completo del archivo de memoria, sino que puedes completarlo paso a paso.\n\n/open es útil cuando quieres seguir editando un archivo manualmente o leerlo con calma, en lugar de verlo solo como fragmento en la terminal. Si lo que quieres es simplemente darle al agente un archivo como contexto en el prompt, sin abrirlo por separado, la referencia `@<ruta>` en el prompt es el camino más directo.",
       "whenGood": [
         {
           "title": "Abrir un archivo para editarlo manualmente fuera de la CLI",
           "example": "/open src/index.ts"
+        },
+        {
+          "title": "Encontrar una ruta mediante autocompletado",
+          "example": "Escribir /open src/ y completar paso a paso por la estructura de directorios hasta dar con el archivo deseado."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo quieres insertar la ruta del archivo en el prompt",
-          "why": "/open abre el editor externo; para una simple referencia en el prompt no hace falta.",
-          "alternative": "Usa @<ruta> en el prompt"
+          "title": "Insertar la ruta del archivo solo en el prompt",
+          "why": "/open inicia el editor externo, para una simple referencia en el prompt eso no es necesario.",
+          "alternative": "Usar @<ruta> en el prompt"
         }
       ],
       "sources": [
@@ -9068,17 +9151,21 @@
       "slug": "usage",
       "name": "/usage",
       "summary": "Muestra el uso de la cuota del modelo. Alias: /quota.",
-      "what": "/usage pertenece a la categoría Utilities, alias /quota, y muestra cuánto del cupo del plan actual (Standard/Pro/Ultra) ya se ha consumido.",
+      "what": "/usage pertenece a la categoría Utilities, tiene el alias `/quota`, y abre un panel interactivo que muestra tu consumo de cuota de modelo: un desglose de tus límites de uso y de las solicitudes o tokens restantes por cada modelo soportado en tu plan actual.\n\nAl abrirse, la CLI fuerza una sincronización actualizada de los valores de cuota, tanto localmente en disco como con el servicio backend — así que ves el estado actual y no una cifra desactualizada en caché. La navegación se hace con las teclas de flecha o al estilo vim con `j`/`k`, `g`/`G` salta al principio o al final de la lista, `Esc` o `q` cierra el panel de nuevo.\n\nCon esto, /usage se diferencia claramente de `/context`: aquí se trata de tu cuota de solicitudes a lo largo del tiempo, no de la ocupación de la ventana de contexto de la sesión actual.",
       "whenGood": [
         {
           "title": "Comprobar las solicitudes restantes en la ventana de tiempo actual",
-          "example": "Llama a /usage antes de lanzar un número elevado de solicitudes"
+          "example": "Invocar /usage antes de iniciar un número elevado de solicitudes"
+        },
+        {
+          "title": "Ver el estado de cuota actual en lugar del guardado en caché",
+          "example": "Abrir /usage o /quota para obtener un estado recién sincronizado con el backend de las cuotas de modelo, en lugar de solo una cifra en caché local."
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres comprobar el saldo de créditos G1, no la cuota general del modelo",
-          "why": "/usage muestra la cuota del plan; para el saldo de créditos, que es independiente, existe un comando propio.",
+          "title": "Comprobar el saldo de créditos G1 en lugar de la cuota general de modelo",
+          "why": "/usage muestra la cuota del plan; para el saldo de créditos independiente hay un comando propio.",
           "alternative": "/credits"
         }
       ],

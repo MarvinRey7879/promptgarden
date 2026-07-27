@@ -2146,3 +2146,25 @@ Build 0, Deploy 89e41943, Prod 200. Playwright: 5 Seiten geprüft, kein H-Scroll
 auf 390px, keine sichtbaren Backticks.
 Merke: `summary` verträgt kein Markup (Meta-Description!) und sollte einzeilig
 bleiben — Detailtiefe gehört ins `what`.
+
+## Iteration 248 — 27.07.2026 ~11:23 UTC — Batch 4 (18 Befehle) + 2 Altlasten gefixt
+Poll grün (0/0/0, views_7d 30, visitors 28, mail_clicks 0), Smoke grün.
+Batch 4: 18 dünnste Befehle aus Antigravity, Cursor CLI, Claude Code — Ø56 →
+Ø198 Wörter, ×5 Sprachen. Gesamt-Ø 320 Befehle: 115 → **123** Wörter,
+Seiten unter 100 Wörtern: 155 → **137** (Start: 209). 72 von 320 Befehlen fertig.
+ZWEI ALTLASTEN GEFUNDEN (beide von Agenten, Claude-Code-Batch):
+① `/feedback`: Alias-Angabe „/bug, /share" war nur bis v2.1.212 korrekt — seit
+   v2.1.212 ist `/share` Alias von `/bug`, `/feedback` ein eigener Befehl.
+   Korrigiert (summary + Text).
+② `/chrome`: verwies als Alternative auf `/web` bzw. `/web-search` — diese
+   Befehle wurden bereits in It.167 als erfunden GELÖSCHT, der Verweis blieb
+   aber stehen. Jetzt ersetzt. Lektion: beim Löschen von Seiten auch die
+   Querverweise darauf mitprüfen.
+Sauberes Agenten-Verhalten: bei einem Widerspruch INNERHALB der Google-Doku
+(features-Seite beschreibt Antigravity-`/usage` falsch als Hilfe-Manual statt
+Quota-Anzeige) hat der Agent die Mehrheitsquelle genommen (Reference-Tabelle +
+dedizierte Seite + Changelog) statt zu raten — und den Widerspruch gemeldet.
+Neuer Stolperstein: ein Übersetzer schrieb die Datei mit BOM → JSON.parse
+scheiterte. BOM entfernt; Merge-Scripts künftig BOM-tolerant lesen.
+Build 0, Deploy a512a6b8, Prod 200. Playwright über 5 Seiten in 3 Sprachen:
+kein H-Scroll auf 390px, keine sichtbaren Backticks, alle Texte >500 Zeichen.

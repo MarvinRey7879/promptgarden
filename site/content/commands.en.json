@@ -317,22 +317,27 @@
       "slug": "chrome",
       "name": "/chrome",
       "summary": "Opens the settings for 'Claude in Chrome'.",
-      "what": "Opens the settings for 'Claude in Chrome'.",
+      "what": "/chrome opens the settings for the connection between Claude Code and the \"Claude in Chrome\" browser extension. From there you check the connection status, reconnect the extension, choose between multiple connected browsers, or enable Chrome by default for future sessions.\n\nAccording to the docs, this requires a direct Anthropic subscription (Pro, Max, Team, or Enterprise) and signing in via /login; with a plain API key or a long-lived token from claude setup-token, the integration stays disabled. The feature isn't available via third-party providers like Amazon Bedrock, Google Cloud, or Microsoft Foundry, nor under Windows Subsystem for Linux (WSL). Supported are Google Chrome, Microsoft Edge, and other Chromium browsers like Brave, Arc, Vivaldi, and Opera.\n\nYou start actual browser control with the --chrome flag or by simply asking Claude directly in the prompt.",
       "whenGood": [
         {
-          "title": "Set up the Claude in Chrome extension before letting Claude take actions in the browser",
-          "example": "/chrome — enable the extension/check permissions before a browser automation task"
+          "title": "Check connection status before a browser task",
+          "example": "Run /chrome and check that 'Status: Enabled' and 'Extension: Installed' are shown before Claude tests in the browser."
         },
         {
-          "title": "Review existing Chrome integration settings",
-          "example": "/chrome to check which sites/permissions the extension currently has"
+          "title": "Enable Chrome permanently",
+          "example": "Open /chrome and choose 'Enabled by default' so the --chrome flag is no longer needed going forward."
         }
       ],
       "whenBad": [
         {
-          "title": "Just wanting to read or search a webpage, no browser control needed",
-          "why": "/chrome only opens the Chrome extension's settings, not a search function",
-          "alternative": "use /web or /web-search for pure reading/searching the web"
+          "title": "Free-plan account without a direct subscription",
+          "why": "According to the docs, /chrome requires a direct Anthropic subscription (Pro, Max, Team, or Enterprise); the integration stays disabled with a plain API key or third-party provider.",
+          "alternative": "Switch to a Pro, Max, Team, or Enterprise plan and sign in via /login."
+        },
+        {
+          "title": "Just having a webpage read or summarized",
+          "why": "/chrome only opens the extension's settings; simple reading or searching the web doesn't require visible browser control.",
+          "alternative": "Ask Claude directly in the prompt to read a URL or search the web — Claude uses built-in web tools for that, no dedicated slash command needed."
         }
       ],
       "sources": [
@@ -947,22 +952,27 @@
       "slug": "export",
       "name": "/export",
       "summary": "Exports the current conversation as plain text.",
-      "what": "Exports the current conversation as plain text.\n\nWith a filename, it goes straight to a file; without one, a dialog offers clipboard or file.",
+      "what": "/export opens a menu where you either copy the current conversation to the clipboard or save it as a plain text file. Messages and tool outputs are rendered as readable text — meant for a human to read, not as raw data or a structured format.\n\nIf you pass a filename directly, e.g. /export session-notes.txt, the command skips the menu and writes straight to that file. Without an argument, you get the choice between clipboard and file.\n\nIf you instead want to process the conversation programmatically, /export isn't the right tool according to the docs: for structured data for scripting, there are other paths, such as a non-interactive run with JSON output or accessing the session's locally stored transcript file.",
       "whenGood": [
         {
-          "title": "Save or share the whole conversation as text",
-          "example": "/export session-notes.txt"
+          "title": "Save the entire conversation as a text file",
+          "example": "Run /export project-review.txt to write the complete conversation directly to a file."
         },
         {
-          "title": "Decide between clipboard and file via the dialog",
-          "example": "/export with no argument opens the choice"
+          "title": "Quickly copy the conversation to the clipboard",
+          "example": "Call /export without an argument and choose the clipboard option in the dialog."
         }
       ],
       "whenBad": [
         {
+          "title": "Conversation as structured data for a script",
+          "why": "According to the docs, /export produces a human-readable text format, not structured data for scripts.",
+          "alternative": "Use claude -p with --output-format json or stream-json to get the result, session ID, and cost in machine-readable form."
+        },
+        {
           "title": "Only wanting to copy the last response",
-          "why": "/export exports the entire conversation, not a single response",
-          "alternative": "use /copy for just the last (or, with a number, the Nth-last) response"
+          "why": "/export exports the entire conversation, not a single response.",
+          "alternative": "Use /copy to copy only the last (or, with a number, the n-th-to-last) response."
         }
       ],
       "sources": [
@@ -1006,23 +1016,28 @@
       "platform": "claude-code",
       "slug": "feedback",
       "name": "/feedback",
-      "summary": "Sends feedback, reports a bug, or shares the conversation.",
-      "what": "Sends feedback, reports a bug, or shares the conversation.\n\nAliases: /bug, /share.",
+      "summary": "No longer aliases: /share is now an alias of /bug.",
+      "what": "/feedback opens the dialog for sending product feedback about Claude Code itself — not about your own project code. You first choose how much session history to include: just the current session, or additionally other sessions from the same project from the last 24 hours or 7 days. Something is only actually sent after you confirm on a consent screen.\n\n/bug and its alias /share open the same dialog; all three send via the same path. If you're signed in directly with Anthropic, the report goes to Anthropic and transcripts are retained for 5 years; via a third-party provider or without Anthropic credentials, the report instead lands locally under ~/.claude/feedback-bundles/ and has to be forwarded yourself. The environment variable DISABLE_FEEDBACK_COMMAND=1 can disable sending entirely.",
       "whenGood": [
         {
           "title": "Report a bug in Claude Code itself",
-          "example": "/feedback or /bug after hitting a reproducible tool error"
+          "example": "Run /feedback after a reproducible error in the tool and select the appropriate session history for the report in the dialog."
         },
         {
-          "title": "Share a conversation with someone",
-          "example": "/share to pass along a helpful conversation"
+          "title": "Include multiple sessions of a project",
+          "example": "Call /feedback and include the last 24 hours of the same project instead of just the current session."
         }
       ],
       "whenBad": [
         {
           "title": "Wanting to report a bug in your own project code",
-          "why": "/feedback addresses issues with Claude Code itself, not your own application",
-          "alternative": "use a normal bug-fix prompt or file an issue in your own repo"
+          "why": "According to the docs, /feedback addresses problems with Claude Code itself, not with your own application.",
+          "alternative": "Write a normal bug-fix prompt or open an issue in your own repo."
+        },
+        {
+          "title": "Not wanting to send any data to Anthropic",
+          "why": "According to the docs, /feedback sends a copy of the conversation history including code to Anthropic by default (or locally with third-party providers).",
+          "alternative": "Set DISABLE_FEEDBACK_COMMAND=1 beforehand to disable the command."
         }
       ],
       "sources": [
@@ -1197,22 +1212,27 @@
       "slug": "help",
       "name": "/help",
       "summary": "Shows help and available commands.",
-      "what": "Shows help and available commands.",
+      "what": "/help shows an overview of help and all available commands directly in the terminal. In the official command reference, it's documented with only this one sentence and isn't marked as either a skill or a workflow, but is built directly into the CLI — so it works the same regardless of plan and platform.\n\nAs an alternative, you can also just type /: this also opens a command list to browse, and if you then type more letters, Claude Code filters the list live to match command names. /help is thus best suited for initial orientation or looking up the full list, while / plus letters is better suited for quickly finding a command name you already vaguely remember.",
       "whenGood": [
         {
-          "title": "Getting first orientation in Claude Code",
-          "example": "Right after installing, type /help to see the list of available commands."
+          "title": "Initial orientation after installation",
+          "example": "Type /help right after installation to see the list of available commands."
         },
         {
-          "title": "Looking up a forgotten command name",
-          "example": "You only vaguely remember a command name → /help shows the full overview to look it up."
+          "title": "Look up a forgotten command name",
+          "example": "Call /help to look up a vaguely remembered command name in the full overview."
         }
       ],
       "whenBad": [
         {
-          "title": "Clarifying detailed questions about one specific feature",
-          "why": "/help only gives a short overview of commands, not a detailed explanation of individual features.",
-          "alternative": "Consult the official docs (code.claude.com/docs) or ask directly."
+          "title": "Filtering specifically for a known command",
+          "why": "According to the docs, /help only shows the general overview; typing right after the slash filters the list live and is therefore more targeted.",
+          "alternative": "Type / and then add letters to filter the list live."
+        },
+        {
+          "title": "Clarifying detailed questions about a single feature",
+          "why": "According to the docs, /help only provides a brief overview of commands, not a detailed explanation of individual features.",
+          "alternative": "Consult the official docs at code.claude.com/docs or ask specifically."
         }
       ],
       "sources": [
@@ -1607,18 +1627,27 @@
       "slug": "mobile",
       "name": "/mobile",
       "summary": "Shows a QR code to download the Claude mobile app.",
-      "what": "Shows a QR code to download the Claude mobile app.\n\nAliases: /ios, /android.",
+      "what": "/mobile shows a QR code directly in the terminal that you can use to download the Claude app for iOS or Android. The aliases /ios and /android trigger the same command.\n\nThe Claude app itself doesn't run code; it acts as a client: through it you can reach Claude Code cloud sessions on the web, a locally running session via Remote Control, or the desktop app via Dispatch. For cloud sessions and Remote Control you need the same claude.ai account as in Claude Code — according to the docs, the app isn't reachable with a plain Anthropic Console API key or via a third-party provider like Amazon Bedrock.\n\nAfter installing, you sign in with the same account and find your sessions in the \"Code\" tab.",
       "whenGood": [
         {
-          "title": "Install the Claude mobile app",
-          "example": "Run /mobile to scan the QR code and download the app to your phone."
+          "title": "Installing the app for the first time",
+          "example": "Run /mobile and scan the displayed QR code with your phone to download the Claude app."
+        },
+        {
+          "title": "Quick access without an App Store search",
+          "example": "Call /mobile in a running session instead of manually searching for 'Claude' in the App Store."
         }
       ],
       "whenBad": [
         {
-          "title": "Continuing to steer a running terminal session on the go, without reinstalling the app",
-          "why": "/mobile only shows a QR code for installing the app, it doesn't hand off a running session.",
-          "alternative": "Enable /remote-control to steer the session remotely from claude.ai or the app."
+          "title": "Controlling a running terminal session from your phone",
+          "why": "According to the docs, /mobile only shows an installation QR code, not a connection to a running session.",
+          "alternative": "Run /remote-control or claude remote-control to control the local session remotely from your phone."
+        },
+        {
+          "title": "Only an API key or third-party provider, no claude.ai account",
+          "why": "According to the docs, cloud sessions and Remote Control require the same claude.ai account as Claude Code; a plain Anthropic Console API key or a third-party provider like Amazon Bedrock isn't enough.",
+          "alternative": "Sign in with a claude.ai account via /login, otherwise only the local terminal or desktop session remains available."
         }
       ],
       "sources": [
@@ -1814,22 +1843,27 @@
       "slug": "privacy-settings",
       "name": "/privacy-settings",
       "summary": "Shows and changes your privacy settings.",
-      "what": "Shows and changes your privacy settings.\n\nOnly for Pro and Max plan subscribers.",
+      "what": "/privacy-settings opens your privacy settings for editing directly from within Claude Code. According to the docs, the command is only visible to Pro and Max plan subscribers — not on the free plan.\n\nThe content is mainly about consent for whether your data may be used to train future Claude models. This setting also affects the retention period: with consent enabled, Anthropic stores your data for 5 years; with it disabled, only for 30 days. The same setting can alternatively also be changed directly in the browser at claude.ai/settings/data-privacy-controls.\n\nFor Team, Enterprise, and API users, separate, contractually regulated privacy terms apply anyway (Commercial Terms, optionally Zero Data Retention), which is why no personal toggle is provided for them via this command.",
       "whenGood": [
         {
-          "title": "Check your own privacy settings",
-          "example": "Open /privacy-settings to see which privacy options are currently set."
+          "title": "Check training consent as a Pro/Max user",
+          "example": "Open /privacy-settings and check whether the use of your own data for model training is enabled."
         },
         {
-          "title": "Adjust privacy settings to match internal requirements",
-          "example": "As a Pro or Max user, go through /privacy-settings to change settings to fit internal policy."
+          "title": "Shorten the retention period of your own data",
+          "example": "Call /privacy-settings and disable consent to shorten retention from 5 years to 30 days."
         }
       ],
       "whenBad": [
         {
           "title": "Free-plan account without a Pro or Max subscription",
           "why": "According to the docs, /privacy-settings is only visible to Pro and Max plan subscribers.",
-          "alternative": "Upgrade to Pro/Max first (/upgrade), or check general account settings via /status."
+          "alternative": "Open the settings directly in the browser at claude.ai/settings/data-privacy-controls."
+        },
+        {
+          "title": "Team or Enterprise account",
+          "why": "According to the docs, Team, Enterprise, and API users are subject to separate, contractually regulated privacy rules instead of a personal training toggle.",
+          "alternative": "Ask your organization admin about the applicable Commercial Terms or Zero Data Retention."
         }
       ],
       "sources": [
@@ -3586,18 +3620,22 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Starts a new, empty chat session.",
-      "what": "/clear starts a new chat session. /new, /new-chat, and /newchat are aliases.",
+      "what": "`/clear` ends the current chat session and starts a new, empty session. The previous conversation history is no longer available as context within the new session afterward. `/new`, `/new-chat`, and `/newchat` are documented as equivalent aliases for the same command.\n\nThe command is useful for starting with a clean, empty context window on a topic change, for example when a task is finished and the next one has nothing to do with it. This keeps old context from unnecessarily affecting the response quality or token cost of the new task.\n\nImportantly, `/clear` discards the history rather than compressing it. If you still need access to earlier messages, for example because you just want to free up space in the context window, `/summarize` (alias `/compress`) is the better choice, since it keeps a summary of the previous history. Old sessions can still be reopened later via `agent ls` or `/resume`.",
       "whenGood": [
         {
           "title": "Free up the context window for a completely new topic",
-          "example": "/clear — after the previous task is done"
+          "example": "/clear — after the previous task is finished"
+        },
+        {
+          "title": "Deliberately end an old session informally when you no longer need it",
+          "example": "/clear after finishing a task, when the session doesn't need to be referenced afterward"
         }
       ],
       "whenBad": [
         {
-          "title": "The prior context is still needed",
-          "why": "/clear discards the current session's conversation history entirely.",
-          "alternative": "Use /summarize to free up space without losing the context completely"
+          "title": "The previous context is still needed",
+          "why": "/clear completely discards the current session's conversation history.",
+          "alternative": "Use /summarize to free up space without losing the context entirely"
         }
       ],
       "sources": [
@@ -3907,17 +3945,21 @@
       "slug": "about",
       "name": "/about",
       "summary": "Shows CLI version, system, and account info and copies it to the clipboard.",
-      "what": "/about shows version, system, and account information and additionally copies it to the clipboard.",
+      "what": "`/about` shows you the Cursor CLI version, system information, and account details within a running chat session. The command also automatically copies this info block to the clipboard, so you can reuse it without manually selecting it.\n\nThere's also an identically named terminal subcommand, `agent about`, which delivers the same info outside a chat session — according to the docs, though, without the automatic clipboard copy, which is only explicitly mentioned for the slash command `/about`.\n\nA typical use case is preparing a bug report or support request: instead of looking up version, operating system, and account separately, you get the whole block with one command and paste it straight into the ticket. If you really only need the plain version number, the command gives you more information than necessary.",
       "whenGood": [
         {
-          "title": "Gather diagnostic info for a bug report",
-          "example": "/about — paste the output directly into a support ticket"
+          "title": "Compile diagnostic info for a bug report",
+          "example": "/about — paste the output directly into the support ticket"
+        },
+        {
+          "title": "Quickly check which account and system you're currently working with",
+          "example": "Call /about to confirm account and system context before reporting a problem."
         }
       ],
       "whenBad": [
         {
-          "title": "Only the bare version number is needed",
-          "why": "/about gives a whole info block, more than needed for a simple version check.",
+          "title": "You only need the plain version number",
+          "why": "/about delivers an entire info block, more than needed for a simple version check.",
           "alternative": "Run agent --version in the terminal"
         }
       ],
@@ -4068,18 +4110,22 @@
       "slug": "copy-request-id",
       "name": "/copy-request-id",
       "summary": "Copies the last request's ID to the clipboard.",
-      "what": "/copy-request-id copies the request ID of the last request to the clipboard, useful for support and debugging.",
+      "what": "`/copy-request-id` copies the ID of the last request sent to the model to the clipboard. Unlike the conversation ID, which identifies the entire session, this request ID always refers only to the last single request within the session.\n\nThe command is mainly intended for support and debugging cases: when a specific problem occurs with exactly one response — an error, an unusually long response time, or an unexpected result — it can be reported precisely to the Cursor team via the request ID, without having to search through the entire session.\n\nAs with the other copy commands, there's no visible terminal output; the ID goes straight to the system clipboard. If the problem instead spans multiple messages or affects the whole session, `/copy-conversation-id` is the better choice.",
       "whenGood": [
         {
           "title": "Report a specific problem to support",
-          "example": "/copy-request-id — paste the ID directly into a support ticket"
+          "example": "/copy-request-id — paste the ID directly into the support ticket"
+        },
+        {
+          "title": "Make an unusual single response instantly traceable",
+          "example": "Run /copy-request-id right after a faulty response to capture the ID immediately"
         }
       ],
       "whenBad": [
         {
           "title": "It's about the whole conversation, not a single request",
-          "why": "The request ID only refers to the last individual request.",
-          "alternative": "Use /copy-conversation-id"
+          "why": "The request ID refers only to the last single request.",
+          "alternative": "Use /copy-conversation-id instead"
         }
       ],
       "sources": [
@@ -4094,18 +4140,22 @@
       "slug": "copy-conversation-id",
       "name": "/copy-conversation-id",
       "summary": "Copies the current conversation's ID to the clipboard.",
-      "what": "/copy-conversation-id copies the current session's conversation ID to the clipboard.",
+      "what": "`/copy-conversation-id` copies the current chat session's unique ID to the clipboard. This ID identifies the entire conversation and differs from the request ID, which only identifies a single request within the session.\n\nIn practice, the command is mainly needed for support requests and debugging: if you report a problem that occurs across multiple messages or relates to the session as a whole, the conversation ID helps the Cursor team trace your session precisely. The ID is also useful for you personally, for example to find a session again later when you have several `cursor-agent` sessions open in parallel.\n\nThe command produces no visible terminal output; it places the ID directly on the system clipboard. You then need to paste it elsewhere, for example into a support ticket or a note.",
       "whenGood": [
         {
           "title": "Find or reference a session later by its ID",
-          "example": "/copy-conversation-id — save the ID in a note"
+          "example": "/copy-conversation-id — save the ID in a note before switching to another session"
+        },
+        {
+          "title": "Report a problem spanning multiple sessions to Cursor support",
+          "example": "Run /copy-conversation-id and paste the ID into the support ticket when the error spans multiple messages"
         }
       ],
       "whenBad": [
         {
           "title": "It's about a single request, not the whole session",
           "why": "The conversation ID identifies the entire session, not a single request.",
-          "alternative": "Use /copy-request-id"
+          "alternative": "Use /copy-request-id instead"
         }
       ],
       "sources": [
@@ -5223,18 +5273,27 @@
       "slug": "install-shell-integration",
       "name": "agent install-shell-integration",
       "summary": "Installs the CLI's shell integration into ~/.zshrc.",
-      "what": "agent install-shell-integration sets up the shell integration in ~/.zshrc. Per the docs this explicitly targets zsh; no separate install routine is documented for other shells.",
+      "what": "`agent install-shell-integration` is not a slash command inside a running chat session but a standalone terminal subcommand of the Cursor CLI. You run it directly in the shell, independent of a `cursor-agent` session, not as a `/` command in the chat.\n\nThe command sets up the shell integration by adding matching entries to `~/.zshrc`. According to the official docs, this explicitly refers to zsh; no separate integration routine is documented for other shells like bash, even though the regular installation of the CLI itself supports both bash and zsh according to the setup guide.\n\nYou typically run the command once after installing the CLI so Cursor Agent is cleanly wired into your shell environment, for example for autocomplete or context features. If you want to remove the integration again later, use its counterpart `agent uninstall-shell-integration`.",
       "whenGood": [
         {
-          "title": "Set up shell integration once after installing the CLI",
+          "title": "Set up the shell integration once after installing the CLI",
           "example": "agent install-shell-integration"
+        },
+        {
+          "title": "Check after a CLI update whether the integration is still wired up cleanly",
+          "example": "Run agent install-shell-integration again if shell features no longer work as expected."
         }
       ],
       "whenBad": [
         {
-          "title": "Shell integration needs to be removed again",
+          "title": "The shell integration should be removed again",
           "why": "agent install-shell-integration only installs, it doesn't remove anything.",
           "alternative": "Use agent uninstall-shell-integration"
+        },
+        {
+          "title": "You're not using a zsh shell",
+          "why": "According to the docs, the command explicitly targets ~/.zshrc; no integration routine is documented for other shells.",
+          "alternative": "Use Cursor CLI normally regardless — the shell integration is optional, not a requirement for it to work"
         }
       ],
       "sources": [
@@ -5249,17 +5308,21 @@
       "slug": "uninstall-shell-integration",
       "name": "agent uninstall-shell-integration",
       "summary": "Removes the CLI's shell integration from ~/.zshrc again.",
-      "what": "agent uninstall-shell-integration reverses what agent install-shell-integration set up and removes the corresponding entries from ~/.zshrc.",
+      "what": "`agent uninstall-shell-integration`, like its counterpart `agent install-shell-integration`, is not a slash command in the chat but a standalone terminal subcommand that you run directly in the shell, not inside a running `cursor-agent` session.\n\nThe command reverses the shell integration setup and removes the entries it added from `~/.zshrc`. According to the docs, only zsh is explicitly listed as a supported shell here as well.\n\nThe command is useful if the shell integration is causing problems, such as conflicts with other tools in your `.zshrc`, or if you want to remove Cursor CLI completely from your system and cleanly reset the shell configuration in the process. It removes the integration entirely rather than just disabling it — for a temporary pause, it's the wrong tool; manually commenting out the relevant block is better suited for that.",
       "whenGood": [
         {
-          "title": "Cleanly reset shell integration when it's causing problems",
+          "title": "Cleanly reset the shell integration when it's causing problems",
           "example": "agent uninstall-shell-integration"
+        },
+        {
+          "title": "Fully uninstall Cursor CLI and clean up the shell configuration too",
+          "example": "Run agent uninstall-shell-integration before actually uninstalling the CLI"
         }
       ],
       "whenBad": [
         {
-          "title": "Shell integration should only be paused briefly, not removed",
-          "why": "agent uninstall-shell-integration deletes the configuration entirely instead of just disabling it.",
+          "title": "The shell integration should only be paused briefly, not removed",
+          "why": "agent uninstall-shell-integration deletes the configuration completely instead of just disabling it.",
           "alternative": "Manually comment out the relevant block in ~/.zshrc"
         }
       ],
@@ -8248,18 +8311,22 @@
       "slug": "artifact",
       "name": "/artifact",
       "summary": "Opens the artifact review panel.",
-      "what": "/artifact belongs to the Tools & Tasks category of the slash command reference and opens a dedicated panel for reviewing artifacts the agent produced during the session.",
+      "what": "/artifact belongs to the Tools & Tasks category and opens the Artifact Review Panel — the central place where the Antigravity CLI presents the agent's deliverables to you for review. According to the docs, an artifact is a structured result the agent produces to accomplish its task and to communicate progress and reasoning to you: implementation plans as Markdown, code diffs, architecture diagrams, and media files.\n\nAs soon as the agent creates or modifies files, the status line shows \"/artifact to review\". The panel separates code files that require approval from a collapsible media drawer for images and videos. Use `↑`/`↓` to navigate between entries, `y` to approve a file, `n` to reject it, `Shift+A` approves all at once. In the detail view, use `c` to attach line-by-line comments before the change is written.\n\nAlternatively, you can open the panel at any time via the `ctrl+r` shortcut, even while an agent question is still pending.",
       "whenGood": [
         {
-          "title": "Review artifacts the agent generated",
-          "example": "Open /artifact after a task to check the generated outputs"
+          "title": "Review agent-generated files before they're written",
+          "example": "Open /artifact (or `ctrl+r`) and use `y`/`n` to approve or reject individual agent-generated files before they get written to disk."
+        },
+        {
+          "title": "Review an implementation plan or diagram",
+          "example": "After a larger task, call /artifact to read the agent-generated Markdown plan or an architecture diagram in detail and comment on it with `c`."
         }
       ],
       "whenBad": [
         {
-          "title": "You need a plain code diff, not artifacts",
-          "why": "/artifact shows artifacts, not a line-level diff of code changes.",
-          "alternative": "/diff"
+          "title": "Reviewing a plain code diff instead of artifacts",
+          "why": "/artifact shows artifacts (plans, diagrams, media files, code files pending approval), not a continuous line diff across turns and commits.",
+          "alternative": "/diff — Interactive Diff Viewer for changes, turns, and commits"
         }
       ],
       "sources": [
@@ -8356,17 +8423,21 @@
       "slug": "context",
       "name": "/context",
       "summary": "Opens the context usage visualization.",
-      "what": "/context belongs to the Utilities category and visually shows how much of the available context window is already used up.",
+      "what": "/context belongs to the Utilities category and opens a panel that visually shows how much of the current session's available context window is already used — like the other utility commands, it can be called at any time, regardless of which panel or overlay is currently focused.\n\nThe display helps you judge when a long conversation is approaching its limits, for example before starting another large task or adding many files via `/add-dir`. When space runs low, other utility commands can help: `/clear` for a completely fresh session, or `/rewind` or `/undo` to jump back to a specific point in the conversation history instead of blindly continuing with a full context window.\n\nFor /context itself, the official docs currently only document the short description from the command reference; there's no dedicated detail page or changelog entries for it.",
       "whenGood": [
         {
           "title": "Check remaining context capacity before a long task",
-          "example": "Call /context to see how much room is left in the context window"
+          "example": "Call /context to see how much space is still free in the context window"
+        },
+        {
+          "title": "Decide whether a restart or rewind makes sense",
+          "example": "Check /context and, if the context window is running low, either restart fresh with /clear or jump back to an earlier point in the history with /rewind."
         }
       ],
       "whenBad": [
         {
-          "title": "You want to check model quota (requests per period), not context window usage",
-          "why": "/context shows context window usage, not the model's usage quota.",
+          "title": "Checking model quota (requests per time period) instead of the context window",
+          "why": "/context shows context-window usage, not the model's usage quota.",
           "alternative": "/usage"
         }
       ],
@@ -8382,17 +8453,21 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "Copies the last agent response to the clipboard.",
-      "what": "/copy belongs to the Utilities category and puts the text of the agent's most recent response onto the system clipboard.",
+      "what": "/copy belongs to the Utilities category and by default copies the agent's last response to the system clipboard — useful for pasting an explanation, code block, or summary directly into another application without manually selecting it.\n\nSince version 1.1.6, the command also accepts an optional index argument: `/copy <n>` copies not the last response but the n-th-to-last response from the conversation history. This lets you grab an older response directly, without first scrolling back through the history or searching for it afterward.\n\n/copy copies plain response text, not a structured code change with file and line references across multiple turns — that's what the Interactive Diff Viewer (`/diff`) is for, which shows and lets you navigate changes, turns, and commits separately.",
       "whenGood": [
         {
-          "title": "Quickly paste a response into another application",
-          "example": "/copy after a code explanation, to paste it into a note"
+          "title": "Copy the last response into a note",
+          "example": "/copy after a code explanation, to paste it into a note."
+        },
+        {
+          "title": "Copy a specific older response",
+          "example": "/copy 3 copies not the last but the third-to-last response from the agent to the clipboard."
         }
       ],
       "whenBad": [
         {
-          "title": "You want a full code diff, not a plain text response",
-          "why": "/copy copies the last text response, not a structured code diff.",
+          "title": "Copying an entire code diff instead of plain text response",
+          "why": "/copy copies the text response, not a structured code diff across multiple files and turns.",
           "alternative": "Open /diff and view the changes there"
         }
       ],
@@ -8584,18 +8659,22 @@
       "slug": "help",
       "name": "/help",
       "summary": "Opens the help panel with commands and shortcuts.",
-      "what": "/help belongs to the Utilities category and shows an overview of all available slash commands and keyboard shortcuts, right in the terminal.",
+      "what": "/help belongs to the Utilities category and opens the help panel with an overview of all available slash commands and the active keyboard shortcuts, directly in the terminal.\n\nThe shortcuts tab is sorted by key combination, so you can look up which action sits behind which key without having to search the whole list. Since version 1.0.10, the panel also shows the path to the CLI log file — useful when you want to reproduce an error and need the associated logs for a bug report via `/feedback`.\n\n/help doesn't replace a detailed explanation of individual features, though: it provides a compact reference of command names, short descriptions, and key combinations, not examples or background on how individual panels work.",
       "whenGood": [
         {
-          "title": "Look up the available commands",
+          "title": "Look up available commands",
           "example": "Call /help to see the list of all slash commands"
+        },
+        {
+          "title": "Find the log file for a bug report",
+          "example": "Open /help and copy the CLI log file path shown there, to include it via /feedback."
         }
       ],
       "whenBad": [
         {
-          "title": "You need the detailed shortcuts of a specific panel like /diff or /agents",
-          "why": "/help shows a general overview, not the detailed shortcuts of individual panels.",
-          "alternative": "Open the relevant panel itself, e.g. /diff or /agents"
+          "title": "Looking up detailed keyboard shortcuts for a single panel like /diff or /agents",
+          "why": "/help shows a general overview, not detailed keyboard shortcuts for individual panels.",
+          "alternative": "Open the respective panel itself, e.g. /diff or /agents"
         }
       ],
       "sources": [
@@ -8764,17 +8843,21 @@
       "slug": "open",
       "name": "/open",
       "summary": "Opens a path in the system default editor.",
-      "what": "/open belongs to the Utilities category and opens the given file or path in the system's default editor, outside the CLI.",
+      "what": "/open belongs to the Utilities category and forces a given path to open in the default editor configured on your system — outside the CLI, in your familiar environment with syntax highlighting, search, and all the editor features the plain terminal view doesn't offer.\n\nWhile typing, the command has supported shell-like path autocompletion since version 1.0.6, just like `/add-dir` — so you don't need to know the full filename by heart, but can complete it step by step.\n\n/open is the right choice when you want to keep editing a file manually or read through it at leisure, instead of only seeing it as a snippet in the terminal. If you just want to give the agent a file as context in the prompt without opening it separately, the `@<path>` reference in the prompt is the more direct route.",
       "whenGood": [
         {
           "title": "Open a file for manual editing outside the CLI",
           "example": "/open src/index.ts"
+        },
+        {
+          "title": "Find a path via autocompletion",
+          "example": "Type /open src/ and complete it step by step through the directory structure until you reach the file you want."
         }
       ],
       "whenBad": [
         {
-          "title": "You just want to reference a file path in the prompt",
-          "why": "/open launches the external editor; that's unnecessary for a plain prompt reference.",
+          "title": "Just inserting a file path into the prompt",
+          "why": "/open launches the external editor, which isn't needed for a plain prompt reference.",
           "alternative": "Use @<path> in the prompt"
         }
       ],
@@ -9068,17 +9151,21 @@
       "slug": "usage",
       "name": "/usage",
       "summary": "Shows model quota usage. Alias: /quota.",
-      "what": "/usage belongs to the Utilities category, alias /quota, and shows how much of the current plan's quota (Standard/Pro/Ultra) has already been used.",
+      "what": "/usage belongs to the Utilities category, has the alias `/quota`, and opens an interactive panel that shows your model quota usage: a breakdown of your usage limits and the remaining requests or tokens per supported model on your current plan.\n\nOn opening, the CLI forces a fresh sync of the quota values, both locally on disk and with the backend service — so you see the current state rather than a cached, outdated number. Navigate with the arrow keys or vim-style with `j`/`k`; `g`/`G` jumps to the start or end of the list; `Esc` or `q` closes the panel again.\n\nThis clearly distinguishes /usage from `/context`: this is about your request quota over time, not the current session's context-window usage.",
       "whenGood": [
         {
           "title": "Check remaining requests in the current time window",
-          "example": "Call /usage before starting a large batch of requests"
+          "example": "Call /usage before kicking off a large number of requests"
+        },
+        {
+          "title": "See the current instead of a cached quota state",
+          "example": "Open /usage or /quota to get a freshly synced state of the model quotas from the backend, instead of just a locally cached number."
         }
       ],
       "whenBad": [
         {
-          "title": "You want to check the G1 credits balance, not general model quota",
-          "why": "/usage shows plan quota; the separate credits balance has its own command.",
+          "title": "Checking G1 credits balance instead of general model quota",
+          "why": "/usage shows the plan quota; there's a separate command for the separate credits balance.",
           "alternative": "/credits"
         }
       ],

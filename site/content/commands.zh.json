@@ -317,22 +317,27 @@
       "slug": "chrome",
       "name": "/chrome",
       "summary": "打开 'Claude in Chrome' 的设置。",
-      "what": "打开 'Claude in Chrome' 的设置。",
+      "what": "/chrome 会打开 Claude Code 与「Claude in Chrome」浏览器扩展之间连接的设置界面。在这里你可以查看连接状态、重新连接扩展、在多个已连接的浏览器之间切换，或者把 Chrome 设为未来会话的默认选项。\n\n根据文档，使用前提是拥有直接的 Anthropic 订阅（Pro、Max、Team 或 Enterprise）并通过 /login 登录；仅使用 API key，或者通过 claude setup-token 获取的长期 token，该集成都将保持禁用状态。通过 Amazon Bedrock、Google Cloud 或 Microsoft Foundry 等第三方接入时，该功能不可用，在 Windows Subsystem for Linux（WSL）下同样不可用。支持的浏览器包括 Google Chrome、Microsoft Edge，以及 Brave、Arc、Vivaldi、Opera 等其他基于 Chromium 的浏览器。\n\n实际的浏览器控制可以通过 --chrome 标志启动，也可以直接在 prompt 中要求 Claude 执行。",
       "whenGood": [
         {
-          "title": "在让 Claude 于浏览器中执行操作之前,设置 Claude-in-Chrome 扩展",
-          "example": "/chrome — 在执行浏览器自动化任务之前启用扩展/检查权限"
+          "title": "在执行浏览器任务前检查连接状态",
+          "example": "在让 Claude 于浏览器中测试之前，执行 /chrome 并确认显示 'Status: Enabled' 和 'Extension: Installed'。"
         },
         {
-          "title": "检查现有的 Chrome 集成设置",
-          "example": "/chrome,用于检查该扩展当前拥有哪些网页/权限"
+          "title": "永久启用 Chrome",
+          "example": "打开 /chrome，选择 'Enabled by default'，这样以后就不再需要 --chrome 标志。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想阅读或搜索某个网页,不需要浏览器控制",
-          "why": "/chrome 只会打开 Chrome 扩展的设置,不提供搜索功能",
-          "alternative": "使用 /web 或 /web-search 进行纯粹的网页阅读/搜索"
+          "title": "没有直接订阅的 Free 方案账户",
+          "why": "根据文档，/chrome 需要直接的 Anthropic 订阅（Pro、Max、Team 或 Enterprise）；仅使用 API key 或第三方接入，该集成将保持禁用状态。",
+          "alternative": "切换到 Pro、Max、Team 或 Enterprise 方案，并通过 /login 登录。"
+        },
+        {
+          "title": "只是想让 Claude 阅读或总结某个网页",
+          "why": "/chrome 只是打开扩展的设置界面；单纯的网页阅读或搜索并不需要可见的浏览器控制。",
+          "alternative": "直接在 prompt 中让 Claude 读取某个 URL 或进行网页搜索——为此 Claude 会使用内置的网页工具，无需专门的 slash command。"
         }
       ],
       "sources": [
@@ -947,22 +952,27 @@
       "slug": "export",
       "name": "/export",
       "summary": "将当前对话导出为纯文本。",
-      "what": "将当前对话导出为纯文本。\n\n带文件名时会直接写入该文件;不带参数则弹出对话框选择复制到剪贴板或保存为文件。",
+      "what": "/export 会打开一个菜单，让你把当前对话复制到剪贴板，或保存为纯文本文件。消息和工具输出会被渲染成便于阅读的文本——是给人查看用的，而不是原始数据或结构化格式。\n\n如果直接指定文件名，比如 /export session-notes.txt，命令会跳过菜单，直接写入该文件。不带参数时则会打开剪贴板与文件之间的选择菜单。\n\n如果你想以机器可处理的方式进一步处理对话内容，根据文档，/export 并不是合适的工具：想获取用于脚本处理的结构化数据，有其他途径，比如以 JSON 输出方式进行非交互式运行，或直接访问会话本地保存的记录文件。",
       "whenGood": [
         {
-          "title": "将整个对话保存为文本或转发给他人",
-          "example": "/export session-notes.txt"
+          "title": "把整个对话保存为文本文件",
+          "example": "执行 /export projekt-review.txt，把完整对话直接写入文件。"
         },
         {
-          "title": "通过对话框在剪贴板和文件之间进行选择",
-          "example": "不带参数的 /export 会打开选择菜单"
+          "title": "快速把对话复制到剪贴板",
+          "example": "不带参数调用 /export，在弹出的对话框中选择复制到剪贴板的选项。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想复制最新的一条回复",
-          "why": "/export 导出的是完整对话,而不仅仅是一条回复",
-          "alternative": "使用 /copy 只复制最新的回复(或加上数字复制倒数第 N 条)"
+          "title": "想把对话作为结构化数据用于脚本处理",
+          "why": "根据文档，/export 提供的是便于人阅读的文本格式，而不是供脚本使用的结构化数据。",
+          "alternative": "使用 claude -p 配合 --output-format json 或 stream-json，以机器可读的方式获取结果、会话 ID 和费用。"
+        },
+        {
+          "title": "只想复制最后一条回复",
+          "why": "/export 导出的是完整对话，而不仅仅是单条回复。",
+          "alternative": "使用 /copy，只复制最后一条（或加上数字，复制倒数第 N 条）回复。"
         }
       ],
       "sources": [
@@ -1006,23 +1016,28 @@
       "platform": "claude-code",
       "slug": "feedback",
       "name": "/feedback",
-      "summary": "发送反馈、报告 Bug 或分享对话。",
-      "what": "发送反馈、报告 Bug 或分享对话。\n\n别名:/bug、/share。",
+      "summary": "目前已不再是别名关系：/share 是 /bug 的别名，而不是 /feedback 的别名。",
+      "what": "/feedback 会打开一个对话框，用于发送关于 Claude Code 本身的产品反馈——而不是关于你自己项目代码的反馈。你可以预先选择要附带多少会话历史：仅当前会话，或者再加上同一项目中过去 24 小时或 7 天内的其他会话。只有在确认同意界面之后，内容才会真正被发送。\n\n/bug 及其别名 /share 也会打开同一个对话框，三者都通过同一条路径发送。如果你直接使用 Anthropic 账户登录，报告会发送给 Anthropic，对话记录会保存 5 年；如果通过第三方接入，或没有 Anthropic 凭证，报告则会保存在本地的 ~/.claude/feedback-bundles/ 下，需要你自行转发。可以通过环境变量 DISABLE_FEEDBACK_COMMAND=1 完全关闭发送功能。",
       "whenGood": [
         {
-          "title": "报告 Claude Code 本身的一个 Bug",
-          "example": "/feedback 或 /bug — 在工具中出现可复现错误之后使用"
+          "title": "报告 Claude Code 本身的 bug",
+          "example": "在工具中出现可复现的错误后执行 /feedback，在对话框中为报告选择合适的会话历史。"
         },
         {
-          "title": "与他人分享一段对话",
-          "example": "/share,用于转发一段有帮助的对话"
+          "title": "附带同一项目的多个会话",
+          "example": "调用 /feedback，除了当前会话外，还包含同一项目过去 24 小时内的会话。"
         }
       ],
       "whenBad": [
         {
-          "title": "想要报告自己项目代码中的 Bug",
-          "why": "/feedback 针对的是 Claude Code 本身的问题,而不是用户自己应用程序的问题",
-          "alternative": "使用普通的 Bug 修复 Prompt,或在自己的仓库中创建 Issue"
+          "title": "想报告自己项目代码中的 bug",
+          "why": "根据文档，/feedback 处理的是 Claude Code 本身的问题，而不是你自己应用中的问题。",
+          "alternative": "提出一个普通的 bug 修复 prompt，或在自己的仓库中创建 issue。"
+        },
+        {
+          "title": "不想向 Anthropic 发送任何数据",
+          "why": "根据文档，/feedback 默认会把包含代码的对话历史副本发送给 Anthropic（使用第三方接入时则保存在本地）。",
+          "alternative": "提前设置 DISABLE_FEEDBACK_COMMAND=1，以禁用该命令。"
         }
       ],
       "sources": [
@@ -1197,22 +1212,27 @@
       "slug": "help",
       "name": "/help",
       "summary": "显示帮助信息及可用命令。",
-      "what": "显示帮助信息及可用命令。",
+      "what": "/help 会直接在终端中显示帮助内容和所有可用命令的概览。在官方命令参考中，它只用这一句话来说明，既不被标记为 skill，也不是 workflow，而是固定内置在 CLI 中——因此无论方案或平台如何，其行为都是一致的。\n\n作为替代方式，你也可以直接输入 /：这同样会打开一个可供浏览的命令列表，如果你接着继续输入字母，Claude Code 会实时按输入内容过滤出匹配的命令名称。因此 /help 更适合用于初次熟悉环境，或查阅完整列表，而 / 加字母的方式则更适合在已经模糊记得命令名称时快速定位。",
       "whenGood": [
         {
-          "title": "初次熟悉 Claude Code",
+          "title": "安装后的初次熟悉",
           "example": "安装完成后立即输入 /help，查看可用命令列表。"
         },
         {
-          "title": "查找忘记的命令名称",
-          "example": "只依稀记得某个命令的名字 → /help 会显示完整的命令总览供查阅。"
+          "title": "查找记不清的命令名称",
+          "example": "当只能模糊记起某个命令名称时，调用 /help，在完整列表中查找。"
         }
       ],
       "whenBad": [
         {
-          "title": "澄清某个具体功能的细节问题",
-          "why": "/help 只提供命令的简要概览，并不会详细解释单项功能。",
-          "alternative": "查阅官方文档（code.claude.com/docs）或直接针对性提问。"
+          "title": "想针对已知命令进行精准过滤",
+          "why": "根据文档，/help 只显示总体概览；在斜杠后直接输入文字可以实时过滤列表，因此更加精准。",
+          "alternative": "输入 /，然后继续输入字母，实时过滤列表。"
+        },
+        {
+          "title": "想弄清某个单一功能的详细问题",
+          "why": "根据文档，/help 只提供命令的简要概览，不包含对单个功能的详细说明。",
+          "alternative": "查阅 code.claude.com/docs 上的官方文档，或直接提出具体问题。"
         }
       ],
       "sources": [
@@ -1607,18 +1627,27 @@
       "slug": "mobile",
       "name": "/mobile",
       "summary": "显示用于下载 Claude 移动应用的二维码。",
-      "what": "显示用于下载 Claude 移动应用的二维码。\n\n别名:/ios、/android。",
+      "what": "/mobile 会直接在终端显示一个二维码，让你下载 iOS 或 Android 版 Claude App。别名 /ios 和 /android 会触发同一个命令。\n\nClaude App 本身不执行代码，而是作为客户端使用：通过它你可以访问 Claude Code on the web 的云端会话、通过 Remote Control 访问本地运行的会话，或者通过 Dispatch 访问桌面版应用。云端会话和 Remote Control 需要与 Claude Code 中相同的 claude.ai 账户——根据文档，仅使用 Anthropic Console API key，或通过 Amazon Bedrock 等第三方接入时，该 App 是无法使用的。\n\n安装完成后，用同一个账户登录，就能在「Code」标签页中找到你的会话。",
       "whenGood": [
         {
-          "title": "安装 Claude 移动端应用",
-          "example": "执行 /mobile，扫描二维码将应用下载到手机上。"
+          "title": "首次安装该 App",
+          "example": "执行 /mobile，用手机扫描显示的二维码，下载 Claude App。"
+        },
+        {
+          "title": "无需在 App Store 搜索即可快速访问",
+          "example": "在运行中的会话里调用 /mobile，而不是手动去 App Store 搜索“Claude”。"
         }
       ],
       "whenBad": [
         {
-          "title": "在外出时继续操控正在运行的终端会话，而无需重新安装应用",
-          "why": "/mobile 只会显示应用的安装二维码，不会转移正在运行的会话。",
-          "alternative": "启用 /remote-control，即可从 claude.ai 或应用端远程控制该会话。"
+          "title": "想从手机上控制正在运行的终端会话",
+          "why": "根据文档，/mobile 只显示一个安装用的二维码，并不会连接到正在运行的会话。",
+          "alternative": "执行 /remote-control 或运行 claude remote-control，从手机远程控制本地会话。"
+        },
+        {
+          "title": "只有 API key 或第三方接入，没有 claude.ai 账户",
+          "why": "根据文档，云端会话和 Remote Control 需要与 Claude Code 相同的 claude.ai 账户；仅有 Anthropic Console API key 或 Amazon Bedrock 等第三方接入是不够的。",
+          "alternative": "通过 /login 使用 claude.ai 账户登录，否则就只能使用本地终端或桌面会话。"
         }
       ],
       "sources": [
@@ -1814,22 +1843,27 @@
       "slug": "privacy-settings",
       "name": "/privacy-settings",
       "summary": "查看并修改自己的隐私设置。",
-      "what": "查看并修改自己的隐私设置。\n\n仅限 Pro 和 Max 套餐订阅用户使用。",
+      "what": "/privacy-settings 可以让你直接从 Claude Code 中打开隐私设置进行修改。根据文档，该命令只对 Pro 和 Max 方案的订阅者可见——免费的 Free 方案用户看不到它。\n\n内容上主要涉及一项同意授权：是否允许你的数据被用于训练未来的 Claude 模型。这项设置也会影响数据保留时长：开启同意后，Anthropic 会保留你的数据 5 年；关闭后则只保留 30 天。同样的设置也可以直接在浏览器中通过 claude.ai/settings/data-privacy-controls 修改。\n\n对于 Team、Enterprise 和 API 用户而言，适用的是另一套通过合同约定的隐私条款（Commercial Terms，可选 Zero Data Retention），因此这个命令并未为他们提供个人开关。",
       "whenGood": [
         {
-          "title": "检查自己的隐私设置",
-          "example": "打开 /privacy-settings，查看当前设置了哪些隐私选项。"
+          "title": "作为 Pro/Max 用户检查训练数据授权",
+          "example": "打开 /privacy-settings，检查是否已启用将你的数据用于模型训练。"
         },
         {
-          "title": "根据内部规定调整隐私设置",
-          "example": "作为 Pro 或 Max 用户，逐项检查 /privacy-settings，有针对性地修改设置。"
+          "title": "缩短自己数据的保留时长",
+          "example": "调用 /privacy-settings 并关闭授权，把保留期从 5 年缩短到 30 天。"
         }
       ],
       "whenBad": [
         {
-          "title": "未订阅 Pro 或 Max 的 Free 套餐账户",
-          "why": "根据文档说明，/privacy-settings 仅对 Pro 和 Max 套餐订阅用户可见。",
-          "alternative": "先升级到 Pro/Max（/upgrade），或通过 /status 查看一般性的账户设置。"
+          "title": "没有 Pro 或 Max 订阅的 Free 方案账户",
+          "why": "根据文档，/privacy-settings 只对 Pro 和 Max 方案的订阅者可见。",
+          "alternative": "直接在浏览器中通过 claude.ai/settings/data-privacy-controls 打开设置。"
+        },
+        {
+          "title": "Team 或 Enterprise 账户",
+          "why": "根据文档，Team、Enterprise 和 API 用户适用的是另一套通过合同约定的隐私规则，而不是个人训练数据开关。",
+          "alternative": "向组织管理员咨询适用的 Commercial Terms 或 Zero Data Retention 条款。"
         }
       ],
       "sources": [
@@ -3586,18 +3620,22 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "开启一个新的、空白的聊天会话。",
-      "what": "/clear 会开启一个新的聊天会话。/new、/new-chat 和 /newchat 是它的别名。",
+      "what": "`/clear` 会结束当前聊天会话并开启一个全新的空会话。之后在新会话中，之前的对话历史将不再作为上下文可用。根据文档，`/new`、`/new-chat` 和 `/newchat` 是同一命令的等效别名。\n\n当话题发生变化时，这个命令适合用来以一个干净、空白的上下文窗口重新开始，比如某个任务已经完成，接下来的任务与之毫无关系。这样可以避免旧的上下文不必要地影响新任务的回答质量或 token 成本。\n\n需要注意的是，`/clear` 是丢弃历史记录，而不是将其压缩。如果你仍需要访问之前的消息，比如只是想腾出上下文窗口的空间，`/summarize`（别名 `/compress`）是更好的选择，因为它会保留此前对话的摘要。之后仍可以通过 `agent ls` 或 `/resume` 重新打开旧会话。",
       "whenGood": [
         {
-          "title": "为一个全新话题释放上下文窗口",
-          "example": "/clear — 在上一个任务完成之后"
+          "title": "为一个全新话题腾出上下文窗口",
+          "example": "/clear——在前一个任务完成之后"
+        },
+        {
+          "title": "有意直接结束一个不再需要的旧会话",
+          "example": "任务完成后执行 /clear，前提是之后不再需要引用该会话"
         }
       ],
       "whenBad": [
         {
-          "title": "之前的上下文仍然需要",
-          "why": "/clear 会完全丢弃当前会话的对话记录。",
-          "alternative": "使用 /summarize 在不完全丢失上下文的情况下腾出空间"
+          "title": "仍然需要之前的上下文",
+          "why": "/clear 会彻底丢弃当前会话的对话历史。",
+          "alternative": "使用 /summarize，在不完全丢失上下文的情况下腾出空间"
         }
       ],
       "sources": [
@@ -3907,18 +3945,22 @@
       "slug": "about",
       "name": "/about",
       "summary": "显示 CLI 版本、系统和账户信息,并复制到剪贴板。",
-      "what": "/about 显示版本、系统和账户信息,并额外复制到剪贴板。",
+      "what": "`/about` 会在正在进行的聊天会话中显示 Cursor CLI 的版本号、系统信息和账户信息。该命令还会自动把这段信息复制到剪贴板，这样你无需手动选中就能直接使用。\n\n此外还有一个同名的终端子命令 `agent about`，可以在聊天会话之外提供同样的信息——不过根据文档，它并不会自动复制到剪贴板，这一点只在 slash command `/about` 中被明确提到。\n\n典型用途是准备 bug 报告或支持请求：与其分别查找版本号、操作系统和账户信息，不如用一个命令一次性拿到完整信息块，直接粘贴进工单。如果你确实只需要纯粹的版本号，这个命令提供的信息就比所需的更多。",
       "whenGood": [
         {
-          "title": "为 Bug 报告整理诊断信息",
-          "example": "/about — 把输出直接粘贴进支持工单"
+          "title": "为 bug 报告收集诊断信息",
+          "example": "/about——把输出直接粘贴进支持工单"
+        },
+        {
+          "title": "快速确认你当前使用的账户和系统",
+          "example": "在报告问题之前调用 /about，确认账户和系统信息"
         }
       ],
       "whenBad": [
         {
           "title": "只需要纯粹的版本号",
-          "why": "/about 给出的是一整块信息,对简单的版本检查来说超出所需。",
-          "alternative": "在终端中执行 agent --version"
+          "why": "/about 会返回整个信息块，超出了单纯查看版本号所需的信息量。",
+          "alternative": "在终端执行 agent --version"
         }
       ],
       "sources": [
@@ -4068,16 +4110,20 @@
       "slug": "copy-request-id",
       "name": "/copy-request-id",
       "summary": "把最后一次请求的 ID 复制到剪贴板。",
-      "what": "/copy-request-id 会把最后一次请求的 Request ID 复制到剪贴板,便于支持和调试(Debugging)。",
+      "what": "`/copy-request-id` 会把最近一次发送给模型的请求 ID 复制到剪贴板。与标识整个会话的 Conversation ID 不同，这个 Request ID 始终只对应会话中最后一次单独的请求。\n\n该命令主要用于支持和调试场景：如果某个具体问题只出现在某一次回复中，比如报错、异常长的响应时间或意外的结果，就可以通过 Request ID 精准地反馈给 Cursor 团队，而无需翻查整个会话。\n\n和其他复制类命令一样，该命令不会在终端产生可见输出，ID 会直接进入系统剪贴板。如果问题跨多条消息出现，或涉及整个会话，那么 `/copy-conversation-id` 才是更合适的选择。",
       "whenGood": [
         {
           "title": "向支持团队报告一个具体问题",
-          "example": "/copy-request-id — 把 ID 直接粘贴进支持工单"
+          "example": "/copy-request-id——把 ID 直接填入支持工单"
+        },
+        {
+          "title": "让某次异常的单独回复立刻可追溯",
+          "example": "在出现错误回复后立即执行 /copy-request-id，第一时间保存该 ID"
         }
       ],
       "whenBad": [
         {
-          "title": "涉及的是整个对话,而不是某一次单独的请求",
+          "title": "问题涉及整个对话，而不是单次请求",
           "why": "Request ID 只对应最后一次单独的请求。",
           "alternative": "使用 /copy-conversation-id"
         }
@@ -4094,17 +4140,21 @@
       "slug": "copy-conversation-id",
       "name": "/copy-conversation-id",
       "summary": "把当前对话的 ID 复制到剪贴板。",
-      "what": "/copy-conversation-id 会把当前会话的 Conversation ID 复制到剪贴板。",
+      "what": "`/copy-conversation-id` 会把当前聊天会话的唯一 ID 复制到剪贴板。这个 ID 标识的是整个对话，与只标识会话内单次请求的 Request ID 不同。\n\n这个命令主要用于支持请求和调试：如果你要报告一个跨多条消息出现、或涉及整个会话的问题，Conversation ID 能帮助 Cursor 团队精准定位你的会话。对你自己来说，这个 ID 也很有用，比如当你同时打开多个 `cursor-agent` 会话时，可以用它在日后准确找回某个会话。\n\n该命令不会在终端中显示任何可见输出，而是直接把 ID 放入系统剪贴板。之后你需要把它粘贴到别处，比如支持工单或笔记中。",
       "whenGood": [
         {
-          "title": "之后需要通过 ID 精确找回或引用某个会话",
-          "example": "/copy-conversation-id — 把 ID 保存在笔记中"
+          "title": "之后通过 ID 精准找回或引用某个会话",
+          "example": "/copy-conversation-id——在切换到另一个会话之前，把 ID 保存到笔记中"
+        },
+        {
+          "title": "向 Cursor 支持团队报告跨会话的问题",
+          "example": "执行 /copy-conversation-id，并在错误跨多条消息出现时，把 ID 填入支持工单"
         }
       ],
       "whenBad": [
         {
-          "title": "涉及的是单次请求,而不是整个会话",
-          "why": "Conversation ID 标识的是整个会话,而不是单次请求。",
+          "title": "问题只涉及单次请求，而不是整个会话",
+          "why": "Conversation ID 标识的是整个会话，而不是单次请求。",
           "alternative": "使用 /copy-request-id"
         }
       ],
@@ -5223,18 +5273,27 @@
       "slug": "install-shell-integration",
       "name": "agent install-shell-integration",
       "summary": "把 CLI 的 Shell 集成安装到 ~/.zshrc 中。",
-      "what": "agent install-shell-integration 会在 ~/.zshrc 中配置 Shell 集成。据文档所述,这明确针对 zsh;文档中没有为其他 Shell 提供单独的安装流程。",
+      "what": "`agent install-shell-integration` 不是正在运行的聊天会话中的 slash command，而是 Cursor CLI 的一个独立终端子命令。你需要直接在 shell 中调用它，与 `cursor-agent` 会话无关，而不是在聊天中作为 `/` 命令使用。\n\n该命令通过在 `~/.zshrc` 中添加相应条目来设置 shell 集成。根据官方文档，这里明确针对的是 zsh；对于 bash 等其他 shell，文档中没有单独的集成流程，尽管根据安装说明，CLI 本身的常规安装同时支持 bash 和 zsh。\n\n通常你会在安装完 CLI 后执行一次该命令，让 Cursor Agent 干净地融入你的 shell 环境，例如支持自动补全或上下文功能。如果之后想移除该集成，可以使用对应的命令 `agent uninstall-shell-integration`。",
       "whenGood": [
         {
-          "title": "在安装 CLI 之后一次性配置好 Shell 集成",
+          "title": "在安装 CLI 后一次性设置 shell 集成",
           "example": "agent install-shell-integration"
+        },
+        {
+          "title": "在 CLI 更新后检查集成是否仍正常生效",
+          "example": "如果 shell 功能不再按预期工作，重新执行 agent install-shell-integration"
         }
       ],
       "whenBad": [
         {
-          "title": "想把 Shell 集成重新移除",
-          "why": "agent install-shell-integration 只负责安装,不会移除任何内容。",
+          "title": "想要移除 shell 集成",
+          "why": "agent install-shell-integration 只负责安装，不会移除任何内容。",
           "alternative": "使用 agent uninstall-shell-integration"
+        },
+        {
+          "title": "你使用的不是 zsh",
+          "why": "根据文档，该命令明确针对 ~/.zshrc；其他 shell 没有相应的集成流程记录在文档中。",
+          "alternative": "仍可正常使用 Cursor CLI——shell 集成是可选项，并非运行的前提条件"
         }
       ],
       "sources": [
@@ -5249,18 +5308,22 @@
       "slug": "uninstall-shell-integration",
       "name": "agent uninstall-shell-integration",
       "summary": "把 CLI 的 Shell 集成从 ~/.zshrc 中重新移除。",
-      "what": "agent uninstall-shell-integration 会撤销 agent install-shell-integration 所做的配置,并从 ~/.zshrc 中移除相应条目。",
+      "what": "`agent uninstall-shell-integration` 和它的对应命令 `agent install-shell-integration` 一样，都不是聊天中的 slash command，而是一个独立的终端子命令，你需要直接在 shell 中调用，而不是在正在运行的 `cursor-agent` 会话内。\n\n该命令会撤销 shell 集成的设置，把之前添加到 `~/.zshrc` 中的相关条目移除。根据文档，这里同样明确只支持 zsh。\n\n当 shell 集成引发问题时，比如与你 `.zshrc` 中的其他工具产生冲突，或者你想把 Cursor CLI 从系统中彻底移除、并顺便把 shell 配置也清理干净时，这个命令就很有用。它会彻底移除集成，而不是只是禁用它——如果只是想临时暂停，这个命令并不合适，更适合的做法是手动注释掉相关代码块。",
       "whenGood": [
         {
-          "title": "在 Shell 集成出问题时干净地重置",
+          "title": "在出现问题时彻底重置 shell 集成",
           "example": "agent uninstall-shell-integration"
+        },
+        {
+          "title": "完全卸载 Cursor CLI 并同时清理 shell 配置",
+          "example": "在正式卸载 CLI 之前执行 agent uninstall-shell-integration"
         }
       ],
       "whenBad": [
         {
-          "title": "只想暂时停用 Shell 集成,而不是彻底移除",
-          "why": "agent uninstall-shell-integration 会完全删除配置,而不是只是禁用它。",
-          "alternative": "在 ~/.zshrc 中手动注释掉相应的代码块"
+          "title": "只想短暂暂停 shell 集成，而不是彻底移除",
+          "why": "agent uninstall-shell-integration 会彻底删除配置，而不是仅仅禁用它。",
+          "alternative": "手动注释掉 ~/.zshrc 中相关的代码块"
         }
       ],
       "sources": [
@@ -8248,18 +8311,22 @@
       "slug": "artifact",
       "name": "/artifact",
       "summary": "打开 artifact 审阅面板。",
-      "what": "/artifact 属于斜杠命令参考中的 Tools & Tasks 分类,会打开一个专门的面板,用于查看 agent 在会话过程中生成的 artifact。",
+      "what": "/artifact 属于 Tools & Tasks 分类，用于打开 Artifact Review Panel——这是 Antigravity CLI 向你展示 agent 交付物以供审核的核心界面。根据文档，Artifact 是 agent 为完成任务而生成的结构化产出，用来向你传达进度和思路：以 Markdown 形式呈现的实施计划、代码 diff、架构图和媒体文件。\n\n一旦 agent 生成或修改了文件，状态栏就会出现「/artifact to review」的提示。该面板将需要你确认的代码文件与一个可折叠的、用于图片和视频的 Media Drawer 区分开来。用 `↑`/`↓` 在条目之间导航，用 `y` 批准某个文件，用 `n` 拒绝它，`Shift+A` 一次性批准全部。在详情视图中，你可以用 `c` 逐行添加评论，然后再让改动被写入。\n\n此外，你也可以随时通过快捷键 `ctrl+r` 打开该面板，即便此时 agent 还有一个尚未回答的追问也是如此。",
       "whenGood": [
         {
-          "title": "查看 agent 生成的 artifact",
-          "example": "任务完成后打开 /artifact,检查生成的输出"
+          "title": "在写入前检查 agent 生成的文件",
+          "example": "打开 /artifact（或按 `ctrl+r`），用 `y`/`n` 逐个批准或拒绝 agent 生成的文件，然后再将其写入磁盘。"
+        },
+        {
+          "title": "查看实施计划或图表",
+          "example": "完成较大任务后调用 /artifact，仔细阅读 agent 生成的 Markdown 计划或架构图，并用 `c` 添加评论。"
         }
       ],
       "whenBad": [
         {
-          "title": "想查看的是纯代码 diff,而不是 artifact",
-          "why": "/artifact 显示的是 artifact,不是代码改动的逐行 diff。",
-          "alternative": "/diff"
+          "title": "想查看纯代码 diff 而不是 Artifacts",
+          "why": "/artifact 显示的是 Artifacts（计划、图表、媒体文件、待批准的代码文件），而不是跨多个 turn 和 commit 的连续逐行 diff。",
+          "alternative": "/diff——用于查看改动、turn 和 commit 的 Interactive Diff Viewer"
         }
       ],
       "sources": [
@@ -8356,17 +8423,21 @@
       "slug": "context",
       "name": "/context",
       "summary": "打开上下文使用情况的可视化面板。",
-      "what": "/context 属于 Utilities 分类,以可视化方式显示可用上下文窗口已经被占用了多少。",
+      "what": "/context 属于 Utilities 分类，会打开一个面板，直观展示当前会话可用上下文窗口已被占用的比例——和其他 Utility 命令一样，无论当前哪个面板或悬浮层处于焦点状态，都可以随时调用。\n\n这个显示能帮你判断一段长对话何时接近上限，比如在开始另一个大型任务之前，或通过 `/add-dir` 添加大量文件之前。如果空间变得紧张，其他 Utility 命令可以帮上忙：`/clear` 可以开启一个全新会话，或者用 `/rewind`、`/undo` 有针对性地跳回对话历史中的某个节点，而不是在上下文窗口已满的情况下盲目继续。\n\n关于 /context 本身，目前官方文档只在 Command 参考中给出了简短描述；并没有专门的详情页面或 Changelog 条目。",
       "whenGood": [
         {
-          "title": "在开始一项长任务前检查剩余的上下文容量",
-          "example": "运行 /context,查看上下文窗口还剩多少空间"
+          "title": "在开始一项长任务之前检查剩余的上下文容量",
+          "example": "调用 /context，查看上下文窗口还剩多少空间"
+        },
+        {
+          "title": "决定是重新开始还是跳回历史节点",
+          "example": "检查 /context，如果上下文窗口紧张，就有针对性地用 /clear 重新开始，或用 /rewind 跳回对话历史中的更早节点。"
         }
       ],
       "whenBad": [
         {
-          "title": "想查看的是模型配额(单位时间内的请求数),而不是上下文窗口",
-          "why": "/context 显示的是上下文窗口的占用情况,不是模型的使用配额。",
+          "title": "想查看模型额度（每个时间段的请求数），而不是上下文窗口",
+          "why": "/context 显示的是上下文窗口的占用情况，而不是模型的使用额度。",
           "alternative": "/usage"
         }
       ],
@@ -8382,18 +8453,22 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "把 agent 最近一次的回复复制到剪贴板。",
-      "what": "/copy 属于 Utilities 分类,会把 agent 最近一次回复的文本放入系统剪贴板。",
+      "what": "/copy 属于 Utilities 分类，默认会把 agent 的最后一条回复复制到系统剪贴板——这样你就能直接把解释、代码块或总结粘贴到另一个应用里，而不用手动选中。\n\n从 1.1.6 版本开始，该命令还支持一个可选的索引参数：`/copy <n>` 复制的不是最后一条回复，而是倒数第 n 条回复。这样即便是较早的回复，也能精准取用，不必先在历史记录中往回滚动或搜索。\n\n/copy 复制的是纯文本回复，而不是跨多个 turn、带文件和行号信息的结构化代码改动——这类内容应使用 Interactive Diff Viewer（`/diff`），它能分别显示改动、turn 和 commit，并支持在其中导航。",
       "whenGood": [
         {
-          "title": "快速把回复粘贴到其他应用中",
-          "example": "在得到代码解释后执行 /copy,把它粘贴到笔记里"
+          "title": "把最后一条回复存入笔记",
+          "example": "在代码讲解之后执行 /copy，把内容粘贴到笔记里。"
+        },
+        {
+          "title": "精准复制一条较早的回复",
+          "example": "/copy 3 复制的不是最后一条，而是 agent 倒数第三条回复到剪贴板。"
         }
       ],
       "whenBad": [
         {
-          "title": "想复制的是完整的代码 diff,而不是纯文本回复",
-          "why": "/copy 复制的是最近一次的文本回复,不是结构化的代码 diff。",
-          "alternative": "打开 /diff 查看具体改动"
+          "title": "想复制完整代码 diff，而不是纯文本回复",
+          "why": "/copy 复制的是文本回复，而不是跨多个文件和 turn 的结构化代码 diff。",
+          "alternative": "打开 /diff 查看改动"
         }
       ],
       "sources": [
@@ -8584,18 +8659,22 @@
       "slug": "help",
       "name": "/help",
       "summary": "打开显示命令和快捷键的帮助面板。",
-      "what": "/help 属于 Utilities 分类,会直接在终端中显示所有可用斜杠命令及键盘快捷键的总览。",
+      "what": "/help 属于 Utilities 分类，会在终端里直接打开帮助面板，其中列出所有可用的 slash command 以及当前生效的键盘快捷键。\n\nShortcuts 标签页按按键组合排序，方便你直接查找某个按键对应的操作，而不必翻遍整个列表。从 1.0.10 版本开始，面板还会额外显示 CLI 日志文件的路径——当你想复现某个错误，并需要通过 `/feedback` 提交 bug 报告时附上相关日志，这一点很有用。\n\n不过 /help 并不能替代对单个功能的详细说明：它提供的是命令名称、简短描述和快捷键组成的精简参考，而不包含示例或各个面板具体工作方式的背景说明。",
       "whenGood": [
         {
-          "title": "查询可用命令",
-          "example": "运行 /help 查看所有斜杠命令的列表"
+          "title": "查阅可用命令",
+          "example": "调用 /help，查看所有 slash command 的列表"
+        },
+        {
+          "title": "查找用于 bug 报告的日志文件",
+          "example": "打开 /help，复制其中显示的 CLI 日志文件路径，通过 /feedback 一并提交。"
         }
       ],
       "whenBad": [
         {
-          "title": "想查询某个具体面板(如 /diff 或 /agents)的详细快捷键",
-          "why": "/help 只显示总体概览,不包含各个面板的详细快捷键。",
-          "alternative": "直接打开相应的面板,例如 /diff 或 /agents"
+          "title": "想查阅 /diff 或 /agents 等单个面板的详细快捷键",
+          "why": "/help 显示的是总体概览，不包含单个面板的详细快捷键。",
+          "alternative": "直接打开相应的面板，例如 /diff 或 /agents"
         }
       ],
       "sources": [
@@ -8764,18 +8843,22 @@
       "slug": "open",
       "name": "/open",
       "summary": "用系统默认编辑器打开一个路径。",
-      "what": "/open 属于 Utilities 分类,会在 CLI 之外,用系统设置的默认编辑器打开指定的文件或路径。",
+      "what": "/open 属于 Utilities 分类，会强制在你系统上设置的默认编辑器中打开指定路径——脱离 CLI，进入你熟悉的环境，拥有语法高亮、搜索等纯终端视图无法提供的编辑器功能。\n\n从 1.0.6 版本开始，输入时该命令支持类似 shell 的路径自动补全，与 `/add-dir` 一致——因此你不必完整记住文件名，可以逐步补全。\n\n如果你想手动继续编辑某个文件，或想从容地通读它，而不只是在终端里看到一个片段，/open 就很合适。如果你只是想在 prompt 中把某个文件作为上下文提供给 agent，而不需要单独打开它，那么在 prompt 中使用 `@<pfad>` 引用是更直接的方式。",
       "whenGood": [
         {
           "title": "在 CLI 之外打开文件进行手动编辑",
           "example": "/open src/index.ts"
+        },
+        {
+          "title": "通过自动补全查找路径",
+          "example": "输入 /open src/，然后逐步补全目录结构，直到确定所需文件。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想把文件路径插入提示词",
-          "why": "/open 会启动外部编辑器,而单纯在提示词中引用并不需要这样做。",
-          "alternative": "在提示词中使用 @<路径>"
+          "title": "只是想把文件路径插入 prompt",
+          "why": "/open 会启动外部编辑器，如果只是想在 prompt 中引用文件，并不需要这样做。",
+          "alternative": "在 prompt 中使用 @<pfad>"
         }
       ],
       "sources": [
@@ -9068,17 +9151,21 @@
       "slug": "usage",
       "name": "/usage",
       "summary": "显示模型配额使用情况。别名:/quota。",
-      "what": "/usage 属于 Utilities 分类,别名 /quota,会显示当前套餐(Standard/Pro/Ultra)的配额已经消耗了多少。",
+      "what": "/usage 属于 Utilities 分类，别名为 `/quota`，会打开一个交互式面板，显示你的模型额度使用情况：当前方案下各支持模型的使用限额明细，以及剩余的请求数或 token 数。\n\n打开时 CLI 会强制刷新额度数据，既在本地磁盘上刷新，也会与后端服务同步——因此你看到的是最新状态，而不是缓存中的过期数字。可以用方向键导航，也可以像 vim 一样用 `j`/`k`，`g`/`G` 跳转到列表开头或结尾，`Esc` 或 `q` 关闭面板。\n\n这样一来，/usage 就与 `/context` 明确区分开：前者关注的是你随时间累积的请求额度，而不是当前会话上下文窗口的占用情况。",
       "whenGood": [
         {
-          "title": "查看当前时间窗口内剩余的可用请求数",
-          "example": "在发起大量请求之前运行 /usage"
+          "title": "查看当前时间窗口内剩余的请求数",
+          "example": "在发起大量请求之前调用 /usage"
+        },
+        {
+          "title": "查看最新而非缓存的额度状态",
+          "example": "打开 /usage 或 /quota，获取与后端刚刚同步的模型额度状态，而不是仅显示本地缓存的数字。"
         }
       ],
       "whenBad": [
         {
-          "title": "想查看的是 G1 credits 余额,而不是整体模型配额",
-          "why": "/usage 显示的是套餐配额;独立的 credits 余额有专门的命令查看。",
+          "title": "想查看 G1 credits 余额，而不是一般的模型额度",
+          "why": "/usage 显示的是方案额度，单独的 credits 余额有专门的命令。",
           "alternative": "/credits"
         }
       ],
