@@ -232,21 +232,26 @@
       "slug": "branch",
       "name": "/branch",
       "summary": "从当前节点为对话创建一个分支,以便尝试不同方向,同时不丢失此前的对话记录。",
-      "what": "从当前节点为对话创建一个分支,以便尝试不同方向,同时不丢失此前的对话记录。\n\n会自动切换到新分支;原对话保留不变,可通过 /resume 访问。如果只是想把一个子任务交给后台子代理而不是自己切换,请用 /fork。",
+      "what": "`/branch` 会从当前节点为正在进行的对话创建一个分支,用来尝试另一个方向,同时不丢失之前的历史记录。该命令会直接切换到新分支;原对话保持不变,可以通过 `/resume` 重新访问。\n\n`/branch` 与另外两个相关命令有区别:`/fork` 会把对话复制到一个独立的后台会话中(在 `claude agents` 中显示为单独一行),自己则继续留在当前窗口工作——自 2.1.212 版起,这个副本不再向原会话回传消息。如果是一个结果需要回流到当前对话中的次要任务,应使用 `/subtask`,它是一个拥有完整对话上下文的后台子代理。\n\n从历史上看,如今的 `/branch` 命令在 2.1.77 版之前本身就叫做 `/fork`;此后 `/fork` 这个名字被多次重新使用,直到 2.1.212 版才固定指代复制到独立会话这一功能。",
       "whenGood": [
         {
-          "title": "从当前节点尝试另一种解决思路",
+          "title": "从当前节点尝试另一种解决方案",
           "example": "/branch"
         },
         {
-          "title": "想探索完全不同的方向,并亲自在那里继续工作",
-          "example": "/branch 改为测试服务端渲染而不是客户端渲染"
+          "title": "探索完全不同的方向,并亲自在那里继续工作",
+          "example": "/branch teste stattdessen Server-Side statt Client-Side Rendering"
         }
       ],
       "whenBad": [
         {
-          "title": "子任务需要在后台并行运行",
-          "why": "branch 与 fork 的区别:branch 会让你本人切换到新分支,而在后台运行带上下文继承的子任务应使用 /fork。",
+          "title": "希望次要任务的结果回流到当前对话,同时自己继续工作",
+          "why": "/branch 会把自己从原有历史切换到新分支;对于需要把结果回传到当前对话的次要任务,自 2.1.212 版起应使用 /subtask,而不是 /fork。",
+          "alternative": "/subtask"
+        },
+        {
+          "title": "希望一个独立副本在后台继续运行,自己则留在当前窗口",
+          "why": "/branch 会切换到新分支,从而离开当前视图;如果想自己继续工作,同时让一个副本在后台独立运行,需要使用 /fork。",
           "alternative": "/fork"
         }
       ],
@@ -462,7 +467,7 @@
       "slug": "color",
       "name": "/color",
       "summary": "设置当前会话提示栏的颜色。",
-      "what": "设置当前会话提示栏的颜色。\n\n可选颜色:red、blue、green、yellow、purple、orange、pink、cyan。'default' 恢复默认,不带参数则随机选色。使用 Remote Control 时会与 claude.ai/code 同步。也支持非交互式(-p)调用,需要 v2.1.205 及以上版本。",
+      "what": "`/color` 用于设置当前会话中提示栏的颜色。可选颜色有 `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink` 和 `cyan`;不带参数时,命令会随机选择一种颜色。\n\n`default` 用于重置颜色;自 2.1.70 版起,`gray`、`reset` 和 `none` 也可作为等效的重置参数使用。如果 Remote Control 已连接到 claude.ai/code,所选颜色会同步到那里。\n\n自 2.1.205 版起,`/color` 也可以在非交互模式(`-p`)下使用,例如在脚本或 CI 运行中。该设置仅对当前会话生效——不会作为默认值保存到未来的会话中。\n\n`/color` 与 `/theme` 的区别在于:`/theme` 会改变整个界面的配色方案,包括明暗两种模式;而 `/color` 只针对性地给单独的提示栏上色,用来在视觉上区分不同会话。",
       "whenGood": [
         {
           "title": "让多个并行会话在视觉上可区分",
@@ -470,14 +475,19 @@
         },
         {
           "title": "为当前会话快速设置一个随机颜色",
-          "example": "不带参数的 /color"
+          "example": "不带参数运行 /color"
         }
       ],
       "whenBad": [
         {
-          "title": "期望该颜色能永久应用于所有未来的会话",
-          "why": "/color 只为当前会话设置颜色",
-          "alternative": "在每次会话启动时重新设置,或配置 /statusline 以获得持久可见的区分标识"
+          "title": "期望该颜色设置能永久应用于所有未来会话",
+          "why": "/color 只对当前会话设置颜色",
+          "alternative": "每次启动会话时重新设置,或者配置 /statusline 以获得持久可见的区分标识"
+        },
+        {
+          "title": "想在旧版本的 Claude Code 中,于脚本或 CI 运行中以非交互方式设置颜色",
+          "why": "根据文档,/color 的非交互模式(-p)要求 2.1.205 或更高版本。",
+          "alternative": "升级 Claude Code,或改为以交互方式设置颜色。"
         }
       ],
       "sources": [
@@ -587,22 +597,27 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "把 Claude 的最后一条回复复制到剪贴板。",
-      "what": "把 Claude 的最后一条回复复制到剪贴板。\n\n带数字 N 时,会复制倒数第 N 条回复。遇到代码块时会弹出交互式选择;按 'w' 键可写入文件(在 SSH 场景下很有用)。",
+      "what": "`/copy` 会把 Claude 最近一次发送的回答复制到剪贴板。加上数字 `N` 时,会改为复制倒数第 N 条回答,例如 `/copy 2` 复制倒数第二条;`/copy 1` 与不带参数调用效果相同。\n\n如果回答中包含代码块,`/copy` 会打开一个交互式选择对话框:可以选择复制某一个代码块,也可以复制整条回答。在这个对话框中,按 `w` 键会把所选内容写入文件,而不是复制到剪贴板——这在系统剪贴板通常无法使用的 SSH 连接场景下很实用。此外,还可以在该对话框中永久设置,让 /copy 以后不再弹出选择对话框,而是直接复制完整回答。\n\n`/copy` 与 `/export` 的区别在于:`/copy` 只把单条回答复制到剪贴板,`/export` 则会把整个对话内容写入文件,或打开一个保存对话框。",
       "whenGood": [
         {
-          "title": "将最新回复直接复制到剪贴板",
-          "example": "/copy — 在收到包含完整代码片段的回复之后使用"
+          "title": "把最近一条回答直接复制到剪贴板",
+          "example": "在收到包含完整代码片段的回答后使用 /copy"
         },
         {
-          "title": "在没有可用剪贴板的 SSH 环境中,改为将回复写入文件",
-          "example": "/copy,然后按 'w' 键导出到文件"
+          "title": "在剪贴板无法使用的 SSH 环境中,把回答改为写入文件",
+          "example": "先执行 /copy,再按 'w' 键导出为文件"
         }
       ],
       "whenBad": [
         {
-          "title": "想要复制较早的回复,而不是最新的一条",
-          "why": "不带数字参数时,/copy 始终只复制最新的回复",
-          "alternative": "使用 /copy 3 复制倒数第三条回复,或使用 /export 导出完整对话"
+          "title": "想复制更早之前而非最近一条的回答",
+          "why": "不带数字参数时,/copy 只会复制最近一条回答",
+          "alternative": "用 /copy 3 复制倒数第三条回答,或用 /export 导出完整对话"
+        },
+        {
+          "title": "想保存整个对话,而不只是一条回答",
+          "why": "/copy 每次只会把单条回答复制到剪贴板或写入文件,不会包含整个对话历史。",
+          "alternative": "用 /export 把完整对话导出为文本文件。"
         }
       ],
       "sources": [
@@ -717,10 +732,10 @@
       "slug": "deep-research",
       "name": "/deep-research",
       "summary": "针对一个问题展开多路网络搜索,抓取并交叉核实来源,生成带引用的报告。",
-      "what": "针对一个问题展开多路网络搜索,抓取并交叉核实来源,生成带引用的报告。\n\n[Workflow] 作为一个打包的动态工作流运行,将任务分派给多个子代理,并在后台执行。",
+      "what": "`/deep-research` 是一个打包好的动态工作流:由 Claude 编写的脚本在后台调度多个子代理,针对一个问题从不同角度展开网络搜索,抓取找到的资料来源,并相互交叉核实。每一条论断都会经过表决;未能通过交叉核实的论断会从报告中剔除。最终得到的是一份带引用的报告,而不是逐轮对话记录。\n\n该工作流在后台运行,期间会话本身保持空闲,并且需要用到 WebSearch 工具。自 2.1.218 版起,`/deep-research` 只能通过手动调用启动——在此之前,Claude 认为有必要时也可以自行启动该工作流。\n\n`/deep-research` 与简单的网络搜索的区别在于它调度了大量子代理并进行相互核实;与 `/code-review` 或 `/security-review` 的区别在于,它分析的是开放性的研究问题,而不是代码。",
       "whenGood": [
         {
-          "title": "针对一个开放性问题进行全面的多来源、有据可查的研究",
+          "title": "针对开放性问题进行有据可查的多来源综合研究",
           "example": "/deep-research what are current best practices for LLM prompt caching in production?"
         },
         {
@@ -730,9 +745,14 @@
       ],
       "whenBad": [
         {
-          "title": "针对某个具体事实的快速单次搜索",
-          "why": "通过多个子代理进行的多代理(Multi-Agent)扇出对于单次快速搜索来说是不必要的开销",
+          "title": "只是想快速查一个具体事实",
+          "why": "针对单次快速搜索,多代理的分发机制是不必要的开销",
           "alternative": "使用 /web-search 进行快速的单次搜索"
+        },
+        {
+          "title": "期望 Claude 在出现开放性问题时会主动发起研究",
+          "why": "自 2.1.218 版起,/deep-research 只能通过手动调用启动,Claude 不再自行触发该工作流。",
+          "alternative": "每次都需要带着问题显式调用 /deep-research。"
         }
       ],
       "sources": [
@@ -852,22 +872,27 @@
       "slug": "diff",
       "name": "/diff",
       "summary": "打开交互式 Diff 查看器,展示尚未提交的更改以及逐轮(Turn)对比。",
-      "what": "打开交互式 Diff 查看器,展示尚未提交的更改以及逐轮(Turn)对比。\n\n左右方向键可在 Git Diff 与 Claude 的对话轮次之间切换,上下方向键可在文件间翻页。自 v2.1.198 起,当外部发生 Git 变更时查看器会自动刷新。",
+      "what": "`/diff` 会为当前工作状态打开一个交互式差异查看器。用左右方向键可以在“未提交更改的 Git diff”和“对话中逐轮的差异”之间切换视图,用上下方向键可以浏览已更改的文件列表。\n\n按 Enter 打开选中文件的差异内容;在其中可以用方向键、`PageUp`/`PageDown`、`j`/`k`、`Space` 或 `Home`/`End` 滚动查看,按 Esc 返回文件列表。自 2.1.198 版起,如果仓库的 Git 状态在会话之外发生变化(例如在另一个终端中切换分支或提交),已打开的查看器会自动更新。\n\n`/diff` 只显示未提交的更改和对话轮次差异,不显示跨多个提交的历史记录,也不会对更改内容做出评判。要回退到之前的状态,应使用 `/rewind`,它会同时回退代码和对话。",
       "whenGood": [
         {
-          "title": "在提交(commit)之前,逐个文件检查尚未提交的更改",
-          "example": "/diff — 在多次编辑后执行,用于检查每个修改过的文件"
+          "title": "在提交前逐个文件检查未提交的更改",
+          "example": "在多次编辑后运行 /diff,逐个检查每个更改过的文件"
         },
         {
-          "title": "追溯某个更改是在对话的哪一轮(Turn)中产生的",
-          "example": "/diff,然后用左右方向键在 Git Diff 和 Claude 对话轮次之间切换"
+          "title": "追溯某个更改是在对话的哪一轮产生的",
+          "example": "运行 /diff,然后用左右方向键在 Git diff 和 Claude 对话轮次之间切换"
         }
       ],
       "whenBad": [
         {
-          "title": "想要跨多个提交(Commit)/分支比较更改",
-          "why": "/diff 只显示未提交的更改和逐轮(Turn)Diff,不显示提交历史",
-          "alternative": "在终端中使用常规的 'git diff <ref1> <ref2>' 进行跨提交比较"
+          "title": "想比较跨多个提交/分支的更改",
+          "why": "/diff 只显示未提交的更改和逐轮对话差异,不显示提交历史",
+          "alternative": "在终端中使用普通的 'git diff <ref1> <ref2>' 进行跨提交比较"
+        },
+        {
+          "title": "想让工具对更改内容做 bug 或安全漏洞检查",
+          "why": "/diff 只展示可视化的差异,不会对内容做出评判。",
+          "alternative": "用 /code-review 检查 bug 和代码清理,用 /security-review 检查安全风险。"
         }
       ],
       "sources": [
@@ -1362,22 +1387,27 @@
       "slug": "init",
       "name": "/init",
       "summary": "为项目初始化一份 CLAUDE.md 指南。",
-      "what": "为项目初始化一份 CLAUDE.md 指南。\n\n设置 CLAUDE_CODE_NEW_INIT=1 后,会运行一个交互式流程,包含 Skill、Hook 以及个人 Memory 文件的配置。",
+      "what": "`/init` 会分析当前仓库,生成一份初始的 `CLAUDE.md`,其中包含 Claude 在代码中发现的构建命令、测试方法和项目约定。如果已经存在 `CLAUDE.md`,该命令不会覆盖它,而是给出针对性的改进建议。\n\n在此过程中,`/init` 会自动读取已有的 Cursor 规则(`.cursor/rules/` 或 `.cursorrules`)和 Copilot 规则(`.github/copilot-instructions.md`),并将相关内容纳入生成的 `CLAUDE.md`。\n\n设置环境变量 `CLAUDE_CODE_NEW_INIT=1` 后,则会运行一个交互式的多阶段流程:Claude 会询问需要配置哪些内容(`CLAUDE.md`、Skills、Hooks),通过子代理探索仓库,提出澄清问题,并在写入前展示方案供确认。在此模式下,`/init` 还会读取 `AGENTS.md`、`.devin/rules/`、`.windsurf/rules/` 或 `.windsurfrules` 以及 `.clinerules`,并可以创建一份不纳入版本控制的私有文件 `CLAUDE.local.md`。自 2.1.108 版起,Claude 也可以在需要时通过 Skill 工具自行触发 `/init`。",
       "whenGood": [
         {
-          "title": "为 Claude Code 准备新的仓库",
-          "example": "在刚克隆的项目中执行 /init，让 Claude 生成一份包含项目上下文的初始 CLAUDE.md。"
+          "title": "为新仓库准备 Claude Code",
+          "example": "在刚克隆的项目中运行 /init,让 Claude 生成包含项目背景信息的初始 CLAUDE.md。"
         },
         {
-          "title": "包含 Skill、Hook 和 Memory 的完整初始化",
-          "example": "设置环境变量 CLAUDE_CODE_NEW_INIT=1 后启动 /init，以交互方式同时配置 Skill、Hook 和个人 Memory 文件。"
+          "title": "包含 Skills、Hooks 和 Memory 的完整配置",
+          "example": "设置环境变量 CLAUDE_CODE_NEW_INIT=1 后启动 /init,以交互方式同时配置 Skills、Hooks 和个人 Memory 文件。"
         }
       ],
       "whenBad": [
         {
-          "title": "项目已经维护着一份专属的 CLAUDE.md",
-          "why": "再次执行 /init 可能会覆盖或不必要地改动已经精心维护的项目文档。",
-          "alternative": "有针对性地手动编辑 CLAUDE.md，而不是重新初始化整个项目。"
+          "title": "只想对已维护好的 CLAUDE.md 做一处针对性补充",
+          "why": "根据文档,/init 不会覆盖已有的 CLAUDE.md,只会提出改进建议——但对于单一、明确的小改动来说,完整的分析流程仍是不必要的绕路。",
+          "alternative": "直接用 /memory 编辑 CLAUDE.md。"
+        },
+        {
+          "title": "只想添加私有的、不纳入版本控制的偏好设置",
+          "why": "个人偏好应放在被 gitignore 排除的 CLAUDE.local.md 中;如果没有设置 CLAUDE_CODE_NEW_INIT=1,/init 不会自动创建这个文件。",
+          "alternative": "手动创建 CLAUDE.local.md,并将其加入 .gitignore。"
         }
       ],
       "sources": [
@@ -1427,22 +1457,27 @@
       "slug": "install-github-app",
       "name": "/install-github-app",
       "summary": "为某个仓库安装 Claude GitHub App,可选包含 GitHub Actions 工作流和 Secrets。",
-      "what": "为某个仓库安装 Claude GitHub App,可选包含 GitHub Actions 工作流和 Secrets。\n\n会引导完成仓库选择和配置。",
+      "what": "`/install-github-app` 会以交互方式在某个仓库上安装 Claude GitHub App。该命令首先引导完成仓库选择和应用安装;这需要该仓库的管理员权限,应用会申请对 Contents、Issues 和 Pull Requests 的读写权限。\n\n安装完成后,命令会询问是否继续设置 GitHub Actions 工作流和 API 密钥 secret。自 2.1.187 版起,可以选择“Skip for now”跳过这一步,只安装应用;工作流/secret 的设置可以之后再次通过 `/install-github-app` 补上。在 2.1.187 版之前,向导会直接进入工作流选择环节。该命令是 CLI 内置功能,可以任意多次重复运行,例如用来补做遗漏的步骤。\n\n根据文档,通过 `/install-github-app` 进行的快速安装仅适用于直接使用 Claude API 的用户;如果使用 Amazon Bedrock 或 Google Cloud 的 Agent Platform,则需要按对应文档手动设置。",
       "whenGood": [
         {
           "title": "配置自动化 PR 检查或 CI 集成",
-          "example": "在团队仓库中执行 /install-github-app，为 Claude 开通通过 GitHub Actions 实现的自动化 PR 工作流。"
+          "example": "在团队仓库中运行 /install-github-app,为 Claude 启用通过 GitHub Actions 实现的自动化 PR 工作流。"
         },
         {
-          "title": "为后续的 Claude 自动化预先准备仓库访问权限",
-          "example": "在新项目中完成 /install-github-app 流程，包括选择仓库和配置 Secrets，以便 /autofix-pr 等工作流可以正常运行。"
+          "title": "只安装 GitHub App,把工作流设置推迟到以后",
+          "example": "运行 /install-github-app,在询问时(2.1.187 版起支持)选择 'Skip for now',以后再次运行 /install-github-app 完成工作流和 secret 的设置。"
         }
       ],
       "whenBad": [
         {
-          "title": "只在本地工作，不需要 GitHub 集成",
-          "why": "/install-github-app 会建立与 GitHub 的连接，并配置可选的 Actions 和 Secrets——如果从不打算通过 GitHub 运行 PR 或 CI，这样做是多余的。",
-          "alternative": "继续在本地使用 Git 工作，无需安装 GitHub App。"
+          "title": "团队使用 Amazon Bedrock 或 Google Cloud 的 Agent Platform,而非直接使用 Claude API",
+          "why": "根据文档,通过 /install-github-app 进行的快速安装仅适用于直接使用 Claude API 的用户。",
+          "alternative": "按照 GitHub Actions 文档中针对 Bedrock/Vertex 的说明手动配置。"
+        },
+        {
+          "title": "只想在本地工作,不需要 GitHub 集成",
+          "why": "/install-github-app 会建立与 GitHub 的连接,并可选配置 Actions 和 secrets——如果从不打算通过 GitHub 运行 PR 或 CI,这就是不必要的开销。",
+          "alternative": "继续在本地使用 Git 工作,不使用 GitHub App。"
         }
       ],
       "sources": [
@@ -1822,27 +1857,27 @@
       "slug": "plan",
       "name": "/plan",
       "summary": "直接从提示词切换进入 Plan 模式(计划模式)。",
-      "what": "直接从提示词切换进入 Plan 模式(计划模式)。\n\n带上可选描述时,Plan 模式会立即针对该任务开始工作,例如 '/plan fix the auth bug'。",
+      "what": "`/plan` 会直接从当前提示切换到计划模式,在该模式下 Claude 会读取文件、执行用于调研的 shell 命令并撰写计划,但不会编辑源文件。加上可选描述,例如 `/plan fix the auth bug`,计划模式会立即以该任务作为第一条提示开始。\n\n计划模式也可以通过按 `Shift+Tab` 进入,并在多轮对话中保持激活,直到某个计划被批准,或手动退出该模式(再次按 `Shift+Tab`)。批准计划时有多种选项可选,例如以自动模式继续执行、逐项手动确认每处更改、继续完善计划,或在浏览器中用 Ultraplan 进一步打磨。只有在计划被批准后,会话才会切换到相应的权限模式,Claude 才开始进行编辑。\n\n因此,`/plan` 与没有计划阶段、Claude 可以立即开始编辑的直接请求方式不同。",
       "whenGood": [
         {
-          "title": "带描述直接以 Plan 模式启动任务",
+          "title": "带描述直接以计划模式启动任务",
           "example": "/plan fix the auth bug"
         },
         {
-          "title": "从正在进行的提示词中切换进入 Plan 模式",
+          "title": "从正在进行的提示中切换到计划模式",
           "example": "/plan"
         }
       ],
       "whenBad": [
         {
-          "title": "只是一个简单的单步改动",
-          "why": "/plan 会专门切换到一个计划阶段——对于明确且简单的小改动来说,这是多余的中间步骤。",
+          "title": "只是一个简单的单步更改",
+          "why": "/plan 会额外切换模式进入计划阶段——对于明确的小改动来说,这是不必要的中间步骤。",
           "alternative": "直接正常提出请求,不使用 /plan"
         },
         {
-          "title": "已经在实施过程中,且计划已经确定",
-          "why": "/plan 会再次切换回计划模式,而不是继续推进实施。",
-          "alternative": "直接正常继续工作,不切换模式"
+          "title": "已经在执行过程中,计划早已确定",
+          "why": "/plan 会再次切换回计划模式,而不是继续执行。",
+          "alternative": "直接照常继续工作,不切换模式"
         }
       ],
       "sources": [
@@ -2497,22 +2532,27 @@
       "slug": "security-review",
       "name": "/security-review",
       "summary": "分析当前分支中尚未处理的改动,检查是否存在安全漏洞。",
-      "what": "分析当前分支中尚未处理的改动,检查是否存在安全漏洞。\n\n会检查 Git Diff,排查注入(Injection)、身份验证问题和数据泄露等风险。",
+      "what": "`/security-review` 不需要额外参数,会针对当前分支上尚未提交的更改(Git diff)进行专项分析,检查注入漏洞、身份验证缺陷、数据泄露等安全风险。差异范围通过与源分支的合并基准(merge-base)来确定;在非常旧的 Git 版本上,2.1.70 版之前会因 `merge-base` 报错而失败。\n\n该命令是多阶段安全链条中快速的单次扫描环节:Security-Guidance 插件在同一会话中于代码编写时就进行检查,Claude-Security 插件会执行更深入的多代理扫描,对发现的问题进行独立复核并给出修复补丁建议,Code Review 则在评审 Pull Request 时结合完整代码库上下文进行评估。\n\n自 2.1.108 版起,Claude 可以在对话中判断相关时通过 Skill 工具自行触发 `/security-review`,而不必完全等待用户手动调用。",
       "whenGood": [
         {
-          "title": "合并涉及 Auth/密钥的功能之前",
-          "example": "在合并处理用户输入的新 API 端点的分支之前,运行 /security-review 检查该 Diff 是否存在注入(Injection)和身份验证(Auth)问题。"
+          "title": "在合并涉及身份验证/密钥的功能前",
+          "example": "在合并一个新增了处理用户输入的 API 端点的分支之前,运行 /security-review 检查该差异是否存在注入和身份验证问题。"
         },
         {
-          "title": "添加支付/敏感功能代码之后",
-          "example": "在当前分支中加入支付逻辑或密钥处理代码后,在提交 PR 之前专门运行 /security-review。"
+          "title": "在添加支付或敏感功能代码之后",
+          "example": "在当前分支中加入支付逻辑或密钥处理代码后,在提交 PR 前专门运行一次 /security-review。"
         }
       ],
       "whenBad": [
         {
-          "title": "不涉及安全性的一般代码质量检查",
-          "why": "根据文档,/security-review 专门检查注入、身份验证问题、数据泄露等安全风险,而非一般性的代码简化。",
-          "alternative": "使用 /simplify 或 /code-review 来检查一般的代码质量/Bug。"
+          "title": "只关注一般代码质量,而非安全问题",
+          "why": "根据文档,/security-review 专门检查注入漏洞、身份验证问题、数据泄露等安全风险,不涉及一般性的代码简化。",
+          "alternative": "用 /simplify 或 /code-review 处理一般的代码质量和 bug 问题。"
+        },
+        {
+          "title": "需要对整个代码库进行带交叉验证结果和补丁建议的深度多代理扫描",
+          "why": "/security-review 只对当前分支差异进行一次快速扫描,不会对发现的问题做独立验证。",
+          "alternative": "使用 Claude-Security 插件(/claude-security)进行多代理扫描,获得经过交叉验证的结果和补丁建议。"
         }
       ],
       "sources": [
@@ -3290,23 +3330,32 @@
       "platform": "codex-cli",
       "slug": "skills",
       "name": "/skills",
-      "summary": "显示当前会话可用的 Skill。",
-      "what": "/skills 属于 Codex 交互式斜杠命令官方列表之一,在会话控制中与 /plugins 并列;文档中未进一步说明其具体细节。",
+      "summary": "显示可用的 Skills,并将所选的应用到下一条请求",
+      "what": "/skills 会在 Codex CLI 中打开一个选择菜单,列出 Codex 在当前会话中能识别的所有 Skills。一个 Skill 是一个包含 `SKILL.md` 文件的文件夹:文件开头的 YAML frontmatter 区块包含名称和描述,用来决定 Codex 何时会推荐它,其余文本则是实际的操作指令,此外还可以包含模板、脚本或参考资料。\n\nCodex 会从多个不同作用范围的位置收集 Skills:项目级的来自仓库中的 `.codex/skills`,用户级的来自 `~/.agents/skills`,此外还有内置的系统 Skills,在托管安装的情况下,还有来自 `/etc/codex/skills` 的管理员预设 Skills。选定后,Codex 会把完整的 Skill 文本插入到下一条请求中,使回答遵循其中的指令。\n\n该命令也可以在任务进行过程中调用,但不能在通过 `/side` 或 `/btw` 开启的旁支对话中使用,并且不接受 Skill 名称作为附加参数。如果想直接定位到某个具体 Skill 而不想在菜单中查找,可以在消息里直接用 `$skill-name` 提及它。也可以使用内置的 `$skill-creator` Skill 来构建自己的 Skill。",
       "whenGood": [
         {
-          "title": "在处理专项任务之前查看可用的 Skill",
-          "example": "/skills — 查看即将进行的任务可以使用哪些 Skill"
+          "title": "在处理专项任务前查看可用的 Skills",
+          "example": "/skills —— 在开始安全审查这类领域专项任务前,查看列表并选择合适的 Skill"
         },
         {
-          "title": "在不清楚 Codex 还有哪些额外能力时先了解概况",
-          "example": "/skills — 在描述一个需要特殊处理方式的任务之前先查看列表"
+          "title": "在任务进行过程中为下一步细化上下文",
+          "example": "在进行中的对话里调用 /skills —— 所选的 Skill 会被插入到下一条请求中"
+        },
+        {
+          "title": "查看新安装的插件带来了哪些 Skills",
+          "example": "在安装插件后打开 /skills,查看列表中该插件附带的 Skills"
         }
       ],
       "whenBad": [
         {
-          "title": "任务简单,不需要特殊的 Skill",
-          "why": "对于简单的改动,查看可用 Skill 是多余的中间步骤。",
-          "alternative": "直接描述任务即可"
+          "title": "任务很简单,不需要特殊的 Skills",
+          "why": "对于简单的更改来说,查看可用 Skills 是不必要的中间步骤。",
+          "alternative": "直接说明任务需求"
+        },
+        {
+          "title": "想直接调用一个已知的 Skill,而不查看菜单",
+          "why": "/skills 不支持在命令本身中附加 Skill 名称这样的参数——每次调用都会打开选择菜单供查找。",
+          "alternative": "在消息中直接用 $skill-name 提及该 Skill"
         }
       ],
       "sources": [
@@ -4448,26 +4497,30 @@
       "slug": "mcp",
       "name": "/mcp",
       "summary": "通过交互式菜单管理 MCP 服务器:登录、列出、查看工具。",
-      "what": "/mcp 打开一个用于管理 MCP 服务器的菜单:筛选、登录、列出某个服务器的工具、查看服务器详情。服务器按作用域(Scope,User/Project/Team)分组,连接失败的服务器会显示其实际错误信息。",
+      "what": "/mcp 会在 Cursor CLI(`agent`)中打开一个交互式菜单,用于管理 Model Context Protocol 服务器。作为斜杠命令,文档记录的语法是 `/mcp [list|list-tools] [identifier]`;在交互式会话之外,同样的功能也以独立的终端子命令形式存在:`agent mcp list`、`agent mcp list-tools <identifier>`、`agent mcp login <identifier>`、`agent mcp enable <identifier>` 和 `agent mcp disable <identifier>`。\n\n配置保存在 `mcp.json` 中,项目级的位于 `.cursor/mcp.json`,全局级的位于 `~/.cursor/mcp.json`;CLI 使用的配置与 Cursor 编辑器完全相同,并按照“项目优先于全局优先于嵌套文件夹”的顺序解析。每个服务器条目定义了连接类型(`stdio`、SSE 或 Streamable HTTP)、启动命令、参数和环境变量;对于 OAuth 服务器,登录通过专门的回调流程完成。\n\n`enable` 会把某个服务器加入本地已授权列表,`disable` 则只是阻止它加载或弹出授权请求——配置条目本身仍然保留。默认情况下,Cursor 在每次调用 MCP 工具前都会请求确认,除非某个运行模式已自动允许该操作。",
       "whenGood": [
         {
-          "title": "在使用之前检查一个新 MCP 服务器提供的工具",
-          "example": "/mcp list-tools github"
+          "title": "在使用前检查新 MCP 服务器提供的工具",
+          "example": "/mcp list-tools playwright"
         },
         {
-          "title": "为团队 MCP 服务器完成 OAuth 登录",
-          "example": "/mcp — 选择服务器,然后点“Login”"
+          "title": "为 mcp.json 中配置的服务器执行 OAuth 登录",
+          "example": "在终端中运行 agent mcp login <identifier>,或在交互式菜单 /mcp 中选择该服务器并登录"
+        },
+        {
+          "title": "查看所有已配置服务器的状态和来源概览",
+          "example": "/mcp list —— 显示每个服务器的连接状态(已连接/已断开)和配置来源(项目级或全局)"
         }
       ],
       "whenBad": [
         {
-          "title": "希望启动时自动放行所有 MCP 服务器",
-          "why": "/mcp 是为交互式管理设计的,不适合脚本中的自动化放行。",
+          "title": "希望启动时自动授权所有 MCP 服务器",
+          "why": "/mcp 是为交互式管理设计的,不适用于脚本中的自动化授权。",
           "alternative": "启动时使用 --approve-mcps"
         },
         {
-          "title": "想让某个服务器从配置中永久消失",
-          "why": "/mcp 只管理运行时的连接状态和授权情况。",
+          "title": "想把某个服务器从配置中永久移除",
+          "why": "agent mcp disable 只是在本地禁用该服务器,配置条目仍会保留在 mcp.json 中。",
           "alternative": "直接在 mcp.json 中删除该服务器条目"
         }
       ],
@@ -7967,22 +8020,27 @@
       "slug": "conversation-id",
       "name": "agy --conversation <id>",
       "summary": "通过 ID 直接加载指定对话,不打开选择对话框。",
-      "what": "agy --conversation <id> 会根据唯一 ID 加载一个具体的已保存对话,跳过交互式的 /resume 选择对话框。可与 -p 组合使用,以非交互方式继续该对话;自 1.0.9 版本起,这种组合模式只会输出新生成的回复,而不再输出完整的历史记录。",
+      "what": "`agy --conversation <id>` 会通过唯一 ID 直接加载一个已保存的对话,跳过 `/resume`(别名 `/switch`、`/conversation`)的交互式选择对话框。对应的 ID 可以事先通过交互式的 `/resume` 选择器搜索获得,该选择器支持按标题、预览文本或 ID 过滤。如果只是想恢复当前工作目录下最近活动的对话,用 `agy -c` 或 `agy --continue` 即可,它会通过本地缓存文件 `~/.gemini/antigravity-cli/cache/last_conversations.json` 解析得到。\n\n该标志可以与 `-p`(打印/非交互模式)组合使用,以便在没有 TUI 的情况下继续已加载的对话。在 1.0.8 版之前,这种组合模式会错误地输出完整的历史对话记录;自 1.0.9 版修复后,`--conversation <id> -p \"...\"` 只会返回新生成的那条回答。ID 本身是 UUID 格式,与本地缓存文件中保存的格式一致(例如 a1b2c3d4-e5f6-7890-abcd-ef1234567890)。",
       "whenGood": [
         {
-          "title": "回到一个已知的具体对话 ID",
+          "title": "定向返回到已知的对话 ID",
           "example": "agy --conversation 7f3a2b1c"
         },
         {
-          "title": "非交互式地继续指定对话",
-          "example": "agy --conversation 7f3a2b1c -p \"总结一下\""
+          "title": "以非交互方式继续某个特定对话,只获取新生成的回答",
+          "example": "agy --conversation 7f3a2b1c -p \"fasse zusammen\""
         }
       ],
       "whenBad": [
         {
           "title": "不知道确切的对话 ID",
-          "why": "--conversation 需要精确的 ID,该标志不支持模糊搜索。",
-          "alternative": "在运行中的 agy 里使用 /resume 来浏览并选择对话"
+          "why": "--conversation 需要精确的 ID,该标志本身不支持模糊搜索。",
+          "alternative": "在运行中的 agy 里使用 /resume,按标题、预览文本或 ID 进行搜索"
+        },
+        {
+          "title": "只是想继续当前目录下最近的那次对话",
+          "why": "--conversation 需要显式指定 ID,对于这种简单场景来说过于繁琐。",
+          "alternative": "使用 agy -c 或 agy --continue"
         }
       ],
       "sources": [
@@ -8035,18 +8093,27 @@
       "slug": "list-models",
       "name": "agy models",
       "summary": "列出可用的模型。",
-      "what": "agy models(子命令)显示当前套餐可用的模型。据文档说明,Gemini 3.1 Pro 和 Gemini 3.5 Flash 在所有套餐中都可用;Claude Sonnet 4.6(thinking)、Claude Opus 4.6(thinking)和 GPT-OSS-120b 仅在 Google AI Ultra 套餐中可用。列出的模型名称可以直接传给 --model。",
+      "what": "`agy models` 是一个子命令(不是斜杠命令),用于列出当前 Google 账号套餐可用的推理模型。根据官方模型概览,Gemini 系列模型——目前包括 Gemini 3.6 Flash、Gemini 3.5 Flash 和 Gemini 3.1 Pro——在所有套餐(包括 Enterprise)上都可用。\n\n相比之下,Claude Sonnet 4.6(thinking)、Claude Opus 4.6(thinking)和 GPT-OSS-120b 仅在 Free、Google AI Plus、Google AI Pro 和 Google AI Ultra 账号上可用,Enterprise 套餐不支持。自 1.1.5 版起,该列表会显示稳定、易读的模型标识(slug),可以直接传给 `--model`,此外还可以通过 `--effort` 标志选择可选的推理强度档位。\n\n列出的名称既可以在启动时使用(`--model <name>`),也可以之后在运行中的 `/model` 选择器里使用。模型选择是“粘性”的:在一个正在进行的代理轮次中更改的值,要到下一轮才会生效。",
       "whenGood": [
         {
           "title": "在启动前查询可用的模型名称",
-          "example": "运行 agy models 来查找 --model 需要的确切名称"
+          "example": "运行 agy models 查找 --model 所需的准确标识"
+        },
+        {
+          "title": "检查某个特定模型是否在自己的套餐中可用",
+          "example": "运行 agy models,并将列表与自己的 Google AI 套餐进行核对"
         }
       ],
       "whenBad": [
         {
-          "title": "希望为正在运行的会话切换模型",
-          "why": "agy models 只是一个在会话之外运行的纯列表子命令。",
+          "title": "想切换当前会话正在使用的模型",
+          "why": "agy models 只是一个在会话之外运行的纯列表子命令,它不会切换任何内容。",
           "alternative": "在运行中的 agy 里使用 /model"
+        },
+        {
+          "title": "想查看每个模型的确切额度或剩余额度",
+          "why": "agy models 只显示名称,不显示速率限制或配额。",
+          "alternative": "在运行中的 agy 里打开 /usage 或 /quota"
         }
       ],
       "sources": [
@@ -8232,22 +8299,27 @@
       "slug": "mode-flag",
       "name": "agy --mode <default|accept-edits|plan>",
       "summary": "在启动时设置 agent 的执行模式。",
-      "what": "agy --mode(自 1.1.0 版本起)在启动时设置执行模式:default(即 request-review,在写入文件前暂停,展示逐行 diff 预览供确认/拒绝)、accept-edits 或 plan。不使用该标志时,也可以在 /settings 面板的“Agent Mode”中长期设置同一模式,或在会话中用 shift+tab 循环切换。",
+      "what": "`agy --mode=<default|accept-edits|plan>` 用于在启动时设定代理的执行模式(自 1.1.0 版起公开可用)。`default`(即 request-review)会在每次写文件操作前暂停,并逐行展示差异预览,供确认(`y`)、拒绝(`n`)或完整审阅(`f`)。`accept-edits` 会自动接受所有标准文件操作(`write_to_file`、`replace_file_content`、`multi_replace_file_content`),即使是并行运行的子代理也一样。`plan` 会自动在每条提示前加上 `/plan` 前缀:代理会先只使用读取类工具进行调研,并提出执行计划,然后才开始编写代码。\n\n如果不带该标志,则沿用最近一次通过 `/settings`(选项 \"Agent Mode\")或 `settings.json` 中 `agentMode` 设置的默认模式。在会话进行期间,无论启动时使用了什么标志,都可以按 `Shift+Tab` 在三种模式之间循环切换(default → accept-edits → plan → default)。无论选择哪种模式,通过 `/permissions` 或 `--dangerously-skip-permissions` 配置的 shell 命令(`run_command`)规则始终具有决定性作用。",
       "whenGood": [
         {
           "title": "直接以风险较低的审阅模式启动",
-          "example": "agy --mode default"
+          "example": "agy --mode=default"
         },
         {
-          "title": "希望改动无需确认直接生效时,直接以自动接受模式启动",
-          "example": "agy --mode accept-edits"
+          "title": "为快速原型开发直接以自动接受模式启动",
+          "example": "agy --mode=accept-edits"
         }
       ],
       "whenBad": [
         {
-          "title": "希望该模式对之后所有启动都长期生效,而不仅是这一次",
-          "why": "--mode 只对当前这次启动生效。",
-          "alternative": "在 /settings 面板中长期设置 Agent Mode"
+          "title": "期望使用已废弃的 /planning 或 /fast 命令",
+          "why": "这两个斜杠命令都已在 1.1.0 版中移除,由三种 --mode 取值取代。",
+          "alternative": "使用 Shift+Tab 循环切换,或在提示前加上 /plan"
+        },
+        {
+          "title": "使用 --permission-mode 作为标志名称",
+          "why": "该标志并不存在;CLI 中执行模式一律使用 --mode。",
+          "alternative": "使用 agy --mode=accept-edits(或用 agy --help 查阅)"
         }
       ],
       "sources": [
@@ -8318,22 +8390,27 @@
       "slug": "plugin-install",
       "name": "agy plugin install <path>",
       "summary": "安装一个本地或已下载的插件目录。",
-      "what": "agy plugin install /path/to/local/plugin 会将一个插件目录加载到本地配置中。安装外部插件时会自动解析并初始化其中的 Git 子模块;也支持直接从 GitHub 子路径安装(支持分支解析)。导入时会复制整个插件目录,包括 shared/ 这类非 skill 子文件夹。",
+      "what": "`agy plugin install <路径>` 会把一个插件包从本地目录或远程来源安装到本地配置文件夹 `~/.gemini/antigravity-cli/plugins/<plugin_name>/` 下。一个有效的插件由必需的清单文件 `plugin.json`,以及可选的子目录如 `skills/`、`agents/`、`rules/`,还有 `mcp_config.json` 或 `hooks.json` 文件组成。\n\n自 1.0.7 版起,插件也可以直接从 GitHub 子路径安装,包括分支解析。自 1.0.9 版起,在进行外部安装时,CLI 会自动解析并初始化插件中包含的 Git 子模块。复制时会完整保留整个插件目录,包括 `shared/` 这类非 skill 子文件夹——早期版本中一个会在导入时丢弃此类文件夹的 bug,已在 1.0.14 版中修复。\n\n相关的子命令还有 `agy plugin list`、`agy plugin disable/enable <name>` 和 `agy plugin uninstall <name>`。该命令是为原生 `plugin.json` 格式的软件包设计的,不适用于旧格式的 Gemini CLI 扩展。",
       "whenGood": [
         {
           "title": "接入一个本地开发的插件目录",
-          "example": "agy plugin install ./my-plugin"
+          "example": "agy plugin install ./mein-plugin"
         },
         {
-          "title": "直接从 GitHub 仓库或子路径安装插件",
-          "example": "agy plugin install github.com/org/repo/path/to/plugin"
+          "title": "直接从 GitHub 仓库的子路径安装插件",
+          "example": "agy plugin install github.com/org/repo/pfad/zum/plugin"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想沿用旧版 Gemini CLI 的扩展",
-          "why": "plugin install 需要原生 plugin.json 格式的插件,不能直接使用 Gemini CLI 扩展。",
-          "alternative": "先用 agy plugin import gemini 转换扩展"
+          "title": "只想接入一个旧版 Gemini CLI 扩展",
+          "why": "plugin install 需要原生的 plugin.json 清单文件,不能直接接受 Gemini CLI 扩展。",
+          "alternative": "先用 agy plugin import gemini 把扩展转换过来"
+        },
+        {
+          "title": "只想短暂启用一个插件做测试",
+          "why": "install 会把目录永久复制到本地配置文件夹中,对于短暂测试来说没有必要。",
+          "alternative": "测试完成后使用 agy plugin uninstall <name>,或用 agy plugin disable <name> 临时禁用"
         }
       ],
       "sources": [
@@ -8467,7 +8544,7 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-aliases",
       "name": "install.sh --skip-aliases",
-      "summary": "Shell 安装脚本会拒绝该参数,但在 Windows 上会未经检查直接传给二进制文件。",
+      "summary": "文档中列出的别名参数，Shell 安装脚本并不接受。",
       "what": "antigravity.google/docs/cli/install 文档页面将 `--skip-aliases` 列为一个标志(flag),用于在安装时跳过对旧版 `agy`/`antigravity` shell 别名的清理。但实际部署在 antigravity.google/cli/install.sh 的引导脚本(239 行,已于 2026 年 7 月 27 日通过 curl 核实)并不认识这个标志:它的参数解析器只接受 `-d`/`--dir`(目标目录)和 `-h`/`--help`。任何其他参数,包括 `--skip-aliases`,都会落入 `*)` 兜底分支,产生 `[ERROR] Unknown parameter: --skip-aliases` 并随后以退出码 1 中止——这样一来安装根本不会发生。\n\n此外:在脚本中搜索“alias”没有任何匹配结果。该脚本没有在任何地方修改 shell 别名;它只是下载并校验二进制文件,最后在内部调用 `agy install`(在 Windows 上是 `agy.exe install`)。因此文档中描述的该标志的作用,目前无论传入什么参数值都是无效的。\n\n在 Windows 上情况有所不同:`install.cmd` 会把未知参数收集到 `FORWARD_ARGS` 中并附加到 `SETUP_FLAGS` 上,`install.ps1` 则通过 `$passthroughArgs` 做同样的事。因此在 Windows 上 `--skip-aliases` 不会导致中止,而是会被原样传递给 `agy.exe install`。至于该二进制文件之后是否会解析或忽略这个参数,从外部无法确认——能观察到的只是调用不会失败。",
       "whenGood": [
         {
@@ -8502,7 +8579,7 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-path",
       "name": "install.sh --skip-path",
-      "summary": "Shell 安装脚本会拒绝该参数,但在 Windows 上会未经检查直接传给二进制文件。",
+      "summary": "文档中列出的 PATH 参数，Shell 安装脚本并不接受。",
       "what": "antigravity.google/docs/cli/install 文档页面将 `--skip-path` 列为一个标志(flag),用于在安装时阻止自动向 shell 配置文件追加 PATH。但实际部署在 antigravity.google/cli/install.sh 的引导脚本(239 行,已于 2026 年 7 月 27 日通过 curl 核实)并不认识这个标志:它的参数解析器只接受 `-d`/`--dir`(目标目录)和 `-h`/`--help`。任何其他参数,包括 `--skip-path`,都会落入 `*)` 兜底分支,产生 `[ERROR] Unknown parameter: --skip-path` 并随后以退出码 1 中止——这样一来安装根本不会发生。\n\n此外:在脚本中搜索“PATH=”只有一处匹配,是用于表示二进制文件安装位置的内部变量 `BINARY_PATH`。该脚本没有在任何地方写入 shell 配置文件,也不会设置 PATH 变量;它只是下载并校验二进制文件,最后在内部调用 `agy install`。因此文档中描述的该标志的作用,目前无论传入什么参数值都是无效的。\n\n在 Windows 上情况有所不同:`install.cmd` 会把未知参数收集到 `FORWARD_ARGS` 中并附加到 `SETUP_FLAGS` 上,`install.ps1` 则通过 `$passthroughArgs` 做同样的事。因此在 Windows 上 `--skip-path` 不会导致中止,而是会被原样传递给 `agy.exe install`。至于该二进制文件之后是否会解析或忽略这个参数,从外部无法确认——能观察到的只是调用不会失败。",
       "whenGood": [
         {
@@ -8538,18 +8615,27 @@
       "slug": "at-path",
       "name": "@<路径>",
       "summary": "在提示词输入框中直接打开一个交互式浮层,用于选择文件路径。",
-      "what": "在提示词输入框中输入 @,会打开交互式路径建议浮层:可以浏览工作区中的文件路径,选中后会以绝对路径的形式直接插入提示词,便于 agent 更精确地在代码中查找。自 1.0.6 版本起,@ 会无条件触发建议列表,即使紧跟在一个左括号后面也是如此。",
+      "what": "在提示输入框中输入 `@`,会弹出“Interactive Path Suggestion”浮层:它会搜索工作区中的文件路径,并把选中的绝对路径直接插入到提示中。根据 CLI 文档的最佳实践建议,这类上下文锚点的作用是更精确地界定代理的推理范围、避免不必要的 token 开销,而不是手动敲入路径或依赖自由文本识别。尤其是在包含多个同名文件(例如多个 index.ts)的大型仓库中,插入的绝对路径能确保代理准确引用到目标文件。\n\n在 1.0.6 版之前,只有当 `@` 前面紧邻空格时才会触发提示;自 1.0.6 版修复后,`@` 会无条件触发,即使紧跟在左括号 `(` 之后或位于单词中间也一样。该浮层只是对文本输入的附加功能:它不会执行任何操作,也不会替换提示中已有的文本。",
       "whenGood": [
         {
-          "title": "精确引用某个文件,而无需手动敲出路径",
-          "example": "输入 @src/auth/,在浮层中定位到对应文件"
+          "title": "精确引用某个文件,而不必手动输入路径",
+          "example": "输入 @src/auth/,在浮层中导航到对应的文件"
+        },
+        {
+          "title": "在提问时直接把某个文件作为上下文提供给代理",
+          "example": "给我解释一下 @src/utils/formatter.ts 里的逻辑"
         }
       ],
       "whenBad": [
         {
-          "title": "希望直接执行一条终端命令",
-          "why": "@ 只会把文件路径插入提示词,并不会执行任何操作。",
+          "title": "想直接执行一条终端命令",
+          "why": "@ 只会把文件路径插入到提示中,不会执行任何操作。",
           "alternative": "在行首使用 ! 来直接执行终端命令"
+        },
+        {
+          "title": "想触发一个斜杠命令",
+          "why": "@ 只会打开路径浮层,不会打开命令列表。",
+          "alternative": "在行首输入 /,打开斜杠命令菜单"
         }
       ],
       "sources": [
@@ -9337,18 +9423,27 @@
       "slug": "model",
       "name": "/model",
       "summary": "选择推理模型,设置会跨会话持久保存。",
-      "what": "/model 属于 Configurations 分类。所做的选择会在当前会话结束后依然生效,直到再次被修改。与启动标志 --model 以及子命令 agy models 相互配合,后者会列出 Shared Agent Engine 中可用的模型(例如所有套餐都可用的 Gemini 3.1 Pro/3.5 Flash,以及仅 Google AI Ultra 可用的 Claude Sonnet/Opus 4.6 和 GPT-OSS-120b)。",
+      "what": "`/model`(Configurations 分类)会打开一个选择器,用来挑选推理模型;根据 CLI 参考文档,该选择会跨会话持续生效,直到再次更改为止。自 1.1.5 版起,选择器按基础模型分组,并支持通过时间轴滑块选择推理强度档位,状态栏中也会显示当前的强度设置;对应的稳定模型标识也可以直接传给启动标志 `--model` 或 `--effort`。\n\n根据官方模型概览,Gemini 系列模型在包括 Enterprise 在内的所有套餐上都可用,而 Claude Sonnet 4.6(thinking)、Claude Opus 4.6(thinking)和 GPT-OSS-120b 仅在 Free、Plus、Pro 和 Ultra 账号上可用,Enterprise 套餐不支持。具体有哪些基础模型可选,可以事先用 `agy models` 查看。模型选择是“粘性”的:在一个正在进行的代理轮次中切换模型,要到下一轮才会生效,而不是立即生效。",
       "whenGood": [
         {
-          "title": "为更具挑战性的任务选择一个更强的推理模型",
-          "example": "打开 /model,切换到性能更强的模型"
+          "title": "为更具挑战性的任务选择更强的推理模型",
+          "example": "打开 /model,切换到例如 Claude Opus 4.6(thinking)"
+        },
+        {
+          "title": "调整某个模型的推理深度",
+          "example": "打开 /model,选择基础模型,再通过滑块调整强度档位"
         }
       ],
       "whenBad": [
         {
-          "title": "只想为下一次启动设置模型,而不是长期生效",
-          "why": "/model 会跨会话持久保存所做的选择。",
-          "alternative": "在启动时使用 agy --model <name>"
+          "title": "只想为下一次启动设置模型,而非永久生效",
+          "why": "/model 会持久地跨会话更改所选模型。",
+          "alternative": "启动时使用 agy --model <name>"
+        },
+        {
+          "title": "想在代理轮次进行中切换模型,并期望立即生效",
+          "why": "模型选择是“粘性”的——当前进行中的轮次仍会用之前的模型完成。",
+          "alternative": "等待当前轮次结束,或中断正在进行的执行"
         }
       ],
       "sources": [
@@ -9397,22 +9492,27 @@
       "slug": "permissions",
       "name": "/permissions",
       "summary": "打开交互式工具权限管理器。",
-      "what": "/permissions 属于 Configurations 分类。通过范围选择器可以在 Project、Shared、Global 之间选择,然后在 allow/deny/ask 这几个规则查看标签页之间切换;a 添加一条规则,e 或 Ctrl+G 编辑规则,d 或 Backspace 删除规则。规则遵循 action(target) 的格式,例如 command(git) 或 mcp(server/tool)。",
+      "what": "`/permissions`(Configurations 分类)会打开交互式的权限管理器。首先由一个作用域选择器在 Project(仅当前项目)、Shared(跨产品共享)和 Global(所有会话)之间选择。之后,规则查看器会显示三个选项卡:allowlist、denylist 和 asklist,可用 `←`/`→` 或 `Tab` 切换。`a` 用于添加规则,`e`(或 `Ctrl+G`)用于编辑选中的规则,`d`(或 `Backspace`)用于删除规则。\n\n规则遵循 `action(target)` 的格式,例如 `command(git)` 表示对命令做前缀匹配,`mcp(server/tool)` 或 `mcp(server/*)` 表示某个 MCP 服务器的单个工具或全部工具。发生冲突时,严格按照 Deny > Ask > Allow 的优先级处理。未明确配置的操作默认归为 ask,但活动工作区内的读写访问除外,它们会被自动允许;授予的 write_file 权限也隐式包含对同一路径的 read_file 权限。自 1.0.13 版起,命令匹配默认采用精确前缀匹配而非正则表达式;如果确实需要使用正则模式,必须在规则前加上 `regex:` 前缀。",
       "whenGood": [
         {
-          "title": "允许自动执行某些特定命令",
-          "example": "打开 /permissions,选择 Project 范围,把 command(git) 设为 allow"
+          "title": "允许自动执行特定命令",
+          "example": "打开 /permissions,选择 Project 作用域,在 allowlist 选项卡中添加 command(git)"
         },
         {
-          "title": "有针对性地屏蔽某个 MCP 工具",
-          "example": "打开 /permissions,把 mcp(server/tool) 设为 deny"
+          "title": "针对性地禁用某个单独的 MCP 工具",
+          "example": "打开 /permissions,在 denylist 选项卡中添加 mcp(server/tool)"
         }
       ],
       "whenBad": [
         {
-          "title": "想为单次启动完全绕过权限设置",
-          "why": "/permissions 管理的是长期规则,并不是针对单次启动的一次性跳过。",
+          "title": "只想在单次启动中完全绕过权限检查",
+          "why": "/permissions 管理的是 settings.json 中的持久化规则,不能用于单次启动的临时跳过。",
           "alternative": "启动时使用 agy --dangerously-skip-permissions(请谨慎使用)"
+        },
+        {
+          "title": "期望规则中使用真正的正则表达式模式",
+          "why": "自 1.0.13 版起,command(...) 默认按精确前缀匹配处理,而非正则表达式。",
+          "alternative": "在规则前加上 regex: 前缀,例如 regex:command(npm run (build|test))"
         }
       ],
       "sources": [

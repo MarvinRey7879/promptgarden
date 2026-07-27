@@ -232,7 +232,7 @@
       "slug": "branch",
       "name": "/branch",
       "summary": "Erstellt einen Zweig der aktuellen Konversation ab diesem Punkt, um eine andere Richtung auszuprobieren, ohne den bisherigen Verlauf zu verlieren.",
-      "what": "Erstellt einen Zweig der aktuellen Konversation ab diesem Punkt, um eine andere Richtung auszuprobieren, ohne den bisherigen Verlauf zu verlieren.\n\nWechselt automatisch in den neuen Zweig; das Original bleibt erhalten und ist über /resume erreichbar. Für eine Nebenaufgabe an einen Hintergrund-Subagenten statt Selbstwechsel: /fork.",
+      "what": "`/branch` erstellt ab dem aktuellen Punkt einen Zweig der laufenden Konversation, um eine andere Richtung auszuprobieren, ohne den bisherigen Verlauf zu verlieren. Der Befehl wechselt direkt in den neuen Zweig; das Original bleibt unverändert erhalten und ist über `/resume` wieder erreichbar.\n\n`/branch` grenzt sich von zwei verwandten Befehlen ab: `/fork` kopiert die Konversation stattdessen in eine unabhängige Hintergrund-Session (eigene Zeile in `claude agents`) und lässt einen selbst im aktuellen Fenster weiterarbeiten — seit Version 2.1.212 meldet sich diese Kopie dabei nicht mehr zurück. Für eine Nebenaufgabe, deren Ergebnis in die aktuelle Konversation zurückfließen soll, ist stattdessen `/subtask` vorgesehen, ein Hintergrund-Subagent mit vollem Konversationskontext.\n\nHistorisch hieß der heutige `/branch`-Befehl bis Version 2.1.77 selbst `/fork`; der Name `/fork` wurde danach mehrfach neu belegt und bezeichnet erst seit Version 2.1.212 das Kopieren in eine unabhängige Session.",
       "whenGood": [
         {
           "title": "Ab dem aktuellen Punkt einen alternativen Lösungsweg ausprobieren",
@@ -245,8 +245,13 @@
       ],
       "whenBad": [
         {
-          "title": "Nebenaufgabe soll im Hintergrund parallel laufen",
-          "why": "branch vs fork: branch wechselt einen selbst in den neuen Zweig, für eine Nebenaufgabe mit Kontext-Vererbung im Hintergrund ist /fork vorgesehen.",
+          "title": "Ergebnis einer Nebenaufgabe soll in diese Konversation zurückfließen, während man selbst weiterarbeitet",
+          "why": "/branch wechselt einen selbst weg vom bisherigen Verlauf in den neuen Zweig; für eine Nebenaufgabe mit Rückmeldung in die aktuelle Konversation ist seit Version 2.1.212 /subtask vorgesehen, nicht /fork.",
+          "alternative": "/subtask"
+        },
+        {
+          "title": "Eine unabhängige Kopie soll im Hintergrund weiterlaufen, während man selbst im aktuellen Fenster bleibt",
+          "why": "/branch wechselt in den neuen Zweig und verlässt damit die aktuelle Ansicht; wer selbst weiterarbeiten will, während eine Kopie unabhängig im Hintergrund läuft, braucht /fork.",
           "alternative": "/fork"
         }
       ],
@@ -462,7 +467,7 @@
       "slug": "color",
       "name": "/color",
       "summary": "Setzt die Farbe der Prompt-Leiste für die aktuelle Session.",
-      "what": "Setzt die Farbe der Prompt-Leiste für die aktuelle Session.\n\nFarben: red, blue, green, yellow, purple, orange, pink, cyan. 'default' setzt zurück, ohne Argument zufällige Farbe. Bei Remote Control synchronisiert zur claude.ai/code. Auch non-interactive (-p) nutzbar, benötigt v2.1.205+.",
+      "what": "`/color` setzt die Farbe der Prompt-Leiste für die aktuelle Session. Verfügbare Farben sind `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink` und `cyan`; ohne Argument wählt der Befehl eine zufällige Farbe.\n\n`default` setzt die Farbe zurück; seit Version 2.1.70 funktionieren dafür zusätzlich `gray`, `reset` und `none` als gleichwertige Rücksetz-Argumente. Ist Remote Control mit claude.ai/code verbunden, synchronisiert sich die gewählte Farbe dorthin.\n\nSeit Version 2.1.205 lässt sich `/color` auch im Non-Interactive-Modus (`-p`) verwenden, etwa in Skripten oder CI-Läufen. Die Einstellung gilt jeweils nur für die aktuelle Session — sie wird nicht als Standard für künftige Sessions gespeichert.\n\n`/color` unterscheidet sich von `/theme`: `/theme` ändert das komplette Farbschema der Oberfläche inklusive Hell-/Dunkel-Variante, während `/color` gezielt nur die einzelne Prompt-Leiste einfärbt, um Sessions optisch auseinanderzuhalten.",
       "whenGood": [
         {
           "title": "Mehrere parallele Sessions optisch unterscheidbar machen",
@@ -478,6 +483,11 @@
           "title": "Erwartung, dass die Farbe dauerhaft für alle künftigen Sessions gilt",
           "why": "/color setzt die Farbe nur für die aktuelle Session",
           "alternative": "bei jedem Sessionstart erneut setzen, oder /statusline für dauerhaft sichtbare Unterscheidungsmerkmale konfigurieren"
+        },
+        {
+          "title": "Farbe non-interaktiv in einem Skript oder CI-Lauf setzen, auf einer älteren Claude-Code-Version",
+          "why": "Der Non-Interactive-Modus (-p) für /color erfordert laut Doku Version 2.1.205 oder neuer.",
+          "alternative": "Claude Code aktualisieren oder die Farbe stattdessen interaktiv setzen."
         }
       ],
       "sources": [
@@ -587,7 +597,7 @@
       "slug": "copy",
       "name": "/copy",
       "summary": "Kopiert die letzte Antwort von Claude in die Zwischenablage.",
-      "what": "Kopiert die letzte Antwort von Claude in die Zwischenablage.\n\nMit Zahl N wird die N-letzte Antwort kopiert. Bei Code-Blöcken interaktive Auswahl; Taste 'w' schreibt in Datei (nützlich über SSH).",
+      "what": "`/copy` kopiert die zuletzt gesendete Antwort von Claude in die Zwischenablage. Mit einer Zahl `N` wird stattdessen die N-letzte Antwort kopiert, `/copy 2` also die vorletzte; `/copy 1` entspricht dabei dem Aufruf ohne Argument.\n\nEnthält die Antwort Code-Blöcke, öffnet `/copy` einen interaktiven Auswahldialog: Es lässt sich ein einzelner Codeblock oder die vollständige Antwort wählen. In diesem Dialog schreibt die Taste `w` die Auswahl stattdessen in eine Datei — praktisch über SSH-Verbindungen, wo die System-Zwischenablage oft nicht erreichbar ist. Über den Dialog lässt sich zudem dauerhaft festlegen, dass /copy künftig ohne Auswahldialog immer direkt die vollständige Antwort kopiert, ohne die Codeblock-Auswahl erneut anzuzeigen.\n\n`/copy` unterscheidet sich von `/export`: `/copy` kopiert nur eine einzelne Antwort für die Zwischenablage, `/export` schreibt die komplette Konversation als Text in eine Datei oder öffnet einen Speichern-Dialog.",
       "whenGood": [
         {
           "title": "Letzte Antwort direkt in die Zwischenablage übernehmen",
@@ -603,6 +613,11 @@
           "title": "Eine ältere, nicht die letzte Antwort kopieren wollen",
           "why": "ohne Zahlenargument kopiert /copy immer nur die letzte Antwort",
           "alternative": "/copy 3 für die drittletzte Antwort, oder /export für die komplette Konversation"
+        },
+        {
+          "title": "Die gesamte Konversation sichern, nicht nur eine Antwort",
+          "why": "/copy überträgt immer nur eine einzelne Antwort in die Zwischenablage oder Datei, nie den ganzen Verlauf.",
+          "alternative": "/export für die komplette Konversation als Textdatei."
         }
       ],
       "sources": [
@@ -717,7 +732,7 @@
       "slug": "deep-research",
       "name": "/deep-research",
       "summary": "Fächert Websuchen zu einer Frage auf, holt und prüft Quellen gegeneinander und erstellt einen zitierten Bericht.",
-      "what": "Fächert Websuchen zu einer Frage auf, holt und prüft Quellen gegeneinander und erstellt einen zitierten Bericht.\n\n[Workflow] Läuft als gebündelter dynamischer Workflow, verteilt Arbeit auf viele Subagenten, läuft im Hintergrund.",
+      "what": "`/deep-research` ist ein gebündelter dynamischer Workflow: Ein von Claude geschriebenes Skript orchestriert im Hintergrund mehrere Subagenten, die zu einer Frage Websuchen über verschiedene Blickwinkel auffächern, gefundene Quellen abrufen und gegeneinander gegenprüfen. Über jede Behauptung wird abgestimmt; Behauptungen, die die Gegenprüfung nicht überstehen, fallen aus dem Bericht heraus. Am Ende steht ein zitierter Bericht statt eines Turn-für-Turn-Verlaufs.\n\nDer Workflow läuft im Hintergrund, während die Session frei bleibt, und benötigt das WebSearch-Tool. Seit Version 2.1.218 startet `/deep-research` ausschließlich bei manuellem Aufruf — davor konnte Claude den Workflow auch selbstständig starten, wenn es die Recherche für sinnvoll hielt.\n\n`/deep-research` unterscheidet sich von einer einfachen Websuche durch die Bündelung vieler Subagenten mit gegenseitiger Prüfung, und von `/code-review` oder `/security-review` dadurch, dass es offene Rechercherfragen statt Code analysiert.",
       "whenGood": [
         {
           "title": "Umfassende, mehrquellige Recherche mit Belegen zu einer offenen Frage",
@@ -733,6 +748,11 @@
           "title": "Schnelle Einzelsuche nach einem konkreten Fakt",
           "why": "die Multi-Agent-Fächerung über viele Subagenten ist für eine einzelne schnelle Suche unnötiger Overhead",
           "alternative": "/web-search für die schnelle Einzelsuche nutzen"
+        },
+        {
+          "title": "Erwartung, dass Claude die Recherche von sich aus anstößt, sobald eine offene Frage auftaucht",
+          "why": "Seit Version 2.1.218 startet /deep-research nur noch bei manuellem Aufruf, Claude löst den Workflow nicht mehr selbstständig aus.",
+          "alternative": "/deep-research jedes Mal explizit mit der Frage aufrufen."
         }
       ],
       "sources": [
@@ -852,7 +872,7 @@
       "slug": "diff",
       "name": "/diff",
       "summary": "Öffnet einen interaktiven Diff-Viewer für nicht committete Änderungen und Turn-für-Turn-Diffs.",
-      "what": "Öffnet einen interaktiven Diff-Viewer für nicht committete Änderungen und Turn-für-Turn-Diffs.\n\nLinks/Rechts wechselt zwischen Git-Diff und Claude-Turns, Hoch/Runter blättert durch Dateien. Ab v2.1.198 aktualisiert sich der Viewer automatisch bei externen Git-Änderungen.",
+      "what": "`/diff` öffnet einen interaktiven Diff-Viewer für den aktuellen Arbeitsstand. Mit den Pfeiltasten links/rechts wechselt die Ansicht zwischen dem Git-Diff der nicht committeten Änderungen und den einzelnen Turn-für-Turn-Diffs der Konversation, mit hoch/runter blättert man durch die geänderten Dateien.\n\nEnter öffnet den Diff der ausgewählten Datei; darin scrollt man mit den Pfeiltasten, `PageUp`/`PageDown`, `j`/`k`, `Space` oder `Home`/`End`, Esc kehrt zur Dateiliste zurück. Seit Version 2.1.198 aktualisiert sich der geöffnete Viewer automatisch, wenn sich der Git-Zustand des Repositories außerhalb der Session ändert, etwa durch einen Branch-Wechsel oder Commit in einem anderen Terminal.\n\n`/diff` zeigt ausschließlich nicht committete Änderungen und Konversations-Turns an, keine Historie über mehrere Commits hinweg, und bewertet den Inhalt der Änderungen nicht inhaltlich. Zum Zurücksetzen auf einen früheren Stand dient stattdessen `/rewind`, das Code und Konversation gemeinsam zurückspult.",
       "whenGood": [
         {
           "title": "Nicht committete Änderungen Datei für Datei durchgehen, bevor man committet",
@@ -868,6 +888,11 @@
           "title": "Änderungen über mehrere Commits/Branches hinweg vergleichen wollen",
           "why": "/diff zeigt nur unkommittete Änderungen und Turn-für-Turn-Diffs, keine Commit-Historie",
           "alternative": "normales 'git diff <ref1> <ref2>' im Terminal für Commit-übergreifende Vergleiche"
+        },
+        {
+          "title": "Änderungen inhaltlich auf Bugs oder Sicherheitslücken prüfen lassen",
+          "why": "/diff zeigt nur den visuellen Unterschied an, ohne ihn inhaltlich zu bewerten.",
+          "alternative": "/code-review für Bugs und Cleanup, /security-review für Sicherheitsrisiken."
         }
       ],
       "sources": [
@@ -1362,7 +1387,7 @@
       "slug": "init",
       "name": "/init",
       "summary": "Initialisiert das Projekt mit einer CLAUDE.md-Anleitung.",
-      "what": "Initialisiert das Projekt mit einer CLAUDE.md-Anleitung.\n\nMit CLAUDE_CODE_NEW_INIT=1 läuft ein interaktiver Ablauf inkl. Skills, Hooks und persönlichen Memory-Dateien.",
+      "what": "`/init` analysiert das aktuelle Repository und erstellt eine Start-`CLAUDE.md` mit Build-Befehlen, Testanleitungen und Projektkonventionen, die Claude im Code entdeckt. Existiert bereits eine `CLAUDE.md`, überschreibt der Befehl sie nicht, sondern schlägt gezielte Verbesserungen vor.\n\nDabei liest `/init` automatisch vorhandene Cursor-Regeln (`.cursor/rules/` bzw. `.cursorrules`) und Copilot-Regeln (`.github/copilot-instructions.md`) aus und übernimmt relevante Teile in die generierte `CLAUDE.md`.\n\nMit gesetzter Umgebungsvariable `CLAUDE_CODE_NEW_INIT=1` läuft stattdessen ein interaktiver Mehrphasen-Ablauf: Claude fragt, welche Artefakte eingerichtet werden (`CLAUDE.md`, Skills, Hooks), erkundet das Repo per Subagent, stellt Rückfragen und zeigt vor dem Schreiben einen Vorschlag zur Freigabe. In diesem Modus liest `/init` zusätzlich `AGENTS.md`, `.devin/rules/`, `.windsurf/rules/` bzw. `.windsurfrules` und `.clinerules` und kann eine private, nicht eingecheckte `CLAUDE.local.md` anlegen. Seit Version 2.1.108 kann Claude `/init` bei Bedarf auch selbst über das Skill-Tool auslösen.",
       "whenGood": [
         {
           "title": "Neues Repository für Claude Code vorbereiten",
@@ -1375,9 +1400,14 @@
       ],
       "whenBad": [
         {
-          "title": "Eine bereits gepflegte, projektspezifische CLAUDE.md existiert schon",
-          "why": "Ein erneutes /init kann bestehende, sorgfältig kuratierte Projekt-Doku überschreiben oder unnötig verändern.",
-          "alternative": "CLAUDE.md gezielt manuell editieren statt das Projekt neu zu initialisieren."
+          "title": "Nur eine gezielte Ergänzung an einer bereits gepflegten CLAUDE.md vornehmen",
+          "why": "/init überschreibt eine vorhandene CLAUDE.md laut Doku nicht, sondern schlägt nur Verbesserungen vor — für eine einzelne, klar umrissene Änderung ist der volle Analyse-Lauf trotzdem ein unnötiger Umweg.",
+          "alternative": "CLAUDE.md direkt mit /memory bearbeiten."
+        },
+        {
+          "title": "Nur private, nicht versionierte Präferenzen ergänzen",
+          "why": "Persönliche Vorgaben gehören in eine gitignorte CLAUDE.local.md; ohne CLAUDE_CODE_NEW_INIT=1 richtet /init diese nicht automatisch ein.",
+          "alternative": "CLAUDE.local.md manuell anlegen und in .gitignore eintragen."
         }
       ],
       "sources": [
@@ -1427,18 +1457,23 @@
       "slug": "install-github-app",
       "name": "/install-github-app",
       "summary": "Installiert die Claude-GitHub-App für ein Repository, optional inklusive GitHub-Actions-Workflows und Secrets.",
-      "what": "Installiert die Claude-GitHub-App für ein Repository, optional inklusive GitHub-Actions-Workflows und Secrets.\n\nFührt durch Repo-Auswahl und Konfiguration.",
+      "what": "`/install-github-app` installiert die Claude-GitHub-App interaktiv auf einem Repository. Der Befehl führt zunächst durch Repo-Auswahl und App-Installation; dafür sind Admin-Rechte auf dem Repository nötig, und die App fordert Lese-/Schreibrechte für Contents, Issues und Pull Requests an.\n\nAnschließend fragt der Befehl, ob direkt mit der Einrichtung von GitHub-Actions-Workflows und dem API-Key-Secret fortgefahren werden soll. Seit Version 2.1.187 lässt sich dieser Schritt mit „Skip for now\" überspringen, sodass nur die App installiert wird; die Workflow-/Secret-Einrichtung lässt sich später erneut über `/install-github-app` nachholen. Vor Version 2.1.187 lief der Assistent direkt in die Workflow-Auswahl. Der Befehl ist fest in die CLI eingebaut und lässt sich beliebig oft erneut ausführen, etwa um fehlende Schritte nachzuholen.\n\nDie Schnellinstallation über `/install-github-app` ist laut Doku nur für Nutzer der direkten Claude-API verfügbar; bei Amazon Bedrock oder Google Cloud's Agent Platform ist stattdessen die manuelle Einrichtung nötig.",
       "whenGood": [
         {
           "title": "Automatisierte PR-Checks oder CI-Integration einrichten",
           "example": "/install-github-app in einem Team-Repository ausführen, um Claude für automatische PR-Workflows per GitHub Actions freizuschalten."
         },
         {
-          "title": "Repo-Zugriff für spätere Claude-Automationen vorbereiten",
-          "example": "Für ein neues Projekt /install-github-app durchlaufen, inklusive Repo-Auswahl und Secrets, damit Workflows wie /autofix-pr funktionieren können."
+          "title": "Nur die GitHub-App installieren, Workflow-Einrichtung auf später verschieben",
+          "example": "/install-github-app ausführen und bei der Nachfrage (ab Version 2.1.187) 'Skip for now' wählen, später erneut /install-github-app für die Workflow-/Secret-Einrichtung starten."
         }
       ],
       "whenBad": [
+        {
+          "title": "Team nutzt Amazon Bedrock oder Google Cloud's Agent Platform statt der direkten Claude-API",
+          "why": "Die Schnellinstallation über /install-github-app ist laut Doku nur für direkte Claude-API-Nutzer verfügbar.",
+          "alternative": "Manuelle Einrichtung nach der Bedrock-/Vertex-Anleitung in den GitHub-Actions-Docs."
+        },
         {
           "title": "Ausschließlich lokal arbeiten, ohne GitHub-Integration",
           "why": "/install-github-app richtet eine Verbindung zu GitHub samt optionalen Actions und Secrets ein — unnötiger Aufwand, wenn nie PRs oder CI über GitHub laufen sollen.",
@@ -1822,7 +1857,7 @@
       "slug": "plan",
       "name": "/plan",
       "summary": "Wechselt direkt aus dem Prompt in den Plan-Modus.",
-      "what": "Wechselt direkt aus dem Prompt in den Plan-Modus.\n\nMit optionaler Beschreibung startet der Plan-Modus sofort mit dieser Aufgabe, z.B. '/plan fix the auth bug'.",
+      "what": "`/plan` wechselt direkt aus dem Prompt heraus in den Plan-Modus, in dem Claude Dateien liest, Shell-Befehle zur Recherche ausführt und einen Plan schreibt, aber keine Quelldateien bearbeitet. Mit optionaler Beschreibung, etwa `/plan fix the auth bug`, startet der Plan-Modus sofort mit dieser Aufgabe als erstem Prompt.\n\nDer Plan-Modus lässt sich alternativ mit `Shift+Tab` betreten und bleibt über mehrere Turns aktiv, bis ein Plan genehmigt oder der Modus manuell verlassen wird (erneut `Shift+Tab`). Bei der Genehmigung eines Plans stehen mehrere Optionen zur Wahl, etwa automatisches Fortfahren im Auto-Modus, manuelle Freigabe jeder einzelnen Änderung, Weiterplanen oder eine Verfeinerung in Ultraplan im Browser. Erst die Genehmigung schaltet die Session auf den jeweiligen Berechtigungsmodus um, sodass Claude mit dem Bearbeiten beginnt.\n\n`/plan` unterscheidet sich damit von direkten Anfragen ohne Planungsphase, bei denen Claude sofort mit dem Bearbeiten beginnen darf.",
       "whenGood": [
         {
           "title": "Aufgabe direkt mit Beschreibung im Plan-Modus starten",
@@ -2497,7 +2532,7 @@
       "slug": "security-review",
       "name": "/security-review",
       "summary": "Analysiert ausstehende Änderungen im aktuellen Branch auf Sicherheitslücken.",
-      "what": "Analysiert ausstehende Änderungen im aktuellen Branch auf Sicherheitslücken.\n\nPrüft den Git-Diff auf Risiken wie Injection, Auth-Probleme und Datenlecks.",
+      "what": "`/security-review` analysiert die noch nicht committeten Änderungen (den Git-Diff) auf dem aktuellen Branch gezielt auf Sicherheitsrisiken wie Injection, fehlerhafte Authentifizierung und Datenlecks, ohne zusätzliche Argumente. Der Diff wird dabei über den Merge-Base zum Ausgangsbranch bestimmt; auf sehr alten Git-Versionen scheiterte das bis Version 2.1.70 mit einem Fehler zu `merge-base`.\n\nDer Befehl ist die schnelle Einzelpass-Stufe in einer mehrstufigen Sicherheitskette: Das Security-Guidance-Plugin prüft Code bereits während des Schreibens in derselben Session, das Claude-Security-Plugin führt einen tieferen Multi-Agent-Scan mit unabhängig geprüften Funden und Patch-Vorschlägen durch, und Code Review bewertet Pull Requests zusätzlich mit vollem Codebase-Kontext.\n\nSeit Version 2.1.108 kann Claude `/security-review` über das Skill-Tool auch selbstständig auslösen, wenn es im laufenden Gespräch relevant erscheint, statt ausschließlich auf einen manuellen Aufruf durch die Nutzerin oder den Nutzer zu warten.",
       "whenGood": [
         {
           "title": "Vor Merge eines Auth-/Secrets-Features",
@@ -2513,6 +2548,11 @@
           "title": "Allgemeine Code-Qualität ohne Security-Fokus",
           "why": "/security-review prüft laut Doku speziell auf Sicherheitsrisiken wie Injection, Auth-Probleme, Datenlecks — nicht auf generelle Vereinfachung.",
           "alternative": "/simplify oder /code-review für allgemeine Qualität/Bugs."
+        },
+        {
+          "title": "Tiefer Multi-Agent-Scan einer ganzen Codebasis mit gegengeprüften Funden und Patch-Vorschlägen nötig",
+          "why": "/security-review liefert nur einen einzelnen, schnellen Pass über den aktuellen Branch-Diff ohne unabhängige Verifizierung der Funde.",
+          "alternative": "Claude-Security-Plugin (/claude-security) für einen Multi-Agent-Scan mit gegengeprüften Findings und Patch-Vorschlägen."
         }
       ],
       "sources": [
@@ -3290,16 +3330,20 @@
       "platform": "codex-cli",
       "slug": "skills",
       "name": "/skills",
-      "summary": "Zeigt die für die Sitzung verfügbaren Skills.",
-      "what": "/skills gehört zur offiziellen Liste der interaktiven Codex-Slash-Commands. Es steht neben /plugins in der Sitzungssteuerung; genaue Detailfunktionen sind in der Doku nicht weiter ausgeführt.",
+      "summary": "Zeigt verfügbare Skills und wendet den gewählten auf die nächste Anfrage an",
+      "what": "/skills öffnet in der Codex-CLI ein Auswahlmenü mit allen Skills, die Codex für die aktuelle Sitzung erkennt. Ein Skill ist ein Ordner mit einer `SKILL.md`-Datei: Ein YAML-Frontmatter-Block mit Namen und Beschreibung entscheidet, wann Codex ihn vorschlägt, der übrige Text enthält die eigentlichen Arbeitsanweisungen, dazu können Vorlagen, Skripte oder Referenzmaterial gehören.\n\nCodex sammelt Skills aus mehreren Fundorten mit unterschiedlichem Geltungsbereich: projektbezogen aus `.codex/skills` im Repository, benutzerbezogen aus `~/.agents/skills`, dazu eingebettete System-Skills und, bei verwalteten Installationen, admin-vorgegebene Skills aus `/etc/codex/skills`. Nach der Auswahl fügt Codex den vollständigen Skill-Text in die nächste Anfrage ein, sodass die Antwort dessen Anweisungen folgt.\n\nDer Befehl lässt sich auch mitten in einer laufenden Aufgabe aufrufen, aber nicht innerhalb einer per `/side` oder `/btw` gestarteten Seitenunterhaltung, und er akzeptiert keinen Skillnamen als Zusatzargument. Wer einen konkreten Skill gezielt ansteuern will, ohne das Menü zu durchsuchen, erwähnt ihn stattdessen direkt per `$skill-name`-Mention in der Nachricht. Eigene Skills lassen sich mit dem mitgelieferten Skill `$skill-creator` bauen.",
       "whenGood": [
         {
           "title": "Verfügbare Skills vor einer spezialisierten Aufgabe prüfen",
-          "example": "/skills — nachsehen, welche Skills für die anstehende Aufgabe genutzt werden können"
+          "example": "/skills — Liste ansehen und passenden Skill auswählen, bevor eine domänenspezifische Aufgabe wie ein Security-Review gestartet wird"
         },
         {
-          "title": "Überblick verschaffen, wenn unklar ist, was Codex zusätzlich kann",
-          "example": "/skills — Liste ansehen, bevor man eine Aufgabe formuliert, die spezielles Vorgehen braucht"
+          "title": "Mitten in einer laufenden Aufgabe den Kontext für den nächsten Schritt nachschärfen",
+          "example": "/skills während einer laufenden Konversation aufrufen — der gewählte Skill wird in die nächste Anfrage eingefügt"
+        },
+        {
+          "title": "Prüfen, welche Skills ein frisch installiertes Plugin mitbringt",
+          "example": "/skills nach der Installation eines Plugins öffnen, um dessen gebündelte Skills in der Liste zu sehen"
         }
       ],
       "whenBad": [
@@ -3307,6 +3351,11 @@
           "title": "Aufgabe ist trivial und braucht keine besonderen Skills",
           "why": "Für eine einfache Änderung ist ein Blick auf verfügbare Skills unnötiger Zwischenschritt.",
           "alternative": "Direkt die Aufgabe formulieren"
+        },
+        {
+          "title": "Ein bekannter Skill soll direkt aufgerufen werden, ohne das Menü zu durchsuchen",
+          "why": "/skills unterstützt keine Zusatzargumente wie einen Skillnamen im Befehl selbst — jeder Aufruf öffnet das Auswahlmenü zum Durchsuchen.",
+          "alternative": "Skill per $skill-name-Mention direkt in der Nachricht erwähnen"
         }
       ],
       "sources": [
@@ -4448,15 +4497,19 @@
       "slug": "mcp",
       "name": "/mcp",
       "summary": "Verwaltet MCP-Server über ein interaktives Menü: einloggen, auflisten, Tools anzeigen.",
-      "what": "/mcp öffnet ein Menü zur Verwaltung von MCP-Servern: filtern, einloggen, Tools eines Servers auflisten, Server-Details ansehen. Server sind nach Scope (User/Project/Team) gruppiert, fehlgeschlagene Server zeigen ihre tatsächliche Fehlermeldung.",
+      "what": "/mcp öffnet in der Cursor CLI (`agent`) ein interaktives Menü zur Verwaltung von Model Context Protocol-Servern. Als Slash-Befehl ist die dokumentierte Syntax `/mcp [list|list-tools] [identifier]`; außerhalb der interaktiven Sitzung existieren dieselben Funktionen als eigenständige Terminal-Unterbefehle: `agent mcp list`, `agent mcp list-tools <identifier>`, `agent mcp login <identifier>`, `agent mcp enable <identifier>` und `agent mcp disable <identifier>`.\n\nDie Konfiguration liegt in `mcp.json`, projektbezogen unter `.cursor/mcp.json` oder global unter `~/.cursor/mcp.json`; die CLI verwendet exakt dieselbe Konfiguration wie der Cursor-Editor und löst sie in der Reihenfolge Projekt vor global vor verschachtelten Ordnern auf. Ein Server-Eintrag definiert den Verbindungstyp (`stdio`, SSE oder Streamable HTTP), Startbefehl, Argumente und Umgebungsvariablen; für OAuth-Server läuft der Login über einen eigenen Callback-Flow.\n\n`enable` setzt einen Server auf die lokal freigegebene Liste, `disable` verhindert nur, dass er lädt oder um Freigabe fragt — der Konfigurationseintrag bleibt bestehen. Vor jedem MCP-Tool-Aufruf fragt Cursor standardmäßig um Bestätigung, sofern kein Run-Mode das automatisch erlaubt.",
       "whenGood": [
         {
           "title": "Tools eines neuen MCP-Servers vor der Nutzung prüfen",
-          "example": "/mcp list-tools github"
+          "example": "/mcp list-tools playwright"
         },
         {
-          "title": "OAuth-Login für einen Team-MCP-Server durchführen",
-          "example": "/mcp — Server auswählen, dann 'Login'"
+          "title": "OAuth-Login für einen in mcp.json konfigurierten Server durchführen",
+          "example": "agent mcp login <identifier> im Terminal, oder /mcp im interaktiven Menü den Server auswählen und einloggen"
+        },
+        {
+          "title": "Übersicht über Status und Herkunft aller konfigurierten Server verschaffen",
+          "example": "/mcp list — zeigt Verbindungsstatus (verbunden/getrennt) und Konfigurationsquelle (Projekt oder global) je Server"
         }
       ],
       "whenBad": [
@@ -4466,9 +4519,9 @@
           "alternative": "--approve-mcps beim Start verwenden"
         },
         {
-          "title": "Ein Server soll dauerhaft aus der Konfiguration verschwinden",
-          "why": "/mcp verwaltet nur Verbindungsstatus und Freigaben zur Laufzeit.",
-          "alternative": "Server-Eintrag direkt in mcp.json entfernen"
+          "title": "Ein Server soll dauerhaft aus der Konfiguration entfernt werden",
+          "why": "agent mcp disable schaltet einen Server nur lokal ab, der Eintrag bleibt in mcp.json bestehen.",
+          "alternative": "Server-Eintrag direkt in mcp.json löschen"
         }
       ],
       "sources": [
@@ -7967,14 +8020,14 @@
       "slug": "conversation-id",
       "name": "agy --conversation <id>",
       "summary": "Lädt eine bestimmte Konversation direkt über ihre ID, ohne Auswahldialog.",
-      "what": "agy --conversation <id> lädt eine konkrete gespeicherte Konversation anhand ihrer eindeutigen ID und überspringt den interaktiven /resume-Auswahldialog. Lässt sich mit -p kombinieren, um diese Konversation nicht-interaktiv fortzusetzen; seit 1.0.9 gibt dieser kombinierte Modus nur noch die neu generierte Antwort statt des kompletten historischen Transkripts aus.",
+      "what": "`agy --conversation <id>` lädt eine gespeicherte Konversation direkt über ihre eindeutige ID und überspringt den interaktiven Auswahldialog von `/resume` (Aliase `/switch`, `/conversation`). Die passende ID lässt sich vorab über die Suche im interaktiven `/resume`-Picker ermitteln, der nach Titel, Vorschautext oder ID filtert. Für die zuletzt aktive Konversation im aktuellen Arbeitsverzeichnis genügt stattdessen `agy -c` bzw. `agy --continue`, was über einen lokalen Cache unter `~/.gemini/antigravity-cli/cache/last_conversations.json` aufgelöst wird.\n\nDas Flag lässt sich mit `-p` (Print-/Nicht-interaktiv-Modus) kombinieren, um die geladene Konversation ohne TUI fortzusetzen. Bis Version 1.0.8 gab dieser kombinierte Modus dabei fälschlich das komplette historische Transkript aus; seit dem Fix in Version 1.0.9 liefert `--conversation <id> -p \"...\"` nur noch die neu generierte Antwort. Die ID selbst hat UUID-Format, wie es auch im lokalen Cache-File hinterlegt ist (z. B. a1b2c3d4-e5f6-7890-abcd-ef1234567890).",
       "whenGood": [
         {
           "title": "Gezielt zu einer bekannten Konversations-ID zurückkehren",
           "example": "agy --conversation 7f3a2b1c"
         },
         {
-          "title": "Bestimmte Konversation nicht-interaktiv fortsetzen",
+          "title": "Eine bestimmte Konversation nicht-interaktiv fortsetzen und nur die neue Antwort einsammeln",
           "example": "agy --conversation 7f3a2b1c -p \"fasse zusammen\""
         }
       ],
@@ -7982,7 +8035,12 @@
         {
           "title": "Die genaue Konversations-ID ist nicht bekannt",
           "why": "--conversation erwartet eine exakte ID, es gibt keine Fuzzy-Suche über das Flag.",
-          "alternative": "/resume im laufenden agy nutzen, um Konversationen zu durchsuchen und auszuwählen"
+          "alternative": "/resume im laufenden agy nutzen, um per Titel, Vorschautext oder ID zu suchen"
+        },
+        {
+          "title": "Einfach nur die letzte Konversation im aktuellen Verzeichnis fortsetzen wollen",
+          "why": "--conversation verlangt eine explizite ID, das ist für den einfachen Fall unnötig umständlich.",
+          "alternative": "agy -c bzw. agy --continue verwenden"
         }
       ],
       "sources": [
@@ -8035,18 +8093,27 @@
       "slug": "list-models",
       "name": "agy models",
       "summary": "Listet die verfügbaren Modelle auf.",
-      "what": "agy models (Subcommand) zeigt die für den aktuellen Plan verfügbaren Modelle. Auf allen Plänen stehen laut Doku Gemini 3.1 Pro und Gemini 3.5 Flash bereit; Claude Sonnet 4.6 (thinking), Claude Opus 4.6 (thinking) und GPT-OSS-120b sind nur auf Google AI Ultra verfügbar. Der gelistete Modellname lässt sich direkt an --model übergeben.",
+      "what": "`agy models` ist ein Subcommand (kein Slash-Befehl), der die für den aktuellen Google-Konto-Plan verfügbaren Reasoning-Modelle auflistet. Laut offizieller Modell-Übersicht stehen die Gemini-Modelle — aktuell Gemini 3.6 Flash, Gemini 3.5 Flash und Gemini 3.1 Pro — auf allen Plänen bereit, einschließlich Enterprise.\n\nClaude Sonnet 4.6 (thinking), Claude Opus 4.6 (thinking) und GPT-OSS-120b sind dagegen auf Free-, Google-AI-Plus-, Google-AI-Pro- und Google-AI-Ultra-Konten verfügbar, jedoch nicht auf Enterprise-Plänen. Seit Version 1.1.5 zeigt die Liste stabile, nutzerfreundliche Modell-Slugs, die sich direkt an `--model` übergeben lassen, dazu optionale Reasoning-Effort-Varianten über das Flag `--effort`.\n\nDer gelistete Name lässt sich sowohl beim Start (`--model <name>`) als auch später im laufenden `/model`-Picker verwenden. Die Modellwahl ist \"sticky\": Ein während eines laufenden Agenten-Turns geänderter Wert wirkt erst ab dem nächsten Turn.",
       "whenGood": [
         {
           "title": "Verfügbare Modellnamen vor dem Start nachschlagen",
-          "example": "agy models, um den exakten Namen für --model zu finden"
+          "example": "agy models, um den exakten Slug für --model zu finden"
+        },
+        {
+          "title": "Prüfen, ob ein bestimmtes Modell auf dem eigenen Plan verfügbar ist",
+          "example": "agy models ausführen und die Liste mit dem eigenen Google-AI-Plan abgleichen"
         }
       ],
       "whenBad": [
         {
-          "title": "Man will das Modell für die laufende Sitzung wechseln",
-          "why": "agy models ist ein reiner Auflistungs-Subcommand außerhalb einer laufenden Sitzung.",
+          "title": "Das Modell für die laufende Sitzung wechseln wollen",
+          "why": "agy models ist ein reiner Auflistungs-Subcommand außerhalb einer laufenden Sitzung, er wechselt nichts.",
           "alternative": "/model im laufenden agy nutzen"
+        },
+        {
+          "title": "Genaue Kontingente bzw. Restkontingente je Modell einsehen wollen",
+          "why": "agy models zeigt nur Namen, keine Rate-Limits oder Quoten.",
+          "alternative": "/usage bzw. /quota im laufenden agy öffnen"
         }
       ],
       "sources": [
@@ -8232,22 +8299,27 @@
       "slug": "mode-flag",
       "name": "agy --mode <default|accept-edits|plan>",
       "summary": "Legt beim Start den Agent-Ausführungsmodus fest.",
-      "what": "agy --mode (seit 1.1.0) setzt beim Start den Ausführungsmodus: default (= request-review, pausiert vor Dateischreibvorgängen für eine Zeilen-Diff-Vorschau zum Bestätigen/Ablehnen), accept-edits oder plan. Ohne das Flag lässt sich derselbe Modus dauerhaft im /settings-Panel unter 'Agent Mode' persistieren oder während der Sitzung per shift+tab durchschalten.",
+      "what": "`agy --mode=<default|accept-edits|plan>` legt beim Start den Agent-Ausführungsmodus fest (seit Version 1.1.0 öffentlich verfügbar). `default` (= request-review) pausiert vor jedem Dateischreibvorgang und zeigt eine zeilenweise Diff-Vorschau zum Bestätigen (`y`), Ablehnen (`n`) oder vollständigen Review (`f`). `accept-edits` übernimmt alle Standard-Dateioperationen (`write_to_file`, `replace_file_content`, `multi_replace_file_content`) automatisch, auch bei parallel laufenden Subagenten. `plan` stellt jedem Prompt automatisch das `/plan`-Präfix voran: Der Agent recherchiert dann zunächst nur mit Lesetools und schlägt einen Ausführungsplan vor, bevor Code geschrieben wird.\n\nOhne das Flag gilt der zuletzt über `/settings` (Option \"Agent Mode\") oder in `settings.json` unter `agentMode` gesetzte Standardmodus. Während der Sitzung lässt sich unabhängig vom Start-Flag per `Shift+Tab` zwischen den drei Modi durchschalten (default → accept-edits → plan → default). Unabhängig vom gewählten Modus bleiben über `/permissions` bzw. `--dangerously-skip-permissions` konfigurierte Regeln für Shell-Befehle (`run_command`) weiterhin maßgeblich.",
       "whenGood": [
         {
           "title": "Direkt im risikoärmeren Review-Modus starten",
-          "example": "agy --mode default"
+          "example": "agy --mode=default"
         },
         {
-          "title": "Direkt im Auto-Accept-Modus starten, wenn Änderungen ohne Rückfrage übernommen werden sollen",
-          "example": "agy --mode accept-edits"
+          "title": "Direkt im Auto-Accept-Modus für schnelles Prototyping starten",
+          "example": "agy --mode=accept-edits"
         }
       ],
       "whenBad": [
         {
-          "title": "Der Modus soll dauerhaft für alle künftigen Starts gelten, nicht nur diesen einen",
-          "why": "--mode wirkt nur für den aktuellen Start.",
-          "alternative": "Agent Mode dauerhaft im /settings-Panel setzen"
+          "title": "Die veralteten Befehle /planning oder /fast erwarten",
+          "why": "Beide Slash-Befehle wurden in Version 1.1.0 entfernt und durch die drei --mode-Werte ersetzt.",
+          "alternative": "Shift+Tab zum Durchschalten nutzen oder /plan vor den Prompt stellen"
+        },
+        {
+          "title": "--permission-mode als Flag-Namen verwenden",
+          "why": "Dieses Flag existiert nicht; die CLI nutzt für Ausführungsmodi ausschließlich --mode.",
+          "alternative": "agy --mode=accept-edits verwenden (bzw. agy --help zum Nachschlagen)"
         }
       ],
       "sources": [
@@ -8318,22 +8390,27 @@
       "slug": "plugin-install",
       "name": "agy plugin install <path>",
       "summary": "Installiert ein lokales oder heruntergeladenes Plugin-Verzeichnis.",
-      "what": "agy plugin install /path/to/local/plugin lädt ein Plugin-Verzeichnis in das lokale Profil. Externe Plugin-Installationen lösen dabei automatisch Git-Submodule auf und initialisieren sie; Installation direkt aus GitHub-Subpfaden (mit Branch-Auflösung) wird ebenfalls unterstützt. Beim Import wird das komplette Plugin-Verzeichnis kopiert, inklusive Nicht-Skill-Unterordnern wie shared/.",
+      "what": "`agy plugin install <pfad>` installiert ein Plugin-Bundle aus einem lokalen Verzeichnis oder einer Remote-Quelle in das lokale Profil unter `~/.gemini/antigravity-cli/plugins/<plugin_name>/`. Ein gültiges Plugin besteht aus dem Pflicht-Manifest `plugin.json` sowie optionalen Unterordnern wie `skills/`, `agents/`, `rules/` und den Dateien `mcp_config.json` bzw. `hooks.json`.\n\nSeit Version 1.0.7 lassen sich Plugins auch direkt aus GitHub-Subpfaden installieren, inklusive Branch-Auflösung. Bei externen Installationen löst die CLI seit Version 1.0.9 automatisch enthaltene Git-Submodule auf und initialisiert sie. Beim Kopieren wird das komplette Plugin-Verzeichnis übernommen, also auch Nicht-Skill-Unterordner wie `shared/` — ein früherer Bug, der solche Ordner beim Import verwarf, wurde in Version 1.0.14 behoben.\n\nVerwandte Subcommands sind `agy plugin list`, `agy plugin disable/enable <name>` und `agy plugin uninstall <name>`. Gedacht ist der Befehl für native `plugin.json`-Pakete, nicht für Gemini-CLI-Extensions im Legacy-Format.",
       "whenGood": [
         {
           "title": "Ein lokal entwickeltes Plugin-Verzeichnis einbinden",
           "example": "agy plugin install ./mein-plugin"
         },
         {
-          "title": "Ein Plugin direkt aus einem GitHub-Repo bzw. -Subpfad installieren",
+          "title": "Ein Plugin direkt aus einem GitHub-Repo-Unterpfad installieren",
           "example": "agy plugin install github.com/org/repo/pfad/zum/plugin"
         }
       ],
       "whenBad": [
         {
-          "title": "Man will nur Legacy-Gemini-CLI-Extensions übernehmen",
-          "why": "plugin install erwartet ein Plugin im nativen plugin.json-Format, keine Gemini-CLI-Extension direkt.",
+          "title": "Nur eine Legacy-Gemini-CLI-Extension übernehmen wollen",
+          "why": "plugin install erwartet ein natives plugin.json-Manifest, keine Gemini-CLI-Extension direkt.",
           "alternative": "agy plugin import gemini nutzen, um Extensions vorher zu konvertieren"
+        },
+        {
+          "title": "Ein Plugin nur kurz zum Testen aktivieren wollen",
+          "why": "install kopiert das Verzeichnis dauerhaft in das lokale Profil, das ist für einen kurzen Test unnötig.",
+          "alternative": "Nach dem Test agy plugin uninstall <name> nutzen, oder agy plugin disable <name> zum vorübergehenden Deaktivieren"
         }
       ],
       "sources": [
@@ -8467,7 +8544,7 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-aliases",
       "name": "install.sh --skip-aliases",
-      "summary": "Vom Shell-Installer abgelehnt, unter Windows ungeprüft an die Binary durchgereicht.",
+      "summary": "Dokumentiertes Alias-Flag, das der Shell-Installer nicht akzeptiert.",
       "what": "Die Doku-Seite antigravity.google/docs/cli/install listet `--skip-aliases` als Flag, das die Bereinigung alter `agy`-/`antigravity`-Shell-Aliase beim Installieren überspringen soll. Das tatsächlich unter antigravity.google/cli/install.sh ausgelieferte Bootstrapper-Script (239 Zeilen, per curl geprüft am 27.07.2026) kennt dieses Flag jedoch nicht: Sein Argument-Parser akzeptiert ausschließlich `-d`/`--dir` (Zielverzeichnis) und `-h`/`--help`. Jeder andere Parameter, auch `--skip-aliases`, fällt in den `*)`-Fallback-Zweig und erzeugt `[ERROR] Unknown parameter: --skip-aliases` mit anschließendem Abbruch bei Exit-Code 1 — die Installation findet dann gar nicht statt.\n\nHinzu kommt: Eine Suche nach „alias\" im Script liefert keinen Treffer. Das Script nimmt an keiner Stelle Änderungen an Shell-Aliasen vor; es lädt und prüft nur die Binary und übergibt am Ende intern an `agy install` (bzw. `agy.exe install` unter Windows). Der in der Doku beschriebene Zweck des Flags ist damit derzeit gegenstandslos, unabhängig vom übergebenen Parameterwert.\n\nUnter Windows verhält es sich anders: `install.cmd` sammelt unbekannte Parameter in `FORWARD_ARGS` und hängt sie an `SETUP_FLAGS` an, `install.ps1` macht dasselbe über `$passthroughArgs`. Dort führt `--skip-aliases` also nicht zum Abbruch, sondern wird ungeprüft an `agy.exe install` weitergereicht. Ob die Binary den Parameter dann auswertet oder ignoriert, lässt sich von außen nicht feststellen — beobachtbar ist nur, dass der Aufruf nicht scheitert.",
       "whenGood": [
         {
@@ -8502,7 +8579,7 @@
       "platform": "antigravity-cli",
       "slug": "install-skip-path",
       "name": "install.sh --skip-path",
-      "summary": "Vom Shell-Installer abgelehnt, unter Windows ungeprüft an die Binary durchgereicht.",
+      "summary": "Dokumentiertes PATH-Flag, das der Shell-Installer nicht akzeptiert.",
       "what": "Die Doku-Seite antigravity.google/docs/cli/install listet `--skip-path` als Flag, das die automatische PATH-Ergänzung im Shell-Profil beim Installieren verhindern soll. Das tatsächlich unter antigravity.google/cli/install.sh ausgelieferte Bootstrapper-Script (239 Zeilen, per curl geprüft am 27.07.2026) kennt dieses Flag jedoch nicht: Sein Argument-Parser akzeptiert ausschließlich `-d`/`--dir` (Zielverzeichnis) und `-h`/`--help`. Jeder andere Parameter, auch `--skip-path`, fällt in den `*)`-Fallback-Zweig und erzeugt `[ERROR] Unknown parameter: --skip-path` mit anschließendem Abbruch bei Exit-Code 1 — die Installation findet dann gar nicht statt.\n\nHinzu kommt: Eine Suche nach „PATH=\" im Script liefert nur einen Treffer, die interne Variable `BINARY_PATH` für den Installationsort der Binary. Das Script schreibt an keiner Stelle in ein Shell-Profil und setzt keine PATH-Variable; es lädt und prüft nur die Binary und übergibt am Ende intern an `agy install`. Der in der Doku beschriebene Zweck des Flags ist damit derzeit gegenstandslos, unabhängig vom übergebenen Parameterwert.\n\nUnter Windows verhält es sich anders: `install.cmd` sammelt unbekannte Parameter in `FORWARD_ARGS` und hängt sie an `SETUP_FLAGS` an, `install.ps1` macht dasselbe über `$passthroughArgs`. Dort führt `--skip-path` also nicht zum Abbruch, sondern wird ungeprüft an `agy.exe install` weitergereicht. Ob die Binary den Parameter dann auswertet oder ignoriert, lässt sich von außen nicht feststellen — beobachtbar ist nur, dass der Aufruf nicht scheitert.",
       "whenGood": [
         {
@@ -8538,11 +8615,15 @@
       "slug": "at-path",
       "name": "@<pfad>",
       "summary": "Öffnet ein interaktives Overlay zur Dateipfad-Auswahl direkt in der Prompt-Eingabe.",
-      "what": "Tippt man @ in der Prompt-Box, öffnet sich das Interactive-Path-Suggestion-Overlay: Es lässt Workspace-Dateipfade durchsuchen und per Auswahl direkt als absoluten Pfad in den Prompt einfügen, damit der Agent gezielter im Code suchen kann. Seit 1.0.6 löst @ die Vorschläge unconditional aus, auch direkt nach einer öffnenden Klammer.",
+      "what": "Tippt man `@` in der Prompt-Box, öffnet sich die \"Interactive Path Suggestion\"-Overlay: Sie durchsucht Dateipfade im Workspace und fügt den gewählten absoluten Pfad direkt in den Prompt ein. Laut den Best-Practice-Empfehlungen der CLI-Doku dienen solche Kontext-Anker dazu, die Reasoning-Grenzen des Agenten präziser einzugrenzen und unnötigen Token-Overhead zu vermeiden, statt Pfade manuell abzutippen oder auf freie Texterkennung zu vertrauen. Gerade in größeren Repositories mit mehreren gleich benannten Dateien (etwa mehreren index.ts) stellt der eingefügte absolute Pfad sicher, dass der Agent exakt die gemeinte Datei referenziert.\n\nVor Version 1.0.6 löste `@` die Vorschläge nur aus, wenn unmittelbar davor ein Leerzeichen stand; seit dem Fix in Version 1.0.6 triggert `@` unconditional, auch direkt nach einer öffnenden Klammer `(` oder mitten im Wort. Das Overlay ist rein additiv zur Texteingabe: Es führt nichts aus und ersetzt keinen bestehenden Text im Prompt.",
       "whenGood": [
         {
           "title": "Eine bestimmte Datei gezielt referenzieren, ohne den Pfad manuell abzutippen",
           "example": "@src/auth/ tippen, um im Overlay zur passenden Datei zu navigieren"
+        },
+        {
+          "title": "Dem Agenten in einer Frage direkt eine Datei als Kontext mitgeben",
+          "example": "Erkläre mir die Logik in @src/utils/formatter.ts"
         }
       ],
       "whenBad": [
@@ -8550,6 +8631,11 @@
           "title": "Ein Terminal-Befehl soll direkt ausgeführt werden",
           "why": "@ fügt nur einen Dateipfad in den Prompt ein, führt aber nichts aus.",
           "alternative": "! am Zeilenanfang für direkte Terminal-Befehle nutzen"
+        },
+        {
+          "title": "Ein Slash-Befehl soll ausgelöst werden",
+          "why": "@ öffnet ausschließlich die Pfad-Overlay, keine Befehlsliste.",
+          "alternative": "/ am Zeilenanfang tippen, um das Slash-Command-Menü zu öffnen"
         }
       ],
       "sources": [
@@ -9337,11 +9423,15 @@
       "slug": "model",
       "name": "/model",
       "summary": "Wählt das Reasoning-Modell aus, sessionübergreifend persistent.",
-      "what": "/model gehört zur Kategorie Configurations. Die Auswahl gilt über die aktuelle Session hinaus, bis sie erneut geändert wird. Ergänzt das Start-Flag --model und den Subcommand agy models, der verfügbare Modelle der Shared Agent Engine auflistet (u.a. Gemini 3.1 Pro/3.5 Flash auf allen Plänen, Claude Sonnet/Opus 4.6 und GPT-OSS-120b nur auf Google AI Ultra).",
+      "what": "`/model` (Kategorie Configurations) öffnet einen Picker zur Wahl des Reasoning-Modells; laut CLI-Referenz gilt die Auswahl sitzungsübergreifend, bis sie erneut geändert wird. Seit Version 1.1.5 ist der Picker nach Basismodell gruppiert und erlaubt die Wahl der Reasoning-Effort-Stufe über einen Timeline-Regler, inklusive Effort-Anzeige in der Statuszeile; die zugehörigen stabilen Modell-Slugs lassen sich auch direkt an das Start-Flag `--model` oder an `--effort` übergeben.\n\nLaut offizieller Modell-Übersicht stehen die Gemini-Modelle auf allen Plänen inklusive Enterprise bereit, während Claude Sonnet 4.6 (thinking), Claude Opus 4.6 (thinking) und GPT-OSS-120b auf Free-, Plus-, Pro- und Ultra-Konten verfügbar sind, jedoch nicht auf Enterprise-Plänen. Welche Basismodelle konkret zur Wahl stehen, lässt sich vorab mit `agy models` einsehen. Die Modellwahl ist \"sticky\": Ein Wechsel während eines laufenden Agenten-Turns wirkt erst ab dem nächsten Turn, nicht sofort.",
       "whenGood": [
         {
           "title": "Für eine anspruchsvollere Aufgabe ein stärkeres Reasoning-Modell wählen",
-          "example": "/model öffnen und auf ein leistungsfähigeres Modell wechseln"
+          "example": "/model öffnen und z. B. auf Claude Opus 4.6 (thinking) wechseln"
+        },
+        {
+          "title": "Die Reasoning-Tiefe eines Modells anpassen",
+          "example": "/model öffnen, Basismodell wählen und die Effort-Stufe per Regler ändern"
         }
       ],
       "whenBad": [
@@ -9349,6 +9439,11 @@
           "title": "Modell nur für den nächsten Start setzen, nicht dauerhaft",
           "why": "/model ändert die Auswahl persistent über Sessions hinweg.",
           "alternative": "agy --model <name> beim Start verwenden"
+        },
+        {
+          "title": "Mitten in einem laufenden Agenten-Turn wechseln und sofortige Wirkung erwarten",
+          "why": "Die Auswahl ist sticky — der laufende Turn wird noch mit dem vorherigen Modell abgeschlossen.",
+          "alternative": "Bis zum Ende des aktuellen Turns warten oder die laufende Ausführung abbrechen"
         }
       ],
       "sources": [
@@ -9397,22 +9492,27 @@
       "slug": "permissions",
       "name": "/permissions",
       "summary": "Öffnet den interaktiven Tool-Permissions-Manager.",
-      "what": "/permissions gehört zur Kategorie Configurations. Über einen Scope-Picker wählst du zwischen Project, Shared und Global, danach zwischen den Rule-Viewer-Tabs allow/deny/ask; a fügt eine Regel hinzu, e bzw. Ctrl+G bearbeitet sie, d bzw. Backspace löscht sie. Regeln folgen dem Format action(target), z.B. command(git) oder mcp(server/tool).",
+      "what": "`/permissions` (Kategorie Configurations) öffnet den interaktiven Permissions-Manager. Zuerst wählt ein Scope-Picker zwischen Project (nur aktives Projekt), Shared (produktübergreifend geteilt) und Global (alle Sessions). Danach zeigt der Rule Viewer drei Tabs: allowlist, denylist und asklist, umschaltbar mit `←`/`→` bzw. `Tab`. `a` fügt eine Regel hinzu, `e` (oder `Ctrl+G`) bearbeitet die markierte Regel, `d` (oder `Backspace`) löscht sie.\n\nRegeln folgen dem Schema `action(target)`, z. B. `command(git)` für einen Präfix-Match auf Kommandos oder `mcp(server/tool)` bzw. `mcp(server/*)` für einzelne oder alle Tools eines MCP-Servers. Bei Konflikten gilt strikt Deny > Ask > Allow. Nicht explizit konfigurierte Aktionen fallen standardmäßig auf ask zurück, außer Lese-/Schreibzugriffe innerhalb des aktiven Workspace, die automatisch erlaubt sind; eine erteilte write_file-Berechtigung schließt implizit auch read_file für denselben Pfad ein. Seit Version 1.0.13 ist das Command-Matching standardmäßig ein exakter Präfix-Match statt Regex; wer echte Regex-Muster braucht, muss die Regel mit `regex:` voranstellen.",
       "whenGood": [
         {
           "title": "Automatisches Ausführen bestimmter Befehle erlauben",
-          "example": "/permissions öffnen, Scope Project wählen und command(git) auf allow setzen"
+          "example": "/permissions öffnen, Scope Project wählen und command(git) im allowlist-Tab hinzufügen"
         },
         {
-          "title": "MCP-Tool gezielt sperren",
-          "example": "/permissions öffnen und mcp(server/tool) auf deny setzen"
+          "title": "Ein einzelnes MCP-Tool gezielt sperren",
+          "example": "/permissions öffnen und mcp(server/tool) im denylist-Tab hinzufügen"
         }
       ],
       "whenBad": [
         {
-          "title": "Permissions für einen einzelnen Start komplett umgehen",
-          "why": "/permissions verwaltet dauerhafte Regeln, kein einmaliges Überspringen für einen Start.",
-          "alternative": "agy --dangerously-skip-permissions beim Start (mit Vorsicht)"
+          "title": "Permissions für nur einen einzelnen Start komplett umgehen wollen",
+          "why": "/permissions verwaltet dauerhafte Regeln in settings.json, kein einmaliges Überspringen für nur einen Start.",
+          "alternative": "agy --dangerously-skip-permissions beim Start verwenden (mit Vorsicht)"
+        },
+        {
+          "title": "Ein echtes Regex-Muster in einer Regel erwarten",
+          "why": "Seit Version 1.0.13 wird command(...) standardmäßig als exakter Präfix-Match ausgewertet, nicht als Regex.",
+          "alternative": "Die Regel mit regex: voranstellen, z. B. regex:command(npm run (build|test))"
         }
       ],
       "sources": [
