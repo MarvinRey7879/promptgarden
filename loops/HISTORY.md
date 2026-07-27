@@ -2261,3 +2261,61 @@ Parameter-Referenz — als Quellenlage vermerkt statt als Fehler behandelt.
 Build 0, Deploy 044ee49a, Prod 200. Playwright über 5 Seiten in 3 Sprachen sauber.
 Merke: wenn eine Doku-Referenztabelle einmal veraltet war, gezielt nach dem
 gleichen Muster bei verwandten Befehlen suchen — hat hier direkt getroffen.
+
+## It. 253 — 27.07.2026, 18:35–21:0x UTC — Batch 9 + Feed
+Poll sauber (keine Bugs/Feedback/Notes), Smoke 4/4 = 200.
+Batch 9: die 18 dünnsten Befehle verteilten sich auf drei Plattformen
+(claude-code 9, antigravity-cli 5, cursor-cli 4) — also ein Sonnet-Agent je
+Plattform statt fixer 3×6. Ø68 → Ø250 Wörter, ×5 Sprachen.
+**162 von 320 fertig, Gesamt-Ø 161 (Start 90), noch 47 Seiten unter 100 W
+(Start 209).**
+
+Wichtigster Fund — dritter Fall des Stale-Doku-Musters, diesmal nicht bei
+Slash-Befehlen, sondern beim Installer: Die Antigravity-Doku listet
+`--skip-aliases` und `--skip-path`. Das ausgelieferte `install.sh` (239
+Zeilen, per curl geprüft) akzeptiert nur `-d/--dir` und `-h/--help`, alles
+andere fällt in den `*)`-Zweig → `[ERROR] Unknown parameter` + Exit 1. Das
+Skript enthält überhaupt keine Alias-Bereinigung und keine PATH-Schreibung
+(`grep -niE "skip|alias|PROFILE|PATH="` = ein Treffer, `BINARY_PATH`).
+Der Agent lieferte als Zusatzfund, dass sich Windows anders verhält; selbst
+gegengeprüft und bestätigt: `install.cmd` sammelt unbekannte Args in
+`FORWARD_ARGS` (Z.23 → Z.174), `install.ps1` in `$passthroughArgs` (Z.37 →
+Z.140), beide reichen sie ungeprüft an `agy.exe` weiter. Ohne diesen
+Gegencheck hätten beide Seiten Windows-Nutzern eine Fehlermeldung
+angekündigt, die sie nie sehen. Beide Seiten beschreiben jetzt das geprüfte
+Verhalten, Slugs unverändert.
+
+Zwei weitere Korrekturen: Cursor `/full-conversation` datiert auf Mai 2026,
+nicht Juni (eine WebFetch-Zusammenfassung hatte es falsch); Claude Code
+`/desktop` benennt jetzt den Widerspruch zwischen commands.md (nur
+macOS/Windows) und der separaten Linux-Beta-Seite, statt eine Seite still zu
+wählen. Damit 20 echte Sachfehler seit Batch 1.
+
+Feed: war seit 24.07. stehen, obwohl `/en/feed/` mit 11 Views die
+zweitmeistbesuchte Seite ist. Ein Agent recherchierte den 25.–27.07. und
+nahm genau 1 Meldung auf, verwarf 4 (leere Changelogs bei Claude Code
+2.1.220 und Zed, n8n-Lücke ohne Agentenbezug, Cognizant-PR).
+**Kimi K3**: Gewichte seit 27.07. 13:31 UTC live — selbst gegengeprüft über
+die HF-API (safetensors 2,779 T Parameter, `gated: false`) und die
+Modellkarte (KDA + AttnRes, 1-Mio-Kontext, eigene Lizenz). Der offene
+TODO-Punkt ist damit erledigt.
+**MCP-Finalspec**: NICHT final. Aktueller Tag ist `2026-07-28-RC`, der
+Blogtext bleibt im Konjunktiv. Die Erwartung „erscheint am 28.07." bezog
+sich auf den RC-Namen. Morgen erneut prüfen, aber ohne Automatik-Annahme.
+
+Newsletter: Cron bestätigt `0 8 * * 1`, modified_on heute 09:30 UTC — der
+08:00-Slot lief also noch mit dem alten Worker. Nächster Digest Mo 03.08.
+`mail_clicks` steht auf 0, plausibel. **Offener Punkt:** am 03.08. beginnt
+das 7-Tage-Fenster am 27.07.; ohne frische Feed-Items greift
+`if (!items.length) continue` und es geht gar keine Mail raus. Der
+Kimi-Eintrag von heute deckt genau die Untergrenze ab — bis 03.08. müssen
+weitere dazukommen.
+
+Querverweis-Audit: 71 Treffer auf `/befehl`-Muster geprüft, alle Fehlalarme
+(Pfade wie `/shared-lib`, Bindestrich-Artefakte, Alias-Nennungen ohne eigene
+Seite). Keine toten Verweise auf entfernte Befehle.
+
+Build 0, Deploy af064520, Prod 200. Playwright 6 Seiten × 2 Viewports in
+4 Sprachen sauber (kein H-Scroll, keine rohen Backticks, `code`-Elemente da).
+Merke: Feed-Dateien mit Einrückung 2 schreiben — mit 1 erzeugt ein
+Ein-Zeilen-Zusatz 1433 Zeilen Diff-Rauschen.
