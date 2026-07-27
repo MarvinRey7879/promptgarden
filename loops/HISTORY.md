@@ -2053,3 +2053,32 @@ geändert; 4 Seiten gegengeprüft, kein H-Scroll mehr.
 Build 0, Deploy 5873e078, Prod 200. 
 Merke: nach jedem Renderer-Eingriff Mobil-Overflow prüfen — der Fehler entsteht
 erst durch echte Inhalte, nicht durch den Code allein.
+
+## Iteration 246b — 27.07.2026 — Newsletter-Digest neu gestaltet (Marvin-Wunsch)
+Marvin bestätigte: die Digest-Mail kam an („glaube sogar gestern, 26.07."),
+Wunsch: „kannste gerne schöner machen". Datum konnte ich nicht unabhängig
+klären — Gmail-MCP findet nichts (Mail ging an marvin.mez@tm2.ai, kein Gmail),
+und es gibt kein Versand-Log in D1. Der Cron steht eindeutig auf `0 8 * * 1`
+= MONTAG; ein Sonntagsversand wäre damit nicht erklärbar. Offen gelassen,
+Marvin um den Zeitstempel aus dem Mail-Header gebeten.
+NEUGESTALTUNG (worker/src/index.js):
+- Vorher: `<h2>promptgarten</h2>` + eine `<ul>` mit fettem Titel je Meldung.
+- Jetzt: E-Mail-taugliches Tabellen-Layout im promptgarten-Look (Cream #fdf6ec,
+  Ink-Border, Accent #e8613c), Kopf mit Kicker + Anzahl-Zeile, je Meldung eine
+  Karte mit farbigem Kategorie-Chip (Farbe je Tag), Datum, Titel, Zusammenfassung
+  und „Quelle →"-Link, danach ein Accent-CTA-Button zum Feed, Fußzeile mit
+  Warum-bekomme-ich-das + Abmelden. Alles inline, keine externen Assets, kein
+  Flexbox/Grid (Outlook-tauglich).
+- 🔴 SICHERHEIT/KORREKTHEIT: es gab KEIN HTML-Escaping — Feed-Titel mit `&`,
+  `<` oder `'` hätten die Mail zerlegt. `escapeHtml()` ergänzt und auf alle
+  eingesetzten Feld-Werte angewandt (Test: `A & B <script>` wird korrekt
+  maskiert).
+- Klartext-Variante (`digestMailText`) ergänzt und an Resend als `text`
+  mitgeschickt — bessere Zustellbarkeit, lesbar ohne HTML.
+- MAIL_TXT ×5 Sprachen erweitert: kicker, intro(n) mit Singular/Plural, cta,
+  source, why, tags-Labels (Modelle/Tools/MCP/Sicherheit/Papers).
+Preview mit ECHTEN Feed-Daten gerendert (8 Meldungen im 7-Tage-Fenster),
+Screenshot Desktop + Mobil geprüft, kein H-Scroll. Worker deployed
+(Version f84eca93), Cron-Trigger unverändert `0 8 * * 1`, Poll danach grün.
+Merke: Worker-Template-Funktionen exportieren → Preview lokal renderbar, ohne
+eine echte Test-Mail zu verschicken.

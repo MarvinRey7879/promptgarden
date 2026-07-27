@@ -74,22 +74,112 @@ function clip(s, max) {
 }
 
 /** Mail via Resend (news.promptgarten.com). Ohne RESEND_API_KEY: no-op (Backfill via Cron, sobald Key da). */
-async function sendMail(env, to, subject, html) {
+async function sendMail(env, to, subject, html, text) {
   if (!env.RESEND_API_KEY) return false;
+  const body = { from: 'promptgarten 🌱 <mail@news.promptgarten.com>', to, subject, html };
+  if (text) body.text = text; // Klartext-Variante: bessere Zustellbarkeit, lesbar ohne HTML
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: 'promptgarten 🌱 <mail@news.promptgarten.com>', to, subject, html }),
+    body: JSON.stringify(body),
   });
   return r.ok;
 }
 
+/** Pflicht vor jedem Einsetzen von Feed-Inhalten in HTML — Titel enthalten &, <, ' usw. */
+function escapeHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const TAG_FARBE = { modelle: '#c9e265', tools: '#a8d8f0', mcp: '#f5d565', security: '#f9c5d8', papers: '#e0d4f7' };
+
+/**
+ * Wochen-Digest im promptgarten-Look (Marvin 27.07: „kannste gerne schöner machen").
+ * E-Mail-tauglich gebaut: Tabellen-Layout, alles inline, keine externen Assets,
+ * kein Flexbox/Grid — das überleben auch Outlook und ältere Clients.
+ */
+export function digestMailHtml(lang, items, unsubUrl, t) {
+  const karten = items
+    .map((i) => {
+      const tag = t.tags?.[i.tag] || i.tag || '';
+      const farbe = TAG_FARBE[i.tag] || '#c9e265';
+      const quelle = Array.isArray(i.sources) && i.sources[0]?.url ? i.sources[0].url : '';
+      return `
+      <tr><td style="padding:0 0 14px">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;border:2px solid #2b2118;border-radius:14px">
+          <tr><td style="padding:16px 18px">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td style="background:${farbe};border:1.5px solid #2b2118;border-radius:7px;padding:1px 9px;font:700 11px/1.6 -apple-system,Segoe UI,sans-serif;color:#2b2118;text-transform:uppercase;letter-spacing:.06em">${escapeHtml(tag)}</td>
+              <td style="padding-left:9px;font:400 11.5px/1.6 -apple-system,Segoe UI,sans-serif;color:#7d7064">${escapeHtml(i.date || '')}</td>
+            </tr></table>
+            <p style="margin:9px 0 5px;font:800 16px/1.35 -apple-system,Segoe UI,sans-serif;color:#2b2118">${escapeHtml(i.title)}</p>
+            <p style="margin:0;font:400 14px/1.6 -apple-system,Segoe UI,sans-serif;color:#4a4038">${escapeHtml(i.summary)}</p>
+            ${quelle ? `<p style="margin:9px 0 0"><a href="${escapeHtml(quelle)}" style="font:600 12.5px/1.5 -apple-system,Segoe UI,sans-serif;color:#e8613c;text-decoration:underline">${escapeHtml(t.source)} &rarr;</a></p>` : ''}
+          </td></tr>
+        </table>
+      </td></tr>`;
+    })
+    .join('');
+
+  return `<!doctype html><html lang="${escapeHtml(lang)}"><head><meta charset="utf-8"><meta name="color-scheme" content="light"></head>
+<body style="margin:0;padding:0;background:#fdf6ec">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#fdf6ec">
+  <tr><td align="center" style="padding:26px 14px 40px">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px">
+      <tr><td style="padding:0 2px 18px">
+        <p style="margin:0;font:800 22px/1.2 -apple-system,Segoe UI,sans-serif;color:#2b2118">prompt<span style="color:#e8613c">garten</span> 🌱</p>
+        <p style="margin:6px 0 0;font:700 12px/1.5 -apple-system,Segoe UI,sans-serif;color:#e8613c;text-transform:uppercase;letter-spacing:.1em">${escapeHtml(t.kicker)}</p>
+        <p style="margin:6px 0 0;font:400 14.5px/1.6 -apple-system,Segoe UI,sans-serif;color:#7d7064">${escapeHtml(t.intro(items.length))}</p>
+      </td></tr>
+      ${karten}
+      <tr><td align="center" style="padding:8px 0 0">
+        <a href="https://promptgarten.com/${escapeHtml(lang)}/feed/" style="display:inline-block;background:#e8613c;color:#ffffff;border:2px solid #2b2118;border-radius:999px;padding:11px 24px;font:800 14px/1 -apple-system,Segoe UI,sans-serif;text-decoration:none">${escapeHtml(t.cta)}</a>
+      </td></tr>
+      <tr><td style="padding:26px 2px 0;border-top:1px solid rgba(43,33,24,.18)">
+        <p style="margin:14px 0 0;font:400 11.5px/1.6 -apple-system,Segoe UI,sans-serif;color:#8a7d70">${escapeHtml(t.why)}</p>
+        <p style="margin:8px 0 0;font:400 11.5px/1.6 -apple-system,Segoe UI,sans-serif;color:#8a7d70">
+          <a href="https://promptgarten.com/${escapeHtml(lang)}/" style="color:#8a7d70">promptgarten.com</a> &nbsp;·&nbsp;
+          <a href="${escapeHtml(unsubUrl)}" style="color:#8a7d70">${escapeHtml(t.unsub)}</a>
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+}
+
+/** Klartext-Variante derselben Mail. */
+export function digestMailText(lang, items, unsubUrl, t) {
+  const zeilen = items
+    .map((i) => {
+      const q = Array.isArray(i.sources) && i.sources[0]?.url ? `\n  ${t.source}: ${i.sources[0].url}` : '';
+      return `[${t.tags?.[i.tag] || i.tag}] ${i.date}\n${i.title}\n${i.summary}${q}`;
+    })
+    .join('\n\n');
+  return `promptgarten — ${t.kicker}\n${t.intro(items.length)}\n\n${zeilen}\n\n${t.cta}: https://promptgarten.com/${lang}/feed/\n\n${t.why}\n${t.unsub}: ${unsubUrl}`;
+}
+
 const MAIL_TXT = {
-  de: { confirmSub: 'Bitte bestätige deine Anmeldung — promptgarten', confirm: 'Klick zum Bestätigen deiner Newsletter-Anmeldung:', confirmBtn: 'Anmeldung bestätigen', digestSub: 'Deine KI-Woche — promptgarten', unsub: 'Abmelden' },
-  en: { confirmSub: 'Please confirm your signup — promptgarten', confirm: 'Click to confirm your newsletter signup:', confirmBtn: 'Confirm signup', digestSub: 'Your AI week — promptgarten', unsub: 'Unsubscribe' },
-  es: { confirmSub: 'Confirma tu suscripción — promptgarten', confirm: 'Haz clic para confirmar tu suscripción:', confirmBtn: 'Confirmar', digestSub: 'Tu semana de IA — promptgarten', unsub: 'Darse de baja' },
-  fr: { confirmSub: 'Confirme ton inscription — promptgarten', confirm: 'Clique pour confirmer ton inscription :', confirmBtn: 'Confirmer', digestSub: 'Ta semaine IA — promptgarten', unsub: 'Se désinscrire' },
-  zh: { confirmSub: '请确认订阅 — promptgarten', confirm: '点击确认你的订阅：', confirmBtn: '确认订阅', digestSub: '你的 AI 一周 — promptgarten', unsub: '退订' },
+  de: { confirmSub: 'Bitte bestätige deine Anmeldung — promptgarten', confirm: 'Klick zum Bestätigen deiner Newsletter-Anmeldung:', confirmBtn: 'Anmeldung bestätigen', digestSub: 'Deine KI-Woche — promptgarten', unsub: 'Abmelden',
+    kicker: 'Deine KI-Woche', intro: (n) => `${n} ${n === 1 ? 'Meldung' : 'Meldungen'} aus der Welt der Coding-Agenten — jede mit Quelle.`, cta: 'Alle Meldungen ansehen', source: 'Quelle', why: 'Du bekommst diese Mail, weil du dich auf promptgarten.com für den Newsletter angemeldet und die Anmeldung bestätigt hast.',
+    tags: { modelle: 'Modelle', tools: 'Tools', mcp: 'MCP', security: 'Sicherheit', papers: 'Papers' } },
+  en: { confirmSub: 'Please confirm your signup — promptgarten', confirm: 'Click to confirm your newsletter signup:', confirmBtn: 'Confirm signup', digestSub: 'Your AI week — promptgarten', unsub: 'Unsubscribe',
+    kicker: 'Your AI week', intro: (n) => `${n} ${n === 1 ? 'story' : 'stories'} from the world of coding agents — each one sourced.`, cta: 'See all stories', source: 'Source', why: 'You are getting this because you signed up for the newsletter on promptgarten.com and confirmed your address.',
+    tags: { modelle: 'Models', tools: 'Tools', mcp: 'MCP', security: 'Security', papers: 'Papers' } },
+  es: { confirmSub: 'Confirma tu suscripción — promptgarten', confirm: 'Haz clic para confirmar tu suscripción:', confirmBtn: 'Confirmar', digestSub: 'Tu semana de IA — promptgarten', unsub: 'Darse de baja',
+    kicker: 'Tu semana de IA', intro: (n) => `${n} ${n === 1 ? 'noticia' : 'noticias'} del mundo de los agentes de programación — cada una con su fuente.`, cta: 'Ver todas las noticias', source: 'Fuente', why: 'Recibes este correo porque te suscribiste al boletín en promptgarten.com y confirmaste tu dirección.',
+    tags: { modelle: 'Modelos', tools: 'Herramientas', mcp: 'MCP', security: 'Seguridad', papers: 'Papers' } },
+  fr: { confirmSub: 'Confirme ton inscription — promptgarten', confirm: 'Clique pour confirmer ton inscription :', confirmBtn: 'Confirmer', digestSub: 'Ta semaine IA — promptgarten', unsub: 'Se désinscrire',
+    kicker: 'Ta semaine IA', intro: (n) => `${n} ${n === 1 ? 'actualité' : 'actualités'} du monde des agents de code — chacune sourcée.`, cta: 'Voir toutes les actualités', source: 'Source', why: 'Tu reçois cet e-mail parce que tu t’es inscrit à la newsletter sur promptgarten.com et que tu as confirmé ton adresse.',
+    tags: { modelle: 'Modèles', tools: 'Outils', mcp: 'MCP', security: 'Sécurité', papers: 'Papers' } },
+  zh: { confirmSub: '请确认订阅 — promptgarten', confirm: '点击确认你的订阅：', confirmBtn: '确认订阅', digestSub: '你的 AI 一周 — promptgarten', unsub: '退订',
+    kicker: '你的 AI 一周', intro: (n) => `${n} 条来自编程智能体领域的消息——每条都附出处。`, cta: '查看全部消息', source: '来源', why: '你收到这封邮件，是因为你在 promptgarten.com 订阅了新闻通讯并确认了邮箱地址。',
+    tags: { modelle: '模型', tools: '工具', mcp: 'MCP', security: '安全', papers: '论文' } },
 };
 const mailT = (lang) => MAIL_TXT[lang] || MAIL_TXT.de;
 const API_BASE = 'https://promptgarden-api.promptgarden.workers.dev';
@@ -439,11 +529,10 @@ export default {
       const items = feeds[lang];
       if (!items.length) continue;
       const t = mailT(lang);
-      const list = items
-        .map((i) => `<li style="margin-bottom:10px"><b>${i.title}</b><br><span style="color:#555">${i.summary}</span></li>`)
-        .join('');
-      const html = `<div style="font-family:sans-serif;max-width:560px"><h2>promptgarten 🌱</h2><ul style="padding-left:18px">${list}</ul><p><a href="https://promptgarten.com/${lang}/feed/">promptgarten.com/feed</a></p><p style="font-size:11px;color:#888"><a href="${API_BASE}/v1/newsletter/unsubscribe?token=${s.token}">${t.unsub}</a></p></div>`;
-      const ok = await sendMail(env, s.email, t.digestSub, html);
+      const unsubUrl = `${API_BASE}/v1/newsletter/unsubscribe?token=${s.token}`;
+      const html = digestMailHtml(lang, items, unsubUrl, t);
+      const text = digestMailText(lang, items, unsubUrl, t);
+      const ok = await sendMail(env, s.email, t.digestSub, html, text);
       if (ok) budget--;
     }
   },
