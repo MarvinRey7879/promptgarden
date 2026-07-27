@@ -702,22 +702,27 @@
       "slug": "debug",
       "name": "/debug",
       "summary": "为当前会话启用调试日志,并借助会话调试日志协助排查问题。",
-      "what": "为当前会话启用调试日志,并借助会话调试日志协助排查问题。\n\n[Skill] 调试日志默认关闭(除非以 'claude --debug' 启动);在会话中途执行 /debug 只会记录从这一刻起的日志。可选附加问题描述以聚焦排查方向。",
+      "what": "`/debug [描述]` 是一个组合型 skill，它会为当前会话开启调试日志记录，之后帮助分析会话调试日志，从而找出问题的根源。默认情况下调试日志是关闭的，除非会话是用 `claude --debug` 启动的；如果是在会话进行到一半时才调用 `/debug`，日志只会从这个时间点开始记录——之前发生的事件不会出现在日志里。可以选择附加一段问题描述，让之后的分析更聚焦，比如针对某个具体的 MCP 服务器、某一次工具调用，或某个 hook 问题。\n\n`/debug` 与相关的诊断命令有所不同：`/doctor` 会全面检查安装、配置和环境设置，并且可以自动修复其中一部分问题；`/heapdump` 在内存占用过高时，会把 JavaScript 堆快照连同内存分布情况写入 `~/Desktop`。而 `/debug` 专门用于追踪当前会话内的运行时问题，例如与 MCP 服务器的连接中断，或者其他难以重现的异常工具行为。",
       "whenGood": [
         {
-          "title": "针对可复现的问题,从现在开始记录调试(Debug)日志",
-          "example": "/debug MCP server keeps disconnecting — 在再次触发该问题之前立即执行"
+          "title": "针对可复现的问题从当下开始记录日志",
+          "example": "在再次触发问题之前直接执行 /debug MCP server keeps disconnecting。"
         },
         {
-          "title": "在难以追踪的排错(Debug)工作之前,系统性地启用日志记录",
-          "example": "/debug,用于在会话调试日志中记录工具调用和错误"
+          "title": "在排查难以追踪的问题之前系统性地开启日志记录",
+          "example": "在尝试下一步操作之前调用 /debug，把工具调用和错误记录到会话调试日志中。"
         }
       ],
       "whenBad": [
         {
-          "title": "错误已经在此之前发生过",
-          "why": "/debug 只会从启用时刻开始记录日志,之前发生的事件不会被记录",
-          "alternative": "使用 'claude --debug' 重新启动会话,从一开始就记录日志"
+          "title": "错误在此之前就已经发生了",
+          "why": "/debug 只从激活时刻起记录日志，之前发生的事件不会出现在日志中。",
+          "alternative": "用 `claude --debug` 重新启动会话，从一开始就记录日志。"
+        },
+        {
+          "title": "诊断安装问题或环境设置错误",
+          "why": "/debug 针对的是当前会话的运行时行为，而不是安装问题、PATH 问题或有误的设置文件。",
+          "alternative": "使用 /doctor，它会执行环境设置检查，并能自动修复其中一部分问题。"
         }
       ],
       "sources": [
@@ -1181,23 +1186,28 @@
       "platform": "claude-code",
       "slug": "fork",
       "name": "/fork",
-      "summary": "启动一个后台子代理,它会继承完整的对话上下文,并按照给定的指令继续工作,同时主会话照常运行。",
-      "what": "启动一个后台子代理,它会继承完整的对话上下文,并按照给定的指令继续工作,同时主会话照常运行。\n\n完成后,结果会返回到对话中。如果想自己切换到一份副本继续工作,请用 /branch。v2.1.161 之前,/fork 是 /branch 的别名。",
+      "summary": "将对话复制到一个独立的后台会话，不会自动回报结果。",
+      "what": "`/fork [Prompt]` 会把当前对话复制到一个新的、独立的后台会话中，让你可以继续在主会话中工作。这个副本包含到目前为止的完整对话记录，会在 Agent 视图（`claude agents`）中以单独一行的形式运行，并且从复制那一刻起完全独立——它的结果不会自动返回到原始对话中。带 prompt 时，副本会立即开始工作；不带 prompt 时，它会在 Agent 视图中等待第一条指令。\n\n这一行为从版本 2.1.212 开始生效。在 2.1.161 到 2.1.211 版本中，`/fork` 启动的是一个被 fork 出来的子代理，其结果会返回到对话中；再之前，`/fork` 只是 `/branch` 的别名。如今，如果需要一个结果要返回到当前对话的附属任务，应使用 `/subtask`。如果想自己切换到副本中，而不是启动一个独立会话，则使用 `/branch`。",
       "whenGood": [
         {
-          "title": "在主会话继续运行的同时,在后台完成一个子任务",
-          "example": "/fork 调研仓库中所有未完成的 TODO"
+          "title": "让对话独立继续运行，同时自己继续工作",
+          "example": "执行 /fork open a draft pull request with the work so far——副本在后台继续工作，同时自己继续进行下一步。"
         },
         {
-          "title": "让带有完整上下文的子代理并行试验一个不确定的改动",
-          "example": "/fork 尝试使用 Redis 缓存的方案"
+          "title": "在一个独立会话中并行尝试有风险的方案",
+          "example": "执行 /fork probiere den Ansatz mit Redis-Cache aus——即使在那里失败了，也不会影响主会话。"
         }
       ],
       "whenBad": [
         {
-          "title": "希望自己切换到另一个方向",
-          "why": "branch 与 fork 的区别:fork 会启动一个后台子代理,而你本人仍留在主会话中——若要亲自切换到新分支,应使用 /branch。",
-          "alternative": "/branch"
+          "title": "结果需要返回到对话中的附属任务",
+          "why": "从版本 2.1.212 起，/fork 生成的副本是一个独立会话，不会自动回报结果。",
+          "alternative": "使用 /subtask，它会启动一个后台子代理，并将其结果以消息形式返回到当前对话中。"
+        },
+        {
+          "title": "自己想切换到另一个方向",
+          "why": "/fork 启动的是一个单独的后台会话，自己仍留在主会话中——如果想切换到副本中，应使用 /branch。",
+          "alternative": "使用 /branch。"
         }
       ],
       "sources": [
@@ -1212,27 +1222,31 @@
       "slug": "goal",
       "name": "/goal",
       "summary": "设定一个目标:Claude 会持续多轮工作,直到满足该条件为止。",
-      "what": "设定一个目标:Claude 会持续多轮工作,直到满足该条件为止。\n\n不带参数时,该命令会显示当前目标或最近达成的目标。clear/stop/off/reset/none/cancel 可提前移除一个正在进行的目标。",
+      "what": "`/goal [条件|clear]` 设定一个完成条件，Claude 会在多个回合中持续朝这个条件努力，不需要每一步都重新手动触发。每个回合结束后，一个小型、快速的模型（默认是 Haiku）会根据对话内容判断条件是否已经达成；如果没有，就会自动开始下一个回合。一旦条件达成，该目标会被自动清除。不带参数时，该命令会显示当前目标或最近达成的目标，以及回合数和 token 消耗量。`clear`、`stop`、`off`、`reset`、`none` 和 `cancel` 都可以提前移除一个正在生效的目标。\n\n设置目标不会改变权限设置——在默认模式下，Claude 仍会在执行未被允许的工具调用前进行询问；如果要实现无人值守的多轮执行，可以把 `/goal` 和自动模式结合使用。每个会话同一时间只能有一个生效的目标，新设置的目标会替换掉已有的。判断是否达成完全基于 Claude 在之前的过程中所展示出来的内容——评估器本身不会调用工具，也不会重新读取文件。",
       "whenGood": [
         {
-          "title": "有明确完成条件的多步骤任务",
-          "example": "/goal 让所有测试都变绿"
+          "title": "有明确可验证终态的多步骤任务",
+          "example": "/goal all tests in test/auth pass and the lint step is clean"
         },
         {
-          "title": "提前终止正在进行的目标",
+          "title": "为目标设置回合数或时间上限",
+          "example": "/goal 把所有调用点迁移到新的 API，或者 stop after 20 turns"
+        },
+        {
+          "title": "提前停止正在进行的目标",
           "example": "/goal stop"
         }
       ],
       "whenBad": [
         {
-          "title": "需要长期反复执行的任务",
-          "why": "/goal 适用于有明确完成条件的目标,而不是跨会话长期反复的检查。",
-          "alternative": "/loop(例如 /loop 30m check for new support tickets)"
+          "title": "跨会话的长期重复性任务",
+          "why": "/goal 绑定的是当前会话内一次性的完成条件，不适合用于长期反复的检查。",
+          "alternative": "使用 /loop，例如 /loop 30m check for new support tickets。"
         },
         {
-          "title": "想探索完全不同的方向",
-          "why": "设定新目标只会改变完成条件,不会改变此前已经走的解决路径。",
-          "alternative": "/branch,从当前节点分支出一个不同的方案"
+          "title": "想从根本上尝试另一种解决方案",
+          "why": "设置新目标只会改变接下来回合的完成条件，不会改变之前的方案或对话记录。",
+          "alternative": "使用 /branch，从当前这一点分支到另一个方向。"
         }
       ],
       "sources": [
@@ -1667,22 +1681,31 @@
       "slug": "mcp",
       "name": "/mcp",
       "summary": "管理 MCP 服务器连接和 OAuth 身份验证。",
-      "what": "管理 MCP 服务器连接和 OAuth 身份验证。\n\n不带参数时显示交互式服务器列表。可用 'reconnect <server>'、'enable'/'disable' 加服务器名或 'all'。自 v2.1.205 起也支持非交互式(-p)调用,并返回文本摘要。",
+      "what": "不带参数时会打开一个交互式列表，列出所有已配置的 MCP 服务器及其连接状态和各自的工具数量。在这里还可以为某个服务器启动或重新进行 OAuth 登录（`Re-authenticate`），例如当某次调用因为 `401 Unauthorized` 或 `403 Forbidden` 失败、服务器因此被标记为需要登录时。\n\n带参数时，该命令可以针对单个服务器进行操作：`/mcp reconnect <server>` 会重新建立与某个已断开服务器的连接；`/mcp enable`/`disable <server>`（或 `all`）用来启用或禁用服务器，而不会删除其配置——被禁用的服务器仍会显示在列表中，只是标记为已禁用。对于 HTTP 或 SSE 服务器，Claude Code 会先自动尝试重新建立中断的连接（最多五次，等待时间逐次增加），只有在此之后才需要通过 `/mcp` 手动干预。\n\n从版本 2.1.205 开始也支持非交互式（`-p`）使用；不带参数时，该命令会输出服务器状态的文字摘要，而不是交互式列表。新增服务器不是在这里完成的，而是通过 `claude mcp add` 来设置。",
       "whenGood": [
         {
           "title": "修复某个 MCP 服务器的连接状态",
           "example": "某个 MCP 服务器不再响应 → 执行 /mcp reconnect <server> 重新建立连接。"
         },
         {
-          "title": "有针对性地禁用某个 MCP 服务器",
-          "example": "使用 /mcp disable <server> 临时关闭一个不常用的服务器，以减少上下文和工具占用。"
+          "title": "有针对性地禁用单个 MCP 服务器",
+          "example": "使用 /mcp disable <server> 临时关闭一个不常用的服务器，同时不丢失它的配置。"
+        },
+        {
+          "title": "为某个服务器重新进行 OAuth 登录",
+          "example": "如果 /mcp 在出现 401 错误后将某个服务器显示为需要登录，就在该服务器的菜单中选择 'Re-authenticate'。"
         }
       ],
       "whenBad": [
         {
-          "title": "首次配置一个新的 MCP 服务器",
-          "why": "/mcp 只能管理已有的连接（reconnect、enable、disable）以及 OAuth 身份验证，并不能创建新的服务器配置。",
-          "alternative": "先在 MCP 配置（项目级或用户级）中添加该服务器，然后再用 /mcp 进行管理。"
+          "title": "首次设置一个新的 MCP 服务器",
+          "why": "/mcp 只管理已有的连接（reconnect、enable、disable）和 OAuth 认证，不会创建新的服务器配置。",
+          "alternative": "先用 claude mcp add 添加服务器，之后再用 /mcp 进行管理。"
+        },
+        {
+          "title": "在脚本中自动化读取服务器状态",
+          "why": "交互模式下 /mcp 会打开一个选择对话框，不适合自动化检查。",
+          "alternative": "使用 -p 以非交互方式运行 /mcp（v2.1.205 起支持）获取文字摘要，或者用 claude mcp list 查看配置列表。"
         }
       ],
       "sources": [
@@ -1697,22 +1720,27 @@
       "slug": "memory",
       "name": "/memory",
       "summary": "编辑 CLAUDE.md Memory 文件,开启/关闭 Auto-Memory,并查看 Auto-Memory 条目。",
-      "what": "编辑 CLAUDE.md Memory 文件,开启/关闭 Auto-Memory,并查看 Auto-Memory 条目。",
+      "what": "`/memory` 列出用户和项目范围内所有 `CLAUDE.md` 和 `CLAUDE.local.md` 文件的位置，包括那些还不存在的文件对应的条目。选中其中一项会在编辑器中打开该文件——像 VS Code 这样的图形界面编辑器会在单独的窗口中打开，会话期间仍可继续使用；而像 Vim 这样的终端编辑器会占用终端，直到关闭为止。此外，`/memory` 还可以开启或关闭 Auto-Memory（保存为 `~/.claude/settings.json` 中的 `autoMemoryEnabled`），并打开 Auto-Memory 文件夹供查看。\n\nAuto-Memory 是 Claude 根据纠正和偏好自主总结出的笔记——比如构建命令、调试经验或工作流偏好——保存在本机，并在同一仓库的所有 worktree 之间共享。相比之下，`CLAUDE.md` 文件是自己编写的，用于记录编码规范或架构等长期性规定。两者都会在每次对话中作为上下文加载，但并不会被强制执行——如果需要强制生效，需要用到 PreToolUse hook。",
       "whenGood": [
         {
-          "title": "为所有未来会话记录一条永久规则",
-          "example": "使用 /memory 将诸如“始终使用 TypeScript strict 模式”这样的固定要求写入 CLAUDE.md，而不必每次重新说明。"
+          "title": "为所有未来的会话记录一条长期规则",
+          "example": "使用 /memory 把类似「始终使用 TypeScript strict mode」这样的规定写入 CLAUDE.md，而不是每次都重复说明。"
         },
         {
-          "title": "检查自动生成的 Memory 条目",
-          "example": "调用 /memory，查看 Claude 从以往会话中自动保存为 Auto-Memory 的规则有哪些。"
+          "title": "查看 Claude 自己记录了哪些 Auto-Memory",
+          "example": "调用 /memory 并打开 Auto-Memory 文件夹，查看自动保存的关于构建命令或偏好的笔记。"
         }
       ],
       "whenBad": [
         {
           "title": "某条指令只适用于当前任务",
-          "why": "/memory 会写入 CLAUDE.md，其效果会持续到会话之外——对于一次性指令来说没有必要，还会让文件变得臃肿。",
-          "alternative": "直接在当前会话的 prompt 中给出该指令，而不将其保存到 CLAUDE.md 中。"
+          "why": "/memory 写入的是会被长期加载的文件——对于一次性的指令来说没有必要，还会让 CLAUDE.md 变得臃肿。",
+          "alternative": "直接在当前会话的 prompt 中给出指令，而不保存它。"
+        },
+        {
+          "title": "查看当前会话实际加载了哪些 memory 文件",
+          "why": "/memory 列出所有位置，但不显示其中哪些实际已加载到当前会话中。",
+          "alternative": "调用 /context，查看「Memory files」下的列表。"
         }
       ],
       "sources": [
@@ -1762,22 +1790,31 @@
       "slug": "model",
       "name": "/model",
       "summary": "切换 AI 模型,并将其保存为新会话的默认模型。",
-      "what": "切换 AI 模型,并将其保存为新会话的默认模型。\n\n对于支持的模型,左右方向键还可以同时调整 Effort 等级。按 's' 键只对当前会话生效。若已有对话历史,会弹出确认提示(因为需要在没有缓存的情况下重新处理完整历史)。自 v2.1.205 起也支持带模型参数的非交互式(-p)调用。",
+      "what": "切换当前使用的 AI 模型，并将该选择保存到用户设置中，作为新会话的默认模型。不带参数时会打开一个交互式模型选择器；直接输入 `/model <name>` 会立即切换，例如 `/model sonnet`。像 `opus`、`sonnet`、`haiku` 或 `fable` 这样的模型系列别名，都会解析为该组织当前允许使用的最新版本。\n\n在选择器中，对于支持的模型，左右方向键还可以调整 effort 级别；在某一行按 `s` 键只会为当前会话切换模型，不会改变已保存的默认设置。如果对话中已经有回复内容，切换前选择器会先询问确认，因为下一次回复将不使用 prompt 缓存，需要重新处理完整的对话记录。\n\n继续之前的会话（`--resume`、`--continue`）时，无论当前的 `/model` 设置是什么，都会沿用记录最后保存时所使用的模型。从版本 2.1.205 开始，也可以通过非交互方式（`-p`）加模型参数来使用，而不用打开选择器；此时的切换只对当前会话生效，不会保存为默认设置。",
       "whenGood": [
         {
-          "title": "交互式地为新会话切换默认模型",
+          "title": "以交互方式切换新会话的默认模型",
           "example": "/model"
         },
         {
-          "title": "只为当前会话设置不同的模型",
-          "example": "/model(然后按 's' 键)"
+          "title": "只为当前会话设置另一个模型",
+          "example": "/model（然后按 's' 键）"
+        },
+        {
+          "title": "直接按名称切换，不打开选择器",
+          "example": "输入 /model sonnet 立即切换，而不用先在选择器中浏览。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是需要提高思考强度,并不需要更换模型",
-          "why": "effort 与 model 的区别:在已有历史记录时切换模型还会触发确认提示,因为需要在没有缓存的情况下重新处理完整历史——如果只是想调整思考强度,这样做没有必要。",
+          "title": "只是需要更多思考量，不需要换模型",
+          "why": "在已有对话记录的情况下切换模型还会触发确认询问，因为完整记录需要在没有缓存的情况下重新处理——如果只是想调整思考量，这样做没有必要。",
           "alternative": "/effort"
+        },
+        {
+          "title": "多个同时打开的终端要长期使用不同的模型",
+          "why": "/model 要么切换保存的默认设置，要么只对当前会话生效；对于需要固定使用不同模型的多个并行终端来说，这样操作比较麻烦。",
+          "alternative": "为每个终端单独用 --model 参数启动，而不是在各个会话之间用 /model 切换。"
         }
       ],
       "sources": [
@@ -1827,22 +1864,27 @@
       "slug": "permissions",
       "name": "/permissions",
       "summary": "管理工具权限的 Allow、Ask 和 Deny 规则。",
-      "what": "管理工具权限的 Allow、Ask 和 Deny 规则。\n\n交互式对话框:可按作用域(Scope)查看规则、增删规则、管理工作目录,以及查看最近在 Auto Mode 下被拒绝的操作。别名:/allowed-tools。",
+      "what": "`/permissions` 打开一个交互式对话框，用来管理 Claude Code 的工具权限。在这里可以按作用范围查看、添加或移除 Allow、Ask 和 Deny 规则；每条规则都会显示它来自哪个 `settings.json` 文件（用户设置、项目设置、本地设置，或某个 CLI 参数）。该对话框还管理已允许访问的工作目录（`additionalDirectories`），并在「Recently denied」标签页中显示自动模式最近拒绝过的工具调用；按 `r` 键可以将某个被拒绝的操作标记为重试，之后 Claude Code 会要求模型重新尝试该调用。\n\n这里设置的规则不受当前权限模式（`default`、`acceptEdits`、`plan`、`auto`、`dontAsk`、`bypassPermissions`）影响，且由 Claude Code 自身强制执行，而不是由模型执行——因此 `CLAUDE.md` 文件或 prompt 中的指令并不会改变实际允许或阻止的内容。规则的格式是 `Tool`（针对某个工具的所有调用）或 `Tool(specifier)`（针对更小范围的限制，例如某个具体的 Bash 命令或文件路径）。别名：`/allowed-tools`。",
       "whenGood": [
         {
-          "title": "有针对性地为某个工具设置 Allow 或 Deny 规则",
-          "example": "打开 /permissions，在交互式对话框中为特定的 Bash 命令添加一条 Deny 规则。"
+          "title": "针对某个高风险命令设置有针对性的 Deny 规则",
+          "example": "打开 /permissions，为某个具体的 Bash 命令添加一条 Deny 规则，使其永远不会被自动执行。"
         },
         {
-          "title": "查看最近在 Auto 模式下被拒绝的操作",
-          "example": "调用 /permissions，查看最近在 Auto 模式下有哪些工具调用被拒绝，并针对性地调整相应规则。"
+          "title": "查看并放行自动模式最近拒绝的操作",
+          "example": "调用 /permissions，在「Recently denied」标签页中，用 `r` 键将一个被误拦截的操作标记为重试。"
         }
       ],
       "whenBad": [
         {
-          "title": "自动整合大量反复出现的只读权限提示",
-          "why": "/permissions 是通过交互式对话框逐条编辑规则——对于需要从记录中自动生成的 Allowlist 而言，这种方式比较繁琐。",
-          "alternative": "使用 /fewer-permission-prompts，它会根据自己的历史记录生成一份按优先级排序的 Allowlist。"
+          "title": "把大量重复出现的只读提示自动整合起来",
+          "why": "/permissions 是通过交互式对话框逐条编辑规则的——如果要根据自己的会话记录生成一份允许列表，这样操作比较麻烦。",
+          "alternative": "使用 /fewer-permission-prompts，它会自动生成一份按优先级排序的允许列表。"
+        },
+        {
+          "title": "切换当前生效的权限模式本身",
+          "why": "/permissions 管理的是单条的 Allow、Ask 和 Deny 规则，并不会改变当前生效的模式（例如 plan 或 auto）。",
+          "alternative": "在 CLI 中用 Shift+Tab 循环切换模式，或者在设置中修改 defaultMode。"
         }
       ],
       "sources": [
@@ -2132,22 +2174,27 @@
       "slug": "reload-skills",
       "name": "/reload-skills",
       "summary": "重新扫描 Skill 和 Command 目录,使会话期间修改过的 Skill 无需重启即可生效。",
-      "what": "重新扫描 Skill 和 Command 目录,使会话期间修改过的 Skill 无需重启即可生效。\n\n会报告当前可用/新增/移除的 Skill。该命令自 v2.1.152 起引入。",
+      "what": "重新扫描 skill 和 command 目录，让那些在会话运行期间被添加、修改或删除的 skill 无需重启会话即可生效。运行结束后，该命令会报告当前总共有多少个可用 skill，以及自上次扫描以来新增或减少了多少个。\n\n会话期间的自动变更检测只覆盖各个 `SKILL.md` 的文本内容。如果某个 skill 目录属于一个插件，那么对其 `hooks/`、`.mcp.json`、`agents/` 或 `output-styles/` 的修改要等执行 `/reload-plugins` 后才会生效，因为这些修改可能还涉及已加载的 MCP 工具和 prompt 缓存。\n\n该命令在版本 2.1.152 中引入。适合在 `.claude/skills/` 中新建或编辑自己的 skill 之后立即使用，以便在当前会话中马上测试改动，而不用结束会话再重新开始。",
       "whenGood": [
         {
-          "title": "让正在运行的会话中可以使用新建的 Skill",
-          "example": "在 .claude/skills/ 中添加一个 Skill 后执行 /reload-skills，而不必重启会话。"
+          "title": "让新建的 skill 在当前会话中立即可用",
+          "example": "在 .claude/skills/ 中添加一个 skill，然后执行 /reload-skills，而不是重启会话。"
         },
         {
-          "title": "检查某次 Skill 改动是否被正确识别",
-          "example": "编辑 SKILL.md 后调用 /reload-skills，核对关于新增或移除 Skill 的提示信息。"
+          "title": "检查某次 skill 修改是否被正确识别",
+          "example": "编辑完某个 SKILL.md 之后执行 /reload-skills，查看关于新增或移除 skill 的提示信息。"
         }
       ],
       "whenBad": [
         {
-          "title": "改动的是整个插件（而不只是零散的 Skill/Command）",
-          "why": "/reload-skills 只会扫描 Skill 和 Command 目录，不会处理插件结构以及已加载的 MCP 工具。",
-          "alternative": "使用 /reload-plugins 重新加载整个插件。"
+          "title": "整个插件（不只是零散的 skill/command）发生了变化",
+          "why": "/reload-skills 扫描的是 skill 和 command 目录；它无法识别插件 skill 目录下 hooks/、.mcp.json、agents/ 或 output-styles/ 的变化。",
+          "alternative": "使用 /reload-plugins 重新加载整个插件（如果涉及已加载的 MCP 工具变化，可能需要加 --force 确认）。"
+        },
+        {
+          "title": "新建了一个全新的顶层 skill 目录",
+          "why": "会话启动时还不存在的目录，Claude Code 尚未对其进行监控——/reload-skills 只会重新扫描已知的目录。",
+          "alternative": "完全重启 Claude Code，让新目录被识别到。"
         }
       ],
       "sources": [
@@ -2232,22 +2279,31 @@
       "slug": "rename",
       "name": "/rename",
       "summary": "重命名当前会话,并在提示栏中显示该名称。",
-      "what": "重命名当前会话,并在提示栏中显示该名称。\n\n不指定名称时,会根据对话历史自动生成。也支持非交互式(-p)调用,需要 v2.1.205 及以上版本。",
+      "what": "为当前正在运行的会话设置一个名称，该名称之后会显示在提示栏中，并让这个会话之后在 `/resume` 选择列表里更容易找到。`/rename <name>` 会立即设置名称；不带参数时，Claude Code 会根据已有的对话内容自动生成一个名称。\n\n该命令可以在会话运行期间随时再次调用，也就是说名称之后也可以修改，而不需要结束会话。从版本 2.1.205 开始，`/rename` 也支持通过 `-p` 参数以非交互方式使用，此时名称作为参数直接传入，而不是通过对话框询问——这对于在脚本中让会话一启动就有统一命名很有用。\n\n需要与 `/clear [name]` 区分开：后者是在结束当前会话时，为即将变成历史记录的那个对话在 `/resume` 选择列表中设置一个名称。而 `/rename` 是直接为仍在运行的当前会话改名，与它之后是否、何时结束无关。",
       "whenGood": [
         {
-          "title": "让长会话方便后续查找",
-          "example": "用 /rename Login-Bug-Session 为一场持续数小时的调试会话命名,方便之后通过 /resume 轻松找到它。"
+          "title": "让长会话之后容易被找到",
+          "example": "用 /rename Login-Bug-Session 给一个持续几个小时的调试会话命名，方便之后通过 /resume 轻松找到它。"
         },
         {
-          "title": "通过脚本自动命名",
-          "example": "在 v2.1.205 及以上版本的非交互式(-p)配置中,在启动时就为会话统一命名,而不是直接使用自动生成的名称。"
+          "title": "通过脚本自动设置名称",
+          "example": "在 v2.1.205 之后的非交互式（-p）环境中，会话启动时直接用 /rename <name> 作为参数统一命名，而不是使用自动生成的名称。"
+        },
+        {
+          "title": "话题变化后重新命名",
+          "example": "在一个会话中途，如果内容已经从修复 bug 演变成了较大规模的重构，可以再次调用 /rename 来调整名称。"
         }
       ],
       "whenBad": [
         {
           "title": "简短的一次性提问",
-          "why": "对于马上就要用 /clear 结束的会话,专门起名并不划算。",
-          "alternative": "不必命名——自动生成的名称对于短暂使用已经足够。"
+          "why": "对于马上就会用 /clear 结束的会话，专门起一个名称并不划算。",
+          "alternative": "不设置名称——自动生成的名称对这种短暂使用已经够用。"
+        },
+        {
+          "title": "在重新开始时为之前的对话命名",
+          "why": "/rename 只能为当前正在运行的会话命名；如果要为刚刚结束的旧对话在 /resume 选择列表中命名，这个命令用错了。",
+          "alternative": "使用 /clear <name>，它会在重新开始前为旧对话命名。"
         }
       ],
       "sources": [
@@ -2262,27 +2318,27 @@
       "slug": "resume",
       "name": "/resume",
       "summary": "通过 ID 或名称恢复某个对话,或打开会话选择列表。",
-      "what": "通过 ID 或名称恢复某个对话,或打开会话选择列表。\n\n自 v2.1.144 起,后台会话会带有 'bg' 标记显示。别名:/continue。",
+      "what": "`/resume [session]` 命令用来恢复另一个独立的对话——可以通过 ID、之前设置的名称，或者不带参数时通过交互式会话选择器从历史对话列表中选取。从版本 2.1.144 开始，该列表中也会显示后台会话，以 `bg` 标记加以区分。如果这样的后台会话仍在运行，就无法通过 `/resume` 直接打开；必须先通过 `claude agents` 接入或在那里将其停止，之后才能在这个选择器中选中它。别名：`/continue`。\n\n也就是说，`/resume` 是在已完成或已暂停的对话之间切换，而不是在当前会话内部跳转：要在同一个会话中跳回之前的某个时间点，需要用 `/rewind`，它会把代码和对话都恢复到某个检查点。用 `/clear [name]` 可以在重新开始前为当前对话命名，方便之后在 `/resume` 选择器中更容易找到它；反过来，`/rename [name]` 是为正在运行的会话改名，不带参数时会根据已有对话内容自动生成一个名称。",
       "whenGood": [
         {
-          "title": "在多个打开的对话之间进行选择",
-          "example": "/resume"
+          "title": "在多个进行中的对话之间切换",
+          "example": "不带参数调用 /resume，在选择器中选出合适的历史会话。"
         },
         {
-          "title": "按名称精准重新连接某个后台会话",
-          "example": "/resume my-background-agent"
+          "title": "恢复一个已命名、已经结束的后台会话",
+          "example": "执行 /resume mein-hintergrund-agent，继续之前用 /background 启动、现在已经不再运行的会话。"
         }
       ],
       "whenBad": [
         {
-          "title": "想回到当前对话内部的某个更早的节点",
-          "why": "/resume 恢复的是另一个独立的对话(按 ID 或名称)——它不会跳转到当前会话内部的某个更早节点。",
-          "alternative": "/rewind"
+          "title": "想跳回当前对话中的某个更早的时间点",
+          "why": "/resume 切换到的是另一个独立的对话——它不会在当前会话内部往回跳。",
+          "alternative": "使用 /rewind。"
         },
         {
-          "title": "已经身处正确的会话之中",
-          "why": "/resume 用于切换到另一个对话——如果不需要切换会话,这个命令没有意义。",
-          "alternative": "直接正常继续输入,无需使用命令"
+          "title": "想继续一个仍在运行的后台会话",
+          "why": "在选择器中标记为 `bg` 且仍在运行的会话，无法通过 /resume 打开。",
+          "alternative": "通过 `claude agents` 接入，或先在那里将该会话停止。"
         }
       ],
       "sources": [
@@ -3091,22 +3147,27 @@
       "slug": "status",
       "name": "/status",
       "summary": "显示正在运行的 Codex 会话的当前状态。",
-      "what": "/status 会概览当前正在运行的交互式会话。它属于 Codex CLI 官方斜杠命令列表之一,用于查询会话状态,而不是盲目更改模型或审批模式等设置。",
+      "what": "`/status` 是 Codex 交互式终端 CLI 中的一个斜杠命令——要与 ChatGPT 应用界面中同名但功能更简单的版本区分开，后者只显示对话 ID、上下文使用情况和速率限制。在终端 CLI 中，`/status` 会给出当前会话的完整概览：当前使用的模型、当前的授权策略（Approval Policy）、可写入的目录（Writable Roots）以及剩余的 token/上下文用量。如果 TUI 连接的是一个远程会话，输出还会额外显示远程地址和服务器版本。\n\n根据源代码，该命令也可以在任务仍在运行时以及在侧边对话（`/side`、`/btw`）中调用，而不会中断当前进行的对话。它不会改变任何内容，只是读取当前状态——适合在执行关键操作之前快速确认当前生效的是哪种授权模式，或者在切换模型或设置之后确认新的状态。如果这个概览还不够，`/debug-config` 会进一步显示各个配置层级及其优先顺序。",
       "whenGood": [
         {
-          "title": "在执行重要操作前确认自己所处的模式",
-          "example": "/status — 在让 Codex 对仓库进行改动之前先查看一下"
+          "title": "在执行高风险操作前检查当前生效的授权策略",
+          "example": "/status——在 Codex 对仓库进行修改之前，确认是否处于自动批准模式"
         },
         {
-          "title": "长时间中断后重新了解会话状态",
-          "example": "/status — 在中断后继续工作时先获取一个整体概览"
+          "title": "在切换模型或配置后确认生效结果",
+          "example": "切换 /model，然后调用 /status 确认当前生效的新模型"
         }
       ],
       "whenBad": [
         {
-          "title": "想主动做出改动,而不只是查看",
-          "why": "/status 只显示状态,不会做任何改动。",
-          "alternative": "需要改动时使用对应的命令,例如 /model 或 /permissions"
+          "title": "想主动修改会话内容，而不是只查看",
+          "why": "/status 只显示当前状态，本身不做任何修改。",
+          "alternative": "如需修改，请使用相应的命令，例如 /model、/permissions 或 /sandbox 相关命令"
+        },
+        {
+          "title": "需要确切知道某个配置层为什么覆盖了某个值",
+          "why": "/status 只显示最终生效的状态，不显示各个配置层及其来源。",
+          "alternative": "使用 /debug-config 查看配置的优先顺序和策略来源"
         }
       ],
       "sources": [
@@ -3181,22 +3242,27 @@
       "slug": "diff",
       "name": "/diff",
       "summary": "显示当前会话的改动(Diff)。",
-      "what": "/diff 属于 Codex 交互式斜杠命令官方列表之一,用于显示 Codex 在当前会话中已经做出或建议做出的改动。它与 /review 等命令相辅相成,后者可以进一步对改动做出评估。",
+      "what": "`/diff` 是 Codex 终端 CLI 中的一个斜杠命令，用来显示当前会话的 Git diff——根据源代码，明确包括 Git 尚未跟踪的文件（untracked files）。输出内容可以直接在终端中滚动查看，包含已暂存和未暂存的改动，以及新建的文件，这样在提交或运行测试之前，就能准确了解 Codex 实际改动了什么，而不需要在另一个终端中手动执行 `git diff`。\n\n需要注意：在 ChatGPT 应用界面中并不存在独立的 `/diff` 命令——那里类似的功能是通过 Review 模式实现的。因此 `/diff` 是纯粹的终端 CLI 命令。根据源代码，它也可以在任务仍在运行时以及在侧边对话中使用，因此可以随时查看改动，而不会打断正在进行的任务。如果需要对所显示的改动进行内容层面的评估，`/review` 会在纯 diff 文本的基础上补充一份评价。",
       "whenGood": [
         {
-          "title": "快速查看 Codex 目前为止做了哪些改动",
-          "example": "/diff — 在完成几个步骤后,查看哪些文件受到了影响"
+          "title": "快速查看 Codex 目前为止改动了什么",
+          "example": "/diff——在完成几个操作步骤后，检查涉及了哪些文件"
         },
         {
-          "title": "在批准之前查看具体的逐行改动",
-          "example": "/diff — 在允许 Codex 采纳改动之前先查看一遍"
+          "title": "在批准之前查看具体的逐行改动，包括新建文件",
+          "example": "/diff——在采纳之前查看改动内容，包括新建的、尚未被跟踪的文件"
         }
       ],
       "whenBad": [
         {
-          "title": "需要的是内容层面的评估,而不只是原始的 Diff 文本",
-          "why": "/diff 只显示改动内容,并不会对其做出评估。",
-          "alternative": "使用 /review 对改动做进一步评估"
+          "title": "需要的是内容评估，而不只是纯 diff 文本",
+          "why": "/diff 只显示改动内容，不对其做内容层面的评估。",
+          "alternative": "使用 /review，让改动内容得到进一步的评估"
+        },
+        {
+          "title": "在 ChatGPT 应用界面中工作，而不是在终端中",
+          "why": "/diff 在那里并不是一个独立命令，只存在于终端 CLI 中。",
+          "alternative": "在终端 CLI 模式下工作，或使用应用界面中的 Review 模式"
         }
       ],
       "sources": [
@@ -3909,27 +3975,27 @@
       "slug": "fork",
       "name": "/fork",
       "summary": "把当前聊天分叉(Fork)到一个新会话,原会话保持不变。",
-      "what": "/fork 会把当前对话分叉(Branch)出一份副本,让你在其中尝试不同的方向。据更新日志(Changelog),别名有 /branch、/duplicate。",
+      "what": "`/fork` 会把当前 Cursor CLI 对话复制为一个新的、独立的会话；原始会话保持不变，仍可继续使用。这个分支会包含到目前为止的完整对话记录（包括所有历史消息），之后可以单独继续进行，比如用来尝试另一种解决方案，而不会丢失或改变原来的对话。这个操作可以重复任意多次，因此一个对话可以派生出多个相互独立的分支。\n\n在当前发布的 CLI 版本中，代码里将 `/duplicate`、`/clone` 和 `/branch` 记录为等效的简写形式，会触发同一个命令；不过官方的斜杠命令参考页面目前只提到了 `/fork` 本身，没有提及这些简写形式——早前的更新日志条目中只列出了 `/branch` 和 `/duplicate` 作为别名，同样也没有提到 `/clone`。与 `/rewind`（在同一个对话中跳回到更早的时间点）不同，`/fork` 会产生两个并行、完全独立的会话。",
       "whenGood": [
         {
-          "title": "并行尝试两种不同的解决思路",
-          "example": "/fork — 然后在新聊天中测试另一种实现方式"
+          "title": "并行尝试两种不同的解决方案",
+          "example": "/fork——然后在新对话中测试另一种实现方式"
         },
         {
-          "title": "在不影响主会话的前提下,为有风险的尝试上一道保险",
-          "example": "/fork — 在进行实验性重构之前先分叉"
+          "title": "在不影响主会话的前提下保障有风险的尝试",
+          "example": "在进行实验性重构之前用 /fork 分支出去，原始对话保持不变"
         }
       ],
       "whenBad": [
         {
-          "title": "只想让原有路径继续下去",
-          "why": "分叉会产生一个额外需要管理的会话,而实际上只需要线性地继续工作。",
-          "alternative": "正常在当前聊天中继续"
+          "title": "只是想让之前的路径继续线性推进",
+          "why": "分支会产生一个额外的、完全独立的会话，之后需要单独进行管理。",
+          "alternative": "直接在当前对话中继续正常输入"
         },
         {
-          "title": "想让旧的失败尝试彻底消失",
-          "why": "/fork 会保留原始会话,并不会做任何清理。",
-          "alternative": "使用 /rewind 跳回到更早的状态"
+          "title": "想让之前的失败尝试从历史记录中消失",
+          "why": "/fork 只会生成一个额外的副本，不会删除或清理原始对话中的任何内容。",
+          "alternative": "使用 /rewind，在同一个对话中跳回到更早的状态"
         }
       ],
       "sources": [
@@ -4147,27 +4213,27 @@
       "slug": "shell",
       "name": "/shell",
       "summary": "切换到 Shell 模式,在不离开对话的情况下直接执行简短命令。",
-      "what": "/shell 切换到 Shell 模式,用于在会话内执行简短命令。别名:/sh、/run。",
+      "what": "`/shell` 会让 Cursor CLI 进入 shell 模式，在这个模式下可以直接执行简短命令，而不需要离开当前对话。根据发布的代码，`/sh` 和 `/run` 会触发同一个命令。也可以直接内联传入单条命令，例如 `/shell git status`，或者在空白输入行开头输入 `!` 来激活这个模式。\n\nShell 模式下的命令遵循正常的会话策略：根据当前生效的权限级别（Allowlist、Run Everything、Auto-review 或 Sandbox 模式），Cursor 会在执行有潜在风险的命令前进行询问，或者自动执行——但这个模式本身不带有固定、明确的路径或网络限制。它主要适合用来快速查看终端中的一些信息，比如 Git 状态或某个目录的内容，而不需要费力地把结果包装成给代理的 prompt。",
       "whenGood": [
         {
-          "title": "在不离开聊天上下文的情况下快速查看 Git 状态",
+          "title": "快速检查 Git 状态，而不离开对话上下文",
           "example": "/shell git status"
         },
         {
-          "title": "在 Agent 继续工作之前简单查看一下某个文件",
+          "title": "在代理继续工作前简单查看一个文件",
           "example": "/sh ls -la src/"
         }
       ],
       "whenBad": [
         {
-          "title": "该命令应该是 Agent 规划的多步骤任务中的一环",
-          "why": "/shell 是孤立执行命令,不会把它纳入 Agent 的任务规划中。",
-          "alternative": "把该命令写成普通 Prompt,让 Agent 在上下文中执行它"
+          "title": "该命令需要作为代理规划的多步骤任务的一部分",
+          "why": "/shell 会单独执行命令，不会把它纳入代理的任务规划中。",
+          "alternative": "改为把命令写成普通的 prompt，让代理在上下文中执行它"
         },
         {
-          "title": "需要有明确边界的持久网络/写入权限",
-          "why": "/shell 遵循普通的会话策略,但不提供明确的路径/网络限制。",
-          "alternative": "使用 agent sandbox run 搭配 --allow-paths/--network"
+          "title": "需要具有明确边界的长期网络/写入权限",
+          "why": "/shell 遵循正常的会话策略，但不提供明确的路径或网络限制。",
+          "alternative": "使用带有 --allow-paths 和 --network 参数的 agent sandbox run"
         }
       ],
       "sources": [
@@ -4536,27 +4602,27 @@
       "slug": "plugin",
       "name": "/plugin",
       "summary": "管理插件(Plugin)和插件市场(Marketplace)。",
-      "what": "/plugin 用于管理插件和市场:通过 Git URL 添加市场(/plugin marketplace add)、按作用域浏览、安装和卸载插件。插件中的 Skill、斜杠命令、子代理(Subagent)和 MCP 服务器都会一并加载进会话。",
+      "what": "`/plugin` 可以直接在 Cursor CLI 会话中管理插件和插件市场：查看已安装的插件、浏览市场，以及安装或卸载插件。根据代码，可用的简写形式包括 `/plugin list`（显示已安装插件和市场内容）、以及 `/plugin marketplace list` 和 `/plugin marketplace add <git-url>`（通过 Git URL 注册新的市场）。已加载的插件一旦在所选范围（用户或项目）内被启用，就会自动为之后每个新会话带来自己的 skill、斜杠命令、子代理和 MCP 服务器，之后无需再手动加载。\n\n对于不需要交互式会话的自动化场景，还有独立于对话之外的 `agent plugin marketplace` 子命令：`add <git-url> --git-ref <branch>`、`list`（配合 `--format json` 供脚本使用）、`update <name>` 和 `remove <name>`。这些可脚本化的 CLI 子命令要与会话中的 `/plugin` 区分开，尽管两者最终管理和读取的是同一份底层市场数据。",
       "whenGood": [
         {
-          "title": "接入一个团队市场",
-          "example": "/plugin marketplace add https://github.com/team/cursor-plugins"
+          "title": "通过脚本注册一个团队市场",
+          "example": "agent plugin marketplace add https://github.com/team/cursor-plugins --git-ref main"
         },
         {
           "title": "只为这一个项目安装某个插件",
-          "example": "/plugin — 选择插件,把作用域设为“Project”"
+          "example": "/plugin——选择插件，将范围设置为 'Project'"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想测试一个本地的插件目录,不涉及市场",
-          "why": "为此专门走一遍市场条目的流程没有必要。",
-          "alternative": "启动时使用 --plugin-dir <path>"
+          "title": "只想测试本地的插件目录，不涉及市场",
+          "why": "为此绕道通过市场条目并没有必要。",
+          "alternative": "在启动 CLI 时使用 --plugin-dir <path>"
         },
         {
-          "title": "希望为整个团队统一指定插件",
-          "why": "/plugin 是面向每个用户的本地交互式管理。",
-          "alternative": "通过 Cursor 的管理员设置统一配置团队级插件"
+          "title": "希望为整个团队统一集中配置插件",
+          "why": "/plugin 是针对每个用户和每次会话的本地交互式管理方式。",
+          "alternative": "通过 Cursor Dashboard（Team Marketplaces）集中管理团队市场"
         }
       ],
       "sources": [
@@ -8334,18 +8400,27 @@
       "slug": "dangerously-skip-permissions",
       "name": "agy --dangerously-skip-permissions",
       "summary": "在启动时绕过权限限制(启动标志)。",
-      "what": "agy --dangerously-skip-permissions 在文档中被列为一个启动标志,可以绕过权限系统的某些安全限制;设置面板会显示该覆盖来自哪个来源。该标志仅在较旧的文档页面 docs/cli-using 中有记录,并未出现在当前的核心参考表中。",
+      "what": "`agy --dangerously-skip-permissions` 是 Antigravity CLI 的一个启动参数。它不仅在较旧的文档页面「Using AGY CLI」中有记录，在目前发布版本（1.1.7）的 `--help` 文本中也有官方说明：它会自动批准所有工具授权请求，不再询问。如果不加这个参数，Antigravity 默认会在执行写入类文件操作、Shell 命令和网络访问之前询问确认（默认设置为 `toolPermission: request-review`）；而这个参数会在整个会话期间完全关闭这些确认询问。\n\n根据文档，这个覆盖设置只对当前这次运行生效，不会永久保留：设置面板（`/settings`）会显示某项设置是被参数覆盖的以及具体原因，持久化的 `settings.json` 文件不会被改动，下次不带该参数启动时会恢复原本的设置。\n\n这个名称本身就清楚表明了意图：代理提出的每一个操作都不经过任何检查就会执行——包括可能具有破坏性的 Shell 命令或文件删除操作。这个参数只适合在完全隔离、可随时丢弃、且无法访问敏感数据或生产系统的环境中使用。",
       "whenGood": [
         {
-          "title": "在刻意隔离出的可信环境中,避免每次工具调用都被追问确认",
-          "example": "只在一次性/沙箱环境中使用 agy --dangerously-skip-permissions,绝不在生产系统上使用"
+          "title": "在完全隔离的一次性环境中无需确认地工作",
+          "example": "在没有生产数据访问权限的 Docker 容器或 CI 沙箱中启动 agy --dangerously-skip-permissions"
+        },
+        {
+          "title": "无法进行人工交互的短期自动化测试运行",
+          "example": "在运行结束后会被丢弃的虚拟机或快照中使用 agy --dangerously-skip-permissions"
         }
       ],
       "whenBad": [
         {
-          "title": "正在处理包含敏感数据或具备生产环境访问权限的常规项目",
-          "why": "从命名和文档来看,该标志本身就是有意绕过权限系统的安全限制。",
-          "alternative": "使用常规的权限规则,并通过 /permissions 有针对性地放行单条规则"
+          "title": "在含有敏感数据或可访问生产环境的普通项目中工作",
+          "why": "根据 --help 文本，这个参数会自动批准所有工具调用，包括写入类文件操作和 Shell 命令，完全不再询问确认。",
+          "alternative": "保留默认设置 toolPermission: request-review，或通过 /permissions 有针对性地放行个别规则"
+        },
+        {
+          "title": "希望代理长时间无人值守运行",
+          "why": "没有确认询问的话，一个有问题的建议就可能在无人干预的情况下直接执行破坏性命令。",
+          "alternative": "使用 toolPermission: proceed-in-sandbox，让有风险的操作至少限制在沙箱内运行"
         }
       ],
       "sources": [
@@ -9826,22 +9901,27 @@
       "slug": "bug",
       "name": "/bug",
       "summary": "报告错误或分享你的对话。",
-      "what": "报告错误或分享你的对话。\n\n你可以选择包含多少会话历史，并先在同意确认界面上确认。通过第一方连接登录 Anthropic 时，报告会发送给 Anthropic；使用第三方提供商或没有 Anthropic 凭据时，Claude Code 会将报告写入 ~/.claude/feedback-bundles/ 下的本地存档，由你自行转发。别名：/share。在 v2.1.212 之前，/bug 和 /share 都是 /feedback 的别名。",
+      "what": "报告一个错误，或将目前为止的对话记录作为报告分享出去。`/bug [文本]` 可以选择性地接受一段自由描述的文字；发送前还需要选择要一并发送多少会话记录，并在确认屏幕上进行确认。\n\n如果是直接登录 Anthropic 账号，报告会发送给 Anthropic。如果会话是通过 Amazon Bedrock 或 Google Cloud 的 Agent Platform 等第三方运行的，或者没有 Anthropic 账号凭证，Claude Code 会自动将报告改为保存在本地的 `~/.claude/feedback-bundles/` 目录下；已知的 API 密钥和 token 格式会预先被遮盖。这个文件需要自己转发给 Anthropic 账号联系人，或作为支持请求的附件发送——具体走哪条路径完全取决于登录状态，与参数无关。\n\n别名：`/share`。在 2.1.212 版本之前，`/bug` 和 `/share` 只是 `/feedback` 的别名，此后 `/bug` 成为一个独立命令，使用同样的对话流程。如果是一般性的产品反馈而不是具体的错误，`/feedback` 更合适。",
       "whenGood": [
         {
-          "title": "向 Anthropic 报告带上下文的错误",
-          "example": "/bug"
+          "title": "报告带会话上下文的具体错误",
+          "example": "执行 /bug 登录按钮没有反应，然后在对话框中选择要一并发送多少会话记录。"
         },
         {
-          "title": "没有 Anthropic 登录时：将报告写入本地，并自行转发",
-          "example": "/bug report"
+          "title": "在没有 Anthropic 账号凭证的情况下转发错误报告",
+          "example": "在 Amazon Bedrock 等第三方平台上执行 /bug——报告会自动保存在本地的 ~/.claude/feedback-bundles/ 目录，之后需要自己从那里发送给 Anthropic 联系人。"
         }
       ],
       "whenBad": [
         {
-          "title": "不是错误，而是产品建议或一般反馈",
-          "why": "/bug 是为报告错误和分享会话而设计的。",
+          "title": "不是错误，而是产品建议或一般性反馈",
+          "why": "/bug 是专门为错误报告和分享会话设计的。",
           "alternative": "/feedback"
+        },
+        {
+          "title": "误以为像 'report' 这样的参数能控制报告是否保存在本地",
+          "why": "/bug [report] 中的参数只是一个可以自由填写描述文字的占位符，不是固定关键词。报告是发送给 Anthropic 还是保存在本地，完全由登录状态决定。",
+          "alternative": "用 /status 检查登录状态，而不是试图通过参数来控制报告去向。"
         }
       ],
       "sources": [
@@ -10061,22 +10141,27 @@
       "slug": "usage-credits",
       "name": "/usage-credits",
       "summary": "配置使用额度，或向管理员申请额度。",
-      "what": "当你达到限额时，配置使用额度，或向管理员申请额度。\n\n在 Pro 和 Max 计划下，会打开一个 CLI 内对话框，用于购买使用额度、设置每月消费上限并配置自动充值。在 v2.1.207 之前的 Claude Code 版本以及其他计划下，则会在浏览器中打开使用额度账单页面。没有账单权限的 Team 和 Enterprise 成员，在对话框中确认后会向管理员发送使用额度申请。",
+      "what": "管理额外的用量额度（Usage Credits），用来在常规套餐限额之外继续使用，或者向自己的管理员申请额度。前提是通过 `/login` 用 claude.ai 订阅账号登录；如果使用 API 密钥认证，该命令不可用。\n\n调用后打开的内容取决于角色：在 Pro 和 Max 套餐下，以及拥有账单权限的团队/企业成员，`/usage-credits` 会在浏览器中打开对应的账单页面。没有账单权限的团队/企业成员则会在 CLI 中直接弹出一个对话框，确认要向组织管理员发送申请（从版本 2.1.211 起才有这个确认步骤，之前没有）。如果无法打开浏览器，比如通过 SSH 连接时，从版本 2.1.205 起该命令会改为输出需要访问的网址。\n\n另外需要说明：在 Pro/Max 套餐下如果设置了支出限额，即使还有额度可用，一旦达到限额，Claude Code 会直接在当前会话中询问是否要提高或取消该限额。这一点要与 `/usage` 区分开，`/usage` 只显示已有的用量和套餐限额，不管理额度本身。",
       "whenGood": [
         {
-          "title": "达到限额后购买更多额度（Pro/Max）",
-          "example": "/usage-credits"
+          "title": "达到套餐限额后继续使用（Pro/Max）",
+          "example": "执行 /usage-credits 在浏览器中打开账单页面并激活额度。"
         },
         {
-          "title": "没有账单权限时，向管理员申请额度",
-          "example": "/usage-credits"
+          "title": "没有账单权限时向管理员申请额度（团队/企业）",
+          "example": "执行 /usage-credits 并确认 CLI 中的提示，让申请发送给组织管理员。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想查看当前使用情况",
-          "why": "/usage-credits 用于管理额度，不显示使用概览。",
+          "title": "只想查看已有用量，不需要管理额度",
+          "why": "/usage-credits 打开的是账单页面或管理员申请，并不显示用量概览。",
           "alternative": "/usage"
+        },
+        {
+          "title": "登录方式是 API 密钥，而不是 claude.ai 账号",
+          "why": "根据文档，该命令只有在通过 /login 用 claude.ai 订阅账号登录后才可用，API 密钥认证方式下不可用。",
+          "alternative": "先用 /login 通过 claude.ai 账号登录，然后再使用 /usage-credits。"
         }
       ],
       "sources": [

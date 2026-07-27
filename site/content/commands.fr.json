@@ -702,22 +702,27 @@
       "slug": "debug",
       "name": "/debug",
       "summary": "Active la journalisation de debug pour la session en cours et aide au diagnostic via le journal de debug de session.",
-      "what": "Active la journalisation de debug pour la session en cours et aide au diagnostic via le journal de debug de session.\n\n[Skill] La journalisation de debug est désactivée par défaut (sauf démarrage avec 'claude --debug') ; /debug en cours de session ne capture les logs qu'à partir de ce moment. Une description du problème peut être fournie en option pour cibler la recherche.",
+      "what": "`/debug [Beschreibung]` est un skill intégré qui active la journalisation de débogage pour la session en cours, puis aide à analyser le journal de débogage de session afin de trouver la cause d'un problème. La journalisation de débogage est désactivée par défaut, sauf si la session a été démarrée avec `claude --debug` ; si `/debug` n'est appelé qu'en cours de session, les journaux ne sont enregistrés qu'à partir de ce moment-là — les événements antérieurs manquent alors dans le journal. Il est possible d'ajouter en option une description du problème afin de concentrer l'analyse qui suit, par exemple sur un serveur MCP précis, un appel d'outil isolé ou un problème de hook.\n\n`/debug` se distingue des commandes de diagnostic apparentées : `/doctor` vérifie de façon complète l'installation, la configuration et le setup, et peut résoudre lui-même certains problèmes détectés ; `/heapdump` écrit, en cas de forte consommation mémoire, un instantané du tas JavaScript accompagné d'une répartition de la mémoire vers `~/Desktop`. `/debug`, en revanche, est spécifiquement destiné à comprendre les problèmes survenant en cours d'exécution dans une session active, par exemple des ruptures de connexion vers des serveurs MCP ou un comportement d'outil inattendu, autrement difficile à reproduire.",
       "whenGood": [
         {
-          "title": "Pour un problème reproductible, faire consigner des logs de debug dès maintenant",
-          "example": "/debug MCP server keeps disconnecting — juste avant de redéclencher le problème"
+          "title": "Activer l'enregistrement dès maintenant pour un problème reproductible",
+          "example": "/debug MCP server keeps disconnecting — juste avant de redéclencher le problème."
         },
         {
-          "title": "Activer la journalisation de façon systématique avant une recherche de bug difficile à suivre",
-          "example": "/debug, pour capturer les appels de tools et les erreurs dans le journal de debug de session"
+          "title": "Activer systématiquement la journalisation avant une recherche d'erreur difficile à suivre",
+          "example": "Appeler /debug pour consigner les appels d'outils et les erreurs dans le journal de débogage de session, avant d'essayer l'étape suivante."
         }
       ],
       "whenBad": [
         {
           "title": "L'erreur s'est déjà produite auparavant",
-          "why": "/debug ne capture les logs qu'à partir du moment de l'activation, les événements antérieurs manquent",
-          "alternative": "redémarrer la session avec 'claude --debug' pour journaliser dès le début"
+          "why": "/debug ne consigne les journaux qu'à partir du moment de l'activation ; les événements antérieurs manquent dans le journal.",
+          "alternative": "Redémarrer la session avec `claude --debug` pour journaliser dès le début."
+        },
+        {
+          "title": "Diagnostiquer des problèmes d'installation ou d'erreurs de configuration",
+          "why": "/debug s'occupe du comportement d'exécution de la session en cours, pas de l'installation, des problèmes de PATH ou de fichiers de paramètres défectueux.",
+          "alternative": "Utiliser /doctor, qui effectue une vérification complète du setup et corrige en partie les problèmes automatiquement."
         }
       ],
       "sources": [
@@ -1181,23 +1186,28 @@
       "platform": "claude-code",
       "slug": "fork",
       "name": "/fork",
-      "summary": "Lance un sous-agent en arrière-plan qui hérite de la conversation complète et poursuit le travail selon la directive fournie, pendant que la session principale continue.",
-      "what": "Lance un sous-agent en arrière-plan qui hérite de la conversation complète et poursuit le travail selon la directive fournie, pendant que la session principale continue.\n\nLe résultat revient dans la conversation une fois terminé. Pour basculer soi-même vers une copie : /branch. Avant la v2.1.161, /fork était un alias de /branch.",
+      "summary": "Copie la conversation dans une session en arrière-plan indépendante, sans retour.",
+      "what": "`/fork [Prompt]` copie la conversation en cours dans une nouvelle session en arrière-plan indépendante, et laisse continuer à travailler dans la session principale. La copie contient tout l'historique de conversation précédent, s'exécute comme une ligne propre dans la vue des agents (`claude agents`) et devient totalement indépendante dès l'instant de la copie — son résultat ne revient pas automatiquement dans la conversation d'origine. Avec un prompt, la copie commence à travailler immédiatement ; sans prompt, elle attend la première instruction dans la vue des agents.\n\nCe comportement s'applique depuis la version 2.1.212. Sur les versions 2.1.161 à 2.1.211, `/fork` démarrait à la place un sous-agent forké dont le résultat revenait dans la conversation ; avant cela, `/fork` n'était qu'un alias de `/branch`. Pour une tâche annexe dont le résultat doit revenir dans la conversation en cours, c'est aujourd'hui `/subtask` qui s'en charge. Pour basculer soi-même vers une copie plutôt que de démarrer une session indépendante, on utilise `/branch`.",
       "whenGood": [
         {
-          "title": "Réaliser une tâche annexe en arrière-plan pendant que la session principale continue",
-          "example": "/fork recherche tous les TODOs ouverts dans le dépôt"
+          "title": "Laisser la conversation continuer de façon indépendante pendant qu'on poursuit son propre travail",
+          "example": "/fork open a draft pull request with the work so far — la copie continue de travailler en arrière-plan pendant qu'on poursuit avec l'étape suivante."
         },
         {
-          "title": "Faire tester en parallèle une modification incertaine avec le contexte complet",
-          "example": "/fork essaie l'approche avec un cache Redis"
+          "title": "Tester une approche risquée en parallèle dans une session indépendante",
+          "example": "/fork essaie l'approche avec cache Redis — un échec à cet endroit n'affecte pas la session principale."
         }
       ],
       "whenBad": [
         {
-          "title": "On veut soi-même basculer vers une autre direction",
-          "why": "branch vs fork : fork lance un sous-agent en arrière-plan tandis qu'on reste soi-même dans la session principale - pour basculer soi-même vers une nouvelle branche, /branch est prévu.",
-          "alternative": "/branch"
+          "title": "Tâche annexe dont le résultat doit revenir dans la conversation",
+          "why": "Depuis la version 2.1.212, la copie de /fork est une session indépendante qui ne se signale plus d'elle-même en retour.",
+          "alternative": "Utiliser /subtask, qui démarre un sous-agent en arrière-plan et renvoie son résultat sous forme de message dans la conversation en cours."
+        },
+        {
+          "title": "On souhaite soi-même bifurquer dans une autre direction",
+          "why": "/fork démarre une session en arrière-plan séparée, tandis qu'on reste soi-même dans la session principale — pour basculer vers une copie, c'est /branch qui est prévu.",
+          "alternative": "Utiliser /branch."
         }
       ],
       "sources": [
@@ -1212,27 +1222,31 @@
       "slug": "goal",
       "name": "/goal",
       "summary": "Définit un objectif : Claude continue de travailler sur plusieurs tours jusqu'à ce que la condition soit remplie.",
-      "what": "Définit un objectif : Claude continue de travailler sur plusieurs tours jusqu'à ce que la condition soit remplie.\n\nSans argument, la commande affiche l'objectif actuel ou le dernier atteint. clear/stop/off/reset/none/cancel suppriment prématurément un objectif actif.",
+      "what": "`/goal [Bedingung|clear]` définit une condition d'achèvement que Claude poursuit sur plusieurs tours, sans qu'il faille relancer chaque étape manuellement. Après chaque tour, un modèle petit et rapide (Haiku par défaut) vérifie, sur la base de la conversation, si la condition est remplie ; si ce n'est pas le cas, un tour supplémentaire démarre automatiquement. Dès que la condition est remplie, l'objectif est automatiquement supprimé. Sans argument, la commande affiche l'objectif actuel ou le dernier atteint, avec le nombre de tours et la consommation de tokens. `clear`, `stop`, `off`, `reset`, `none` et `cancel` suppriment un objectif actif avant son terme.\n\nUn objectif ne modifie pas les autorisations — en mode par défaut, Claude continue de demander confirmation avant les appels d'outils qui ne sont pas déjà autorisés ; pour des tours sans surveillance, `/goal` peut être combiné avec le mode automatique. Un seul objectif est actif à la fois par session ; en définir un nouveau remplace celui en cours. La vérification se fait uniquement sur ce que Claude a rendu visible dans l'historique jusque-là — l'évaluateur n'appelle lui-même aucun outil et ne relit aucun fichier.",
       "whenGood": [
         {
-          "title": "Tâche à plusieurs étapes avec une condition de fin claire",
-          "example": "/goal faire passer tous les tests au vert"
+          "title": "Tâche à plusieurs étapes avec un état final clairement vérifiable",
+          "example": "/goal all tests in test/auth pass and the lint step is clean"
         },
         {
-          "title": "Arrêter prématurément un objectif en cours",
+          "title": "Limiter l'objectif par un nombre de tours ou une durée maximale",
+          "example": "/goal migre tous les points d'appel vers la nouvelle API, ou stop after 20 turns"
+        },
+        {
+          "title": "Arrêter un objectif en cours avant son terme",
           "example": "/goal stop"
         }
       ],
       "whenBad": [
         {
-          "title": "Tâche récurrente permanente",
-          "why": "/goal est conçu pour un objectif avec condition de réalisation, pas pour des vérifications récurrentes permanentes à travers plusieurs sessions.",
-          "alternative": "/loop (par ex. /loop 30m vérifier les nouveaux tickets de support)"
+          "title": "Tâche récurrente permanente à travers plusieurs sessions",
+          "why": "/goal est lié à une condition d'achèvement ponctuelle au sein de la session en cours, pas conçu pour des vérifications récurrentes permanentes.",
+          "alternative": "Utiliser /loop, par exemple /loop 30m check for new support tickets."
         },
         {
-          "title": "Explorer une direction fondamentalement différente",
-          "why": "Définir un nouvel objectif ne change que la condition de fin, pas la voie de résolution suivie jusque-là.",
-          "alternative": "/branch, pour créer une branche avec une autre approche à partir de ce point"
+          "title": "Essayer fondamentalement une autre approche de résolution",
+          "why": "Un nouvel objectif ne change que la condition d'achèvement pour les tours suivants, pas l'approche adoptée jusque-là ni l'historique de conversation.",
+          "alternative": "Utiliser /branch pour bifurquer dans une autre direction à partir de ce point."
         }
       ],
       "sources": [
@@ -1667,22 +1681,31 @@
       "slug": "mcp",
       "name": "/mcp",
       "summary": "Gère les connexions aux serveurs MCP et l'authentification OAuth.",
-      "what": "Gère les connexions aux serveurs MCP et l'authentification OAuth.\n\nSans argument, liste interactive des serveurs. 'reconnect <server>', 'enable'/'disable' avec un nom ou 'all'. À partir de la v2.1.205, aussi en mode non interactif (-p) avec un résumé textuel.",
+      "what": "Sans argument, ouvre une liste interactive de tous les serveurs MCP configurés avec leur état de connexion et le nombre d'outils par serveur. On peut aussi y démarrer ou renouveler l'authentification OAuth d'un serveur (`Re-authenticate`), par exemple lorsqu'un appel échoue avec `401 Unauthorized` ou `403 Forbidden` et que le serveur est de ce fait marqué comme nécessitant une connexion.\n\nAvec des arguments, la commande cible des serveurs précis : `/mcp reconnect <server>` rétablit la connexion à un serveur déconnecté, `/mcp enable`/`disable <server>` (ou `all`) active ou désactive des serveurs sans supprimer leur configuration — un serveur désactivé reste visible dans la liste, mais marqué comme désactivé. Pour les serveurs HTTP ou SSE, Claude Code tente d'abord de rétablir automatiquement une connexion interrompue (jusqu'à cinq tentatives avec un délai croissant) ; une intervention manuelle via `/mcp` n'est nécessaire qu'ensuite.\n\nDepuis la version 2.1.205, également utilisable en mode non interactif (`-p`) ; sans argument, la commande produit alors un résumé textuel de l'état des serveurs au lieu de la liste interactive. Les nouveaux serveurs ne se configurent pas ici, mais via `claude mcp add`.",
       "whenGood": [
         {
           "title": "Réparer l'état de connexion d'un serveur MCP",
           "example": "Un serveur MCP ne répond plus → exécuter /mcp reconnect <server> pour rétablir la connexion."
         },
         {
-          "title": "Désactiver spécifiquement certains serveurs MCP",
-          "example": "Utiliser /mcp disable <server> pour désactiver temporairement un serveur peu utilisé et réduire le contexte/les tools."
+          "title": "Désactiver un serveur MCP en particulier",
+          "example": "Utiliser /mcp disable <server> pour désactiver temporairement un serveur peu utilisé sans perdre sa configuration."
+        },
+        {
+          "title": "Renouveler l'authentification OAuth d'un serveur",
+          "example": "Si /mcp affiche un serveur comme nécessitant une connexion après une erreur 401, sélectionner 'Re-authenticate' dans le menu du serveur."
         }
       ],
       "whenBad": [
         {
           "title": "Configurer un nouveau serveur MCP pour la première fois",
-          "why": "/mcp ne gère que les connexions existantes (reconnect, enable, disable) et l'authentification OAuth, il ne crée pas de nouvelle configuration de serveur.",
-          "alternative": "ajouter d'abord le serveur dans la configuration MCP (au niveau projet ou utilisateur), avant d'utiliser /mcp pour la gestion."
+          "why": "/mcp ne gère que les connexions existantes (reconnect, enable, disable) et l'authentification OAuth ; elle ne crée pas de nouvelle configuration de serveur.",
+          "alternative": "Ajouter d'abord le serveur avec claude mcp add, avant d'utiliser /mcp pour la gestion."
+        },
+        {
+          "title": "Analyser l'état des serveurs de façon automatisée dans un script",
+          "why": "En mode interactif, /mcp ouvre un dialogue de sélection peu adapté aux vérifications automatisées.",
+          "alternative": "Exécuter /mcp en mode non interactif avec -p (à partir de la v2.1.205) pour un résumé textuel, ou claude mcp list pour la liste de configuration."
         }
       ],
       "sources": [
@@ -1697,22 +1720,27 @@
       "slug": "memory",
       "name": "/memory",
       "summary": "Édite les fichiers de mémoire CLAUDE.md, active/désactive la mémoire automatique et affiche les entrées de mémoire automatique.",
-      "what": "Édite les fichiers de mémoire CLAUDE.md, active/désactive la mémoire automatique et affiche les entrées de mémoire automatique.",
+      "what": "`/memory` liste les emplacements de tous les fichiers `CLAUDE.md` et `CLAUDE.local.md` dans les scopes utilisateur et projet, y compris les entrées pour des fichiers qui n'existent pas encore. Une sélection ouvre le fichier dans l'éditeur — les éditeurs graphiques comme VS Code l'ouvrent dans une fenêtre séparée, de sorte que la session reste utilisable pendant ce temps ; les éditeurs de terminal comme Vim occupent le terminal jusqu'à leur fermeture. `/memory` active ou désactive en outre la mémoire automatique (enregistrée sous `autoMemoryEnabled` dans `~/.claude/settings.json`) et ouvre le dossier de mémoire automatique pour consultation.\n\nLa mémoire automatique regroupe des notes que Claude déduit lui-même des corrections et préférences — par exemple des commandes de build, des enseignements de débogage ou des préférences de workflow —, stockées localement sur la machine et partagées entre tous les worktrees d'un même dépôt. Les fichiers `CLAUDE.md`, en revanche, sont rédigés par l'utilisateur lui-même, pour des consignes durables comme les standards de code ou l'architecture. Les deux sont chargés comme contexte à chaque conversation, mais pas appliqués de façon stricte — une application rigoureuse nécessite des hooks PreToolUse.",
       "whenGood": [
         {
-          "title": "Consigner une règle durable pour toutes les futures sessions",
-          "example": "Utiliser /memory pour inscrire une consigne fixe comme « toujours utiliser le mode strict de TypeScript » dans CLAUDE.md, plutôt que de la répéter à chaque fois."
+          "title": "Consigner une règle durable pour toutes les sessions futures",
+          "example": "Utiliser /memory pour inscrire une consigne comme 'toujours utiliser le mode strict de TypeScript' dans CLAUDE.md, plutôt que de la répéter à chaque fois."
         },
         {
-          "title": "Vérifier les entrées de mémoire automatique",
-          "example": "Appeler /memory pour voir quelles règles Claude a automatiquement enregistrées en mémoire automatique à partir de sessions précédentes."
+          "title": "Vérifier ce que Claude a lui-même retenu en mémoire automatique",
+          "example": "Appeler /memory et ouvrir le dossier de mémoire automatique pour parcourir les notes enregistrées automatiquement sur les commandes de build ou les préférences."
         }
       ],
       "whenBad": [
         {
           "title": "Une instruction ne vaut que pour la tâche en cours",
-          "why": "/memory écrit dans CLAUDE.md et agit donc durablement au-delà de la session — inutile pour une instruction ponctuelle, et cela gonfle le fichier.",
-          "alternative": "donner l'instruction directement dans le prompt de la session en cours, sans la stocker dans CLAUDE.md."
+          "why": "/memory écrit dans des fichiers chargés en permanence — inutile pour une instruction ponctuelle et alourdit inutilement CLAUDE.md.",
+          "alternative": "Donner l'instruction directement dans le prompt de la session en cours, sans l'enregistrer."
+        },
+        {
+          "title": "Vérifier quels fichiers de mémoire ont réellement été chargés dans la session en cours",
+          "why": "/memory liste tous les emplacements, mais n'indique pas ce qui est réellement chargé dans la session en cours.",
+          "alternative": "Appeler /context et vérifier la liste sous 'Memory files'."
         }
       ],
       "sources": [
@@ -1762,22 +1790,31 @@
       "slug": "model",
       "name": "/model",
       "summary": "Change le modèle d'IA et l'enregistre comme valeur par défaut pour les nouvelles sessions.",
-      "what": "Change le modèle d'IA et l'enregistre comme valeur par défaut pour les nouvelles sessions.\n\nLes flèches gauche/droite ajustent aussi l'effort pour les modèles qui le prennent en charge. La touche 's' change uniquement pour la session en cours. En présence d'un historique existant, une question de confirmation apparaît (historique complet sans cache). À partir de la v2.1.205, aussi en mode non interactif (-p) avec un argument de modèle.",
+      "what": "Change le modèle d'IA actif et enregistre le choix comme valeur par défaut pour les nouvelles sessions, en l'inscrivant dans les paramètres utilisateur. Sans argument, un sélecteur de modèle interactif s'ouvre ; saisir directement `/model <name>` bascule immédiatement, par exemple `/model sonnet`. Les alias de famille de modèles comme `opus`, `sonnet`, `haiku` ou `fable` se résolvent alors vers la version la plus récente autorisée par l'organisation.\n\nDans le sélecteur, les flèches gauche/droite ajustent en plus le niveau d'effort pour les modèles qui le prennent en charge, et la touche `s` sur une ligne change le modèle uniquement pour la session en cours, sans modifier la valeur par défaut enregistrée. Si la conversation contient déjà des réponses, le sélecteur demande confirmation avant le changement, car la prochaine réponse retraite l'intégralité de l'historique sans cache de prompt.\n\nLes sessions reprises (`--resume`, `--continue`) conservent, indépendamment du réglage `/model` actuel, le modèle avec lequel l'historique a été enregistré pour la dernière fois. Depuis la version 2.1.205, également utilisable en mode non interactif (`-p`) avec un argument de modèle au lieu du sélecteur ; le changement ne s'applique alors qu'à la session en cours et n'est pas enregistré comme valeur par défaut.",
       "whenGood": [
         {
-          "title": "Changer de façon interactive le modèle par défaut pour les nouvelles sessions",
+          "title": "Changer le modèle par défaut des nouvelles sessions de façon interactive",
           "example": "/model"
         },
         {
           "title": "Définir un autre modèle uniquement pour la session en cours",
           "example": "/model (puis touche 's')"
+        },
+        {
+          "title": "Changer directement par nom sans ouvrir le sélecteur",
+          "example": "Saisir /model sonnet pour changer immédiatement, plutôt que de d'abord naviguer dans le sélecteur."
         }
       ],
       "whenBad": [
         {
           "title": "Seul un effort de réflexion accru est nécessaire, pas un autre modèle",
-          "why": "effort vs model : un changement de modèle avec un historique existant déclenche en plus une question de confirmation, car tout l'historique est retraité sans cache - inutile pour un simple ajustement de l'effort de réflexion.",
+          "why": "Un changement de modèle avec un historique existant déclenche en plus une demande de confirmation, car l'historique complet est retraité sans cache — inutile pour un simple ajustement de l'effort de réflexion.",
           "alternative": "/effort"
+        },
+        {
+          "title": "Plusieurs terminaux ouverts simultanément doivent utiliser durablement des modèles différents",
+          "why": "/model change la valeur par défaut enregistrée ou s'applique à la session en cours ; pour des terminaux parallèles avec des modèles fixes différents, c'est peu pratique.",
+          "alternative": "Démarrer chaque terminal individuellement avec l'option --model, plutôt que de changer de modèle entre les sessions avec /model."
         }
       ],
       "sources": [
@@ -1827,22 +1864,27 @@
       "slug": "permissions",
       "name": "/permissions",
       "summary": "Gère les règles Allow, Ask et Deny pour les permissions des tools.",
-      "what": "Gère les règles Allow, Ask et Deny pour les permissions des tools.\n\nDialogue interactif : règles par scope, ajout/suppression, répertoires de travail, refus récents en mode automatique. Alias : /allowed-tools.",
+      "what": "`/permissions` ouvre un dialogue interactif pour gérer les autorisations d'outils de Claude Code. On y consulte, ajoute ou supprime des règles Allow, Ask et Deny par scope ; pour chaque règle, le fichier `settings.json` dont elle provient est affiché (paramètres utilisateur, paramètres de projet, paramètres locaux ou une option CLI). Le dialogue gère en outre les répertoires de travail autorisés (`additionalDirectories`) et affiche, dans l'onglet « Recently denied », les appels d'outils que le mode automatique a récemment refusés ; la touche `r` permet de marquer une action refusée pour une nouvelle tentative, après quoi Claude Code invite le modèle à réessayer l'appel.\n\nLes règles définies ici s'appliquent indépendamment du mode d'autorisation actif (`default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`) et sont appliquées par Claude Code lui-même, pas par le modèle — des instructions dans un fichier `CLAUDE.md` ou dans le prompt ne changent donc rien à ce qui est réellement autorisé ou bloqué. Les règles suivent le format `Tool` pour tous les appels d'un outil, ou `Tool(specifier)` pour un périmètre plus restreint, par exemple une commande Bash ou un chemin de fichier précis. Alias : `/allowed-tools`.",
       "whenGood": [
         {
-          "title": "Définir précisément une règle Allow ou Deny pour un tool",
-          "example": "ouvrir /permissions pour ajouter, dans le dialogue interactif, une règle Deny pour une commande Bash précise"
+          "title": "Définir une règle Deny ciblée pour une commande à risque",
+          "example": "Ouvrir /permissions et ajouter une règle Deny pour une commande Bash précise, afin qu'elle ne soit jamais exécutée automatiquement."
         },
         {
-          "title": "Vérifier les actions récemment refusées en mode automatique",
-          "example": "appeler /permissions pour voir quels appels de tools ont été refusés récemment en mode automatique, et ajuster une règle en conséquence"
+          "title": "Vérifier et autoriser les actions récemment refusées par le mode automatique",
+          "example": "Appeler /permissions, puis dans l'onglet « Recently denied » marquer avec `r` une action bloquée à tort pour une nouvelle tentative."
         }
       ],
       "whenBad": [
         {
-          "title": "Regrouper automatiquement de nombreux prompts récurrents en lecture seule",
-          "why": "/permissions édite les règles une par une via un dialogue interactif — c'est fastidieux pour une liste blanche générée automatiquement à partir du transcript.",
-          "alternative": "utiliser /fewer-permission-prompts, qui crée une liste blanche priorisée à partir de ses propres transcripts."
+          "title": "Regrouper automatiquement de nombreuses invites en lecture seule récurrentes",
+          "why": "/permissions traite les règles une par une via un dialogue interactif — peu pratique pour une liste blanche générée à partir de son propre transcript.",
+          "alternative": "Utiliser /fewer-permission-prompts, qui crée automatiquement une liste blanche priorisée."
+        },
+        {
+          "title": "Changer soi-même le mode d'autorisation actif",
+          "why": "/permissions gère des règles Allow, Ask et Deny individuelles, mais ne change pas le mode actif (par ex. plan ou auto).",
+          "alternative": "Dans la CLI, parcourir les modes avec Shift+Tab, ou définir defaultMode dans les paramètres."
         }
       ],
       "sources": [
@@ -2132,22 +2174,27 @@
       "slug": "reload-skills",
       "name": "/reload-skills",
       "summary": "Réanalyse les répertoires de skills et de commandes pour que les skills modifiés pendant la session soient disponibles sans redémarrage.",
-      "what": "Réanalyse les répertoires de skills et de commandes pour que les skills modifiés pendant la session soient disponibles sans redémarrage.\n\nSignale les skills disponibles/ajoutés/supprimés. Introduit dans la v2.1.152.",
+      "what": "Analyse à nouveau les répertoires de skills et de commandes, afin que les skills ajoutés, modifiés ou supprimés sur le disque pendant la session en cours soient disponibles sans redémarrage de la session. Une fois l'analyse terminée, la commande indique le nombre total de skills disponibles et combien ont été ajoutés ou retirés depuis le dernier scan.\n\nLa détection automatique des changements en cours de session ne couvre que le texte du fichier `SKILL.md` correspondant. Si un dossier de skill appartient à un plugin, les changements apportés à ses `hooks/`, `.mcp.json`, `agents/` ou `output-styles/` ne prennent effet qu'après un `/reload-plugins`, car cela peut aussi affecter les outils MCP chargés et le cache de prompt.\n\nIntroduite dans la version 2.1.152. Utile juste après la création ou la modification d'un skill personnel dans `.claude/skills/`, pour tester le changement immédiatement dans la session en cours, plutôt que de fermer puis redémarrer la session.",
       "whenGood": [
         {
-          "title": "Rendre disponible un nouveau skill personnel pendant la session en cours",
-          "example": "ajouter un skill dans .claude/skills/ puis exécuter /reload-skills, plutôt que de redémarrer la session"
+          "title": "Rendre un nouveau skill personnel disponible pendant la session en cours",
+          "example": "Ajouter un skill dans .claude/skills/ puis exécuter /reload-skills, plutôt que de redémarrer la session."
         },
         {
-          "title": "Vérifier qu'une modification de skill a été correctement détectée",
-          "example": "après avoir édité un SKILL.md, appeler /reload-skills et contrôler le message concernant les skills ajoutés ou supprimés"
+          "title": "Vérifier qu'une modification de skill a bien été détectée",
+          "example": "Après avoir modifié un SKILL.md, appeler /reload-skills et contrôler le message relatif aux skills ajoutés ou retirés."
         }
       ],
       "whenBad": [
         {
           "title": "Un plugin entier (pas seulement des skills/commandes isolés) a été modifié",
-          "why": "/reload-skills analyse les répertoires de skills et de commandes, pas la structure du plugin avec ses tools MCP chargés.",
-          "alternative": "utiliser /reload-plugins pour recharger le plugin entier."
+          "why": "/reload-skills analyse les répertoires de skills et de commandes ; il ne détecte pas les changements apportés à hooks/, .mcp.json, agents/ ou output-styles/ d'un dossier de skill de plugin.",
+          "alternative": "Utiliser /reload-plugins pour recharger le plugin entier (confirmer avec --force si nécessaire en cas de changements sur des outils MCP chargés)."
+        },
+        {
+          "title": "Un tout nouveau répertoire de skills de premier niveau a été créé",
+          "why": "Un répertoire qui n'existait pas encore au démarrage de la session n'est pas encore surveillé par Claude Code — /reload-skills ne réanalyse que les répertoires déjà connus.",
+          "alternative": "Redémarrer complètement Claude Code pour que le nouveau répertoire soit détecté."
         }
       ],
       "sources": [
@@ -2232,22 +2279,31 @@
       "slug": "rename",
       "name": "/rename",
       "summary": "Renomme la session en cours et affiche le nom dans la barre de prompt.",
-      "what": "Renomme la session en cours et affiche le nom dans la barre de prompt.\n\nSans nom, il est généré automatiquement à partir de l'historique. Aussi en mode non interactif (-p), nécessite v2.1.205+.",
+      "what": "Attribue un nom à la session en cours, qui apparaît ensuite dans la barre de prompt et facilite la recherche ultérieure de la session dans le sélecteur `/resume`. `/rename <name>` définit le nom immédiatement ; sans argument, Claude Code génère automatiquement un nom à partir de l'historique de conversation.\n\nLa commande peut être rappelée à tout moment pendant la session en cours, un nom peut donc aussi être modifié ultérieurement sans mettre fin à la session. Depuis la version 2.1.205, `/rename` fonctionne aussi en mode non interactif via l'option `-p`, le nom étant alors passé en argument plutôt que demandé via un dialogue — utile pour nommer les sessions de façon cohérente dès leur démarrage dans un script.\n\nÀ distinguer de `/clear [name]`, qui, à la fermeture de la session en cours, enregistre un nom pour la conversation alors devenue ancienne dans le sélecteur `/resume`. `/rename`, à l'inverse, renomme directement la session en cours encore active, indépendamment du fait qu'elle se termine plus tard ou non.",
       "whenGood": [
         {
           "title": "Rendre une longue session facile à retrouver",
-          "example": "nommer une session de débogage de plusieurs heures avec /rename session-bug-login, pour la retrouver facilement plus tard via /resume"
+          "example": "Nommer une session de débogage de plusieurs heures avec /rename Login-Bug-Session pour la retrouver facilement plus tard via /resume."
         },
         {
-          "title": "Nommage automatisé par script",
-          "example": "dans une configuration non interactive (-p) à partir de la v2.1.205, nommer les sessions de façon cohérente dès le démarrage plutôt que de reprendre le nom automatique"
+          "title": "Définir le nom de façon automatisée via un script",
+          "example": "Dans une configuration non interactive (-p) à partir de la v2.1.205, nommer les sessions de façon cohérente dès leur démarrage avec /rename <name> en argument, plutôt que d'accepter le nom automatique."
+        },
+        {
+          "title": "Renommer après coup lorsque le sujet a changé",
+          "example": "En pleine session ayant évolué d'une correction de bug vers une refactorisation plus importante, rappeler /rename et ajuster le nom."
         }
       ],
       "whenBad": [
         {
-          "title": "Question jetable et courte",
-          "why": "pour une session qui sera de toute façon terminée juste après par /clear, un nom dédié n'en vaut pas la peine",
-          "alternative": "ne pas nommer — le nom généré automatiquement suffit pour un usage court"
+          "title": "Question courte et jetable",
+          "why": "Pour une session qui sera immédiatement close avec /clear, un nom dédié ne se justifie pas.",
+          "alternative": "Laisser sans nom — le nom généré automatiquement suffit pour cette utilisation brève."
+        },
+        {
+          "title": "Nommer la conversation précédente lors d'un redémarrage",
+          "why": "/rename ne renomme que la session actuellement en cours ; pour nommer, dans le sélecteur /resume, l'ancienne conversation qui vient d'être close, ce n'est pas la bonne commande.",
+          "alternative": "Utiliser /clear <name>, qui nomme l'ancienne conversation avant le redémarrage."
         }
       ],
       "sources": [
@@ -2262,27 +2318,27 @@
       "slug": "resume",
       "name": "/resume",
       "summary": "Reprend une conversation par ID ou par nom, ou ouvre le sélecteur de sessions.",
-      "what": "Reprend une conversation par ID ou par nom, ou ouvre le sélecteur de sessions.\n\nÀ partir de la v2.1.144, les sessions en arrière-plan apparaissent avec la marque « bg ». Alias : /continue.",
+      "what": "La commande `/resume [session]` reprend une autre conversation indépendante — par ID, par un nom attribué précédemment, ou, sans argument, via le sélecteur de session interactif listant les conversations antérieures. Depuis la version 2.1.144, les sessions en arrière-plan y apparaissent aussi, reconnaissables à la mention `bg`. Si une telle session en arrière-plan est encore en cours, elle ne peut pas être ouverte directement via `/resume` ; il faut d'abord s'y rattacher via `claude agents` ou l'arrêter là-bas, avant qu'elle ne devienne sélectionnable dans ce sélecteur. Alias : `/continue`.\n\n`/resume` bascule donc entre des conversations terminées ou suspendues, pas à l'intérieur de la session en cours : pour revenir à un point antérieur dans la même session, c'est `/rewind` qui s'en charge, en ramenant le code et la conversation à un checkpoint. Avec `/clear [name]`, on peut nommer la conversation en cours avant son redémarrage, afin de la retrouver plus facilement plus tard dans le sélecteur `/resume` ; `/rename [name]`, à l'inverse, renomme la session en cours et génère automatiquement un nom à partir de l'historique existant en l'absence d'argument.",
       "whenGood": [
         {
-          "title": "Choisir parmi plusieurs conversations ouvertes",
-          "example": "/resume"
+          "title": "Basculer entre plusieurs conversations ouvertes",
+          "example": "Appeler /resume sans argument pour sélectionner dans le sélecteur la session antérieure souhaitée."
         },
         {
-          "title": "Rattacher spécifiquement une session en arrière-plan par son nom",
-          "example": "/resume mon-agent-arriere-plan"
+          "title": "Reprendre une session en arrière-plan nommée déjà terminée",
+          "example": "/resume mein-hintergrund-agent pour poursuivre une session lancée précédemment avec /background et qui n'est plus en cours."
         }
       ],
       "whenBad": [
         {
-          "title": "Revenir à un point antérieur au sein de la conversation en cours",
-          "why": "/resume reprend une autre conversation autonome par ID ou par nom - il ne permet pas de revenir à un point antérieur de la session en cours.",
-          "alternative": "/rewind"
+          "title": "Revenir à un point antérieur dans la conversation en cours",
+          "why": "/resume bascule vers une autre conversation indépendante — il ne revient pas en arrière dans la session en cours.",
+          "alternative": "Utiliser /rewind."
         },
         {
-          "title": "On est déjà dans la session ouverte qui convient",
-          "why": "/resume sert à basculer vers une autre conversation - sans changement de session, la commande n'apporte rien.",
-          "alternative": "continuer simplement à écrire normalement, sans commande"
+          "title": "Poursuivre une session en arrière-plan encore en cours",
+          "why": "Une session marquée `bg` dans le sélecteur et encore en cours ne peut pas être ouverte via /resume.",
+          "alternative": "S'y rattacher via `claude agents`, ou arrêter d'abord la session à cet endroit."
         }
       ],
       "sources": [
@@ -3091,22 +3147,27 @@
       "slug": "status",
       "name": "/status",
       "summary": "Affiche le statut actuel de la session Codex en cours.",
-      "what": "/status donne un aperçu de la session interactive en cours. Elle fait partie de la liste officielle des commandes slash de la CLI Codex, qui permettent d'interroger l'état de la session au lieu de modifier à l'aveugle des paramètres comme le modèle ou le mode d'autorisation.",
+      "what": "`/status` est une commande slash de la CLI terminal interactive de Codex — à distinguer de la variante homonyme, plus légère, de l'interface de l'application ChatGPT, qui n'y affiche que l'ID du chat, l'utilisation du contexte et les limites de débit. Dans la CLI terminal, `/status` fournit un résumé complet de la session en cours : modèle actif, politique d'approbation actuelle (Approval Policy), répertoires accessibles en écriture (Writable Roots) et consommation restante de tokens/contexte. Si la TUI est connectée à une session distante, la sortie affiche en plus l'adresse distante et la version du serveur.\n\nSelon le code source, la commande peut aussi être appelée pendant qu'une tâche est encore en cours et à l'intérieur d'un chat annexe (`/side`, `/btw`), sans interrompre la conversation en cours. Elle ne modifie rien, mais se contente de lire l'état actuel — utile pour vérifier brièvement, avant une action critique, quel mode d'approbation est actif, ou pour confirmer le nouvel état après un changement de modèle ou de paramètres. Si cet aperçu ne suffit pas, `/debug-config` affiche en plus les différentes couches de configuration et leur ordre de priorité.",
       "whenGood": [
         {
-          "title": "Vérifier dans quel mode on se trouve avant une action importante",
-          "example": "/status — vérifier rapidement avant que Codex n'apporte des modifications au dépôt"
+          "title": "Vérifier la politique d'approbation active avant une action à risque",
+          "example": "/status — contrôler si un mode d'approbation automatique est actif avant que Codex n'apporte des modifications au dépôt"
         },
         {
-          "title": "Se resituer dans l'état de la session après une longue pause",
-          "example": "/status — se faire une vue d'ensemble en reprenant le travail après une interruption"
+          "title": "Confirmer l'effet après un changement de modèle ou de configuration",
+          "example": "Changer de modèle avec /model, puis appeler /status pour confirmer le nouveau modèle actif"
         }
       ],
       "whenBad": [
         {
-          "title": "On veut modifier activement quelque chose, pas seulement consulter",
-          "why": "/status ne fait qu'afficher l'état, elle ne modifie rien.",
-          "alternative": "Utiliser les commandes adaptées pour les modifications, par ex. /model ou /permissions"
+          "title": "On souhaite modifier activement la session, pas seulement consulter son état",
+          "why": "/status affiche uniquement l'état actuel et n'effectue elle-même aucune modification.",
+          "alternative": "Pour effectuer des changements, utiliser les commandes appropriées, par ex. /model, /permissions ou les commandes /sandbox"
+        },
+        {
+          "title": "On a besoin de la raison précise pour laquelle une couche de configuration remplace une valeur",
+          "why": "/status n'affiche que l'état final effectif, pas les différentes couches de configuration ni leur origine.",
+          "alternative": "Utiliser /debug-config pour consulter l'ordre de priorité et les sources des politiques de configuration"
         }
       ],
       "sources": [
@@ -3181,22 +3242,27 @@
       "slug": "diff",
       "name": "/diff",
       "summary": "Affiche les modifications actuelles (diff) de la session.",
-      "what": "/diff fait partie de la liste officielle des commandes slash interactives de Codex et affiche les modifications que Codex a effectuées ou propose dans la session en cours. Elle complète des commandes comme /review, qui permettent en plus d'évaluer les modifications.",
+      "what": "`/diff` est une commande slash de la CLI terminal de Codex et affiche le diff Git de la session en cours — selon le code source, en incluant explicitement les fichiers que Git ne suit pas encore (untracked files). La sortie peut être parcourue directement dans le terminal et montre aussi bien les modifications indexées que non indexées, ainsi que les fichiers nouvellement créés, ce qui permet, avant un commit ou une exécution de tests, de savoir précisément ce que Codex a réellement modifié, sans avoir à exécuter manuellement `git diff` dans un terminal séparé.\n\nImportant : dans l'interface de l'application ChatGPT, il n'existe pas de commande `/diff` autonome — la fonction équivalente y passe par le mode de révision. `/diff` est donc une commande purement propre à la CLI terminal. Selon le code source, elle fonctionne aussi pendant qu'une tâche est encore en cours et à l'intérieur d'un chat annexe, ce qui permet de vérifier les modifications à tout moment sans interrompre la tâche en cours. Pour une évaluation qualitative des modifications affichées, `/review` complète le simple texte du diff par une appréciation.",
       "whenGood": [
         {
-          "title": "Vérifier rapidement ce que Codex a modifié jusqu'ici",
-          "example": "/diff — vérifier après quelques étapes de travail quels fichiers sont concernés"
+          "title": "Vérifier brièvement ce que Codex a modifié jusqu'ici",
+          "example": "/diff — après quelques étapes de travail, vérifier quels fichiers sont concernés"
         },
         {
-          "title": "Voir les modifications de lignes concrètes avant une validation",
-          "example": "/diff — examiner les modifications avant d'autoriser Codex à les appliquer"
+          "title": "Voir les modifications de lignes concrètes avant une validation, y compris pour les nouveaux fichiers",
+          "example": "/diff — consulter les modifications, y compris les fichiers nouvellement créés et non encore suivis, avant de les accepter"
         }
       ],
       "whenBad": [
         {
-          "title": "Une évaluation qualitative est nécessaire, pas seulement le texte brut du diff",
-          "why": "/diff affiche les modifications, mais ne les évalue pas.",
+          "title": "On a besoin d'une évaluation qualitative, pas seulement du texte brut du diff",
+          "why": "/diff affiche les modifications, mais ne les évalue pas sur le fond.",
           "alternative": "Utiliser /review pour faire évaluer les modifications en plus"
+        },
+        {
+          "title": "On travaille dans l'interface de l'application ChatGPT plutôt que dans le terminal",
+          "why": "/diff n'y existe pas comme commande autonome, mais uniquement comme partie de la CLI terminal.",
+          "alternative": "Travailler en mode CLI terminal ou utiliser le mode de révision de l'interface de l'application"
         }
       ],
       "sources": [
@@ -3909,27 +3975,27 @@
       "slug": "fork",
       "name": "/fork",
       "summary": "Crée une branche du chat en cours dans une nouvelle session, l'original reste intact.",
-      "what": "/fork transforme la conversation en cours en une copie et permet d'y suivre un chemin différent. Alias selon le changelog : /branch, /duplicate.",
+      "what": "`/fork` crée une copie de la conversation Cursor CLI en cours sous forme de nouvelle session indépendante ; la session d'origine reste inchangée et utilisable. Le fork reprend l'intégralité de l'historique de conversation précédent, y compris tous les messages antérieurs, et peut ensuite être poursuivi séparément, par exemple pour tester une autre approche de résolution sans perdre ni modifier le chat d'origine. L'opération peut être répétée autant de fois que nécessaire, de sorte qu'un chat peut donner naissance à plusieurs branches indépendantes.\n\nDans la version actuellement livrée de la CLI, `/duplicate`, `/clone` et `/branch` sont référencés dans le code comme des formes courtes équivalentes déclenchant la même commande ; la page de référence officielle des commandes slash ne mentionne toutefois actuellement que `/fork` lui-même, sans citer ces formes courtes — une entrée de changelog antérieure ne listait comme alias que `/branch` et `/duplicate`, `/clone` y manquait également. Contrairement à `/rewind`, qui revient à un moment antérieur dans le même chat, `/fork` fait naître deux sessions parallèles, entièrement séparées.",
       "whenGood": [
         {
-          "title": "Essayer deux approches de résolution différentes en parallèle",
-          "example": "/fork — puis tester un chemin d'implémentation alternatif dans le nouveau chat"
+          "title": "Tester en parallèle deux approches de résolution différentes",
+          "example": "/fork — puis tester une autre méthode d'implémentation dans le nouveau chat"
         },
         {
-          "title": "Sécuriser une tentative risquée sans mettre en danger la session principale",
-          "example": "/fork — créer une branche avant un refactor expérimental"
+          "title": "Sécuriser un essai risqué sans mettre en péril la session principale",
+          "example": "/fork pour bifurquer avant une refactorisation expérimentale, l'original reste intact"
         }
       ],
       "whenBad": [
         {
-          "title": "Le chemin actuel doit simplement se poursuivre",
-          "why": "un fork crée une session supplémentaire à gérer, alors qu'on veut juste continuer de façon linéaire",
-          "alternative": "continuer normalement à écrire dans le chat en cours"
+          "title": "Le chemin suivi jusqu'ici doit simplement se poursuivre de façon linéaire",
+          "why": "Un fork crée une session supplémentaire, entièrement séparée, qu'il faut ensuite gérer indépendamment.",
+          "alternative": "Continuer normalement à écrire dans le chat en cours"
         },
         {
-          "title": "D'anciens essais ratés doivent complètement disparaître",
-          "why": "/fork conserve l'original, il ne nettoie rien",
-          "alternative": "utiliser /rewind pour revenir à un état antérieur"
+          "title": "D'anciens essais infructueux doivent disparaître de l'historique",
+          "why": "/fork ne fait que créer une copie supplémentaire, il ne supprime ni ne nettoie rien dans l'original.",
+          "alternative": "Utiliser /rewind pour revenir à un état antérieur dans le même chat"
         }
       ],
       "sources": [
@@ -4147,27 +4213,27 @@
       "slug": "shell",
       "name": "/shell",
       "summary": "Bascule en mode Shell pour exécuter de courtes commandes directement, sans quitter la conversation.",
-      "what": "/shell bascule en mode Shell pour de courtes commandes au sein de la session. Alias : /sh, /run.",
+      "what": "`/shell` fait passer la CLI Cursor en mode shell, où de courtes commandes peuvent s'exécuter directement, sans quitter la conversation en cours. Selon le code livré, `/sh` et `/run` déclenchent la même commande. On peut aussi passer une commande unique en ligne, par exemple `/shell git status`, ou activer le mode avec `!` en début d'une ligne de saisie vide.\n\nLes commandes en mode shell suivent la politique normale de la session : selon le niveau d'autorisation actif (liste blanche, Run Everything, révision automatique ou mode sandbox), Cursor demande confirmation avant les commandes potentiellement risquées ou les exécute automatiquement — le mode n'apporte en revanche pas de limites explicites fixes de chemin ou de réseau. Il convient surtout pour vérifier rapidement quelque chose dans le terminal, par exemple l'état Git ou un répertoire, sans devoir d'abord formuler laborieusement le résultat sous forme de prompt pour l'agent.",
       "whenGood": [
         {
-          "title": "Vérifier rapidement le statut Git sans quitter le contexte du chat",
+          "title": "Vérifier rapidement l'état Git sans quitter le contexte du chat",
           "example": "/shell git status"
         },
         {
-          "title": "Inspecter brièvement un fichier avant que l'agent continue",
+          "title": "Inspecter brièvement un fichier avant que l'agent ne poursuive",
           "example": "/sh ls -la src/"
         }
       ],
       "whenBad": [
         {
           "title": "La commande doit faire partie d'une tâche à plusieurs étapes planifiée par l'agent",
-          "why": "/shell exécute la commande isolément, sans l'intégrer à la planification de tâches de l'agent",
-          "alternative": "formuler la commande comme un prompt normal, pour que l'agent l'exécute dans son contexte"
+          "why": "/shell exécute la commande de façon isolée, sans l'intégrer à la planification des tâches de l'agent.",
+          "alternative": "Formuler plutôt la commande comme un prompt normal, afin que l'agent l'exécute dans son contexte"
         },
         {
-          "title": "Il faut un accès réseau/écriture durable avec des limites claires",
-          "why": "/shell suit la politique normale de session, mais n'offre pas de limites explicites de chemins/réseau",
-          "alternative": "utiliser agent sandbox run avec --allow-paths/--network"
+          "title": "Un accès réseau/écriture durable avec des limites claires est nécessaire",
+          "why": "/shell suit la politique normale de la session, mais n'offre pas de limites explicites de chemin ou de réseau.",
+          "alternative": "Utiliser agent sandbox run avec --allow-paths et --network"
         }
       ],
       "sources": [
@@ -4536,27 +4602,27 @@
       "slug": "plugin",
       "name": "/plugin",
       "summary": "Gère les plugins et les marketplaces de plugins.",
-      "what": "/plugin gère les plugins et les marketplaces : ajouter un marketplace par URL Git (/plugin marketplace add), parcourir, installer et désinstaller des plugins par portée. Les skills, commandes slash, sous-agents et serveurs MCP des plugins sont aussi chargés dans la session.",
+      "what": "`/plugin` gère les plugins et les marketplaces de plugins directement depuis la session Cursor CLI : consulter les plugins installés, parcourir le marketplace, ainsi qu'installer ou désinstaller des plugins. Selon le code, `/plugin list` (afficher les plugins installés et le marketplace), ainsi que `/plugin marketplace list` et `/plugin marketplace add <git-url>` (enregistrer un nouveau marketplace via une URL Git) sont disponibles comme formes courtes. Les plugins chargés apportent automatiquement leurs propres skills, commandes slash, sous-agents et serveurs MCP dans chaque nouvelle session, dès qu'ils sont activés dans le scope choisi (utilisateur ou projet), sans qu'il faille les recharger manuellement ensuite.\n\nPour l'automatisation sans session interactive, il existe en plus des sous-commandes autonomes `agent plugin marketplace` en dehors du chat : `add <git-url> --git-ref <branch>`, `list` (avec `--format json` pour les scripts), `update <name>` et `remove <name>`. Ces sous-commandes CLI scriptables sont à distinguer de `/plugin` au sein d'une conversation en cours, même si les deux gèrent et lisent finalement les mêmes données de marketplace sous-jacentes.",
       "whenGood": [
         {
-          "title": "Intégrer un marketplace d'équipe",
-          "example": "/plugin marketplace add https://github.com/team/cursor-plugins"
+          "title": "Enregistrer un marketplace d'équipe via un script",
+          "example": "agent plugin marketplace add https://github.com/team/cursor-plugins --git-ref main"
         },
         {
-          "title": "Installer un plugin pour ce seul projet",
-          "example": "/plugin — sélectionner le plugin, définir la portée sur 'Project'"
+          "title": "Installer un plugin uniquement pour ce projet",
+          "example": "/plugin — sélectionner le plugin, définir le scope sur 'Project'"
         }
       ],
       "whenBad": [
         {
-          "title": "Tester juste un dossier de plugin local, sans marketplace",
-          "why": "passer par une entrée de marketplace pour ça n'est pas nécessaire",
-          "alternative": "utiliser --plugin-dir <path> au démarrage"
+          "title": "Tester uniquement un répertoire de plugin local, sans marketplace",
+          "why": "Le détour par une entrée de marketplace n'est pas nécessaire pour cela.",
+          "alternative": "Utiliser --plugin-dir <path> au démarrage de la CLI"
         },
         {
-          "title": "Les plugins doivent être imposés de façon centralisée pour toute l'équipe",
-          "why": "/plugin est une gestion locale et interactive par utilisateur",
-          "alternative": "définir une configuration de plugins pour toute l'équipe via les paramètres admin de Cursor"
+          "title": "Les plugins doivent être définis de façon centralisée pour toute l'équipe",
+          "why": "/plugin est la gestion locale et interactive par utilisateur et par session.",
+          "alternative": "Gérer le marketplace d'équipe de façon centralisée via le tableau de bord Cursor (Team Marketplaces)"
         }
       ],
       "sources": [
@@ -8334,18 +8400,27 @@
       "slug": "dangerously-skip-permissions",
       "name": "agy --dangerously-skip-permissions",
       "summary": "Contourne les restrictions de permissions au démarrage (flag de lancement).",
-      "what": "agy --dangerously-skip-permissions est documenté comme un flag de lancement pouvant contourner certaines restrictions de sécurité du système de permissions ; le panneau des réglages indique alors la source de ce contournement. Le flag n'est documenté que sur l'ancienne page docs/cli-using, pas dans le tableau de référence central actuel.",
+      "what": "`agy --dangerously-skip-permissions` est une option de démarrage de la CLI Antigravity. Elle est attestée non seulement dans l'ancienne page de documentation « Using AGY CLI », mais aussi officiellement documentée dans le texte `--help` de la version actuellement livrée (1.1.7) : elle approuve automatiquement toutes les demandes d'autorisation d'outils, sans jamais demander confirmation. Sans cette option, Antigravity demande par défaut confirmation avant les opérations d'écriture sur des fichiers, les commandes shell et les accès web (réglage de base `toolPermission: request-review`) ; l'option désactive entièrement ces confirmations pour toute la session.\n\nSelon la documentation, ce remplacement ne vaut que pour la session en cours, pas de façon durable : le panneau de paramètres (`/settings`) indique qu'une valeur a été remplacée par l'option, et par quoi ; le fichier `settings.json` persistant reste inchangé et reprend effet après un redémarrage sans l'option.\n\nLe nom rend l'intention volontairement explicite : chaque action proposée par l'agent s'exécute sans aucun contrôle — y compris des commandes shell potentiellement destructrices ou des suppressions de fichiers. L'option ne convient que pour des environnements totalement isolés et jetables, sans accès à des données sensibles ou à des systèmes de production.",
       "whenGood": [
         {
-          "title": "Éviter les confirmations à chaque appel d'outil dans un environnement délibérément isolé et de confiance",
-          "example": "N'utilise agy --dangerously-skip-permissions que dans un environnement jetable/sandbox, jamais sur un système de production"
+          "title": "Travailler dans un environnement jetable totalement isolé sans confirmations",
+          "example": "Démarrer agy --dangerously-skip-permissions dans un conteneur Docker ou un sandbox CI n'ayant aucun accès aux données de production"
+        },
+        {
+          "title": "Exécutions de test automatisées et de courte durée sans possibilité d'interaction",
+          "example": "Utiliser agy --dangerously-skip-permissions dans une VM ou un instantané qui sera jeté après l'exécution"
         }
       ],
       "whenBad": [
         {
-          "title": "Tu travailles sur un projet normal avec des données sensibles ou un accès à la production",
-          "why": "Le flag contourne délibérément, selon son nom et la documentation, des restrictions de sécurité du système de permissions.",
-          "alternative": "Utiliser les règles de permissions normales et autoriser des règles précises au cas par cas via /permissions"
+          "title": "Travail sur un projet normal avec des données sensibles ou un accès à la production",
+          "why": "Selon le texte --help, l'option approuve automatiquement tous les appels d'outils, y compris les opérations d'écriture sur des fichiers et les commandes shell, sans aucune confirmation.",
+          "alternative": "Conserver le réglage par défaut toolPermission: request-review ou autoriser des règles précises ciblées via /permissions"
+        },
+        {
+          "title": "Un agent doit fonctionner sans surveillance pendant une période prolongée",
+          "why": "Sans confirmations, une seule proposition erronée peut exécuter sans frein des commandes destructrices avant qu'on puisse intervenir.",
+          "alternative": "Utiliser toolPermission: proceed-in-sandbox pour que les actions à risque s'exécutent au moins dans le sandbox"
         }
       ],
       "sources": [
@@ -9826,22 +9901,27 @@
       "slug": "bug",
       "name": "/bug",
       "summary": "Signale un bug ou partage votre conversation.",
-      "what": "Signale un bug ou partage votre conversation.\n\nVous choisissez la quantité d'historique de session à inclure et confirmez d'abord sur un écran de consentement. Connecté à Anthropic via une connexion first-party, le rapport part chez Anthropic ; avec un fournisseur tiers ou sans identifiants Anthropic, Claude Code l'écrit dans une archive locale sous ~/.claude/feedback-bundles/ que vous transmettez vous-même. Alias : /share. Avant la v2.1.212, /bug et /share étaient des alias de /feedback.",
+      "what": "Signale une erreur ou transmet l'historique de conversation en cours sous forme de rapport. `/bug [Text]` accepte en option une description libre ; avant l'envoi, on choisit en plus la quantité d'historique de session à inclure, puis on confirme sur un écran de consentement.\n\nSi l'on est connecté directement chez Anthropic, le rapport est envoyé à Anthropic. Si la session passe en revanche par un fournisseur tiers comme Amazon Bedrock ou Google Cloud's Agent Platform, ou si aucun identifiant Anthropic n'est disponible, Claude Code enregistre automatiquement le rapport en local sous `~/.claude/feedback-bundles/` à la place ; les schémas connus de clés API et de tokens sont masqués au préalable. Ce fichier doit ensuite être transmis soi-même au contact du compte Anthropic ou joint à une demande de support — lequel des deux chemins s'applique dépend uniquement du statut de connexion, pas d'un argument.\n\nAlias : `/share`. Avant la version 2.1.212, `/bug` et `/share` n'étaient que des alias de `/feedback` ; depuis, `/bug` est une commande autonome avec le même dialogue. Pour un retour produit général plutôt qu'une erreur concrète, `/feedback` convient mieux.",
       "whenGood": [
         {
-          "title": "Signaler un bug avec contexte à Anthropic",
-          "example": "/bug"
+          "title": "Signaler une erreur concrète avec le contexte de la session",
+          "example": "Lancer /bug le bouton de connexion ne répond plus puis choisir dans le dialogue la quantité d'historique à transmettre."
         },
         {
-          "title": "Sans connexion Anthropic : écrire le rapport localement et le transmettre vous-même",
-          "example": "/bug report"
+          "title": "Transmettre un rapport de bug sans identifiants Anthropic",
+          "example": "Exécuter /bug chez un fournisseur tiers comme Amazon Bedrock — le rapport atterrit automatiquement en local sous ~/.claude/feedback-bundles/, d'où il doit être envoyé soi-même au contact Anthropic."
         }
       ],
       "whenBad": [
         {
-          "title": "Ce n'est pas un bug mais une idée de produit ou un retour général",
-          "why": "/bug est conçu pour les rapports de bugs et le partage d'une session.",
+          "title": "Pas une erreur, mais une idée produit ou un retour général",
+          "why": "/bug est conçu pour les rapports d'erreur et le partage d'une session.",
           "alternative": "/feedback"
+        },
+        {
+          "title": "Supposer qu'un argument comme 'report' détermine si le rapport reste local",
+          "why": "L'argument dans /bug [report] n'est qu'un espace réservé pour un texte de description libre, pas un mot-clé fixe. Que le rapport soit envoyé à Anthropic ou enregistré en local dépend uniquement du statut de connexion.",
+          "alternative": "Vérifier le statut de connexion avec /status, plutôt que d'essayer de contrôler la destination via un argument."
         }
       ],
       "sources": [
@@ -10061,22 +10141,27 @@
       "slug": "usage-credits",
       "name": "/usage-credits",
       "summary": "Configure les crédits d'utilisation ou les demande à votre administrateur.",
-      "what": "Configure les crédits d'utilisation, ou les demande à votre administrateur, lorsque vous atteignez une limite.\n\nSur les forfaits Pro et Max, ouvre une boîte de dialogue dans la CLI pour acheter des crédits d'utilisation, définir une limite de dépense mensuelle et configurer le rechargement automatique. Sur les versions de Claude Code antérieures à v2.1.207 et sur les autres forfaits, elle ouvre à la place la page de facturation des crédits d'utilisation dans votre navigateur. Les membres Team et Enterprise sans accès à la facturation envoient une demande de crédits d'utilisation à leur administrateur après confirmation dans une boîte de dialogue.",
+      "what": "Gère le crédit supplémentaire (Usage Credits) permettant de continuer à travailler au-delà de la limite normale du plan, ou en fait la demande auprès de son propre administrateur. Une connexion via l'abonnement claude.ai avec `/login` est requise ; avec une authentification par clé API, la commande n'est pas disponible.\n\nCe que l'appel ouvre dépend du rôle : sur Pro et Max, ainsi que pour les membres Team/Enterprise ayant accès à la facturation, `/usage-credits` ouvre la page de facturation correspondante dans le navigateur. Les membres Team et Enterprise sans accès à la facturation confirment à la place, dans un dialogue directement en CLI, qu'une demande est envoyée aux administrateurs de l'organisation (depuis la version 2.1.211 ; auparavant sans cette étape de confirmation). Si aucun navigateur ne peut être ouvert, par exemple via SSH, la commande affiche depuis la version 2.1.205 l'URL à ouvrir à la place.\n\nSéparément : si une limite de dépense est définie sur Pro/Max et qu'elle est atteinte malgré la présence de crédit, Claude Code demande directement dans la session en cours si la limite doit être relevée ou supprimée. À distinguer de `/usage`, qui affiche uniquement la consommation passée et les limites du plan, sans gérer de crédit.",
       "whenGood": [
         {
-          "title": "Acheter plus de crédits après avoir atteint la limite (Pro/Max)",
-          "example": "/usage-credits"
+          "title": "Continuer à travailler après avoir atteint la limite du plan (Pro/Max)",
+          "example": "Exécuter /usage-credits pour ouvrir la page de facturation dans le navigateur et activer du crédit."
         },
         {
-          "title": "Sans accès à la facturation, demander des crédits à votre administrateur",
-          "example": "/usage-credits"
+          "title": "Demander du crédit à l'administrateur sans accès à la facturation (Team/Enterprise)",
+          "example": "Exécuter /usage-credits et valider la confirmation en CLI pour que la demande soit envoyée aux administrateurs de l'organisation."
         }
       ],
       "whenBad": [
         {
-          "title": "Consulter uniquement l'utilisation actuelle",
-          "why": "/usage-credits gère les crédits ; elle n'affiche pas la vue d'ensemble de l'utilisation.",
+          "title": "Vérifier uniquement la consommation passée, sans gérer de crédit",
+          "why": "/usage-credits ouvre la facturation ou une demande à l'administrateur, mais n'affiche pas de récapitulatif de consommation.",
           "alternative": "/usage"
+        },
+        {
+          "title": "La connexion se fait via une clé API plutôt que via le compte claude.ai",
+          "why": "Selon la documentation, la commande n'est disponible qu'après connexion avec l'abonnement claude.ai via /login, pas avec une authentification par clé API.",
+          "alternative": "Se connecter d'abord avec /login via le compte claude.ai, puis utiliser /usage-credits."
         }
       ],
       "sources": [
