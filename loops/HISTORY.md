@@ -1991,3 +1991,35 @@ Desktop+Mobil, Titel/Link pro Sprache korrekt.
 NÄCHSTE LOOP-ARBEIT: die 320 Befehlsseiten anreichern (Syntax-Varianten, echtes
 Beispiel, typische Fehler, verwandte Befehle) — behebt den Ablehnungsgrund.
 Merke: ui[lang].nav hat KEIN „Startseite"-Label → eigene Map nötig.
+
+## Iteration 245 — 27.07.2026 ~06:30 UTC — Befehlsseiten-Anreicherung Batch 1 (18 Befehle) + Faktenfehler gefixt
+Marvin: Loop weiter, triviale Arbeit an Sonnet (Token sparen). Opus nur
+Orchestrator. Poll grün (0/0/0, views_7d 30), Smoke grün.
+ARBEIT (Marvin-Auftrag „Befehlsseiten anreichern"): Batch 1 = die 18 dünnsten
+Befehle aus 3 Plattformen. 3 Sonnet-Agenten parallel (je eine Plattform, je aus
+der OFFIZIELLEN Doku recherchiert), danach 4 Sonnet-Übersetzer (en/es/fr/zh).
+Neu: Übersetzer schreiben ihr Ergebnis SELBST per Write in scratchpad-Dateien
+und melden nur „fertig" → der Text läuft NIE durch den Orchestrator-Kontext.
+Das ist der eigentliche Token-Hebel.
+Ergebnis: 18 Befehle von Ø44 auf Ø192 Wörter (Faktor 4,4), ×5 Sprachen =
+90 Seiten. Gesamt-Ø aller 320 Befehle: 90 → 99 Wörter, unter-100-Wörter-Seiten
+209 → 191.
+🔴 ZWEI ECHTE FEHLER GEFUNDEN UND GEFIXT:
+① `/upgrade` war inhaltlich FALSCH beschrieben („Aktualisiert Claude Code auf
+   die neueste Version") — laut offizieller Doku öffnet es die Browser-Upgrade-
+   Seite für einen PLAN-Wechsel. Selbst gegengeprüft am Doku-Original
+   (code.claude.com/docs/en/commands.md, Zeile /upgrade). what UND summary in
+   allen 5 Sprachen korrigiert.
+② Backticks wurden als Zeichen gerendert (Renderer gab Plaintext aus) — fiel
+   erst durch die neuen, code-reichen Texte auf. Neue Server-Komponente
+   components/RichText.tsx rendert `inline code` als <code>, ohne Markdown-
+   Parser und ohne dangerouslySetInnerHTML; an 4 Stellen der Detailseite
+   verdrahtet (what, whenGood.example, whenBad.why, whenBad.alternative).
+Zusatz-Befund (Codex): /cloud-environment, /local, /project sind laut Doku
+ChatGPT-Desktop-App-Features, nicht reine Terminal-CLI-Befehle — Texte sagen das
+jetzt ehrlich, Kategorisierung unverändert gelassen.
+Build 0, Deploy 4b665a4f, Prod 200. Playwright: 8 <code>-Tags, keine Backticks
+im Text, kein H-Scroll mobil, Kurzbeschreibung korrekt.
+Merke: Agenten Ergebnisse in Dateien schreiben lassen (nicht in die Antwort) —
+spart massiv Orchestrator-Kontext. Wortzählung per Whitespace funktioniert bei
+ZH nicht (Zeichen zählen).

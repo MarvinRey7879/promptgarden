@@ -5,6 +5,7 @@ import { LANGS, isLang, langAlternates, ui } from '@/lib/i18n';
 import ExampleVideo from '@/components/ExampleVideo';
 import RosettaHinweis from '@/components/RosettaHinweis';
 import ShareButtons from '@/components/ShareButtons';
+import RichText from '@/components/RichText';
 import { breadcrumbLd, techArticleLd } from '@/lib/schema';
 
 // Remotion-Terminal-Demos (Direktive 12) für ausgewählte Befehle: platform/slug → Video-Basename
@@ -94,7 +95,7 @@ export default async function CommandPage({
       {(() => {
         const rest = c.what.startsWith(c.summary) ? c.what.slice(c.summary.length).trim() : c.what;
         return rest ? (
-          <p style={{ margin: '0 0 24px', fontSize: 15.5, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{rest}</p>
+          <p style={{ margin: '0 0 24px', fontSize: 15.5, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}><RichText text={rest} /></p>
         ) : null;
       })()}
 
@@ -112,7 +113,7 @@ export default async function CommandPage({
           {c.whenGood.map((g, i) => (
             <div key={i} style={{ marginBottom: i < c.whenGood.length - 1 ? 14 : 0 }}>
               <p style={{ margin: '0 0 4px', fontSize: 14.5, fontWeight: 800 }}>{g.title}</p>
-              <p className="mono" style={{ margin: 0, fontSize: 13, lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>{g.example}</p>
+              <p className="mono" style={{ margin: 0, fontSize: 13, lineHeight: 1.55, whiteSpace: 'pre-wrap' }}><RichText text={g.example} /></p>
             </div>
           ))}
         </div>
@@ -124,9 +125,9 @@ export default async function CommandPage({
           {c.whenBad.map((b, i) => (
             <div key={i} style={{ marginBottom: i < c.whenBad.length - 1 ? 14 : 0 }}>
               <p style={{ margin: '0 0 4px', fontSize: 14.5, fontWeight: 800 }}>{b.title}</p>
-              <p style={{ margin: '0 0 4px', fontSize: 14, lineHeight: 1.55 }}>{b.why}</p>
+              <p style={{ margin: '0 0 4px', fontSize: 14, lineHeight: 1.55 }}><RichText text={b.why} /></p>
               <p style={{ margin: 0, fontSize: 13.5 }}>
-                <b>{t.cmdAlternative}:</b> {b.alternative}
+                <b>{t.cmdAlternative}:</b> <RichText text={b.alternative} />
               </p>
             </div>
           ))}

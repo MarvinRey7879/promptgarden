@@ -592,18 +592,27 @@
       "slug": "cost",
       "name": "/cost",
       "summary": "/usage 的别名。",
-      "what": "/usage 的别名。",
+      "what": "根据参考表，`/cost` 字面上是 \"Alias for /usage\"。调用 `/cost` 会打开与 `/usage` 相同的视图：顶部的会话区块显示当前会话的 token 消耗量，该数值由 Claude Code 在本地根据 token 数量按标价计算得出——不包含促销价格或合同折扣。若要查看具有约束力的账单，文档建议前往 Claude Console 中的 Usage 页面。\n\n在 Pro、Max、Team 或 Enterprise 方案上，该视图还会补充方案使用限额、活动统计，以及按 Skill、子代理（Subagent）、插件和 MCP 服务器划分的明细。自 2.1.211 版起，这些汇总数字会在每次 `/clear` 时重置为 0 美元；在此之前，它们会在整个进程运行期间持续累计。\n\n除 `/cost` 之外，还有 `/stats` 这个第二个别名，可直接跳转到同一视图的 Stats 标签页。",
       "whenGood": [
         {
-          "title": "快速查看 API 费用/Token 消耗,而无需记住 /usage 这个名称",
-          "example": "/cost"
+          "title": "快速查看费用",
+          "example": "输入 `/cost`，无需记住真正的命令名称 `/usage`。"
+        },
+        {
+          "title": "对照方案限额查看消耗量",
+          "example": "作为 Pro 或 Max 订阅用户，调用 `/cost` 一目了然地查看方案使用限额和活动统计。"
         }
       ],
       "whenBad": [
         {
-          "title": "期望它相对于 /usage 具有独立的附加功能",
-          "why": "/cost 只是一个别名(Alias),并不是行为不同的独立命令",
-          "alternative": "直接使用 /usage,或使用 /stats 查看统计(Stats)标签页"
+          "title": "期待独立功能",
+          "why": "根据文档，该命令只是一个别名，并非具有不同行为的独立命令。",
+          "alternative": "直接使用 `/usage`，或使用 `/stats` 打开同一视图的 Stats 标签页。"
+        },
+        {
+          "title": "想查看具有约束力的账单",
+          "why": "显示的美元金额是在本地根据 token 数量按标价计算得出的，可能与实际账单金额存在差异。",
+          "alternative": "如需具有约束力的账单信息，请打开 Claude Console 中的 Usage 页面。"
         }
       ],
       "sources": [
@@ -708,18 +717,27 @@
       "slug": "design-login",
       "name": "/design-login",
       "summary": "通过 claude.ai 账户为 /design-sync 授权访问设计系统。",
-      "what": "通过 claude.ai 账户为 /design-sync 授权访问设计系统。",
+      "what": "`/design-login` 会通过你的 claude.ai 账号，为 `/design-sync` 授权访问你的设计系统（Design System）。该命令本身不进行任何同步，只是建立 `/design-sync` 之后所需要的账号连接。\n\n`/design-sync [hint]` 会转换你仓库中的 React 设计系统并上传到 Claude Design，让 Claude 生成的设计使用你真实的组件；你也可以选择为设计系统命名，例如 `/design-sync Acme DS`。首次同步会校验每一个组件，对于较大的仓库可能需要数小时。\n\n关于可用性有一点很重要：`/design-sync` 仅通过 Anthropic API 运行。在 Amazon Bedrock、Google Cloud 的 Agent Platform、Microsoft Foundry 以及 Claude Platform on AWS 上，底层工具无法访问 claude.ai——这两个命令在这些平台上均不可用。",
       "whenGood": [
         {
-          "title": "在首次使用 /design-sync 之前进行一次性授权",
-          "example": "/design-login — 在首次同步自己的 React 设计系统之前执行"
+          "title": "在首次设计同步之前先授权",
+          "example": "在首次同步自己的 React 设计系统之前执行 `/design-login`。"
+        },
+        {
+          "title": "更换账号后重新连接",
+          "example": "当 `/design-sync` 突然无法再访问设计系统时，重新调用 `/design-login`。"
         }
       ],
       "whenBad": [
         {
-          "title": "期望该命令已经能同步设计稿",
-          "why": "/design-login 只通过 claude.ai 账户授权访问,本身并不进行任何同步",
-          "alternative": "之后执行 /design-sync 来完成实际的同步"
+          "title": "期待立即完成同步",
+          "why": "该命令只通过 claude.ai 账号授权访问，本身不进行任何同步。",
+          "alternative": "之后执行 `/design-sync` 来完成真正的同步。"
+        },
+        {
+          "title": "在 Bedrock、Vertex 或 Foundry 上",
+          "why": "根据文档，`/design-sync` 在 Amazon Bedrock、Google Cloud 的 Agent Platform、Microsoft Foundry 以及 Claude Platform on AWS 上均不可用——授权操作也就毫无意义。",
+          "alternative": "如果需要设计同步功能，请切换到直接使用 Anthropic API。"
         }
       ],
       "sources": [
@@ -2523,18 +2541,22 @@
       "slug": "stickers",
       "name": "/stickers",
       "summary": "订购 Claude Code 贴纸。",
-      "what": "订购 Claude Code 贴纸。",
+      "what": "`/stickers` 是「所有命令」参考表中一个简单、独立、不带参数的命令。文档用一句话字面描述它：\"Order Claude Code stickers\"——在聊天中调用后，会启动实体 Claude Code 贴纸的订购流程。\n\n文档既没有记录任何标志（flag），也没有记录可选参数，参考表中也没有为 `/stickers` 本身注明任何针对特定方案或平台的限制。不过文档中有一条通用说明适用于所有命令：并非每个命令都会对每个用户显示，这取决于平台、方案和环境——文档明确以 `/upgrade` 为例，该命令在企业版方案上不会显示。\n\n该命令既未被标记为 Skill，也未被标记为 Workflow，因此属于内置命令：它的行为固定写死在 CLI 代码中，而不是存在于发给 Claude 的提示词里。",
       "whenGood": [
         {
-          "title": "为自己或团队订购周边商品",
-          "example": "调用 /stickers 订购 Claude Code 贴纸。"
+          "title": "为团队订购贴纸",
+          "example": "调用 `/stickers`，为自己或团队订购 Claude Code 贴纸。"
+        },
+        {
+          "title": "为聚会准备贴纸",
+          "example": "在本地开发者聚会之前输入 `/stickers`，订购贴纸分发给参与者。"
         }
       ],
       "whenBad": [
         {
-          "title": "期待获得开发方面的实际用处",
-          "why": "/stickers 与实际开发工作无关,纯粹是周边商品订购。",
-          "alternative": "处理实际开发任务时使用其他开发相关命令,而不是 /stickers。"
+          "title": "期待生产性用途",
+          "why": "根据文档，该命令的功能仅是 \"Order Claude Code stickers\"——与实际开发工作没有任何关联。",
+          "alternative": "对于生产性任务，请使用 `/code-review` 或 `/plan` 等开发命令。"
         }
       ],
       "sources": [
@@ -2608,19 +2630,28 @@
       "platform": "claude-code",
       "slug": "upgrade",
       "name": "/upgrade",
-      "summary": "将 Claude Code 更新到最新版本。",
-      "what": "将 Claude Code 更新到最新版本。\n\n仅在 Pro 和 Max 套餐下可见。",
+      "summary": "在浏览器中打开升级页面，以切换到更高的方案等级。",
+      "what": "`/upgrade` 会在浏览器中打开升级页面，以便切换到更高的方案等级——涉及的是你的订阅，而不是已安装的软件。如果浏览器自动打开失败，根据文档，该命令会改为显示一个登录提示，而不会直接输出 URL。\n\n该命令的可见性取决于方案和平台：官方参考文档明确指出，`/upgrade` 在企业版方案上不会显示。根据更新日志，引入该命令是为了简化切换到 Claude Max 方案的流程。\n\n`/upgrade` 不负责更新已安装的 Claude Code 版本。若发布渠道中有更新版本，`/doctor` 会在设置检查时予以提示；更新本身则通过常规安装方式或你的包管理器进行。",
       "whenGood": [
         {
-          "title": "更新到最新版本",
-          "example": "一旦有新的 Claude Code 版本发布,就调用 /upgrade 直接安装。"
+          "title": "切换到更高的方案等级",
+          "example": "调用 `/upgrade`，在浏览器中打开升级页面，例如从 Pro 切换到 Max。"
+        },
+        {
+          "title": "触及限额后获取更多额度",
+          "example": "收到限额提示后输入 `/upgrade`，直接切换到更高的方案等级，而不必等到限额重置。"
         }
       ],
       "whenBad": [
         {
-          "title": "没有 Pro/Max 订阅计划",
-          "why": "根据文档,/upgrade 仅在 Pro 和 Max 订阅计划下可见。",
-          "alternative": "通过常规的安装方式/包管理器进行更新。"
+          "title": "期待更新 CLI",
+          "why": "根据文档，该命令用于切换方案等级，为此会打开浏览器中的升级页面——它不会更新已安装的 Claude Code 版本。",
+          "alternative": "通过常规安装方式或包管理器更新版本；`/doctor` 会提示是否有更新版本可用。"
+        },
+        {
+          "title": "在企业版方案上使用",
+          "why": "官方参考文档明确指出，`/upgrade` 在企业版方案上不会显示。",
+          "alternative": "方案变更请通过相应的管理员或团队/企业版管理渠道处理。"
         }
       ],
       "sources": [
@@ -3462,18 +3493,22 @@
       "slug": "rename",
       "name": "/rename",
       "summary": "重命名当前的聊天会话。",
-      "what": "/rename 为当前聊天会话设置一个新名称。",
+      "what": "`/rename <name>` 用于为 Cursor CLI 当前的聊天会话重命名。你直接将想要的名称作为参数传入，例如 `/rename Auth-Refactor`。官方 slash 命令参考文档对该命令的描述是 \"Rename the current chat session\"——文档没有提及其他选项。\n\n根据 2026 年 6 月 22 日的更新日志条目，`/rename` 与 `/copy` 一同属于围绕输入快捷方式、复制先前消息以及会话命名的一系列改进。\n\n一个有意义的名称主要有助于日后通过 `/resume` 在最近聊天列表中重新找到该会话，而不必依赖时间戳来判断。",
       "whenGood": [
         {
-          "title": "让多个并行会话可以互相区分",
-          "example": "/rename Auth-Refactor — 在多个打开的聊天之间切换之前"
+          "title": "让并行的会话彼此可辨",
+          "example": "在多个针对不同功能的聊天之间切换之前，输入 `/rename Auth-Refactor`。"
+        },
+        {
+          "title": "为便于日后找回而标记会话",
+          "example": "在 `/quit` 之前先调用 `/rename Release-Vorbereitung`，让会话在 `/resume` 中依然可辨认。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是一个单次、短暂的会话",
-          "why": "对于一次性的会话,重命名通常不值得。",
-          "alternative": "保留默认名称,需要时再用 /resume 找回"
+          "title": "只是一个短暂的会话",
+          "why": "对于随即就会结束的一次性聊天，重命名通常并不划算。",
+          "alternative": "保留默认名称，需要时通过 `/resume` 根据内容识别该会话。"
         }
       ],
       "sources": [
@@ -3827,18 +3862,27 @@
       "slug": "setup-terminal",
       "name": "/setup-terminal",
       "summary": "根据检测到的终端配置换行快捷键。",
-      "what": "/setup-terminal 会根据检测到的终端程序,自动配置换行快捷键(例如 Option+Enter)。",
+      "what": "`/setup-terminal` 会识别你使用的终端程序，并将 `Option+Enter` 设置为插入换行符的方式。根据文档，iTerm2、Ghostty、Kitty、Warp 以及 Zed 内置终端本身就已原生支持 `Shift+Enter`——在这些终端中不需要用到该命令。而在 Apple Terminal、Alacritty 以及 VS Code 内置终端中，该命令会负责完成相应配置。\n\n在 tmux 或 screen 这类终端复用器（multiplexer）中，该命令不起作用，因为这些工具会自行拦截 `Shift+Enter`；根据文档，在这种情况下 `Ctrl+J` 仍是最可靠的替代方式，在任何地方都无需配置即可使用。\n\n如果你更愿意自己设置按键，文档中提供了手动配置说明——例如让 `Option+Enter` 发送 `\\x1b\\r`，并附有 iTerm2、Alacritty 和 Kitty 的示例配置。",
       "whenGood": [
         {
-          "title": "想方便地书写多行 Prompt",
-          "example": "/setup-terminal — 安装后执行一次即可"
+          "title": "能够编写多行提示词",
+          "example": "在 Apple Terminal 中安装完成后执行一次 `/setup-terminal`，让 `Option+Enter` 插入换行符而不是直接发送。"
+        },
+        {
+          "title": "配置 VS Code 终端",
+          "example": "在 VS Code 内置终端中调用 `/setup-terminal`，因为根据文档，该终端并不原生支持 `Shift+Enter`。"
         }
       ],
       "whenBad": [
         {
-          "title": "终端程序不支持重新配置",
-          "why": "并非所有终端都允许自动设置这类快捷键。",
-          "alternative": "在终端程序中手动配置换行快捷键"
+          "title": "终端已经支持 Shift+Enter",
+          "why": "根据文档，iTerm2、Ghostty、Kitty、Warp 以及 Zed 内置终端无需设置即可处理换行。",
+          "alternative": "直接使用 `Shift+Enter` 即可。"
+        },
+        {
+          "title": "在 tmux 或 screen 中工作",
+          "why": "终端复用器会自行拦截 `Shift+Enter`，根据文档，该命令在这类环境中不起作用。",
+          "alternative": "使用 `Ctrl+J`——根据文档，这是最可靠的替代方式。"
         }
       ],
       "sources": [
@@ -3853,18 +3897,22 @@
       "slug": "help",
       "name": "/help",
       "summary": "显示帮助;带上命令名参数时显示该命令的详情。",
-      "what": "/help 显示可用命令概览;/help <command> 显示某个具体命令的详情。",
+      "what": "`/help` 会在 Cursor CLI 的聊天提示词界面中显示所有可用 slash 命令的概览。如果你以某个命令的名称作为参数调用 `/help <command>`，CLI 会改为显示该命令的详细说明。官方参考文档对此的简要描述是 \"Show help. Use /help <command> for command details.\"\n\n除了这个可选参数外，文档没有提及其他选项。调用该命令不会对代码或会话产生任何改动，它纯粹用于查阅。\n\nslash 命令参考文档列出了超过 30 个命令，从 `/model` 到 `/bedrock`——因此 `/help` 是在这份列表中快速定位、而无需打开文档网站的核心入口。",
       "whenGood": [
         {
-          "title": "查阅一个不常用命令的语法",
-          "example": "/help mcp"
+          "title": "查阅不常用命令的语法",
+          "example": "输入 `/help mcp`，在使用之前查看 MCP 服务器管理的准确语法。"
+        },
+        {
+          "title": "获取所有命令的总览",
+          "example": "不带参数调用 `/help`，在终端中查看完整的 slash 命令列表。"
         }
       ],
       "whenBad": [
         {
-          "title": "已经明确知道需要哪个命令",
-          "why": "先绕道去看帮助只会浪费时间。",
-          "alternative": "直接调用该命令"
+          "title": "早已熟知要找的命令",
+          "why": "绕道去看帮助只会多花一步，却不会带来任何新信息。",
+          "alternative": "直接用已知的参数调用该命令。"
         }
       ],
       "sources": [
@@ -4009,18 +4057,22 @@
       "slug": "quit",
       "name": "/quit",
       "summary": "退出当前 CLI 会话。",
-      "what": "/quit 会退出 CLI 会话。",
+      "what": "`/quit` 会结束 Cursor CLI 当前的交互式会话。与 `/exit` 一样，官方 slash 命令参考文档中的说明也只是简单的 \"Exit\"——因此根据文档，这两个命令可以互换使用，都没有额外的文档说明功能。\n\n参考文档没有提及任何参数或选项。执行 `/quit` 后聊天进程会关闭，你会回到普通终端。\n\n如果希望日后还能找回这个会话，可以提前用 `/rename` 为它取一个便于识别的名字；之后就能通过 `/resume` 从最近聊天列表中重新打开它。",
       "whenGood": [
         {
-          "title": "这个会话的工作已经完成",
-          "example": "/quit — 在所有改动都已采纳之后"
+          "title": "工作已经完成",
+          "example": "在最后一批改动被采纳后输入 `/quit`，关闭聊天。"
+        },
+        {
+          "title": "使用更顺口的命令",
+          "example": "如果觉得 `/quit` 比 `/exit` 更好记，直接输入 `/quit` 即可——根据文档，两者行为相同。"
         }
       ],
       "whenBad": [
         {
-          "title": "之后还想继续这个具体的会话",
-          "why": "执行 /quit 之后,需要先通过 /resume 才能找回该会话。",
-          "alternative": "提前用 /rename 让会话之后更容易找到"
+          "title": "之后想继续处理同一个会话",
+          "why": "结束会话后，必须先通过 `/resume` 在最近聊天列表中重新找到它。",
+          "alternative": "提前使用 `/rename`，以便日后更容易找到它。"
         }
       ],
       "sources": [
@@ -4035,18 +4087,22 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "退出当前 CLI 会话,效果与 /quit 相同。",
-      "what": "/exit 会退出 CLI 会话,功能上与 /quit 完全一致。",
+      "what": "`/exit` 会结束 Cursor CLI（`cursor-agent`）当前的交互式会话。你在提示词输入框中直接输入该命令，不带任何其他参数。在官方 slash 命令参考文档中，`/exit` 的说明与 `/quit` 完全相同：两者都仅被记录为 \"Exit\"，因此根据文档，二者在功能上没有区别。\n\n参考文档没有提及任何选项或参数。调用后聊天进程会结束，你会回到普通的终端提示符。\n\n如果之后想继续处理同一个会话，可以通过 `/resume` 找回它——建议提前用 `/rename` 为其命名，以便在最近聊天列表中能够辨认出来。",
       "whenGood": [
         {
-          "title": "这个会话的工作已经完成",
-          "example": "/exit — 在所有改动都已采纳之后"
+          "title": "任务完成后结束会话",
+          "example": "在最后一次提交（commit）被采纳后输入 `/exit`，退出聊天并返回 Shell。"
+        },
+        {
+          "title": "出于终端使用习惯而退出",
+          "example": "习惯在 Unix 终端中使用 `exit` 的用户，会输入 `/exit` 而不是 `/quit`——根据文档，两者行为相同。"
         }
       ],
       "whenBad": [
         {
-          "title": "出于习惯混用这两个命令",
-          "why": "/exit 和 /quit 做的事情完全一样,用其中一个就够了。",
-          "alternative": "始终如一地使用其中一个"
+          "title": "随意混用这两个命令",
+          "why": "根据参考文档，`/exit` 和 `/quit` 都只被描述为 \"Exit\"；文档中没有记录任何区别。",
+          "alternative": "两者选其一，保持一致地使用。"
         }
       ],
       "sources": [
@@ -4318,18 +4374,22 @@
       "slug": "load-workspace",
       "name": "/load-workspace",
       "summary": "加载之前用 /save-workspace 保存的多根工作区集合。",
-      "what": "/load-workspace 会把之前保存的目录组合重新加载到会话中。记录于官方 Changelog,(暂)未列入命令参考表。",
+      "what": "`/load-workspace` 会将之前用 `/save-workspace` 保存的多目录集合重新加载到当前会话中。根据 2026 年 6 月 22 日的更新日志条目（\"Named multi-directory workspaces\"），借助该功能可以让代理跨多个仓库使用：你在运行时用 `/add-dir` 添加目录，用 `/save-workspace` 为形成的集合命名并保存，之后再用 `/load-workspace` 重新打开它。\n\n另外，你也可以通过 `--workspace <path>` 标志直接以某个特定集合启动。\n\n该命令目前尚未出现在 CLI 文档的 slash 命令参考表中——仅在更新日志中有记录。更新日志条目没有说明更详细的语法细节，例如加载时是否需要提供名称作为参数。",
       "whenGood": [
         {
-          "title": "快速回到熟悉的多仓库环境",
-          "example": "/load-workspace backend-plus-shared-lib"
+          "title": "回到熟悉的多仓库环境",
+          "example": "重启 CLI 后调用 `/load-workspace`，重新加载之前保存的、由前端和后端仓库组成的集合。"
+        },
+        {
+          "title": "在跨项目配置之间切换",
+          "example": "在从一个微服务集合切换到另一个时使用 `/load-workspace`，而不是用 `/add-dir` 重新逐一添加每个目录。"
         }
       ],
       "whenBad": [
         {
-          "title": "还没有保存过任何工作区集合",
-          "why": "/load-workspace 需要先执行过一次 /save-workspace。",
-          "alternative": "用 /add-dir 手动添加目录"
+          "title": "还没有已保存的集合",
+          "why": "根据更新日志，该命令的前提是此前已经调用过 `/save-workspace`。",
+          "alternative": "先用 `/add-dir` 添加目录，再用 `/save-workspace` 保存。"
         }
       ],
       "sources": [
@@ -9145,18 +9205,27 @@
       "slug": "web-setup",
       "name": "/web-setup",
       "summary": "将你的 GitHub 账号连接到网页版 Claude Code。",
-      "what": "使用本地 gh CLI 凭据，将你的 GitHub 账号连接到网页版 Claude Code。",
+      "what": "`/web-setup` 会将你的 GitHub 账号与 Claude Code on the web 连接起来——使用的是本地已安装的 `gh` CLI 的凭据，而不是走单独的 OAuth 流程。参考文档没有提及其他参数或标志。\n\n该命令也会被自动触发：如果你用 `/schedule` 设置了一个周期性云端例程（routine），而 GitHub 尚未关联，Claude Code 会主动询问是否建立这一连接。此外，`/web-setup` 现在会在替换已有的 GitHub App 连接之前发出警告，而不是悄无声息地覆盖旧的关联。\n\n前提条件是已安装并登录 `gh` CLI；若没有它，该命令无法读取凭据，也无法建立连接。",
       "whenGood": [
         {
-          "title": "将网页版 Claude Code 与你的 GitHub 账号关联",
-          "example": "/web-setup"
+          "title": "将 GitHub 与 Claude Code on the web 关联",
+          "example": "调用 `/web-setup`，让 Claude Code on the web 获得对自己仓库的访问权限。"
+        },
+        {
+          "title": "在设置云端例程之前先配置好",
+          "example": "在使用 `/schedule` 之前先执行一次 `/web-setup`，让例程可以直接访问 GitHub，而不是在执行到一半时才询问。"
         }
       ],
       "whenBad": [
         {
-          "title": "没有安装并登录 gh CLI",
-          "why": "该命令使用你本地的 gh CLI 凭据；没有凭据就无法连接任何账号。",
-          "alternative": "先安装 gh CLI，并使用「gh auth login」登录"
+          "title": "未安装 gh CLI 的情况下",
+          "why": "该命令使用的是 `gh` CLI 的本地凭据；没有它就无法建立任何连接。",
+          "alternative": "先安装 `gh` CLI，并通过 `gh auth login` 登录。"
+        },
+        {
+          "title": "替换已有连接",
+          "why": "该命令虽然会在替换已有的 GitHub App 连接前发出警告，但如果直接点掉警告，就会失去旧的关联。",
+          "alternative": "仔细阅读警告内容，如有不确定就取消操作。"
         }
       ],
       "sources": [
@@ -9171,22 +9240,27 @@
       "slug": "workflows",
       "name": "/workflows",
       "summary": "打开正在运行的工作流的进度视图。",
-      "what": "打开工作流进度视图，用于查看、暂停、恢复或保存正在运行和已完成的工作流。",
+      "what": "`/workflows` 会打开动态工作流（Workflow）的进度视图：可以选择、观察、暂停、继续、停止正在运行和已完成的运行，或将其保存为自定义命令。工作流在后台运行，将工作分配给多个子代理（Subagent）；即使当前正有回复在生成，该视图也会立即打开。\n\n根据文档，视图中适用以下按键：`p` 暂停或继续运行，`x` 停止选中的代理，或者——当焦点在整个运行上时——停止整个工作流，`r` 重新启动一个正在运行的代理，`s` 将脚本保存为自定义命令，项目范围内保存到 `.claude/workflows/`，个人范围内保存到 `~/.claude/workflows/`。\n\n已暂停的运行可以继续：已完成的代理会提供其缓存结果，其余代理则实时继续运行。不过这只在同一会话内有效——重启后，工作流会从头开始。",
       "whenGood": [
         {
-          "title": "查看或暂停正在运行的工作流",
-          "example": "/workflows"
+          "title": "观察正在运行的工作流",
+          "example": "调用 `/workflows`，用方向键选择运行，再按 `p` 暂停，以便短暂去做别的事情。"
         },
         {
-          "title": "保存已完成的工作流以便日后复用",
-          "example": "/workflows"
+          "title": "将一次运行保存为命令",
+          "example": "在一次成功的审查（review）工作流之后打开 `/workflows`，选择该运行，按 `s` 保存到 `.claude/workflows/`，以便日后重复使用。"
         }
       ],
       "whenBad": [
         {
-          "title": "根本没有正在运行的工作流",
-          "why": "该视图显示正在运行和已完成的工作流；没有工作流时会保持空白。",
-          "alternative": "先启动一个工作流"
+          "title": "根本没有工作流在运行",
+          "why": "该视图显示正在运行和已完成的工作流；如果一个都没有，视图就是空的。",
+          "alternative": "先启动一个工作流，例如通过 `/deep-research` 这样的内置工作流。"
+        },
+        {
+          "title": "期待重启后能继续运行",
+          "why": "根据文档，继续运行的功能只在同一会话内有效；如果在工作流运行期间退出 Claude Code，下一次会话会让工作流从头开始。",
+          "alternative": "让会话保持打开，或有意识地重新启动工作流。"
         }
       ],
       "sources": [
@@ -9413,18 +9487,22 @@
       "slug": "feedback",
       "name": "/feedback",
       "summary": "打开反馈对话框，可选择附带日志。",
-      "what": "打开反馈对话框以提交反馈，并可选择附带日志。",
+      "what": "`/feedback` 会打开 Codex CLI 的反馈对话框。你输入 `/feedback` 并按 Enter 确认，之后 Codex 会引导你完成几项询问，并允许你可选地附上日志或诊断数据；随后 Codex 会将这些信息提交给 Codex 团队。\n\n根据文档，该命令用于向 Codex 维护者发送日志——也就是报告具体问题或分享诊断信息，而不是作为当前聊天中解答内容性问题的求助渠道。\n\n该命令属于独立的终端 CLI 参考文档，拥有专门的文档章节和分步说明；此外它也以相同含义出现在跨平台的总命令表中。",
       "whenGood": [
         {
-          "title": "向 Codex 团队报告问题或建议",
-          "example": "/feedback"
+          "title": "附带日志报告一个错误",
+          "example": "Codex 在某个场景中表现异常，于是调用 `/feedback` 并附上日志以便诊断。"
+        },
+        {
+          "title": "提交一个改进建议",
+          "example": "通过 `/feedback` 将一个关于缺失功能的想法直接发送给维护者。"
         }
       ],
       "whenBad": [
         {
-          "title": "这是一个普通问题，而非反馈",
-          "why": "/feedback 用于向团队发送消息，而不是在聊天中获取帮助。",
-          "alternative": "直接在聊天中提出问题"
+          "title": "涉及的是内容性问题",
+          "why": "根据文档，该命令用于向维护者反馈信息，而不是作为会话内的求助渠道。",
+          "alternative": "直接在聊天中提出问题。"
         }
       ],
       "sources": [
@@ -9439,18 +9517,27 @@
       "slug": "approve",
       "name": "/approve",
       "summary": "在自动审查拒绝后，批准一次重试。",
-      "what": "仅在自动审查处于启用状态时，批准对最近一次自动审查拒绝的重试。",
+      "what": "`/approve` 会为此前被自动审查器（Reviewer）拒绝的某个操作批准一次重试。根据文档，该命令只有在启用了自动审查（Auto-Review）时才起作用。自动审查会用一个独立的审查代理取代沙盒边界处的人工放行，该代理会批准或拒绝诸如风险性 Shell 命令、网络访问，或超出允许路径范围的写入访问等请求。\n\n调用 `/approve` 会打开一个最近被拒绝的操作列表——Codex 每个任务最多保存十条。你从中选择一项，为其批准恰好一次重试。\n\n该批准的范围非常有限：它只针对这一个具体操作生效，不适用于未来类似的操作，而且这次重试仍会经过自动审查，仍有可能再次被拒绝。",
       "whenGood": [
         {
-          "title": "放行一个被自动审查拦下的步骤",
-          "example": "/approve"
+          "title": "重试一个被误拦截的操作",
+          "example": "审查器拒绝了一个位于允许路径之外、但无害的 lint 命令；你通过 `/approve` 为它批准一次重试。"
+        },
+        {
+          "title": "在被拒绝后有针对性地干预",
+          "example": "Codex 报告某个操作被自动审查拒绝；你通过 `/approve` 恰好批准这一个操作。"
         }
       ],
       "whenBad": [
         {
           "title": "自动审查根本没有启用",
-          "why": "只有存在需要重试的自动拒绝时，/approve 才适用。",
-          "alternative": "通过 /permissions 调整权限"
+          "why": "根据文档，该命令只在启用了自动审查的交互式放行场景中起作用；如果放行策略被设为「从不」，就没有什么可审查的。",
+          "alternative": "通过 `/permissions` 或相应配置调整审批策略。"
+        },
+        {
+          "title": "想要永久放宽策略",
+          "why": "根据文档，该命令只为恰好一个操作批准一次重试，不会放宽某一类未来操作。",
+          "alternative": "在 `config.toml` 中调整自动审查策略，或设置更严格的路径规则。"
         }
       ],
       "sources": [
@@ -9491,18 +9578,27 @@
       "slug": "project",
       "name": "/project",
       "summary": "为新聊天选择一个项目。",
-      "what": "为新聊天选择一个项目。\n\n所选项目会设定新启动聊天的初始上下文。",
+      "what": "`/project` 用于选择新聊天启动时所使用的项目。slash 命令参考文档对它的简要描述是 \"Choose a project for new chats\"——所选项目会提供文件、指令以及关联数据源等上下文，供新启动的聊天访问。\n\n有一点对理解它至关重要：关于项目与聊天的文档明确指出，ChatGPT 的 Projects 视图是 ChatGPT 桌面应用的功能，并且原文写明，Codex CLI 会把你启动它时所在的目录当作项目，而根本不会显示 Projects 视图。\n\n因此在终端 CLI 中，只有启动目录（或 `--cd <directory>` 即 `-C`）才决定项目。IDE 扩展相应地会将已打开的文件夹作为本地项目使用。",
       "whenGood": [
         {
-          "title": "将新聊天绑定到特定项目",
-          "example": "/project"
+          "title": "让新聊天绑定同一批文件",
+          "example": "你正在长期进行一次重新设计，于是选择对应的项目，让新聊天自动使用其文件和指令。"
+        },
+        {
+          "title": "将多个聊天归入同一项工作",
+          "example": "针对一个包含多个子任务的功能使用同一个项目，而不是孤立地启动每个聊天。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想影响当前这一个聊天",
-          "why": "/project 作用于新启动的聊天，不会追溯应用到正在进行的聊天。",
-          "alternative": "保持当前聊天不变"
+          "title": "期望在终端 CLI 中使用",
+          "why": "根据文档，在终端 CLI 中，启动目录本身就决定了项目；该 CLI 根本不会显示 ChatGPT 的 Projects 视图。",
+          "alternative": "在目标目录下启动终端 CLI，或通过 `--cd <directory>` 显式指定。"
+        },
+        {
+          "title": "工作只是一次性的",
+          "why": "根据文档，对于不需要重复使用上下文的孤立聊天，使用项目并不划算。",
+          "alternative": "不使用项目，直接启动聊天。"
         }
       ],
       "sources": [
@@ -9543,18 +9639,27 @@
       "slug": "local",
       "name": "/local",
       "summary": "在你的本地工作区中运行该聊天。",
-      "what": "在你的本地工作区中运行该聊天。\n\n是 /cloud 的对应命令：任务在你的机器上运行，可直接访问你的文件。",
+      "what": "`/local` 用于让 Codex 聊天在你的本地工作区中运行，而不是在云端；slash 命令参考文档对它的简要描述是 \"Run the chat in your local workspace\"。与之相对的是云端执行，或者说选择一个具体的环境。\n\n有一点对理解它很重要：Codex 环境相关文档明确将这一选择描述为 ChatGPT 桌面应用的功能——你在那里启动新聊天时做出这一选择。Local 和 Worktree 两种聊天都在你自己的电脑上运行，可以直接访问文件，只有 Cloud 是在容器中远程运行。\n\n而独立的终端 CLI 参考文档并未列出 `/local`——终端 CLI 本身原本就是本地运行的，根本不需要单独的切换命令。",
       "whenGood": [
         {
-          "title": "直接处理本地项目文件",
-          "example": "/local"
+          "title": "保留对文件的直接访问",
+          "example": "你希望能完全访问本地文件，因此选择保持本地运行，而不是把聊天转移到云端。"
+        },
+        {
+          "title": "无云端延迟的快速迭代",
+          "example": "对于一个想立即测试的简短 bug 修复，你选择留在本地工作区。"
         }
       ],
       "whenBad": [
         {
-          "title": "本机性能不足以胜任该任务",
-          "why": "在本地模式下，一切都在你的机器上运行。",
-          "alternative": "/cloud"
+          "title": "任务需要独立于本机运行",
+          "why": "本地执行会将工作绑定在你的电脑上；若要远程执行，需要一个云端环境。",
+          "alternative": "切换到一个已配置好的云端环境。"
+        },
+        {
+          "title": "期望在终端 CLI 中使用该命令",
+          "why": "根据文档，Local/Worktree/Cloud 的选择是通过 ChatGPT 桌面应用完成的；终端 CLI 中并未列出 `/local`。",
+          "alternative": "在终端中直接在目标目录下启动 `codex` 即可——这本身就是本地运行。"
         }
       ],
       "sources": [
@@ -9569,18 +9674,27 @@
       "slug": "cloud-environment",
       "name": "/cloud-environment",
       "summary": "为该聊天选择云端环境。",
-      "what": "为该聊天选择云端环境。\n\n决定一个云端聊天在哪个已配置的云端环境中运行。",
+      "what": "如果你选择以云端方式运行，`/cloud-environment` 用于选择 Codex 聊天所运行的云端环境。根据 Codex 环境相关文档，为此你需要在 ChatGPT 桌面应用中打开 ChatGPT 下拉菜单，选择 Codex，并在启动新聊天时在 Local、Worktree 和 Cloud 之间做出选择。\n\n云端环境决定了 Codex 在云端聊天期间安装和运行的内容：依赖项、Linter 或格式化工具等工具、环境变量。启动时，Codex 会在容器中检出你的分支或提交（commit），运行你的设置脚本，如果你没有使用自定义设置，之后会继续在预安装的默认镜像 `universal` 中工作。环境的配置在 Codex 的设置（Settings）中完成。\n\n有一点对理解该命令很重要：纯终端 CLI 的参考文档中并未列出该命令——文档明确将环境选择描述为 ChatGPT 桌面应用的功能。",
       "whenGood": [
         {
           "title": "在多个云端环境之间切换",
-          "example": "/cloud-environment"
+          "example": "你创建了两个使用不同 Node 版本的环境，并在下一次云端聊天之前选择合适的那一个。"
+        },
+        {
+          "title": "在云端任务开始前确保工具链就绪",
+          "example": "在启动一个依赖特殊依赖项的云端聊天之前，检查当前激活的环境是否预装了合适的软件包。"
         }
       ],
       "whenBad": [
         {
-          "title": "该聊天在本地运行",
-          "why": "只有在云端执行模式下，云端环境才有意义。",
-          "alternative": "先用 /cloud 切换到云端"
+          "title": "聊天在本地运行",
+          "why": "根据文档，该命令只决定云端执行使用哪个环境——在本地执行时不起作用。",
+          "alternative": "先通过 Local/Worktree/Cloud 选项切换到云端。"
+        },
+        {
+          "title": "期望在纯终端 CLI 中使用",
+          "why": "文档明确将 Local/Worktree/Cloud 选择描述为 ChatGPT 桌面应用的功能；终端 CLI 参考文档中并未列出该命令。",
+          "alternative": "在终端中改用子命令 `codex cloud` 来启动云端任务。"
         }
       ],
       "sources": [
@@ -9621,18 +9735,22 @@
       "slug": "quit",
       "name": "/quit",
       "summary": "退出会话。",
-      "what": "退出会话并关闭 CLI。等同于 /exit——两个命令都会结束会话。",
+      "what": "`/quit` 会立即结束正在运行的 Codex CLI 会话。你在 Composer 中输入该命令并按 Enter 确认，会话随即关闭。根据文档，`/quit` 在功能上与 `/exit` 完全相同——两者结束的是同一个会话，`/exit` 只是另一种写法。另外，也可以用 `Ctrl+C` 关闭会话。\n\n文档明确建议，只有在保存或提交（commit）了重要改动之后才使用该命令：Codex 会立即退出，不会事先询问，也不会自动保存。\n\n与 `/cloud-environment` 或 `/project` 不同，`/quit` 有专门的文档章节，被明确记录为纯终端会话的组成部分。",
       "whenGood": [
         {
-          "title": "结束 Codex 会话",
-          "example": "/quit"
+          "title": "工作已经完成",
+          "example": "在提交（commit）所有改动之后输入 `/quit`，干净地结束会话。"
+        },
+        {
+          "title": "有序结束，而非强行关闭",
+          "example": "不要直接强行关闭终端窗口，而是使用 `/quit`，让 Codex 有序地结束会话。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想清空上下文，但继续工作",
-          "why": "/quit 会结束整个会话。",
-          "alternative": "使用 /compact 腾出空间，或开始一个新聊天"
+          "title": "改动尚未保存",
+          "why": "根据文档，Codex 会立即结束会话——未保存的工作会丢失。",
+          "alternative": "先提交（commit）或保存，再调用 `/quit` 或 `/exit`。"
         }
       ],
       "sources": [
