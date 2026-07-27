@@ -74,22 +74,23 @@ Poll-Rezept (unten, X-Admin-Key!), cwd-Regel, Verify-Gate, aktuelle Rotation + I
 4. Statusboard-Artifact nur bei Substanz (gleiche file_path data/statusboard.html, Artifact c4776440…).
 5. ScheduleWakeup mit vollem /loop-Prompt + aktualisiertem Status-Block.
 
-## Aktueller Stand (It. 145, 18.07.26 nachmittags, Commit-Stand siehe HISTORY)
-~2132 Seiten live: **101 Kapitel ×5** (alle 🌱/🔬 + Quiz + Übung mit selfCheck), **293 Befehle ×5** auf 5 Plattformen + **🔄 /rosetta/** (28 Aufgaben × 5 Plattformen, 96 gegen commands.json validierte Zellen), **🩺 /fehler/** (24 Fehlermeldungen mit geprüften Quellen, Suche + Kategorie-Filter), **📊 /fortschritt/** (XP-Kurve, Welt-Balken, Challenge-Bilanz, Teilen-Bild), 🧭 /start/-Wizard **mit Starter-Kit** (Projekt-Anleitungsdatei je Tool + erste 5 Befehle), 🧩 16 Prompts + Sandbox, 12 Addons, 4 Welten (W0 5/W1 17/W2 18/W3 27), Vergleiche v3 (Intelligence-per-Dollar-Quadrant, Ratio-Tabelle, 💶 Preisrechner), 📊 /timeline/, 🔍 Suche, 🗺️ Lern-Landkarte, **Feed 32 News** + 📡 RSS, 🎯 Tages-Challenge (Pool 101), 📱 PWA, 🎬 **80 Remotion-Clips**, 📬 **Newsletter LIVE** (Resend, news.promptgarten.com verifiziert, Digest-Cron Mo 08:00 UTC), Forum, freie API, Admin V2, WERBUNG AN außer Landing. Traffic 18.07 15:00: views_7d 539, besucher_7d 89. Direktive 13: **Runden 1–4 alle geliefert**, Abgelehnt-Liste leer.
-**Quellen-Gesundheit** (Link-Audit 18.07): 410 URLs, 0 defekt; Skripte `research/link-audit.mjs` (Rohtext-Scan nötig — addons/vergleiche/timeline/benchmarks/loops halten Links NICHT in sources[]) + `research/kanonisiere-links.mjs`. 9 Kapitel aus Batch 5/6 haben bewusst je Sprache eigene Quellen — kein Fehler.
+## Aktueller Stand (It. 254, 27.07.26 abends, Commit-Stand siehe HISTORY)
+~2355 URLs in der Sitemap: **111 Kapitel ×5** (🌱/🔬 + Quiz + Übung), **320 Befehle ×5** auf 5 Plattformen + 🔄 /rosetta/, 🩺 /fehler/, 📊 /fortschritt/, 🧭 /start/ mit Starter-Kit, 🧩 16 Prompts + Sandbox, **16 Addons** mit Detailseiten, 4 Welten, Vergleiche v3, 📊 /timeline/, 🔍 Suche, 🗺️ Lern-Landkarte, **Feed 49 Meldungen** + 📡 RSS, 🎯 Tages-Challenge, 📱 PWA, 🎬 80 Remotion-Clips, 📬 Newsletter mit **Digest v2** (Klick-Tracking `/v1/r`, Cron `0 8 * * 1`), **👤 /ueber/** (Marvin als Macher, ×5), Forum, freie API, Admin V2.
+**Laufende Hauptarbeit**: die 320 Befehlsseiten anreichern (AdSense-Ablehnung „mangelnder Content"). Stand: **162/320 fertig, Ø161 Wörter (Start 90), 47 Seiten unter 100 (Start 209)**, 20 echte Sachfehler dabei korrigiert.
+**🔴 Traffic ehrlich** (27.07.): views_7d **30**, Besucher_7d 28, heute 0. Der alte Wert „539" aus It. 145 war ein Artefakt — er enthielt den 13.–15.07-Ausschlag aus eigenem Testen, bevor am 14.07. der Interne-Traffic-Filter kam. Echte Größenordnung sind **1–10 externe Aufrufe/Tag, Tendenz fallend**. Mediavine „Journey" braucht 1.000 Sessions/Monat — das ist rund das 8-Fache. robots.txt offen, Sitemap 2355 URLs, 200 → technisch indexierbar; die Engpässe sind Auffindbarkeit und fehlende GSC-Sicht (siehe Blocker).
+**Quellen-Gesundheit** (Link-Audit 18.07): 410 URLs, 0 defekt; Skripte `research/link-audit.mjs` (Rohtext-Scan nötig — addons/vergleiche/timeline/benchmarks/loops halten Links NICHT in sources[]) + `research/kanonisiere-links.mjs`. Querverweis-Audit 27.07: 71 `/befehl`-Treffer, alle Fehlalarme (Pfade, Bindestrich-Artefakte, Alias-Nennungen).
 
 ## Rotation (nächste Arbeit)
-① Feed täglich (nächster 19.07 früh; erst alle 32 Bestands-ids listen; 🔔 Fable-5-Frist endet 19.07) ② Kapitel-Batch 8 (101→111) ~19./20.07 — Kandidaten: WebSearch/Grounding, Distillation, Agent-Kosten-Benchmarks, CLAUDE.md-Patterns tiefer, Retrieval-Evaluation, Multi-Repo, Secrets-Management, Observability-Metriken, Fine-Tuning-vs-Prompting, Agent-Fehlerkultur ③ Remotion R12 ④ Ideen-Pitch R5 ~22./23.07 (4 NEUE Kandidaten) ⑤ Kapitel-Batch 9 ⑥ Link-Audit erneut ~25.07 (Skript wiederverwenden) ⑦ LOOP.md-Pruning ~25.07.
+① **Befehls-Anreicherung** (Hauptauftrag, ~9 Runden à 18 Seiten noch) ② **Feed frisch halten** — der Digest filtert Items der letzten 7 Tage, ohne neue Items geht am Montag GAR KEINE Mail raus ③ 🔔 28.07. MCP-Spec prüfen (Stand 27.07.: nicht final, Tag `2026-07-28-RC`) ④ Link-/Konsistenz-Audit mit **wechselndem Blickwinkel** (nie denselben Check zweimal) ⑤ nach Abschluss der Anreicherung: AdSense-Neuantrag.
 
 ## Blocker / Warte auf Marvin (auch als /admin-Todos)
+- **🔴 GSC-TXT-Wert schicken** (offen seit 14.07.) — ohne Search Console sehen wir nicht, ob Google die 2355 URLs überhaupt indexiert. Bei 1–10 Aufrufen/Tag ist genau das die wichtigste offene Frage, nicht der Seitenumfang. Loop setzt den DNS-TXT und reicht die Sitemap ein.
+- AdSense: 27.07. abgelehnt („mangelnder Content"). Neuantrag erst nach Abschluss der Anreicherung — nichts zu klicken.
 - Sponsors: angemeldet ✓ — Restschritte (Bio/Tier/Stripe/W-8BEN/2FA/Submit) in /admin, danach Footer-Link
-- #4 GSC: TXT-Verifizierungswert schicken → Loop setzt DNS-TXT + reicht Sitemap ein
-- AdSense: Code eingebaut ✓ — Marvin: Site-Review anstoßen + Datenschutz & Mitteilungen (DSGVO-Message + Limited Ads) aktivieren
-- Bing: Sitemap eingereicht ✓ (14.07.)
 - Ko-fi-Verification-Token → `wrangler secret put KOFI_TOKEN` (Webhook liegt bereit)
 - www→apex-Redirect: kein Token mit Ruleset-Recht (canonical entschärft)
-- Newsletter: Marvin ist erster Abonnent — Opt-in-Mail bestätigen (kein Blocker)
-- 🔔 19.07.: Fable-5-Frist läuft ab → Feed · 🔔 Mo 20.07 ~08:05 UTC: ersten Digest-Cron-Lauf prüfen (`GET https://api.resend.com/emails` mit PG_RESEND_FULL_KEY) · 🔔 24.07. DeepSeek-Migration · 🔔 27.07. Kimi-K3-Weights · 🔔 28.07.: MCP-Spec final? → alle als Feed-Update
+- Bing: Sitemap eingereicht ✓ (14.07.)
+- 🔔 28.07.: MCP-Spec final? (27.07. noch RC) · 🔔 Mo 03.08. 08:00 UTC: erster Digest mit neuem Design + Klick-Tracking → `mail_clicks_30d` prüfen
 
 ## Architektur
 ```

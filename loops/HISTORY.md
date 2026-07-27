@@ -2319,3 +2319,48 @@ Build 0, Deploy af064520, Prod 200. Playwright 6 Seiten × 2 Viewports in
 4 Sprachen sauber (kein H-Scroll, keine rohen Backticks, `code`-Elemente da).
 Merke: Feed-Dateien mit Einrückung 2 schreiben — mit 1 erzeugt ein
 Ein-Zeilen-Zusatz 1433 Zeilen Diff-Rauschen.
+
+## It. 254 — 27.07.2026, 20:09–22:0x UTC — Batch 10 + Quellen-Audit + LOOP.md-Pruning
+Poll sauber, Smoke 4/4.
+Batch 10: Verteilung war diesmal schief (claude-code 14, cursor 2,
+antigravity 1, codex 1) → 2 Agenten à 7 für Claude Code, einer für die
+restlichen vier über drei Plattformen. Ø86 → Ø236 Wörter, ×5.
+**180 von 320 fertig, Gesamt-Ø 170, noch 29 Seiten unter 100 W.**
+
+Korrekturen: `/ultrareview` = nur noch veralteter Alias, der Befehl heißt
+`/code-review ultra` (in der Doku existiert `ultrareview` bloß als
+Seitenpfad) — selbst gegengeprüft, summaryFix. `/tasks`-Summary war ungenau.
+`/fast` gegen die Rohdoku belegt: „supported on Opus 5 and Opus 4.8", also
+NICHT 4.7 — das widersprach meiner eigenen Umgebungsinfo, die Doku hat
+recht; Preis $10/$50 MTok ebenfalls aus der Quelle. Cursor `/login`: der
+Agent hat `--auth-token`/`CURSOR_AUTH_TOKEN` als unbelegbar ENTFERNT statt
+übernommen und stattdessen `NO_OPEN_BROWSER=1` + QR-Anmeldung belegt.
+`/pr-comments` trägt in der Doku selbst „Removed in v2.1.91" — hier ist die
+Herstellerdoku also sauber, anders als bei Antigravity.
+
+**Neuer Audit-Blickwinkel (Quellen statt Querverweise):** alle 44 in
+commands.json zitierten URLs geprüft. Status: 44/44 = 200. Aber die
+Redirect-Prüfung („HTTP 200 ≠ belegt") zeigte, dass 32 Einträge — praktisch
+die komplette Codex-Referenz — nur noch über Weiterleitungen von
+developers.openai.com nach learn.chatgpt.com erreichbar waren. Auf die
+kanonischen Ziele umgestellt (×5), beide neuen Ziele ohne weitere
+Weiterleitung 200. Titel blieben, sie beschreiben die Zielseiten weiterhin.
+
+**LOOP.md-Pruning** (war seit ~25.07 überfällig): Der Stand-Block stammte
+aus It. 145 (18.07.) und war durchweg falsch — 101 statt 111 Kapitel, 293
+statt 320 Befehle, Feed 32 statt 49, dazu eine Rotation und Blocker-Liste
+aus der Vorwoche. 🔴 Dabei aufgefallen: der dort notierte Traffic „views_7d
+539" war ein **Messartefakt**. Der Tagesverlauf zeigt 13.–15.07. mit
+103/230/130 Aufrufen — eigenes Deployen/Testen, BEVOR am 14.07. der
+Interne-Filter kam. Seither real 19, 18, 54, 10, 7, 7, 0, 0, 5, 1, heute 0.
+Echte Größenordnung: 1–10 externe Aufrufe/Tag, fallend. Mediavine braucht
+1.000 Sessions/Monat ≈ das Achtfache. robots.txt offen, Sitemap 2355 URLs,
+200 → technisch indexierbar; der eigentliche blinde Fleck ist die seit
+14.07. offene GSC-Verifizierung. In LOOP.md als wichtigster Blocker notiert
+und Marvin gemeldet.
+
+Build 0, Deploy 389a2847, Live-Verify 5×200, alte OpenAI-URL 0× im HTML.
+Playwright 6 Seiten × 2 Viewports in 4 Sprachen sauber.
+Merke: Quell-URLs nicht nur auf Status prüfen, sondern auf
+`url_effective` — ein 200 nach Redirect verdeckt, dass die zitierte Adresse
+faktisch tot ist.
