@@ -2415,3 +2415,55 @@ prüfen.
 Build 0, Deploy f426d07c, Live-Verify 6×200, Enterprise-Korrektur und die
 zwei nun verschiedenen Meta-Descriptions im HTML bestätigt.
 Playwright 6 Seiten × 2 Viewports in 4 Sprachen sauber.
+
+## It. 256 — 28.07.2026 (UTC 23:14 des 27.) — Batch 12: Anreicherung ABGESCHLOSSEN
+Poll sauber, Smoke 4/4. MCP-Spec weiterhin nur `2026-07-28-RC`; beim
+Vorgänger erschien die finale Fassung um 21:17 UTC ihres Tages, also
+frühestens im Lauf des 28.07. UTC.
+
+Batch 12: 3 Agenten (cc-a 6, cc-b 6, rest 6 über drei Plattformen).
+Ø98 → Ø256 Wörter, ×5. **216 von 320 überarbeitet, Gesamt-Ø 186 (Start 90),
+Seiten unter 100 Wörtern: 0 (Start 209).** Der von AdSense bemängelte
+Dünn-Content ist damit abgeräumt.
+
+🔎 Bester Fund kam NICHT aus einer Doku, sondern aus dem ausgelieferten
+Programm: Der Agent hat den installierten Cursor-Build geöffnet und
+`id:"fork" … boostedAlts:["duplicate","clone","branch"]` gefunden — drei
+Aliase, und `/clone` steht in KEINER Doku und keinem Changelog. Selbst
+gegengeprüft in
+`$LOCALAPPDATA/cursor-agent/versions/2026.07.23-e383d2b/5305.index.js`.
+Derselbe Agent hat das Antigravity-Flag per SHA512-geprüftem Download und
+`agy.exe --help` verifiziert — dort war der Bestand korrekt.
+Weitere Korrekturen: Claude Code `/fork` beschrieb noch das Verhalten vor
+v2.1.212 (Subagent, meldet zurück) — heute unabhängige Session ohne
+Rückmeldung, die Rolle hat `/subtask`. `/usage-credits` erfand einen
+Kauf-Dialog in der CLI; laut Rohdoku öffnet der Befehl die Browser-Seite,
+der CLI-Dialog existiert nur für Team/Enterprise OHNE Abrechnungszugang und
+erst seit v2.1.211. `/bug [report]`: eckige Klammern sind Platzhalter für
+freien Text, „report" ist KEIN Schlüsselwort — wohin der Bericht geht,
+entscheidet der Anmeldestatus. Beides selbst an der Rohdatei bestätigt.
+Ein Agent hat außerdem einen unbelegten Zusatz (`claude permissions` als
+CLI-Subcommand) VOR dem Schreiben selbst gestrichen.
+
+**Neuer Audit-Blickwinkel (i18n-Parität):** erster Audit ohne einen einzigen
+Treffer — 11 Content-Typen × 5 Sprachen, gleiche Anzahl, keine fehlenden
+Einträge, keine leeren Pflichtfelder. Skript versioniert als
+`research/i18n-parity.mjs` (Exit 1 bei Problemen). Drei Fallstricke beim
+Bauen, im Skript dokumentiert: jeder Typ verschachtelt sein Array anders;
+„erstes Array im Objekt" liefert bei prompts die 6 Kategorien statt der 16
+Einträge; timeline hat weder slug noch id und `name` ist ÜBERSETZT — mit
+`name` als Schlüssel meldet die Prüfung 21 Fehlalarme, richtig ist
+date+typ+anbieter.
+
+⚠️ Eigener Messfehler zum zweiten Mal derselben Art: Meine Längenprüfung
+schlug bei allen 18 ZH-Übersetzungen an (0.35–0.44×). Gegen den
+ausgelieferten Bestand gemessen liegt der Median bei **0.42** — Chinesisch
+ist schlicht dichter, der 0.5-Schwellwert war sprachblind. Für ZH gilt
+0.22 als Grenze. Nebenprodukt: der Längenvergleich taugt als
+Nach-Merge-Wächter — vor dem Merge schlug er bei genau den 18 Befehlen an
+(DE schon gemergt, Rest nicht), danach 0 in allen vier Sprachen. Das würde
+eine still nicht durchgelaufene Sprache auffallen lassen.
+
+Build 0, Deploy 76e55111, Live-Verify 6×200, `/clone` und die korrigierte
+fork-Meta-Description im HTML bestätigt. Playwright 6 Seiten × 2 Viewports
+in 4 Sprachen sauber.
