@@ -19,7 +19,9 @@ export default function RichText({ text }: { text: string }) {
               borderRadius: 5,
               padding: '1px 5px',
               fontSize: '.92em',
-              whiteSpace: 'nowrap',
+              // Kein nowrap: lange Code-Strings (z.B. ganze Beispiel-Prompts)
+              // erzeugten sonst horizontalen Scroll auf schmalen Screens.
+              overflowWrap: 'anywhere',
             }}
           >
             {part.slice(1, -1)}

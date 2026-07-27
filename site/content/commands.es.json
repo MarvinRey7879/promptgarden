@@ -1398,18 +1398,27 @@
       "slug": "keybindings",
       "name": "/keybindings",
       "summary": "Abre el archivo con los atajos de teclado.",
-      "what": "Abre el archivo con los atajos de teclado.",
+      "what": "`/keybindings` abre tu archivo de configuración de atajos de teclado en `~/.claude/keybindings.json` — si aún no existe, se crea. El archivo es un objeto JSON con un array `bindings`: cada bloque define un contexto (p. ej. `Global`, `Chat`, `Settings`, `Transcript`) y, dentro de él, una asignación de combinaciones de teclas a acciones con el formato `namespace:action`, por ejemplo `chat:submit` para enviar un mensaje o `app:toggleTodos` para mostrar/ocultar la lista de tareas.\n\nPuedes desactivar los atajos predeterminados con `null`, combinar varios modificadores (`ctrl+shift+c`) y definir secuencias de teclas (chords) como `ctrl+k ctrl+s`. Los cambios en el archivo se detectan automáticamente y se aplican de inmediato, no hace falta reiniciar. Algunas combinaciones como Ctrl+C, Ctrl+D o Ctrl+M están reservadas y no se pueden reasignar. Al cargar, Claude Code comprueba el archivo en busca de errores de parseo, contextos no válidos y bindings reservados o duplicados, y escribe advertencias en el log de depuración (inícialo con `--debug` para más detalles).",
       "whenGood": [
         {
-          "title": "Personalizar los atajos de teclado",
-          "example": "Abrir /keybindings para cambiar un atajo que colisiona con otra aplicación."
+          "title": "Un atajo entra en conflicto con otra aplicación",
+          "example": "Abrir /keybindings y, por ejemplo, asignar el atajo predeterminado de `chat:externalEditor` a otra combinación, si esa tecla ya está ocupada por la terminal o tmux."
+        },
+        {
+          "title": "Crear una combinación de chord propia",
+          "example": "Añadir en el contexto `Chat` del archivo una entrada como \"ctrl+k ctrl+s\": \"chat:stash\" para definir una secuencia de teclas propia."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo querer consultar rápidamente qué atajos existen, sin cambiar nada",
-          "why": "/keybindings abre directamente el archivo editable, en lugar de mostrar un simple resumen.",
-          "alternative": "Consultar la documentación sobre los atajos de teclado en lugar de abrir el archivo."
+          "title": "Solo consultar rápidamente qué atajos hay actualmente, sin cambiar nada",
+          "why": "/keybindings abre directamente el archivo editable en lugar de una vista puramente informativa de la configuración predeterminada.",
+          "alternative": "Consultar las tablas de la documentación sobre atajos de teclado, en lugar de abrir el archivo."
+        },
+        {
+          "title": "Remapear teclas del modo Vim como 'jj' a Escape",
+          "why": "Según la documentación, las propias teclas de Vim no se pueden remapear mediante el archivo de keybindings.",
+          "alternative": "Usar el ajuste `vimInsertModeRemaps` para mapear secuencias de teclas del modo INSERT."
         }
       ],
       "sources": [
@@ -1424,18 +1433,27 @@
       "slug": "login",
       "name": "/login",
       "summary": "Inicia sesión con la cuenta de Anthropic.",
-      "what": "Inicia sesión con la cuenta de Anthropic.",
+      "what": "`/login` inicia el proceso de acceso a tu cuenta de Anthropic. En el primer arranque de Claude Code se abre automáticamente una ventana del navegador para ello; después puedes llamar a `/login` manualmente en cualquier momento, por ejemplo para volver a iniciar sesión tras un `/logout` o para cambiar de cuenta. Se admiten Claude Pro/Max, Claude for Teams/Enterprise, la Claude Console, proveedores cloud como Amazon Bedrock, Google Cloud's Agent Platform o Microsoft Foundry (mediante variables de entorno o la opción \"3rd-party platform\" en el prompt de login), así como un Claude Apps Gateway autoalojado mediante SSO empresarial.\n\nSi el navegador no se abre automáticamente, pulsa `c` para copiar la URL de login al portapapeles. Si el navegador muestra en su lugar un código —habitual en WSL2, sesiones SSH o contenedores—, lo pegas directamente en la terminal. Al terminar, la terminal muestra \"Login successful\". Si una sesión existente caduca en menos de tres días, Claude Code avisa al iniciar y recomienda usar `/login` para renovarla.",
       "whenGood": [
         {
-          "title": "Inicio de sesión por primera vez o cambio de cuenta",
-          "example": "Ejecutar /login en un equipo nuevo para conectarse con la cuenta de Anthropic."
+          "title": "Primer inicio de sesión en un ordenador nuevo",
+          "example": "Después de la instalación, ejecutar `claude` en la terminal y correr /login para conectarse a la cuenta de Claude a través del navegador."
+        },
+        {
+          "title": "Renovar un inicio de sesión que está por caducar",
+          "example": "Ante el mensaje 'Your login expires in 3 days · run /login to renew', simplemente ejecutar /login para prolongar la sesión, sin interrumpir la sesión en curso."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo querer comprobar si ya se ha iniciado sesión",
-          "why": "/login inicia directamente el proceso de inicio de sesión, no muestra solo un estado.",
-          "alternative": "usar /status para consultar la información de cuenta y conexión, sin iniciar un nuevo flujo de login."
+          "title": "Solo se quiere comprobar el estado actual del inicio de sesión",
+          "why": "/login inicia directamente un nuevo flujo de acceso en lugar de mostrar solo información.",
+          "alternative": "Usar /status — muestra, entre otras cosas, una línea de login con el estado de la cuenta y de caducidad."
+        },
+        {
+          "title": "Trabajar con clave de API o con un script de credenciales propio",
+          "why": "ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN o apiKeyHelper funcionan de forma independiente al flujo de /login y tienen prioridad sobre el inicio de sesión por suscripción en el orden de autenticación.",
+          "alternative": "Configurar la variable de entorno correspondiente o apiKeyHelper, en lugar de iniciar sesión mediante /login."
         }
       ],
       "sources": [
@@ -1450,18 +1468,27 @@
       "slug": "logout",
       "name": "/logout",
       "summary": "Cierra la sesión de la cuenta de Anthropic.",
-      "what": "Cierra la sesión de la cuenta de Anthropic.",
+      "what": "`/logout` cierra la sesión de la cuenta de Anthropic actualmente conectada. El comando elimina las credenciales guardadas (`.credentials.json`, según el sistema operativo en el llavero de macOS, en `~/.claude/.credentials.json` en Linux o en `%USERPROFILE%\\.claude\\.credentials.json` en Windows) y además restablece el estado de configuración de primer arranque: si después vuelves a iniciar Claude Code con `claude`, te guiará de nuevo por completo a través del login y la configuración inicial.\n\nUsa `/logout` para volver a iniciar sesión —por ejemplo con otra cuenta o tras un cambio de organización— o para desconectar limpiamente una cuenta de un ordenador compartido. El comando afecta solo a la sesión guardada mediante `/login`; las credenciales a través de `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN` o `apiKeyHelper` funcionan como vías de credenciales independientes de esto.",
       "whenGood": [
         {
-          "title": "Desvincular limpiamente la cuenta de un dispositivo",
-          "example": "En un ordenador compartido, ejecutar /logout al terminar de trabajar para cerrar la sesión de tu cuenta de Anthropic."
+          "title": "Desconectar la cuenta en un ordenador compartido por el equipo",
+          "example": "Después de trabajar en un ordenador de equipo/pruebas, ejecutar /logout para que la siguiente persona tenga que iniciar sesión con su propia cuenta."
+        },
+        {
+          "title": "Cambiar a otra cuenta u otra organización",
+          "example": "Ejecutar /logout y después /login, para volver a conectarse con otra cuenta de Claude."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo quieres comprobar rápidamente si (y con qué cuenta) has iniciado sesión",
-          "why": "/logout cierra la sesión de inmediato, en lugar de limitarse a mostrar información.",
-          "alternative": "Usa /status para consultar la información de la cuenta sin cerrar sesión."
+          "title": "Solo comprobar brevemente qué cuenta está activa en este momento",
+          "why": "/logout finaliza la sesión de inmediato, en lugar de mostrar solo información.",
+          "alternative": "Usar /status para consultar la línea de login con la información de cuenta y caducidad, sin cerrar sesión."
+        },
+        {
+          "title": "Querer terminar el acceso mediante ANTHROPIC_API_KEY o apiKeyHelper",
+          "why": "Según la documentación, /logout gestiona solo la sesión guardada mediante /login en .credentials.json; los accesos basados en clave de API o helper funcionan mediante variables de entorno o configuración.",
+          "alternative": "Eliminar la variable de entorno (p. ej. ANTHROPIC_API_KEY) en la terminal, o ajustar la configuración de apiKeyHelper."
         }
       ],
       "sources": [
@@ -1808,18 +1835,27 @@
       "slug": "radio",
       "name": "/radio",
       "summary": "Abre la radio lo-fi 'Claude FM' en el navegador.",
-      "what": "Abre la radio lo-fi 'Claude FM' en el navegador.\n\nMuestra la URL del stream si no hay navegador disponible. No disponible en Bedrock/Vertex/Foundry.",
+      "what": "`/radio` abre \"Claude FM\", un stream de radio lo-fi, en tu navegador predeterminado — como música de fondo mientras trabajas con Claude Code. El comando no necesita argumentos; basta con escribir `/radio` en una sesión en curso.\n\nSi no hay ningún navegador disponible —por ejemplo, en una sesión SSH pura o un contenedor sin interfaz gráfica—, Claude Code muestra en su lugar la URL del stream como texto en la terminal, que puedes abrir manualmente en cualquier reproductor. Según la documentación, el comando no está disponible en Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry ni Claude Platform on AWS. Según el resumen semanal de Anthropic (Week 27, 29 de junio – 3 de julio de 2026), `/radio` se incorporó con las versiones v2.1.195–v2.1.201.",
       "whenGood": [
         {
-          "title": "Escuchar música lo-fi de fondo mientras programas",
-          "example": "Ejecuta /radio para abrir 'Claude FM' en el navegador."
+          "title": "Escuchar música de fondo mientras se programa",
+          "example": "Ejecutar /radio para iniciar Claude FM en el navegador, mientras Claude trabaja en segundo plano en una tarea."
+        },
+        {
+          "title": "Sin navegador a mano, abrir la URL del stream manualmente",
+          "example": "En una sesión SSH, ejecutar /radio y pegar la URL del stream mostrada en un reproductor de audio aparte."
         }
       ],
       "whenBad": [
         {
-          "title": "Trabajando sobre Bedrock, Vertex o Foundry",
-          "why": "Según la documentación, /radio no está disponible en estas plataformas.",
-          "alternative": "Usa tu propia app de música o reproductor en paralelo."
+          "title": "Trabajando en Bedrock, Vertex, Foundry o Claude Platform on AWS",
+          "why": "Según la documentación, /radio no está disponible en estas cuatro plataformas.",
+          "alternative": "Iniciar por separado tu propia app de música o reproductor."
+        },
+        {
+          "title": "Versión de Claude Code anterior a v2.1.195",
+          "why": "Según el resumen semanal de Anthropic, /radio se añadió recién con las versiones v2.1.195–v2.1.201; en versiones anteriores el comando aún no existe.",
+          "alternative": "Comprobar la versión instalada con `claude --version` y actualizar si es necesario."
         }
       ],
       "sources": [
@@ -2455,18 +2491,27 @@
       "slug": "stats",
       "name": "/stats",
       "summary": "Alias de /usage, abre directamente la pestaña de estadísticas.",
-      "what": "Alias de /usage, abre directamente la pestaña de estadísticas.",
+      "what": "`/stats` es un alias de `/usage` y abre la vista directamente en la pestaña Stats. `/usage` en sí muestra los costes de la sesión, los límites de uso de tu plan y estadísticas de actividad; arriba aparece un bloque de sesión con el consumo de tokens y los costes calculados localmente a partir de las cifras de tokens según precios de lista. Este bloque está pensado principalmente para usuarios de API, ya que los usuarios de suscripción (Pro/Max/Team/Enterprise) tienen su cuota incluida en el plan y en su lugar ven barras de uso, estadísticas de actividad y un desglose de consumo. En los planes Pro, Max, Team y Enterprise, el desglose asigna el consumo reciente a skills, subagentes, plugins y servidores MCP individuales; `d`/`w` alterna entre las últimas 24 horas y los últimos 7 días.\n\nSegún el changelog, `/stats` y `/cost` fueron históricamente comandos independientes que se unificaron en `/usage` — ambos siguen existiendo como atajos de teclado que abren directamente la pestaña correspondiente.",
       "whenGood": [
         {
-          "title": "Comprobación rápida de costes",
-          "example": "Invocar /stats para ver directamente en la pestaña de estadísticas el consumo de tokens y costes, sin tener que navegar antes por /usage."
+          "title": "Comprobación rápida de costes/uso durante el trabajo",
+          "example": "Escribir /stats para ver de inmediato, en la pestaña Stats de /usage, los costes de la sesión y el consumo de tokens."
+        },
+        {
+          "title": "Comprobar cuán cerca se está de los límites del plan",
+          "example": "Como usuario Pro o Max, ejecutar /stats para consultar las barras de uso y el desglose por skills/subagentes/servidores MCP de las últimas 24 horas o de los últimos 7 días."
         }
       ],
       "whenBad": [
         {
-          "title": "Referenciarlo como comando propio en documentación/scripts",
-          "why": "Según la documentación, /stats es solo un alias de /usage que abre directamente la pestaña de estadísticas, sin función propia.",
-          "alternative": "Referenciar /usage, que cubre la misma funcionalidad."
+          "title": "Referenciar /stats como comando independiente con función propia en documentación o scripts",
+          "why": "Según la documentación, /stats es solo un alias de /usage que abre directamente la pestaña Stats — no tiene funcionalidad propia independiente.",
+          "alternative": "Referenciar /usage, que representa el comando completo y todo su alcance funcional."
+        },
+        {
+          "title": "Necesitar datos de facturación vinculantes para la organización",
+          "why": "Los costes mostrados en /usage o /stats se calculan localmente a partir de cifras de tokens según precios de lista y pueden diferir de la factura real.",
+          "alternative": "Usar la página de Usage en la Claude Console (platform.claude.com/usage) para datos de facturación autoritativos."
         }
       ],
       "sources": [
@@ -5800,18 +5845,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "Borra el historial de chat de la sesión actual.",
-      "what": "/clear elimina el historial de conversación del contexto del chat. Según la documentación, esto ayuda cuando Aider se queda atascado en una tarea y necesita un reinicio limpio.",
+      "what": "Según la referencia de comandos, `/clear` borra el historial de chat de la sesión actual — en resumen, \"Clear the chat history\". Según los consejos de la documentación, esta es la vía recomendada para un reinicio: \"Use /clear to discard the chat history and make a fresh start.\"\n\nDesde la versión 0.85.2, según el changelog, Aider confirma la acción también en la terminal con el mensaje \"All chat history cleared.\", para que se vea claramente que el comando ha surtido efecto.\n\n`/clear` afecta exclusivamente al historial de la conversación, no a los archivos añadidos en el chat — estos permanecen sin cambios en el contexto. Para eso existe, según la documentación, el comando independiente `/reset`, que además elimina también todos los archivos del chat. Escribes `/clear` sin argumentos cuando Aider se atasca en una tarea o el historial infla innecesariamente el contexto, y a continuación reformulas la tarea.",
       "whenGood": [
         {
-          "title": "Reiniciar cuando Aider se atasca en una tarea",
-          "example": "/clear — después, reformular la tarea de forma nueva y más precisa"
+          "title": "Reinicio cuando Aider se atasca en una tarea",
+          "example": "Escribir `/clear` y después reformular la tarea de forma nueva y más precisa."
+        },
+        {
+          "title": "Limpiar el contexto antes de un tema nuevo e independiente",
+          "example": "Usar `/clear` antes de abordar un problema completamente nuevo con los mismos archivos que ya están en el chat."
         }
       ],
       "whenBad": [
         {
-          "title": "Eliminar solo algunos archivos del contexto",
-          "why": "/clear borra todo el historial de conversación, pero deja intactos los archivos añadidos al chat.",
-          "alternative": "Usar /drop para eliminar archivos concretos de forma selectiva"
+          "title": "Eliminar solo archivos concretos del contexto",
+          "why": "Según la documentación, `/clear` borra todo el historial de la conversación, pero deja intactos los archivos añadidos en el chat.",
+          "alternative": "Usar `/drop` para eliminar archivos concretos de forma selectiva."
+        },
+        {
+          "title": "Restablecer historial Y archivos juntos",
+          "why": "Según la documentación, `/clear` solo vacía la historia, no la lista de archivos.",
+          "alternative": "Usar `/reset` para hacer \"Drop all files and clear the chat history\" en un solo paso."
         }
       ],
       "sources": [
@@ -6086,18 +6140,22 @@
       "slug": "edit",
       "name": "/edit",
       "summary": "Alias de /editor: abre un editor externo para escribir un prompt.",
-      "what": "Según la documentación, /edit es un alias de /editor y abre un editor de texto externo para escribir ahí el siguiente mensaje del chat.",
+      "what": "Según la referencia de comandos, `/edit` es un alias de `/editor` y abre un editor de texto externo para escribir en él el siguiente mensaje de chat. Según el changelog, el alias se añadió en la versión 0.79.0: \"Added /edit as an alias for the /editor command\".\n\nSegún los consejos de la documentación, puedes abrir el mismo editor sin usar el comando slash, mediante la combinación de teclas `Ctrl-X Ctrl-E`, siempre que la terminal lo admita — la documentación describe esto para `/editor`, al que `/edit` remite directamente como alias.\n\nEscribes `/edit`, se abre el editor externo, escribes ahí tu prompt, guardas y cierras el archivo — el contenido se envía después a Aider como el siguiente mensaje de chat. La documentación no menciona más argumentos ni opciones para `/edit`.",
       "whenGood": [
         {
-          "title": "Escribir cómodamente un prompt largo de varias líneas",
-          "example": "/edit — abre el editor externo en lugar de escribir un prompt largo directamente en la terminal"
+          "title": "Escribir cómodamente un prompt más largo y de varias líneas",
+          "example": "Escribir `/edit` para redactar una descripción de cambio extensa con varios párrafos en el editor habitual en lugar de en la terminal."
+        },
+        {
+          "title": "Flujo de trabajo con teclado sin comando slash",
+          "example": "Pulsar `Ctrl-X Ctrl-E` para abrir el mismo editor externo que con `/edit`, sin quitar las manos del teclado."
         }
       ],
       "whenBad": [
         {
           "title": "Escribir un mensaje corto de una sola frase",
           "why": "Para un mensaje de una sola línea, el rodeo por un editor externo es innecesario.",
-          "alternative": "Escribir el mensaje directamente en el prompt de la terminal"
+          "alternative": "Escribir el mensaje directamente en la línea de prompt de la terminal."
         }
       ],
       "sources": [
@@ -6177,18 +6235,22 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "Cierra Aider.",
-      "what": "/exit cierra la aplicación Aider en ejecución.",
+      "what": "`/exit` cierra la aplicación Aider en ejecución. En la referencia de comandos, la descripción es muy breve: la documentación lo describe como \"Exit the application\" — no menciona argumentos ni opciones adicionales para este comando.\n\n`/exit` tiene un gemelo documentado: `/quit`. Según el changelog de Aider, `/quit` se introdujo explícitamente \"as alias for /exit\" — ambos comandos son, por tanto, equivalentes y cierran el programa de inmediato, sin confirmación. Se trata de un cierre puro del programa, no de un restablecimiento del historial de chat ni de los archivos añadidos; para eso la documentación prevé otros comandos.\n\nEscribes `/exit` sin más argumentos en la línea de prompt en cuanto quieras terminar el trabajo con Aider en esta sesión.",
       "whenGood": [
         {
-          "title": "Cerrar la sesión de forma limpia",
-          "example": "/exit — cuando el trabajo con Aider para esta sesión ha terminado"
+          "title": "Terminar la sesión de forma ordenada",
+          "example": "Escribir `/exit` en cuanto todos los cambios deseados estén confirmados (commit) y quieras finalizar la sesión de Aider."
+        },
+        {
+          "title": "Liberar la terminal para otras tareas",
+          "example": "Ejecutar `/exit` para salir del programa y seguir trabajando con otra herramienta en la misma ventana de terminal."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo reiniciar el historial de chat, siguiendo con Aider",
-          "why": "/exit cierra todo el programa, no solo el historial.",
-          "alternative": "Usar /clear para borrar solo el historial de chat y seguir en la misma sesión"
+          "title": "Solo restablecer el historial de chat y seguir trabajando con Aider",
+          "why": "Según la documentación, `/exit` cierra todo el programa, no solo el historial.",
+          "alternative": "Usar `/clear` para borrar únicamente el historial de chat y continuar en la misma sesión."
         }
       ],
       "sources": [
@@ -6242,18 +6304,22 @@
       "slug": "help",
       "name": "/help",
       "summary": "Responde preguntas sobre el uso, la configuración y la solución de problemas del propio Aider.",
-      "what": "/help responde preguntas sobre Aider como herramienta, p. ej. sobre uso, configuración y solución de problemas.",
+      "what": "Según la referencia de comandos, `/help` sirve para \"Ask questions about aider\" — con él haces preguntas sobre Aider mismo, no sobre el código de tu proyecto.\n\nEl comando se invoca como `/help <pregunta>`, por ejemplo `/help ¿cómo configuro mi clave de API?`. Según la documentación, Aider tiene indexada toda su documentación: la pregunta se usa para encontrar los apartados de documentación relevantes, que se pasan al LLM junto con el contexto de chat en curso mediante Retrieval-Augmented-Generation (RAG) — por lo que la respuesta puede referirse a tu problema concreto dentro de la sesión.\n\n`/help` es a la vez un modo de chat propio: sin una pregunta añadida, el comando cambia de forma permanente al modo de ayuda según la documentación (alternativamente `/chat-mode help`); si antepones `/help` a un mensaje, el modo se aplica solo a esa pregunta.",
       "whenGood": [
         {
           "title": "Saber cómo se usa una función de Aider",
-          "example": "/help How do I use aider with ollama?"
+          "example": "Escribir `/help how do I configure my API key?` para obtener una respuesta basada en la documentación directamente en el chat."
+        },
+        {
+          "title": "Aclarar una pregunta de configuración poco clara",
+          "example": "`/help is the .env file global or for a git repo?` — el ejemplo oficial de la documentación de Aider."
         }
       ],
       "whenBad": [
         {
-          "title": "Hacer preguntas sobre el propio código o proyecto",
-          "why": "Según la documentación, /help responde preguntas sobre Aider mismo, no sobre el propio código.",
-          "alternative": "Usar /ask para hacer preguntas sobre el código en el chat"
+          "title": "Hacer preguntas sobre tu propio código o proyecto",
+          "why": "Según la documentación, `/help` responde preguntas sobre Aider mismo (uso, configuración, solución de problemas), no sobre tu propia base de código.",
+          "alternative": "Usar `/ask` para hacer preguntas sobre el código en el chat sin modificar archivos."
         }
       ],
       "sources": [
@@ -6547,18 +6613,22 @@
       "slug": "ok",
       "name": "/ok",
       "summary": "Forma abreviada para confirmar los cambios propuestos en el modo Code.",
-      "what": "/ok es la forma abreviada de '/code Ok, please go ahead and make those changes.'. El texto adicional que se escriba se añade a ese prompt.",
+      "what": "Según la referencia de comandos, `/ok` es la forma abreviada de `/code Ok, please go ahead and make those changes.` — cualquier texto adicional que escribas se añade a esta frase fija. Según el changelog, el comando se introdujo como \"shortcut for asking aider to go ahead with the proposed changes, with optional extra instructions\".\n\nEl comando encaja con el flujo de trabajo Ask/Code descrito en la documentación: primero discutes un cambio en un modo como `/ask` o `/architect`, y si la propuesta te convence, basta con un breve `/ok` en lugar de una formulación propia para que Aider realice la implementación en modo Code — de forma comparable a la indicación de la documentación de que ya un simple \"go ahead\" en modo Code activa la implementación.\n\nSin texto adicional, `/ok` envía exactamente la frase fija de conformidad; si añades texto propio, según la documentación este se añade a la frase, no la sustituye.",
       "whenGood": [
         {
-          "title": "Aprobar rápidamente una propuesta de una conversación en Ask/Architect",
-          "example": "/ok — en lugar de escribir uno mismo toda la frase de aprobación"
+          "title": "Aprobar rápidamente una propuesta surgida de una conversación en Ask/Architect",
+          "example": "Escribir `/ok` en lugar de redactar tú mismo toda la frase de conformidad, después de que Aider haya propuesto un plan en modo Ask."
+        },
+        {
+          "title": "Combinar la aprobación con una breve instrucción adicional",
+          "example": "Escribir `/ok pero por favor sin modificar los tests` — el texto añadido se agrega, según la documentación, a la frase fija de conformidad."
         }
       ],
       "whenBad": [
         {
-          "title": "Se quiere añadir todavía peticiones de cambio, no solo dar el visto bueno",
-          "why": "/ok solo añade texto propio a una frase de aprobación fija, pero no sustituye una instrucción propia y precisa.",
-          "alternative": "Usar /code <instrucción propia y concreta>"
+          "title": "Se quiere aportar todavía indicaciones de cambio fundamentales, no solo aprobar",
+          "why": "`/ok` solo añade tu propio texto a una frase de conformidad fija, pero no sustituye una instrucción formulada de forma independiente.",
+          "alternative": "Usar `/code <instrucción propia y concreta>`."
         }
       ],
       "sources": [
@@ -6599,18 +6669,22 @@
       "slug": "quit",
       "name": "/quit",
       "summary": "Cierra Aider (equivalente a /exit).",
-      "what": "/quit cierra de inmediato la sesión de Aider en curso, igual que /exit. Es un simple alias sin funcionalidad adicional.",
+      "what": "`/quit` cierra la aplicación Aider en ejecución — según la referencia de comandos, la descripción es idéntica a la de `/exit`: \"Exit the application\". El changelog deja explícita la relación entre ambos comandos: en la versión 0.24.0 se introdujo `/quit` \"as alias for /exit\". `/quit` no es, por tanto, un comando independiente con un comportamiento distinto, sino un simple alias de nombre.\n\nEscribes `/quit` sin más argumentos en cuanto quieras salir de Aider; según la documentación, el comportamiento es indistinguible de `/exit`. La documentación no menciona opciones adicionales, confirmaciones o casos especiales para `/quit` — el comando cierra el proceso directamente.\n\nCuál de los dos comandos uses es pura cuestión de gustos: algunos usuarios conocen mejor `/quit` de otras herramientas CLI, otros `/exit`.",
       "whenGood": [
         {
-          "title": "Cerrar la sesión de forma limpia en lugar de forzar el cierre de la ventana de la terminal",
-          "example": "/quit, una vez confirmados todos los cambios deseados"
+          "title": "Terminar la sesión de forma ordenada en lugar de cerrar la ventana de terminal a la fuerza",
+          "example": "Escribir `/quit` después de que todos los cambios deseados estén confirmados (commit)."
+        },
+        {
+          "title": "Mantener el hábito de otras herramientas CLI",
+          "example": "Usar `/quit` en lugar de `/exit` si este nombre de comando te resulta más familiar por otros programas — según la documentación, ambos cierran Aider de forma idéntica."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo se quiere reiniciar archivos/historial, pero seguir trabajando",
-          "why": "/quit cierra todo el proceso, no solo la selección actual del chat.",
-          "alternative": "Usar /reset para vaciar archivos e historial sin salir de Aider"
+          "title": "Solo se quiere restablecer archivos/historial, pero seguir trabajando",
+          "why": "Según la documentación, `/quit` cierra todo el proceso, no solo la selección de chat actual o el historial.",
+          "alternative": "Usar `/reset` para vaciar archivos e historial sin salir de Aider."
         }
       ],
       "sources": [
@@ -7803,18 +7877,22 @@
       "slug": "plugin-uninstall",
       "name": "agy plugin uninstall <name>",
       "summary": "Elimina por completo un directorio de plugin, incluidas sus entradas de registro.",
-      "what": "agy plugin uninstall <plugin_name> elimina por completo el directorio del plugin y limpia las entradas de registro correspondientes.",
+      "what": "En sentido estricto, `agy plugin uninstall <name>` no es un comando slash de la TUI interactiva, sino un subcomando de la CLI que se invoca directamente en la terminal — es decir, `agy plugin uninstall <plugin_name>`, no `/plugin uninstall` en la ventana de prompt.\n\nSegún la documentación oficial de Antigravity CLI, el comando elimina un plugin por completo: \"purges\" el directorio del paquete y limpia las entradas de registro correspondientes. Esto lo distingue claramente de `agy plugin disable`, que solo desactiva un plugin de forma temporal, sin borrar sus archivos. El resto de la gestión de plugins incluye además `agy plugin list` (muestra los paquetes activos junto con los componentes cargados) y `agy plugin install` (traslada un directorio de paquete al perfil local).\n\nUsa `uninstall` cuando un plugin deba desaparecer definitivamente. Si solo quieres desactivarlo temporalmente, `disable` es la opción más suave, porque permite una reactivación posterior sin necesidad de volver a instalarlo.",
       "whenGood": [
         {
           "title": "Eliminar definitivamente un plugin que ya no se necesita",
           "example": "agy plugin uninstall mi-plugin"
+        },
+        {
+          "title": "Limpiar antes de sustituir un plugin por una versión nueva",
+          "example": "agy plugin uninstall plugin-antiguo, seguido de agy plugin install ./plugin-nuevo"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo quieres suspender el plugin de forma temporal",
-          "why": "uninstall elimina por completo el directorio y el registro; volver a activarlo más tarde exige reinstalarlo.",
-          "alternative": "Usa agy plugin disable <name>"
+          "title": "El plugin solo debe desactivarse temporalmente",
+          "why": "uninstall elimina por completo el directorio y las entradas de registro; para volver a activarlo más tarde hace falta reinstalarlo.",
+          "alternative": "Usar agy plugin disable <name>, que solo suspende las herramientas sin borrar los archivos del plugin."
         }
       ],
       "sources": [
@@ -7963,18 +8041,27 @@
       "slug": "help-question-mark",
       "name": "?",
       "summary": "Muestra la ayuda y una lista de todos los slash commands.",
-      "what": "Un ? en el cuadro del prompt abre la ayuda con una lista de todos los slash commands disponibles.",
+      "what": "Según la documentación oficial de Antigravity CLI, un `?` en el cuadro de prompt no es un comando slash propio con prefijo `/`, sino un atajo de carácter especial: si escribes solo `?`, se abre la ayuda con una lista de todos los comandos slash disponibles.\n\nEsto distingue `?` de comandos reales como `/config` o `/permissions`, que aparecen en el menú de autocompletado en cuanto escribes `/`. `?` sirve exclusivamente como visión general — no ejecuta ninguna acción por sí mismo, sino que te muestra qué comandos `/` existen en tu versión actual.\n\nEn la referencia oficial de la CLI aparece además un comando `/help` independiente (categoría \"Utilities\"), que según la documentación abre un panel de ayuda con comandos y atajos. `?` y `/help` se solapan mucho en su función; `?` es el reflejo más rápido directamente desde la línea de entrada, sin tener que escribir primero `/help`.",
       "whenGood": [
         {
-          "title": "Consultar rápido qué slash commands están disponibles",
-          "example": "Escribe ? en el cuadro del prompt"
+          "title": "Consultar rápidamente qué comandos slash están disponibles en la versión actual",
+          "example": "Escribir ? en el cuadro de prompt antes de aventurarte en un flujo de trabajo desconocido"
+        },
+        {
+          "title": "Comprobar brevemente la visión general antes de escribir `/`",
+          "example": "Escribir ? para ver si ya existe un comando adecuado para una tarea concreta"
         }
       ],
       "whenBad": [
         {
           "title": "Ya conoces el comando y quieres ejecutarlo directamente",
-          "why": "? solo abre la vista general, pero no ejecuta nada por sí mismo.",
-          "alternative": "Escribe directamente el slash command que ya conoces"
+          "why": "Según la documentación, ? solo abre la visión general de ayuda, pero no ejecuta ninguna acción por sí mismo.",
+          "alternative": "Escribir directamente el comando slash conocido, p. ej. /tasks"
+        },
+        {
+          "title": "Esperar un comando slash independiente y con nombre propio",
+          "why": "Según la documentación, ? no es un comando `/` con nombre propio, sino un carácter especial de ayuda separado en el cuadro de prompt.",
+          "alternative": "Usar /help si prefieres referirte a un comando slash documentado y con nombre."
         }
       ],
       "sources": [
@@ -8341,18 +8428,22 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "Termina la sesión de la TUI y restaura la shell anfitriona. Alias: /quit.",
-      "what": "/exit pertenece a la categoría Core, alias /quit. El comando termina la sesión de la TUI de Antigravity CLI en curso y devuelve el control a la shell original.",
+      "what": "/exit pertenece, en la referencia oficial de Antigravity CLI, a la categoría \"Core\" y tiene como alias `/quit`. Según la documentación, \"closes the TUI session and restores your host shell\" — el comando cierra, por tanto, la sesión de terminal interactiva en curso y devuelve el control a la shell desde la que se inició `agy`.\n\nAsí, /exit es la vía habitual para salir de una sesión de Antigravity CLI, en lugar de cerrar la ventana de terminal a la fuerza o interrumpir el proceso con Ctrl+C. Como `/quit` tiene, como alias, exactamente la misma función, no importa cuál de las dos formas uses — ambas están documentadas oficialmente como equivalentes.\n\nImportante: /exit solo afecta a la sesión de TUI actual. Según la referencia, el historial de la conversación sigue siendo localizable mediante /resume, siempre que la sesión no se haya vaciado previamente con /clear.",
       "whenGood": [
         {
-          "title": "Terminar la sesión de forma limpia",
-          "example": "/exit cuando la tarea esté terminada"
+          "title": "Terminar la sesión de forma ordenada y volver a la shell del host",
+          "example": "/exit, cuando la tarea esté terminada"
+        },
+        {
+          "title": "Usar el alias si te resulta más familiar",
+          "example": "Escribir /quit — según la documentación, idéntico a /exit"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo quieres vaciar el contexto actual, dejando la sesión en marcha",
-          "why": "/exit termina toda la sesión de la TUI, no solo el contexto de la conversación.",
-          "alternative": "/clear"
+          "title": "Solo vaciar el contexto, pero seguir trabajando en la misma sesión",
+          "why": "Según la documentación, /exit cierra toda la sesión de TUI, no solo el contexto de la conversación.",
+          "alternative": "Usar /clear para iniciar una nueva conversación dentro de la misma sesión"
         }
       ],
       "sources": [
@@ -8505,18 +8596,22 @@
       "slug": "keybindings",
       "name": "/keybindings",
       "summary": "Abre el editor interactivo de atajos de teclado.",
-      "what": "/keybindings pertenece a la categoría Configurations y abre un editor para personalizar los atajos de teclado de la CLI, que se guardan en un archivo de keybindings independiente.",
+      "what": "/keybindings pertenece a la categoría \"Configurations\" y, según la referencia oficial, abre \"the interactive Keyboard Shortcut Editor\" — es decir, un editor interactivo dentro de la TUI en el que puedes personalizar los atajos de teclado de Antigravity CLI.\n\nLa página de documentación \"Using AGY CLI\" añade que los atajos se pueden editar tanto mediante este editor como directamente en un archivo JSON. Según la información oficial, el archivo se encuentra en `~/.gemini/antigravity-cli/keybindings.json`. Para restablecer la configuración predeterminada, según la documentación basta con eliminar este archivo.\n\n/keybindings sirve, por tanto, tanto para ajustes puntuales a través de la interfaz como para la edición manual y versionable del archivo JSON — por ejemplo, para sincronizar un conjunto propio de atajos de teclado entre varios ordenadores.",
       "whenGood": [
         {
-          "title": "Adaptar los atajos de teclado a tus propios hábitos",
-          "example": "Abre /keybindings y cambia el atajo de un comando que uses con frecuencia"
+          "title": "Cambiar un atajo de teclado que entra en conflicto con otra aplicación",
+          "example": "Abrir /keybindings y reasignar en el editor interactivo el atajo afectado"
+        },
+        {
+          "title": "Sincronizar atajos de teclado propios entre varios ordenadores",
+          "example": "Editar o copiar directamente el archivo ~/.gemini/antigravity-cli/keybindings.json, en lugar de abrir el editor cada vez"
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres cambiar los ajustes generales, no los atajos de teclado",
-          "why": "/keybindings solo cubre los atajos de teclado, no el resto de la configuración.",
-          "alternative": "/config"
+          "title": "Cambiar la configuración general en lugar de los atajos de teclado",
+          "why": "Según la documentación, /keybindings cubre solo los atajos de teclado, no el resto de la configuración.",
+          "alternative": "Usar /config o /settings"
         }
       ],
       "sources": [
@@ -8869,18 +8964,22 @@
       "slug": "tasks",
       "name": "/tasks",
       "summary": "Abre el panel del administrador de tareas para monitorizar los logs de shell en segundo plano.",
-      "what": "/tasks pertenece a la categoría Tools & Tasks y muestra en un panel propio las tareas en segundo plano en curso y completadas, junto con sus logs de shell.",
+      "what": "Según la referencia oficial de Antigravity CLI, /tasks pertenece a la categoría \"Tools & Tasks\". El comando \"opens the Task Manager Panel to monitor background shell execution logs\" — es decir, abre un panel propio en el que se muestran los procesos de shell en segundo plano en curso y completados, junto con sus logs.\n\nEsto es relevante en cuanto un agente inicia en segundo plano un comando de terminal de larga duración (por ejemplo, un build o una ejecución de tests): en lugar de esperar, puedes consultar el progreso y la salida mediante /tasks mientras el agente sigue trabajando en paralelo. Según el changelog oficial de la CLI, la vista de lista y de detalle de /tasks se revisó en una versión anterior (horas de inicio a la izquierda, estado alineado a la derecha), lo que sugiere un diseño tabular.\n\n/tasks muestra exclusivamente los logs de tareas de shell — para el estado de los subagentes, según la referencia, existe un panel separado.",
       "whenGood": [
         {
-          "title": "Consultar el log de un comando en ejecución en segundo plano",
-          "example": "Abre /tasks para revisar la salida de una tarea de shell en segundo plano de larga duración"
+          "title": "Comprobar el log de un comando de shell que se ejecuta en segundo plano",
+          "example": "Abrir /tasks mientras un build se ejecuta en segundo plano, para ver la salida actual"
+        },
+        {
+          "title": "Obtener una visión general de todos los procesos en segundo plano activos",
+          "example": "Llamar a /tasks para ver qué shells en segundo plano están en ejecución o ya han terminado"
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres monitorizar el estado de los subagentes, no las tareas de shell en segundo plano",
-          "why": "/tasks muestra los logs de las tareas de shell; para los subagentes hay un panel propio.",
-          "alternative": "/agents"
+          "title": "Monitorizar el estado de subagentes en lugar de tareas de shell en segundo plano",
+          "why": "Según la referencia, /tasks muestra logs de tareas de shell; para subagentes hay documentado un panel propio.",
+          "alternative": "Usar /agents para monitorizar subagentes"
         }
       ],
       "sources": [
@@ -8895,18 +8994,22 @@
       "slug": "title",
       "name": "/title",
       "summary": "Alterna las actualizaciones del título de la ventana de la terminal.",
-      "what": "/title pertenece a la categoría Configurations y controla si la CLI actualiza automáticamente el título de ventana del emulador de terminal. Al llamarlo sin argumento, se alterna el estado; on/off lo fijan de forma explícita.",
+      "what": "/title pertenece a la categoría \"Configurations\" y controla si el título de ventana de tu emulador de terminal se actualiza automáticamente. Según la página de documentación dedicada, con la función activada el título se actualiza de forma dinámica y muestra el modelo activo, el workspace y el estado del agente.\n\nLa sintaxis es `/title [on|off]`: sin argumento, el comando alterna el estado actual; con `on` activas explícitamente las actualizaciones del título, con `off` las desactivas explícitamente. En la referencia de la CLI, la descripción breve se indica como \"toggle or set terminal window title updates\".\n\nEsto es útil, por ejemplo, cuando tienes varias pestañas o ventanas de terminal abiertas con distintas sesiones de Antigravity y quieres reconocer de inmediato, por el título de la ventana, qué modelo o qué workspace está activo, sin tener que hacer clic primero en la ventana correspondiente.",
       "whenGood": [
         {
-          "title": "Desactivar de forma específica las actualizaciones del título de ventana",
+          "title": "Distinguir varias ventanas de terminal con sesiones distintas",
+          "example": "/title on, para que el título de la ventana muestre el modelo y el workspace de cada sesión"
+        },
+        {
+          "title": "Desactivar las actualizaciones del título de ventana de forma selectiva, p. ej. por un script de título propio",
           "example": "/title off"
         }
       ],
       "whenBad": [
         {
-          "title": "Quieres ajustar el contenido de la barra de estado dentro de la TUI",
-          "why": "/title solo afecta al título de ventana del emulador de terminal, no a la barra de estado de la TUI.",
-          "alternative": "/statusline"
+          "title": "Ajustar el contenido de la barra de estado dentro de la TUI",
+          "why": "Según la documentación, /title solo afecta al título de ventana del emulador de terminal, no a la barra de estado dentro de la propia TUI.",
+          "alternative": "Usar /statusline"
         }
       ],
       "sources": [
@@ -9085,22 +9188,27 @@
       "slug": "tui",
       "name": "/tui",
       "summary": "Establece el renderizador del terminal y reinicia en él.",
-      "what": "Establece el renderizador de la interfaz del terminal y reinicia en él manteniendo intacta tu conversación.\n\nfullscreen habilita el renderizador alt-screen sin parpadeo. Sin argumentos, muestra el renderizador activo.",
+      "what": "`/tui` determina qué renderer dibuja la interfaz y reinicia Claude Code conservando el historial de la conversación. `/tui fullscreen` cambia al renderer de pantalla alternativa sin parpadeo (como en `vim` o `htop`): reduce el volumen de datos enviado a la terminal, mantiene constante el consumo de memoria en conversaciones largas y aporta soporte de ratón (clic, arrastrar para seleccionar, desplazamiento con la rueda del ratón), además de un área de entrada fija en la parte inferior de la pantalla. `/tui default` vuelve al renderer clásico, que mantiene la conversación en el scrollback nativo de la terminal, de modo que, por ejemplo, la búsqueda con Cmd+F y el modo de copia de tmux siguen funcionando directamente. Sin argumento, `/tui` solo indica qué renderer está activo en ese momento, sin cambiar nada.\n\nSegún la documentación, el renderizado fullscreen es una Research Preview: se ha probado en los emuladores de terminal más comunes, pero en terminales o configuraciones menos habituales aún puede presentar errores de representación. Como alternativa, el mismo modo se puede activar de forma permanente al iniciar mediante la variable de entorno `CLAUDE_CODE_NO_FLICKER=1`.",
       "whenGood": [
         {
-          "title": "Cambiar al renderizador fullscreen sin parpadeo",
-          "example": "/tui fullscreen"
+          "title": "Solucionar parpadeos o saltos de scroll en la terminal de VS Code o en tmux",
+          "example": "Ejecutar /tui fullscreen cuando la pantalla parpadea al transmitir la salida de una herramienta o cuando la posición de scroll salta constantemente hacia arriba."
         },
         {
-          "title": "Comprobar qué renderizador está activo actualmente",
-          "example": "/tui"
+          "title": "Comprobar qué renderer está activo en este momento",
+          "example": "Escribir /tui sin argumento para comprobar si la sesión actual se ejecuta con el renderer clásico o con el fullscreen."
         }
       ],
       "whenBad": [
         {
-          "title": "Esperar que la conversación se borre",
-          "why": "el cambio conserva tu conversación; el comando no la reinicia.",
-          "alternative": "/clear"
+          "title": "Esperar que con esto se pierda o se restablezca el historial de la conversación",
+          "why": "Según la documentación, el cambio conserva el historial y solo reinicia el renderer; el comando no realiza ningún restablecimiento.",
+          "alternative": "Usar /clear para vaciar realmente el historial."
+        },
+        {
+          "title": "Querer usar directamente la búsqueda nativa de la terminal (Cmd+F) o el modo de copia de tmux para la conversación",
+          "why": "En el renderer fullscreen, la conversación se encuentra en el búfer de pantalla alternativo en lugar de en el scrollback nativo — Cmd+F y la búsqueda de tmux no encuentran nada ahí.",
+          "alternative": "Cambiar al modo Transcript con Ctrl+O y pulsar ahí [ para volcar la conversación al scrollback nativo, o usar /tui default."
         }
       ],
       "sources": [

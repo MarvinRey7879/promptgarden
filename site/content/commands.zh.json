@@ -1398,18 +1398,27 @@
       "slug": "keybindings",
       "name": "/keybindings",
       "summary": "打开键盘快捷键配置文件。",
-      "what": "打开键盘快捷键配置文件。",
+      "what": "`/keybindings` 会打开你位于 `~/.claude/keybindings.json` 的快捷键配置文件——如果文件还不存在，会自动创建。这个文件是一个包含 `bindings` 数组的 JSON 对象：每个代码块定义一个上下文（例如 `Global`、`Chat`、`Settings`、`Transcript`），并在其中将按键组合映射到 `namespace:action` 格式的动作，例如 `chat:submit` 用于发送消息，`app:toggleTodos` 用于显示/隐藏待办列表。\n\n你可以用 `null` 禁用默认快捷键，组合多个修饰键（`ctrl+shift+c`），也可以定义像 `ctrl+k ctrl+s` 这样的按键序列（chord）。对该文件的修改会被自动检测并立即生效，无需重启。像 Ctrl+C、Ctrl+D 或 Ctrl+M 这类组合是保留键位，无法重新绑定。加载时，Claude Code 会检查文件是否有解析错误、无效的上下文，以及保留或重复的绑定，并将警告写入调试日志（用 `--debug` 启动可查看详情）。",
       "whenGood": [
         {
-          "title": "自定义快捷键",
-          "example": "打开 /keybindings，修改与其他应用程序冲突的快捷键。"
+          "title": "快捷键与其他应用冲突",
+          "example": "打开 /keybindings，如果 `chat:externalEditor` 的默认快捷键已经被终端或 tmux 占用，就把它改成另一个组合键。"
+        },
+        {
+          "title": "自定义按键序列组合",
+          "example": "在文件的 `Chat` 上下文中添加一条类似 \"ctrl+k ctrl+s\": \"chat:stash\" 的记录，定义自己的按键序列。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想快速查看有哪些快捷键，而不打算修改",
-          "why": "/keybindings 会直接打开可编辑的文件，而不是单纯的概览列表。",
-          "alternative": "查阅快捷键相关文档，而不是打开该文件。"
+          "title": "只是想快速查看当前有哪些快捷键，而不想改动任何东西",
+          "why": "/keybindings 直接打开的是可编辑的文件，而不是一份纯粹的默认按键总览。",
+          "alternative": "查阅文档中关于快捷键的表格，而不是打开这个文件。"
+        },
+        {
+          "title": "把 Vim 模式下的按键，比如 'jj'，重新映射为 Escape",
+          "why": "根据文档，Vim 按键本身无法通过这个快捷键文件重新映射。",
+          "alternative": "使用设置项 `vimInsertModeRemaps`，来映射 INSERT 模式下的按键序列。"
         }
       ],
       "sources": [
@@ -1424,18 +1433,27 @@
       "slug": "login",
       "name": "/login",
       "summary": "登录 Anthropic 账户。",
-      "what": "登录 Anthropic 账户。",
+      "what": "`/login` 会启动你 Anthropic 账户的登录流程。首次启动 Claude Code 时，会自动打开一个浏览器窗口；此后你可以随时手动调用 `/login`，比如在执行 `/logout` 之后重新登录，或者切换账户。支持的账户类型包括 Claude Pro/Max、Claude for Teams/Enterprise、Claude Console，以及 Amazon Bedrock、Google Cloud's Agent Platform 或 Microsoft Foundry 等云服务商（通过环境变量，或在登录提示中选择「3rd-party platform」选项），此外还支持通过企业 SSO 使用自托管的 Claude Apps Gateway。\n\n如果浏览器没有自动打开，按 `c` 即可将登录 URL 复制到剪贴板。如果浏览器改为显示一个代码——这在 WSL2、SSH 会话或容器环境中很常见——你可以直接把它粘贴到终端中。完成后，终端会显示「Login successful」。如果现有登录将在三天内过期，Claude Code 会在启动时发出提醒，并建议运行 `/login` 来续期。",
       "whenGood": [
         {
-          "title": "首次登录或切换账户",
-          "example": "在新电脑上执行 /login，将其与 Anthropic 账户关联。"
+          "title": "在新电脑上首次登录",
+          "example": "安装完成后，在终端中启动 `claude`，然后执行 /login，通过浏览器连接到 Claude 账户。"
+        },
+        {
+          "title": "续期即将过期的登录",
+          "example": "看到「Your login expires in 3 days · run /login to renew」提示时，直接执行 /login 即可续期，不会中断当前进行中的会话。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想确认自己是否已经登录",
-          "why": "/login 会直接启动登录流程，而不是单纯显示状态。",
-          "alternative": "使用 /status 查看账户和连接信息，而无需启动新的登录流程。"
+          "title": "只是想查看当前的登录状态",
+          "why": "/login 会直接启动一个新的登录流程，而不只是显示信息。",
+          "alternative": "使用 /status——其中会显示一行登录信息，包含账户和过期状态等。"
+        },
+        {
+          "title": "使用 API Key 或自己的凭证脚本工作",
+          "why": "ANTHROPIC_API_KEY、ANTHROPIC_AUTH_TOKEN 或 apiKeyHelper 独立于 /login 流程运行，并且在身份验证的优先级顺序中排在订阅登录之前。",
+          "alternative": "设置相应的环境变量，或者配置 apiKeyHelper，而不是通过 /login 登录。"
         }
       ],
       "sources": [
@@ -1450,18 +1468,27 @@
       "slug": "logout",
       "name": "/logout",
       "summary": "从 Anthropic 账户登出。",
-      "what": "从 Anthropic 账户登出。",
+      "what": "`/logout` 会将你从当前连接的 Anthropic 账户中登出。该命令会删除已保存的凭证（`.credentials.json`，具体位置视操作系统而定：macOS 存放在钥匙串中，Linux 上位于 `~/.claude/.credentials.json`，Windows 上位于 `%USERPROFILE%\\\\.claude\\\\.credentials.json`），并同时重置首次启动的初始设置状态：之后再用 `claude` 启动 Claude Code 时，会重新引导你完整走一遍登录和初始设置流程。\n\n使用 `/logout` 可以重新登录——比如换一个账户，或者在组织变更之后——也可以用来把账户从共享电脑上干净地断开。该命令只影响通过 `/login` 保存的登录信息；通过 `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN` 或 `apiKeyHelper` 提供的凭证走的是独立的凭证渠道，不受影响。",
       "whenGood": [
         {
-          "title": "干净地从某台设备上退出账户",
-          "example": "在共用电脑上工作结束后执行 /logout，退出自己的 Anthropic 账户。"
+          "title": "在共享电脑上断开账户连接",
+          "example": "在团队/测试电脑上完成工作后执行 /logout，让下一个使用的人必须用自己的账户登录。"
+        },
+        {
+          "title": "切换到另一个账户或另一个组织",
+          "example": "先执行 /logout，再执行 /login，用另一个 Claude 账户重新建立连接。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想简单确认是否登录以及登录的是哪个账户",
-          "why": "/logout 会立即结束登录状态，而不是仅仅显示信息。",
-          "alternative": "使用 /status 查看账户信息，而不必退出登录。"
+          "title": "只是想快速查看当前登录的是哪个账户",
+          "why": "/logout 会立即结束登录，而不是仅仅显示信息。",
+          "alternative": "使用 /status，查看包含账户和过期信息的登录行，而无需登出。"
+        },
+        {
+          "title": "想结束通过 ANTHROPIC_API_KEY 或 apiKeyHelper 建立的登录",
+          "why": "根据文档，/logout 只管理通过 /login 保存的 .credentials.json 登录信息；基于 API Key 或 Helper 的访问方式是通过环境变量或配置运行的。",
+          "alternative": "在终端中移除相应的环境变量（例如 ANTHROPIC_API_KEY），或者在配置中调整 apiKeyHelper 设置。"
         }
       ],
       "sources": [
@@ -1808,18 +1835,27 @@
       "slug": "radio",
       "name": "/radio",
       "summary": "在浏览器中打开 'Claude FM' Lo-Fi 电台。",
-      "what": "在浏览器中打开 'Claude FM' Lo-Fi 电台。\n\n如果没有浏览器,则输出串流地址。在 Bedrock/Vertex/Foundry 上不可用。",
+      "what": "`/radio` 会在你的默认浏览器中打开「Claude FM」，一个 Lo-Fi 电台直播流——用作你使用 Claude Code 时的背景音乐。该命令不需要任何参数，只需在运行中的会话里输入 `/radio` 即可。\n\n如果没有可用的浏览器——比如在纯 SSH 会话或没有图形界面的容器中——Claude Code 会改为在终端中以文本形式输出直播流的 URL，你可以手动把它粘贴到任意播放器中打开。根据文档，该命令在 Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry 和 Claude Platform on AWS 上不可用。根据 Anthropic 的每周回顾（Week 27，2026 年 6 月 29 日 – 7 月 3 日），`/radio` 是随 v2.1.195–v2.1.201 版本新增的。",
       "whenGood": [
         {
-          "title": "编码时顺便听 Lo-Fi 音乐",
-          "example": "执行 /radio，在浏览器中打开“Claude FM”。"
+          "title": "编码时顺便听点音乐",
+          "example": "在 Claude 于后台处理任务的同时，执行 /radio，在浏览器中启动 Claude FM。"
+        },
+        {
+          "title": "手边没有浏览器时，自己打开直播流 URL",
+          "example": "在 SSH 会话中执行 /radio，然后把输出的直播流 URL 粘贴到一个独立的音频播放器中。"
         }
       ],
       "whenBad": [
         {
-          "title": "在 Bedrock、Vertex 或 Foundry 环境下使用",
-          "why": "根据文档说明，/radio 在这些平台上不可用。",
-          "alternative": "并行使用自己的音乐应用或播放器。"
+          "title": "在 Bedrock、Vertex、Foundry 或 Claude Platform on AWS 上使用",
+          "why": "根据文档，/radio 在这四个平台上均不可用。",
+          "alternative": "单独启动自己的音乐应用或播放器。"
+        },
+        {
+          "title": "v2.1.195 之前的旧版 Claude Code",
+          "why": "根据 Anthropic 的每周回顾，/radio 是随 v2.1.195–v2.1.201 版本才新增的；在更早的版本中，该命令尚不存在。",
+          "alternative": "用 `claude --version` 检查已安装的版本，必要时进行更新。"
         }
       ],
       "sources": [
@@ -2455,18 +2491,27 @@
       "slug": "stats",
       "name": "/stats",
       "summary": "/usage 的别名,会直接打开 Stats 标签页。",
-      "what": "/usage 的别名,会直接打开 Stats 标签页。",
+      "what": "`/stats` 是 `/usage` 的别名，会直接打开该视图的 Stats 标签页。`/usage` 本身显示会话花费、你所在计划的使用限额，以及活动统计信息；顶部有一个会话区块，显示 token 用量，以及根据 token 数量按标价本地计算出的费用。这个区块主要面向 API 用户，因为订阅用户（Pro/Max/Team/Enterprise）的额度已经包含在套餐中，看到的是用量条、活动统计和用量明细。在 Pro、Max、Team 和 Enterprise 套餐下，用量明细会把最近的消耗归类到 skills、subagents、插件以及各个 MCP 服务器；按 `d`/`w` 可以在最近 24 小时和最近 7 天之间切换。\n\n根据更新日志，`/stats` 和 `/cost` 历史上曾是各自独立的命令，后来被合并进了 `/usage`——两者作为快捷方式仍然存在，会直接打开对应的标签页。",
       "whenGood": [
         {
-          "title": "快速费用检查",
-          "example": "调用 /stats,直接在 Stats 标签页查看 Token 和费用消耗情况,而无需先在 /usage 中导航。"
+          "title": "工作中快速查看花费/用量",
+          "example": "输入 /stats，立即在 /usage 的 Stats 标签页中查看会话花费和 token 用量。"
+        },
+        {
+          "title": "查看自己离套餐限额还有多远",
+          "example": "作为 Pro 或 Max 用户，执行 /stats，查看最近 24 小时或 7 天按 skills/subagents/MCP 服务器划分的用量条和明细。"
         }
       ],
       "whenBad": [
         {
-          "title": "在文档/脚本中将其作为独立命令引用",
-          "why": "根据文档,/stats 只是 /usage 的一个别名,直接打开 Stats 标签页——并非独立功能。",
-          "alternative": "引用 /usage,它覆盖同样的功能范围。"
+          "title": "在文档或脚本中把 /stats 当作有独立功能的命令来引用",
+          "why": "根据文档，/stats 只是 /usage 的别名，用于直接打开 Stats 标签页——它没有独立的功能。",
+          "alternative": "引用 /usage，它代表完整的命令及其全部功能范围。"
+        },
+        {
+          "title": "需要供组织使用的正式结算数据",
+          "why": "/usage 或 /stats 中显示的费用，是根据 token 数量按标价在本地计算得出的，可能与实际账单存在差异。",
+          "alternative": "使用 Claude Console（platform.claude.com/usage）中的 Usage 页面，获取权威的结算数据。"
         }
       ],
       "sources": [
@@ -5800,18 +5845,27 @@
       "slug": "clear",
       "name": "/clear",
       "summary": "清除当前会话到目前为止的聊天历史。",
-      "what": "/clear 会把之前的对话历史从聊天上下文中移除。文档建议在 Aider 卡在某个任务上、需要重新开始时使用。",
+      "what": "根据命令参考文档，`/clear` 会清空当前会话的聊天记录——简言之就是「Clear the chat history」。根据文档中的使用技巧，这是推荐的重新开始的方式：「Use /clear to discard the chat history and make a fresh start.」\n\n根据更新日志，从 0.85.2 版本起，Aider 还会在终端中用「All chat history cleared.」这条消息确认操作已执行，让你能看到命令确实生效了。\n\n`/clear` 只影响对话记录本身，不涉及聊天中已添加的文件——这些文件会原样保留在上下文中。为此文档提供了另一个独立命令 `/reset`，它会额外把所有文件也从聊天中移除。当 Aider 在某项任务上卡住，或者对话记录让上下文变得臃肿时，你可以不带任何参数输入 `/clear`，然后重新、更精确地描述任务。",
       "whenGood": [
         {
-          "title": "Aider 在任务上卡住时重新开始",
-          "example": "/clear — 然后把任务重新、更精确地描述一遍"
+          "title": "Aider 卡在某项任务时重新开始",
+          "example": "输入 `/clear`，然后重新、更精确地描述任务。"
+        },
+        {
+          "title": "在开始新的独立主题前清理上下文",
+          "example": "在使用聊天中相同的文件着手处理一个完全不同的新问题之前，使用 `/clear`。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想从上下文中移除个别文件",
-          "why": "/clear 会清空整个对话历史,但已加入聊天的文件不受影响。",
-          "alternative": "改用 /drop 有针对性地移除个别文件"
+          "title": "只想从上下文中移除某几个文件",
+          "why": "根据文档，`/clear` 会清空整个对话记录，但不会动聊天中已添加的文件。",
+          "alternative": "使用 `/drop`，有针对性地移除单个文件。"
+        },
+        {
+          "title": "想同时重置记录和文件",
+          "why": "根据文档，`/clear` 只会清空历史记录，不会清空文件列表。",
+          "alternative": "使用 `/reset`，一步完成「Drop all files and clear the chat history」。"
         }
       ],
       "sources": [
@@ -6086,18 +6140,22 @@
       "slug": "edit",
       "name": "/edit",
       "summary": "/editor 的别名:打开外部编辑器撰写提示词。",
-      "what": "文档把 /edit 列为 /editor 的别名(alias),用于打开一个外部文本编辑器,在里面撰写下一条聊天消息。",
+      "what": "根据命令参考文档，`/edit` 是 `/editor` 的别名，用于打开外部文本编辑器来撰写下一条聊天消息。根据更新日志，该别名是在 0.79.0 版本中加入的：「Added /edit as an alias for the /editor command」。\n\n根据文档中的使用技巧，只要终端支持，你也可以不通过斜杠命令，而是用快捷键 `Ctrl-X Ctrl-E` 打开同一个编辑器——文档是针对 `/editor` 说明这一点的，而 `/edit` 作为别名直接沿用该说明。\n\n输入 `/edit` 后，外部编辑器会打开，你在其中写好提示内容，保存并关闭文件——文件内容随后会作为下一条聊天消息发送给 Aider。文档并未为 `/edit` 提及其他参数或选项。",
       "whenGood": [
         {
-          "title": "舒适地撰写较长的多行提示词",
-          "example": "/edit — 打开外部编辑器,而不是直接在终端里敲一大段提示词"
+          "title": "轻松撰写较长的多行提示",
+          "example": "输入 `/edit`，在你熟悉的编辑器里撰写一段包含多个段落的详细改动说明，而不是在终端里写。"
+        },
+        {
+          "title": "不用斜杠命令的键盘工作流",
+          "example": "按下 `Ctrl-X Ctrl-E`，打开与 `/edit` 相同的外部编辑器，双手无需离开键盘。"
         }
       ],
       "whenBad": [
         {
-          "title": "写一条简短的一句话消息",
-          "why": "对于一行的消息,绕道外部编辑器没有必要。",
-          "alternative": "直接在终端提示符里输入消息"
+          "title": "写一条简短的单句消息",
+          "why": "对于一句话就能说清的消息，绕道使用外部编辑器没有必要。",
+          "alternative": "直接在终端提示行中输入消息。"
         }
       ],
       "sources": [
@@ -6177,18 +6235,22 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "退出 Aider。",
-      "what": "/exit 会结束正在运行的 Aider 应用。",
+      "what": "`/exit` 用于退出正在运行的 Aider 应用。命令参考文档中的描述十分简短：「Exit the application」——文档并未提及额外的参数或选项。\n\n`/exit` 有一个文档记录在案的“双胞胎”：`/quit`。根据 Aider 的更新日志，`/quit` 是明确作为「as alias for /exit」引入的——也就是说这两个命令等价，都会立即退出程序，无需确认。这是纯粹的程序退出操作，并不会重置聊天记录或已添加的文件；文档为此另外提供了别的命令。\n\n当你想结束本次 Aider 会话时，只需在提示行中直接输入 `/exit`，无需附加任何参数。",
       "whenGood": [
         {
-          "title": "干净地结束会话",
-          "example": "/exit — 当这次和 Aider 的工作已经完成时"
+          "title": "干净利落地结束会话",
+          "example": "当所有想要的改动都已提交、准备结束 Aider 会话时，输入 `/exit`。"
+        },
+        {
+          "title": "让终端腾出来做别的事",
+          "example": "执行 `/exit` 退出程序，以便在同一个终端窗口中继续使用其他工具。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想重置聊天历史并继续用 Aider 工作",
-          "why": "/exit 会结束整个程序,而不只是清历史。",
-          "alternative": "用 /clear 只清除聊天历史,在同一会话中继续"
+          "title": "只想重置聊天记录，但继续使用 Aider",
+          "why": "根据文档，`/exit` 会退出整个程序，而不仅仅是清空聊天记录。",
+          "alternative": "使用 `/clear`，仅清空聊天记录，并在同一会话中继续工作。"
         }
       ],
       "sources": [
@@ -6242,18 +6304,22 @@
       "slug": "help",
       "name": "/help",
       "summary": "回答关于 Aider 自身的使用、配置和故障排查问题。",
-      "what": "/help 回答关于 Aider 这个工具本身的问题,例如使用方法、配置和故障排查(troubleshooting)。",
+      "what": "根据命令参考文档，`/help` 的作用是「Ask questions about aider」——也就是说，你用它来询问关于 Aider 本身的问题，而不是关于你项目代码的问题。\n\n该命令的调用方式是 `/help <问题>`，例如 `/help is the .env file global or for a git repo?`（文档中的官方示例）。根据文档，Aider 已经对其完整文档做了索引：这个问题会被用来查找相关的文档段落，再通过检索增强生成（RAG）与当前的聊天上下文一起交给 LLM——因此答案可以针对你在本次会话中遇到的具体问题。\n\n`/help` 同时也是一种独立的聊天模式：根据文档，如果不附带问题，该命令会永久切换到帮助模式（也可以用 `/chat-mode help`）；而如果在某条消息前加上 `/help`，则该模式只对这一条消息生效。",
       "whenGood": [
         {
           "title": "想知道某个 Aider 功能怎么用",
-          "example": "/help How do I use aider with ollama?"
+          "example": "输入 `/help how do I configure my API key?`，即可在聊天中直接获得基于文档的答案。"
+        },
+        {
+          "title": "澄清不清楚的配置问题",
+          "example": "`/help is the .env file global or for a git repo?`——这是 Aider 文档中的官方示例。"
         }
       ],
       "whenBad": [
         {
-          "title": "问自己代码或项目的问题",
-          "why": "文档说明 /help 回答的是 Aider 本身的问题,不是你的代码库。",
-          "alternative": "用 /ask 在聊天里询问代码相关的问题"
+          "title": "询问关于自己代码或项目的问题",
+          "why": "根据文档，`/help` 回答的是关于 Aider 本身（使用方法、配置、故障排除）的问题，而不是关于你自己代码库的问题。",
+          "alternative": "使用 `/ask`，在聊天中提出关于代码的问题，而不修改任何文件。"
         }
       ],
       "sources": [
@@ -6547,18 +6613,22 @@
       "slug": "ok",
       "name": "/ok",
       "summary": "在 Code 模式下确认建议改动的快捷方式。",
-      "what": "/ok 是 '/code Ok, please go ahead and make those changes.' 的简写。额外输入的文本会被附加到这个提示词后面。",
+      "what": "根据命令参考文档，`/ok` 是 `/code Ok, please go ahead and make those changes.` 的简写形式——额外输入的文字会附加在这句固定的话后面。根据更新日志，该命令被引入时的定位是「shortcut for asking aider to go ahead with the proposed changes, with optional extra instructions」。\n\n这个命令契合文档中描述的 Ask/Code 工作流：你先在 `/ask` 或 `/architect` 这类模式下讨论一项改动，如果提议合适，就不需要自己再写一遍确认的话，只需简短地输入 `/ok`，让 Aider 切到 Code 模式去实现——这与文档中提到的、在 Code 模式下光是一句「go ahead」就能触发实现的说法是一致的。\n\n不附加文字时，`/ok` 会原样发送那句固定的确认语；如果你在后面附加了自己的文字，根据文档，它会被追加在这句话之后，而不是替代它。",
       "whenGood": [
         {
-          "title": "快速批准来自 Ask/Architect 讨论的方案",
-          "example": "/ok — 不用自己把整句同意的话打出来"
+          "title": "快速批准 Ask/Architect 对话中提出的方案",
+          "example": "在 Aider 于 Ask 模式下提出方案后，输入 `/ok`，而不必自己把整句确认语敲出来。"
+        },
+        {
+          "title": "将确认与简短的补充说明结合",
+          "example": "输入 `/ok aber bitte ohne die Tests zu ändern`——根据文档，附加的文字会被加在固定的确认语之后。"
         }
       ],
       "whenBad": [
         {
-          "title": "还想附带修改要求,而不只是同意",
-          "why": "/ok 只是把你的文本附加到一句固定的同意语后面,替代不了一条精确的自定义指令。",
-          "alternative": "使用 /code <自己的具体指令>"
+          "title": "还想给出实质性的修改要求，而不仅仅是表示同意",
+          "why": "`/ok` 只会把你自己的文字附加在一句固定的确认语后面，并不能替代一条独立完整表述的指令。",
+          "alternative": "使用 `/code <你自己具体的指令>`。"
         }
       ],
       "sources": [
@@ -6599,18 +6669,22 @@
       "slug": "quit",
       "name": "/quit",
       "summary": "退出 Aider(等价于 /exit)。",
-      "what": "/quit 会立即结束正在运行的 Aider 会话,和 /exit 完全一样。它是纯别名(alias),没有额外功能。",
+      "what": "`/quit` 用于退出正在运行的 Aider 应用——根据命令参考文档，其描述与 `/exit` 完全相同：「Exit the application」。更新日志明确说明了这两个命令的关系：在 0.24.0 版本中，`/quit` 是作为「as alias for /exit」被引入的。因此 `/quit` 并非一个行为不同的独立命令，而纯粹是一个名称别名。\n\n当你想退出 Aider 时，直接输入 `/quit`，无需附加任何参数；根据文档，其行为与 `/exit` 没有区别。文档并未为 `/quit` 提及额外的选项、确认提示或特殊情况——该命令会直接终止进程。\n\n使用这两个命令中的哪一个纯属个人喜好：有些用户更熟悉其他 CLI 工具中的 `/quit`，另一些则更习惯 `/exit`。",
       "whenGood": [
         {
-          "title": "干净地结束会话,而不是硬关终端窗口",
-          "example": "/quit,在所有想要的改动都提交之后"
+          "title": "干净地结束会话，而不是强行关闭终端窗口",
+          "example": "在所有想要的改动都已提交后，输入 `/quit`。"
+        },
+        {
+          "title": "沿用其他 CLI 工具的使用习惯",
+          "example": "如果你更熟悉其他程序中的这个命令名，可以用 `/quit` 代替 `/exit`——根据文档，两者退出 Aider 的效果完全相同。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想重置文件/历史,但继续工作",
-          "why": "/quit 结束的是整个进程,而不只是当前的聊天选择。",
-          "alternative": "用 /reset 清空文件和历史,而不退出 Aider"
+          "title": "只想重置文件或记录，但继续工作",
+          "why": "根据文档，`/quit` 会终止整个进程，而不仅仅是清空当前的聊天选择或记录。",
+          "alternative": "使用 `/reset`，在不退出 Aider 的情况下清空文件和记录。"
         }
       ],
       "sources": [
@@ -7803,18 +7877,22 @@
       "slug": "plugin-uninstall",
       "name": "agy plugin uninstall <name>",
       "summary": "彻底移除插件目录及其所有注册表条目。",
-      "what": "agy plugin uninstall <plugin_name> 会完全删除插件目录,并清理相关的注册表条目。",
+      "what": "严格来说，`agy plugin uninstall <name>` 并不是交互式 TUI 的斜杠命令，而是一个直接在终端中调用的 CLI 子命令——也就是 `agy plugin uninstall <plugin_name>`，而不是在提示窗口中输入 `/plugin uninstall`。\n\n根据官方 Antigravity CLI 文档，该命令会彻底移除一个插件：它会「purge」（清除）包目录，并清理相关的注册表条目。这使它与 `agy plugin disable` 明确区分开来——后者只是暂时停用插件，并不会删除其文件。插件管理的其余部分还包括 `agy plugin list`（显示当前激活的包及其已加载的组件）和 `agy plugin install`（将一个包目录纳入本地配置）。\n\n如果想让某个插件彻底消失，就使用 `uninstall`。如果只是想暂时停用它，`disable` 是更温和的选择，因为之后可以直接重新启用，而无需再次安装。",
       "whenGood": [
         {
           "title": "彻底移除一个不再需要的插件",
-          "example": "agy plugin uninstall my-plugin"
+          "example": "agy plugin uninstall mein-plugin"
+        },
+        {
+          "title": "在插件被新版本取代前先清理",
+          "example": "agy plugin uninstall altes-plugin，然后执行 agy plugin install ./neues-plugin"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想暂时挂起该插件",
-          "why": "uninstall 会彻底删除目录和注册表条目;之后若想再次启用需要重新安装。",
-          "alternative": "使用 agy plugin disable <name>"
+          "title": "插件只是想暂时停用",
+          "why": "uninstall 会彻底删除目录和注册表条目；之后想重新启用就必须重新安装。",
+          "alternative": "使用 agy plugin disable <name>，它只会暂停相关工具，而不会删除插件文件"
         }
       ],
       "sources": [
@@ -7963,18 +8041,27 @@
       "slug": "help-question-mark",
       "name": "?",
       "summary": "显示帮助信息以及所有斜杠命令的列表。",
-      "what": "在提示词输入框中输入 ?,会打开帮助信息,列出所有可用的斜杠命令。",
+      "what": "根据官方 Antigravity CLI 文档，提示框中的 `?` 并不是一个带 `/` 前缀的独立斜杠命令，而是一个特殊字符快捷方式：只输入 `?`，就会打开显示所有可用斜杠命令列表的帮助。\n\n这使 `?` 有别于 `/config` 或 `/permissions` 这类真正的命令——这些命令会在你输入 `/` 时出现在自动补全菜单中。`?` 纯粹用于速查——它本身不会执行任何操作，只是告诉你当前版本中存在哪些 `/` 命令。\n\n官方 CLI 参考文档中另外还有一个独立的 `/help` 命令（分类为「Utilities」），根据文档，它会打开一个包含命令和快捷键的帮助面板。`?` 和 `/help` 在功能上有很大重叠；`?` 是可以直接从输入行敲出的更快速的反应方式，不必先完整输入 `/help`。",
       "whenGood": [
         {
-          "title": "快速查看有哪些斜杠命令可用",
-          "example": "在提示词输入框中输入 ?"
+          "title": "快速查看当前版本有哪些可用的斜杠命令",
+          "example": "在尝试一个不熟悉的工作流之前，在提示框中输入 ?。"
+        },
+        {
+          "title": "在输入 `/` 之前先快速查看总览",
+          "example": "输入 ?，查看是否已经有适用于某项特定任务的命令。"
         }
       ],
       "whenBad": [
         {
-          "title": "已经知道命令,想直接执行",
-          "why": "? 只会打开概览,本身不会执行任何操作。",
-          "alternative": "直接输入已知的斜杠命令"
+          "title": "已经知道命令，想直接执行",
+          "why": "根据文档，? 只会打开帮助总览，本身不会执行任何操作。",
+          "alternative": "直接输入已知的斜杠命令，例如 /tasks"
+        },
+        {
+          "title": "期待一个独立的、有名字的斜杠命令",
+          "why": "根据文档，? 并不是一个有独立名称的 `/` 命令，而是提示框中一个单独的帮助特殊字符。",
+          "alternative": "如果你更想引用一个有文档记录、有名字的斜杠命令，使用 /help"
         }
       ],
       "sources": [
@@ -8341,18 +8428,22 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "结束 TUI 会话,恢复到宿主 shell。别名:/quit。",
-      "what": "/exit 属于 Core 分类,别名 /quit。该命令会结束正在运行的 Antigravity CLI TUI 会话,把控制权交还给原来的 shell。",
+      "what": "在官方 Antigravity CLI 参考文档中，/exit 属于「Core」分类，别名为 `/quit`。根据文档，它「closes the TUI session and restores your host shell」——也就是说，该命令会结束正在运行的交互式终端会话，并将控制权交还给启动 `agy` 的那个 shell。\n\n因此，/exit 是退出 Antigravity CLI 会话的正规方式，而不必强行关闭终端窗口或用 Ctrl+C 中断进程。由于 `/quit` 作为别名功能完全相同，你使用哪一种写法都无所谓——官方文档将两者记录为完全等价。\n\n需要注意：/exit 只影响当前的 TUI 会话。根据参考文档，只要会话此前没有被 /clear 清空过，对话记录仍可以通过 /resume 找回。",
       "whenGood": [
         {
-          "title": "干净利落地结束会话",
-          "example": "任务完成后执行 /exit"
+          "title": "干净地结束会话并返回宿主 shell",
+          "example": "任务完成时执行 /exit"
+        },
+        {
+          "title": "使用别名，如果它更顺手的话",
+          "example": "输入 /quit——根据文档，与 /exit 完全相同"
         }
       ],
       "whenBad": [
         {
-          "title": "只想清空当前上下文,让会话继续运行",
-          "why": "/exit 会结束整个 TUI 会话,而不仅仅是对话上下文。",
-          "alternative": "/clear"
+          "title": "只想清空上下文，但在同一会话中继续工作",
+          "why": "根据文档，/exit 会结束整个 TUI 会话，而不仅仅是清空对话上下文。",
+          "alternative": "使用 /clear，在同一会话内开始一段新的对话"
         }
       ],
       "sources": [
@@ -8505,18 +8596,22 @@
       "slug": "keybindings",
       "name": "/keybindings",
       "summary": "打开交互式快捷键编辑器。",
-      "what": "/keybindings 属于 Configurations 分类,会打开一个编辑器,用于自定义 CLI 的快捷键,这些快捷键保存在单独的 keybindings 文件中。",
+      "what": "/keybindings 属于「Configurations」分类，根据官方参考文档，它会打开「the interactive Keyboard Shortcut Editor」——也就是 TUI 内部的一个交互式编辑器，你可以在其中调整 Antigravity CLI 的快捷键。\n\n文档页面「Using AGY CLI」补充说明，快捷键既可以通过这个编辑器修改，也可以直接编辑 JSON 文件。根据官方说明，该文件位于 `~/.gemini/antigravity-cli/keybindings.json`。要恢复到默认设置，根据文档，只需删除这个文件即可。\n\n因此，/keybindings 既适合通过界面进行零散的调整，也适合手动编辑这个可纳入版本管理的 JSON 文件——比如在多台电脑之间同步自己的一套快捷键。",
       "whenGood": [
         {
-          "title": "把快捷键调整为符合个人习惯",
-          "example": "打开 /keybindings,修改一个常用命令的快捷键"
+          "title": "修改与其他应用冲突的快捷键",
+          "example": "打开 /keybindings，在交互式编辑器中为受影响的快捷键重新分配按键"
+        },
+        {
+          "title": "在多台电脑之间同步自己的快捷键设置",
+          "example": "直接编辑或复制 ~/.gemini/antigravity-cli/keybindings.json 文件，而不必每次都打开编辑器"
         }
       ],
       "whenBad": [
         {
-          "title": "想修改的是通用设置,而不是快捷键",
-          "why": "/keybindings 只涉及快捷键,不涉及其余配置。",
-          "alternative": "/config"
+          "title": "想修改常规设置而不是快捷键",
+          "why": "根据文档，/keybindings 只涵盖快捷键，不涉及其他配置。",
+          "alternative": "使用 /config 或 /settings"
         }
       ],
       "sources": [
@@ -8869,18 +8964,22 @@
       "slug": "tasks",
       "name": "/tasks",
       "summary": "打开任务管理面板,用于监控后台 shell 日志。",
-      "what": "/tasks 属于 Tools & Tasks 分类,会在一个独立面板中显示正在运行和已完成的后台任务及其 shell 日志。",
+      "what": "根据官方 Antigravity CLI 参考文档，/tasks 属于「Tools & Tasks」分类。该命令「opens the Task Manager Panel to monitor background shell execution logs」——也就是打开一个专门的面板，显示正在运行和已完成的后台 shell 进程及其日志。\n\n这在某个 agent 在后台启动一个耗时较长的终端命令（例如构建或测试）时很有用：你不必干等，而是可以通过 /tasks 查看进度和输出，同时 agent 在后台继续并行工作。根据官方 CLI 更新日志，/tasks 的列表视图和详情视图在早期版本中做过一次调整（开始时间靠左对齐，状态靠右对齐），这说明它采用了表格式布局。\n\n/tasks 只显示 shell 任务日志——根据参考文档，subagent 的状态另有一个独立面板负责展示。",
       "whenGood": [
         {
-          "title": "查看后台运行命令的日志",
-          "example": "打开 /tasks,查看一个耗时较长的后台 shell 任务的输出"
+          "title": "查看后台运行的 shell 命令的日志",
+          "example": "在后台构建运行期间打开 /tasks，查看当前的输出"
+        },
+        {
+          "title": "了解所有活动后台进程的概览",
+          "example": "调用 /tasks，查看哪些后台 shell 正在运行、哪些已经完成"
         }
       ],
       "whenBad": [
         {
-          "title": "想监控的是子 agent 的状态,而不是后台 shell 任务",
-          "why": "/tasks 显示的是 shell 任务日志;子 agent 有专门的面板。",
-          "alternative": "/agents"
+          "title": "想监控 subagent 状态而不是后台 shell 任务",
+          "why": "根据参考文档，/tasks 显示的是 shell 任务日志；subagent 另有专门的面板记录在文档中。",
+          "alternative": "使用 /agents 来监控 subagent"
         }
       ],
       "sources": [
@@ -8895,18 +8994,22 @@
       "slug": "title",
       "name": "/title",
       "summary": "切换终端窗口标题的自动更新。",
-      "what": "/title 属于 Configurations 分类,用于控制 CLI 是否自动更新终端模拟器的窗口标题。不带参数调用时会切换当前状态,on/off 可以显式设置。",
+      "what": "/title 属于「Configurations」分类，用于控制终端模拟器的窗口标题是否自动更新。根据专门的文档页面，启用该功能后，标题会动态更新，显示当前使用的模型、工作区和 agent 状态。\n\n语法是 `/title [on|off]`：不带参数时，命令会在当前状态之间切换；带 `on` 时显式开启标题更新；带 `off` 时显式关闭。CLI 参考文档中给出的简短描述是「toggle or set terminal window title updates」。\n\n当你同时打开多个终端标签页或窗口、分别对应不同的 Antigravity 会话时，这个功能就很有用：无需先点进对应窗口，就能通过窗口标题立即看出当前活动的是哪个模型或哪个工作区。",
       "whenGood": [
         {
-          "title": "有针对性地关闭窗口标题更新",
+          "title": "区分多个使用不同会话的终端窗口",
+          "example": "执行 /title on，让窗口标题显示对应会话的模型和工作区"
+        },
+        {
+          "title": "有针对性地关闭窗口标题更新，例如因为使用了自己的标题脚本",
           "example": "/title off"
         }
       ],
       "whenBad": [
         {
-          "title": "想调整的是 TUI 内部状态栏的内容",
-          "why": "/title 只影响终端模拟器的窗口标题,不影响 TUI 内部的状态栏。",
-          "alternative": "/statusline"
+          "title": "调整 TUI 内部状态栏的内容",
+          "why": "根据文档，/title 只影响终端模拟器的窗口标题，不涉及 TUI 内部的状态栏。",
+          "alternative": "使用 /statusline"
         }
       ],
       "sources": [
@@ -9085,22 +9188,27 @@
       "slug": "tui",
       "name": "/tui",
       "summary": "设置终端渲染器并重新启动进入该渲染器。",
-      "what": "设置终端 UI 渲染器并重新启动进入该渲染器，同时保留你的对话内容。\n\nfullscreen 启用无闪烁的备用屏幕渲染器。不带参数时，会显示当前使用的渲染器。",
+      "what": "`/tui` 用于设定由哪种渲染器绘制界面，并会在保留对话记录的前提下重新启动 Claude Code。`/tui fullscreen` 会切换到无闪烁的备用屏幕（alt-screen）渲染器（类似 `vim` 或 `htop` 的做法）：它减少了发送给终端的数据量，在长对话中让内存占用保持稳定，并带来鼠标支持（点击、拖拽选中、滚轮滚动）以及固定在屏幕底部的输入区域。`/tui default` 会切回经典渲染器，该渲染器把对话保留在终端原生的回滚缓冲区（scrollback）中，因此 Cmd+F 搜索、tmux 的复制模式等功能仍可直接使用。不带参数时，`/tui` 只会输出当前使用的是哪种渲染器，不会做任何改动。\n\n根据文档，全屏渲染目前是一项 Research Preview（研究预览）功能：它已经在常见的终端模拟器上测试过，但在较少见的终端或配置下仍可能出现显示问题。此外，也可以通过在启动时设置环境变量 `CLAUDE_CODE_NO_FLICKER=1`，永久性地启用同一种模式。",
       "whenGood": [
         {
-          "title": "切换到无闪烁的 fullscreen 渲染器",
-          "example": "/tui fullscreen"
+          "title": "解决 VS Code 终端或 tmux 中的闪烁或滚动跳跃问题",
+          "example": "当工具输出流式显示时屏幕闪烁，或者滚动位置反复跳回顶部时，执行 /tui fullscreen。"
         },
         {
-          "title": "查看当前使用的是哪个渲染器",
-          "example": "/tui"
+          "title": "查看当前使用的是哪种渲染器",
+          "example": "不带参数输入 /tui，检查当前会话运行在经典渲染器还是全屏渲染器下。"
         }
       ],
       "whenBad": [
         {
-          "title": "期望对话会被清空",
-          "why": "切换会保留你的对话；该命令不会重置对话。",
-          "alternative": "/clear"
+          "title": "以为这样会丢失或重置对话记录",
+          "why": "根据文档，切换渲染器时会保留对话记录，只是重新启动渲染器；该命令并不会做任何重置。",
+          "alternative": "使用 /clear，真正地清空对话记录。"
+        },
+        {
+          "title": "想直接对对话内容使用终端原生搜索（Cmd+F）或 tmux 复制模式",
+          "why": "在全屏渲染器下，对话内容位于备用屏幕缓冲区，而不是终端原生的回滚缓冲区中——Cmd+F 和 tmux 的搜索在那里什么也找不到。",
+          "alternative": "用 Ctrl+O 切换到 transcript 模式，在其中按 [，把对话内容写入终端原生的回滚缓冲区，或者直接使用 /tui default。"
         }
       ],
       "sources": [

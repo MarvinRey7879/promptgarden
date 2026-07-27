@@ -2023,3 +2023,33 @@ im Text, kein H-Scroll mobil, Kurzbeschreibung korrekt.
 Merke: Agenten Ergebnisse in Dateien schreiben lassen (nicht in die Antwort) —
 spart massiv Orchestrator-Kontext. Wortzählung per Whitespace funktioniert bei
 ZH nicht (Zeichen zählen).
+
+## Iteration 246 — 27.07.2026 ~08:10 UTC — Batch 2 (18 Befehle, erstmals Aider+Antigravity) + Feed 41→48 + Mobil-Bug
+Poll grün (0/0/0, views_7d 30), Smoke grün.
+DIGEST-PRÜFUNG (🔔 fällig): Cron `0 8 * * 1` korrekt registriert, scheduled-
+Handler vorhanden, api/feed.<lang>.json liefert valides JSON. `since` = heute−7
+= 20.07., neuestes Feed-Item war 20.07. → genau EIN Item im Fenster, Mail sollte
+rausgegangen sein. KEIN Versand-Log in D1 (Tabelle newsletter_signups hat kein
+last_digest-Feld) → nur Marvin kann den Empfang bestätigen, wurde gefragt.
+🔴 ECHTER BEFUND dabei: der Feed war seit 20.07. nicht aktualisiert — nächsten
+Montag wäre der Digest LEER gewesen (`if (!items.length) continue`).
+ARBEIT (4+5 Sonnet-Agenten, Opus nur Orchestrator):
+① Batch 2 = 18 dünnste Befehle, erstmals AIDER (6) und ANTIGRAVITY (6) plus
+   Claude Code (6). Ø44 → Ø208 Wörter. Gesamt-Ø 320 Befehle: 99 → 107,
+   Seiten unter 100 Wörtern 191 → 173. Alle 5 Sprachen, QA sauber.
+   Antigravity: `agy plugin uninstall` und `?` korrekt als NICHT-Slash-Befehle
+   markiert (Subcommand bzw. Prompt-Shortcut). Aider: /quit ist laut HISTORY.md
+   v0.24.0 echter Alias von /exit (vorher nur vermutet).
+② FEED-WARTUNG: 7 neue belegte Meldungen (41 → 48 ×5 Sprachen), u.a. Claude
+   Opus 5 (1M Kontext, Effort-Regler), Gemini 3.6 Flash, Codex CLI 0.145.0,
+   Cursor-Router, Azure-DevOps-MCP-Lücke, IssueTrojanBench-Paper.
+   Kimi K3 BEWUSST NICHT aufgenommen (Gewichte laut HF noch „Upcoming release"),
+   MCP-Finalspec auch nicht (erscheint erst 28.07.) — Quellenpflicht gehalten.
+   Opus-5- und MCP-Meldung selbst am Original gegengeprüft.
+🔴 EIGENEN BUG GEFUNDEN UND GEFIXT: die RichText-Komponente aus It.245 hatte
+`white-space: nowrap` — lange Code-Strings (z.B. `/code Ok, please go ahead …`)
+erzeugten dadurch horizontalen Scroll auf 390px. Auf `overflow-wrap: anywhere`
+geändert; 4 Seiten gegengeprüft, kein H-Scroll mehr.
+Build 0, Deploy 5873e078, Prod 200. 
+Merke: nach jedem Renderer-Eingriff Mobil-Overflow prüfen — der Fehler entsteht
+erst durch echte Inhalte, nicht durch den Code allein.
