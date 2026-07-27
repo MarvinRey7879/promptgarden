@@ -2115,3 +2115,34 @@ Worker deployed (a71c693a). Preview mit echten Daten gerendert, Desktop+Mobil
 geprüft, kein H-Scroll.
 Merke: bei Promise.all IMMER Query-Reihenfolge gegen Destructuring-Reihenfolge
 prüfen — ein Einschub in der Mitte verschiebt lautlos alle Folgewerte.
+
+## Iteration 247 — 27.07.2026 ~09:44 UTC — Batch 3 (18 Befehle) + 4 Faktenfehler gefixt
+Poll grün (0/0/0, views_7d 30, visitors_7d 28, mail_clicks 0), Smoke grün.
+Batch 3: 18 dünnste Befehle aus Cursor CLI, Codex CLI, Claude Code — Ø46 → Ø189
+Wörter, ×5 Sprachen. Gesamt-Ø 320 Befehle: 107 → **115** Wörter, Seiten unter
+100 Wörtern: 173 → **155** (Start: 209).
+Besondere Sorgfalt für `/scroll-speed` (meistbesuchte Seite der Plattform,
+echter Suchverkehr): jetzt 252 Wörter mit Dialog-Steuerung, Persistenz,
+Beschleunigungs-Einstellung, Fullscreen-Voraussetzung.
+🔴 VIER ECHTE FEHLER GEFUNDEN (alle von Sonnet-Agenten entdeckt, die starken
+selbst gegengeprüft):
+① Cursor `/open`: verwies als Alternative auf einen Befehl `/changes`, den es in
+   der offiziellen 34-Einträge-Referenz gar nicht gibt → auf `git diff` korrigiert.
+② Codex `/ide-context`: heißt in der Terminal-CLI-Referenz schlicht `/ide`
+   (Abschnitt „Include IDE context with /ide", mit on/off/status). SELBST am
+   Original verifiziert. Angezeigter Befehlsname in allen 5 Sprachen auf `/ide`
+   korrigiert — Slug/URL bewusst unverändert gelassen, damit keine 404 entstehen.
+③+④ Codex `/worktree` und `/cloud`: stehen NUR in der allgemeinen App-Composer-
+   Tabelle, fehlen in der Terminal-CLI-Referenz (selbst geprüft: 0 Treffer).
+   Kurzbeschreibungen waren dadurch irreführend → korrigiert.
+Zwei eigene Patzer bemerkt und behoben:
+- Merge-Script hatte „promptgarTen" statt „promptgarDen" im Pfad (die bekannte
+  Domain/Ordner-Falle) → ENOENT, sofort korrigiert.
+- Die neuen Kurzbeschreibungen enthielten Backticks, aber `summary` läuft NICHT
+  durch RichText (sie dient auch als Meta-Description) → Backticks entfernt.
+  Außerdem waren sie mit ~30 Wörtern zu lang für die Listenansicht → am
+  Gedankenstrich auf den Kern gekürzt (Details stehen im Fließtext).
+Build 0, Deploy 89e41943, Prod 200. Playwright: 5 Seiten geprüft, kein H-Scroll
+auf 390px, keine sichtbaren Backticks.
+Merke: `summary` verträgt kein Markup (Meta-Description!) und sollte einzeilig
+bleiben — Detailtiefe gehört ins `what`.

@@ -472,21 +472,21 @@
       "slug": "compact",
       "name": "/compact",
       "summary": "Resume la conversación anterior para liberar contexto.",
-      "what": "Resume la conversación anterior para liberar contexto.\n\nOpcionalmente se puede dar una instrucción de enfoque para el resumen.",
+      "what": "Resume la conversación anterior para liberar espacio en la ventana de contexto. Opcionalmente puedes pasar una instrucción de enfoque como argumento, por ejemplo /compact enfócate en los TODOs pendientes y los próximos pasos — el resumen conserva entonces específicamente lo que tú indiques, en lugar de lo que el proceso automático considere importante.\n\nDespués, el CLAUDE.md del proyecto y la memoria automática se recargan automáticamente desde el disco; en cambio, las reglas vinculadas a rutas y los archivos CLAUDE.md anidados en subcarpetas se pierden hasta que se vuelva a leer el archivo correspondiente. El contenido de las skills invocadas también se vuelve a cargar, pero con un límite de 5.000 tokens por skill y 25.000 tokens en total.",
       "whenGood": [
         {
-          "title": "Liberar contexto mientras se sigue trabajando en el mismo tema",
+          "title": "Liberar contexto mientras sigues trabajando en el mismo tema",
           "example": "/compact"
         },
         {
-          "title": "Resumen con instrucción de enfoque",
-          "example": "/compact enfoque: TODOs pendientes y próximos pasos"
+          "title": "Dirigir el resumen de forma específica",
+          "example": "/compact enfócate en los TODOs pendientes y los próximos pasos"
         }
       ],
       "whenBad": [
         {
           "title": "Cambio completo de tema",
-          "why": "/compact resume la conversación anterior y mantiene el hilo - en un cambio completo de tema esto arrastra lastre innecesario.",
+          "why": "/compact resume la conversación anterior y mantiene el hilo; en un cambio completo de tema, según la documentación, esto arrastra lastre innecesario — la documentación menciona expresamente /clear como el camino para trabajo nuevo sin relación con lo anterior.",
           "alternative": "/clear"
         }
       ],
@@ -912,18 +912,27 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "Cierra la CLI.",
-      "what": "Cierra la CLI.\n\nEn una sesión en segundo plano adjunta, solo se desconecta la conexión; la sesión sigue ejecutándose. Alias: /quit.",
+      "what": "Cierra la CLI y con ello finaliza también todas las tareas en segundo plano que estén en ejecución en la sesión, como procesos Bash o monitores — se limpian automáticamente al salir, no continúan ejecutándose.\n\nEn una sesión en segundo plano a la que estás conectado (ver /background), /exit se comporta de forma distinta: aquí el comando solo desconecta del terminal, la sesión en sí sigue ejecutándose en segundo plano. Puedes volver a conectarte mediante claude agents, o bien — si la sesión ya ha terminado — mediante el selector de /resume, donde las sesiones en segundo plano aparecen marcadas con bg. Si realmente quieres detener una sesión así en lugar de solo desconectarte, usa /stop mientras sigas conectado. Alias: /quit.",
       "whenGood": [
         {
-          "title": "Cerrar la sesión de forma limpia cuando la tarea está terminada",
+          "title": "Cerrar la sesión de forma limpia cuando la tarea ha terminado",
           "example": "/exit al terminar el trabajo"
+        },
+        {
+          "title": "Desconectarte deliberadamente de una sesión en segundo plano sin detenerla",
+          "example": "/exit, estando conectado a una sesión en segundo plano — la sesión sigue ejecutándose, puedes volver a conectarte más tarde mediante claude agents."
         }
       ],
       "whenBad": [
         {
-          "title": "Querer detener realmente una sesión en segundo plano adjunta",
-          "why": "/exit, en una sesión en segundo plano adjunta, solo desconecta la conexión; la sesión sigue ejecutándose",
-          "alternative": "Gestionar/detener la sesión en segundo plano con 'claude agents' en lugar de usar solo /exit"
+          "title": "En realidad quieres detener una sesión en segundo plano a la que estás conectado",
+          "why": "Según la documentación, en una sesión en segundo plano conectada /exit solo desconecta; la sesión sigue ejecutándose.",
+          "alternative": "usar /stop mientras sigas conectado"
+        },
+        {
+          "title": "Quieres que los procesos Bash o monitores en segundo plano sigan ejecutándose",
+          "why": "Según la documentación, las tareas en segundo plano se limpian automáticamente al salir en lugar de continuar — solo poner la sesión en segundo plano las transfiere a una sesión que sigue en ejecución.",
+          "alternative": "usar /background en lugar de /exit, para que la sesión siga ejecutándose en segundo plano junto con sus tareas en curso"
         }
       ],
       "sources": [
@@ -2315,18 +2324,27 @@
       "slug": "scroll-speed",
       "name": "/scroll-speed",
       "summary": "Ajusta de forma interactiva la velocidad de desplazamiento de la rueda del ratón.",
-      "what": "Ajusta interactivamente la velocidad de desplazamiento de la rueda del ratón.\n\nUna regla que puedes desplazar con el diálogo abierto muestra el cambio al instante en vista previa. Solo en renderizado de pantalla completa, no en la terminal del IDE de JetBrains.",
+      "what": "/scroll-speed ajusta de forma interactiva la velocidad de desplazamiento de la rueda del ratón. El comando solo está disponible en el renderizado a pantalla completa — un modo de visualización opcional y experimental que activas antes con /tui fullscreen — y ahí tampoco en el terminal del IDE de JetBrains.\n\nEl diálogo muestra una regla que puedes desplazar con la ventana abierta para notar el cambio al instante. Con ← / → ajustas la velocidad en pasos enteros hasta 10, y en terminales con control más fino, además en pasos de un cuarto a partir de 0,25. r restablece el valor predeterminado detectado automáticamente, Enter guarda. El valor guardado corresponde a la variable de entorno CLAUDE_CODE_SCROLL_SPEED y queda de forma permanente en ~/.claude/settings.json; valores superiores a 10 solo se pueden establecer mediante la variable. Independientemente de la velocidad base, Claude Code acelera automáticamente el desplazamiento rápido — se puede desactivar con wheelScrollAccelerationEnabled: false en la configuración.",
       "whenGood": [
         {
-          "title": "La velocidad de scroll no se siente bien",
-          "example": "En el terminal a pantalla completa, invocar /scroll-speed y ajustar en vivo la velocidad de la rueda del ratón con la vista previa de la regla (ruler)."
+          "title": "Ajustar la velocidad de desplazamiento de forma permanente",
+          "example": "Abrir /scroll-speed en el terminal a pantalla completa, ajustar con ←/→ a la velocidad deseada y guardar con Enter — el valor queda en ~/.claude/settings.json."
+        },
+        {
+          "title": "Restablecer al valor predeterminado detectado automáticamente",
+          "example": "Abrir /scroll-speed y pulsar r para corregir una velocidad ajustada demasiado alta o demasiado baja."
         }
       ],
       "whenBad": [
         {
-          "title": "Terminal del IDE de JetBrains o modo sin pantalla completa",
-          "why": "Según la documentación, solo está disponible en el renderizado a pantalla completa, no en el terminal del IDE de JetBrains.",
-          "alternative": "Usar los ajustes de scroll propios del terminal del IDE."
+          "title": "Renderizado clásico o terminal de IDE de JetBrains",
+          "why": "Según la documentación, /scroll-speed solo está disponible en el renderizado a pantalla completa opcional, activado mediante /tui fullscreen, y en el terminal del IDE de JetBrains no existe en absoluto.",
+          "alternative": "Activar primero /tui fullscreen; en el terminal de JetBrains usar en su lugar los ajustes de desplazamiento propios del IDE (a partir de JetBrains 2025.3, además, con correcciones automáticas de Claude Code para bugs de scroll conocidos)"
+        },
+        {
+          "title": "El terminal no reenvía los eventos de la rueda del ratón",
+          "why": "Según la documentación, la vista previa en vivo de la regla solo reacciona a los eventos de la rueda del ratón que el terminal reenvía a Claude Code — iTerm2, por ejemplo, bloquea esto de forma predeterminada mediante un ajuste de perfil.",
+          "alternative": "En iTerm2, activar 'Enable mouse reporting' en Settings → Profiles → Terminal, y luego volver a abrir /scroll-speed"
         }
       ],
       "sources": [
@@ -3768,17 +3786,21 @@
       "slug": "line-numbers",
       "name": "/line-numbers",
       "summary": "Activa o desactiva los números de línea en los bloques de código mostrados.",
-      "what": "/line-numbers activa o desactiva la visualización de números de línea en los bloques de código de la sesión.",
+      "what": "`/line-numbers` alterna la visualización de números de línea en los bloques de código que la CLI muestra en el historial del chat. El comando no necesita argumentos – una llamada simplemente cambia entre activado y desactivado, para la sesión en curso.\n\nCon los números de línea activados puedes, al leer diffs o fragmentos de código, referirte con precisión a una línea concreta, por ejemplo cuando quieres decirle al agente qué parte debe cambiar. Esto ayuda especialmente en archivos o funciones más largos, donde una descripción vaga como \"la línea con la condición\" sería demasiado imprecisa. En fragmentos muy cortos, en cambio, la columna adicional genera más ruido visual que utilidad, por lo que el estado predeterminado puede variar según el estilo de trabajo.",
       "whenGood": [
         {
-          "title": "Querer referenciar líneas concretas durante una revisión",
-          "example": "/line-numbers — activarlo antes de decir 'revisar la línea 42'"
+          "title": "Referirte a líneas concretas",
+          "example": "/line-numbers — activado, antes de decir 'revisar la línea 42'"
+        },
+        {
+          "title": "Preparar referencias antes de una sesión de pairing",
+          "example": "/line-numbers activado, antes de hablar en una llamada sobre una función en conjunto y querer nombrar líneas"
         }
       ],
       "whenBad": [
         {
-          "title": "Solo fragmentos de código cortos sin referencia a líneas",
-          "why": "En snippets cortos, los números de línea estorban más de lo que ayudan.",
+          "title": "Solo fragmentos de código cortos sin necesidad de referenciar líneas",
+          "why": "En fragmentos cortos, los números de línea molestan más de lo que ayudan.",
           "alternative": "Dejar /line-numbers desactivado para una vista más compacta"
         }
       ],
@@ -3820,17 +3842,21 @@
       "slug": "status-indicators",
       "name": "/status-indicators",
       "summary": "Activa o desactiva los indicadores de estado en el título de la terminal.",
-      "what": "/status-indicators activa o desactiva si el estado del agente (p. ej. esperando, trabajando) se muestra en el título de la ventana de la terminal.",
+      "what": "`/status-indicators` alterna si el estado actual de la CLI se muestra en el título de la ventana del terminal. El comando no acepta argumentos, sino que cambia entre activado y desactivado con cada llamada.\n\nCon la visualización activada puedes ver en la pestaña o el título de la ventana del terminal que algo está en curso en esa sesión, sin tener que entrar primero para comprobarlo. Esto ayuda sobre todo cuando tienes varias ventanas o pestañas de terminal abiertas en paralelo y quieres reconocer de un vistazo qué sesión sigue ocupada. Si ya usas el título del terminal para otra cosa, por ejemplo mediante tu propio script de prompt o de línea de estado, la visualización de estado sobrescribe ese texto – en ese caso suele ser mejor dejar el comando desactivado.",
       "whenGood": [
         {
-          "title": "Reconocer el estado del agente incluso con la ventana de terminal minimizada",
-          "example": "/status-indicators — activado mientras corre una tarea larga en segundo plano"
+          "title": "Reconocer el estado del agente incluso con la ventana del terminal minimizada",
+          "example": "/status-indicators — activado, mientras se ejecuta una tarea larga en segundo plano"
+        },
+        {
+          "title": "Mantener a la vista varias pestañas de terminal en paralelo",
+          "example": "/status-indicators activado, cuando tienes varias sesiones de agente ejecutándose a la vez en distintas pestañas"
         }
       ],
       "whenBad": [
         {
-          "title": "El título de la terminal se usa para otra cosa, p. ej. mediante un script propio",
-          "why": "El indicador de estado sobrescribe entonces el texto de título propio.",
+          "title": "El título del terminal se usa para otra cosa, p. ej. mediante un script propio",
+          "why": "La visualización de estado sobrescribe entonces tu propio texto de título.",
           "alternative": "Dejar /status-indicators desactivado"
         }
       ],
@@ -3972,18 +3998,27 @@
       "slug": "feedback",
       "name": "/feedback",
       "summary": "Envía feedback directamente al equipo de Cursor.",
-      "what": "/feedback envía un mensaje como feedback al equipo de Cursor.",
+      "what": "`/feedback <message>` envía un mensaje directamente al equipo de Cursor, sin que tengas que salir de la CLI ni abrir un formulario aparte. Añades tu texto directamente al comando: por ejemplo, una descripción de error, la petición de una función que falta o una observación sobre el comportamiento de otro comando.\n\nComo el comando espera, según la documentación, un argumento de texto (`/feedback <message>`), una llamada sin mensaje adjunto no genera feedback utilizable – solo el texto convierte la llamada en una respuesta con sentido. El canal está pensado para indicaciones breves y concretas que surgen directamente en el contexto de tu sesión actual, no para informes de errores extensos con adjuntos ni para solicitudes en las que necesites una respuesta personal a corto plazo. Para esto último, la documentación prevé canales de soporte propios.",
       "whenGood": [
         {
-          "title": "Reportar directamente un bug o una función que falta",
+          "title": "Reportar un bug o una función que falta",
           "example": "/feedback /rewind a veces retrocede dos turnos en lugar de uno"
+        },
+        {
+          "title": "Dar feedback positivo sobre un workflow",
+          "example": "/feedback El nuevo modo Plan me ayudó mucho en un refactor grande"
         }
       ],
       "whenBad": [
         {
           "title": "Se trata de una solicitud de soporte urgente e individual",
-          "why": "Los mensajes de feedback no están pensados para soporte 1:1 rápido.",
+          "why": "Los mensajes de feedback no están pensados para soporte rápido 1:1.",
           "alternative": "Usar el canal de soporte oficial de Cursor"
+        },
+        {
+          "title": "Falta el mensaje al invocar el comando",
+          "why": "/feedback <message> espera, según la tabla de referencia, un argumento de texto – sin un mensaje adjunto, el comando no genera feedback utilizable.",
+          "alternative": "Añadir siempre un texto breve directamente, p. ej. /feedback <tu observación>"
         }
       ],
       "sources": [
@@ -3998,18 +4033,27 @@
       "slug": "open",
       "name": "/open",
       "summary": "Abre el directorio raíz de Git del repo actual en el editor Cursor.",
-      "what": "/open abre el directorio raíz de Git del repositorio en Cursor. Alias: /cursor.",
+      "what": "`/open` abre el directorio raíz de Git de tu repositorio actual en Cursor, el editor. Según la documentación, también tienes disponible `/cursor` como alias del mismo comando – ambas formas hacen lo mismo.\n\nEl comando requiere que estés dentro de un repositorio Git, porque se orienta según la raíz de Git, y que Cursor esté instalado localmente como editor, para que haya algo que abrir. Normalmente usas `/open` cuando llevas una sesión de CLI en el terminal pero quieres continuar de forma visual una vez hecho el trabajo – por ejemplo, para revisar los cambios en la vista de diff o editar archivos directamente, en lugar de repasar cada cambio uno por uno en el terminal.",
       "whenGood": [
         {
-          "title": "Continuar visualmente en el editor tras el trabajo con la CLI",
+          "title": "Continuar de forma visual tras el trabajo en la CLI",
           "example": "/open — después de que el agente haya propuesto los cambios"
+        },
+        {
+          "title": "Seguir editando un archivo concreto en el editor",
+          "example": "/open, para retocar manualmente en el editor de Cursor un archivo modificado por el agente"
         }
       ],
       "whenBad": [
         {
-          "title": "Cursor (el editor) ni siquiera está instalado o no se quiere usar",
+          "title": "Cursor (el editor) no está instalado o no se desea usar",
           "why": "/open requiere una instalación local de Cursor.",
-          "alternative": "Revisar los cambios en su lugar directamente en la terminal con /changes"
+          "alternative": "Revisar los cambios directamente en el terminal, p. ej. con git diff"
+        },
+        {
+          "title": "No hay ningún repositorio Git",
+          "why": "Según la documentación, /open abre el directorio raíz de Git del repositorio — sin repositorio Git no hay raíz de Git que abrir.",
+          "alternative": "Abrir la carpeta manualmente en el editor o seguir con el flujo de trabajo normal en el terminal"
         }
       ],
       "sources": [
@@ -9080,18 +9124,27 @@
       "slug": "stop",
       "name": "/stop",
       "summary": "Detiene la sesión en segundo plano actual.",
-      "what": "Detiene la sesión en segundo plano actual.\n\nSolo está disponible mientras estás conectado a una sesión en segundo plano; se conservan la transcripción y cualquier worktree. Para desconectarte sin detenerla, usa /exit.",
+      "what": "Detiene definitivamente la sesión en segundo plano en curso — el proceso finaliza, pero después no se elimina.\n\nEl comando solo está disponible mientras estés conectado a una sesión en segundo plano; el transcript y un posible worktree se conservan. Si solo quieres desconectarte sin detener la sesión, usa /exit o pulsa ← con el prompt vacío. Fuera de la sesión conectada, la detienes en su lugar con Ctrl+X en la vista de agentes o con claude stop <id> en el terminal (alias: claude kill). Una sesión detenida se puede reiniciar con claude respawn <id> conservando la conversación intacta; para eliminarla por completo, incluido el worktree, usa claude rm <id>.",
       "whenGood": [
         {
-          "title": "Finalizar una sesión que se ejecuta en segundo plano",
-          "example": "/stop"
+          "title": "Finalizar una sesión en segundo plano que ya no se necesita",
+          "example": "/stop, estando conectado a una sesión en segundo plano — el transcript y el worktree se conservan."
+        },
+        {
+          "title": "Limpiar después de una tarea en segundo plano finalizada",
+          "example": "/stop, después de que el agente en segundo plano haya terminado su tarea, para liberar recursos; con claude respawn <id> se puede volver a iniciar más tarde si hace falta."
         }
       ],
       "whenBad": [
         {
-          "title": "Solo desconectarte pero mantener la sesión en ejecución",
-          "why": "/stop finaliza la sesión; se conservan la transcripción y el worktree, pero el trabajo no continúa.",
-          "alternative": "/exit"
+          "title": "Solo quieres desconectarte, pero que la sesión siga ejecutándose",
+          "why": "Según la documentación, /stop finaliza la sesión de forma definitiva; el registro y el worktree se conservan, pero el trabajo no continúa.",
+          "alternative": "/exit o ← con el prompt vacío"
+        },
+        {
+          "title": "No estás (ya) conectado a la sesión",
+          "why": "Según la documentación, /stop solo está disponible mientras estés conectado a una sesión en segundo plano.",
+          "alternative": "Fuera de la sesión: pulsar Ctrl+X en la vista de agentes o ejecutar claude stop <id> en el terminal"
         }
       ],
       "sources": [
@@ -9132,18 +9185,27 @@
       "slug": "terminal-setup",
       "name": "/terminal-setup",
       "summary": "Configura atajos de teclado del terminal como Shift+Enter.",
-      "what": "Configura atajos de teclado del terminal para Shift+Enter y otros accesos directos.\n\nSolo es visible en terminales que lo necesitan, como VS Code, Cursor, Devin Desktop, Alacritty o Zed.",
+      "what": "Configura en un solo paso varios ajustes del terminal, sobre todo Shift+Enter para un salto de línea en lugar de enviar. El comando solo es necesario en VS Code, Cursor, Devin Desktop, Alacritty y Zed — otros terminales como Ghostty, Kitty, iTerm2, WezTerm, Warp, Apple Terminal o Windows Terminal ya admiten Shift+Enter sin necesidad de configuración. En gnome-terminal y los IDEs de JetBrains el comando no existe en absoluto; ahí ayuda en su lugar Ctrl+J o barra invertida seguida de Enter.\n\nSegún el terminal, el comando hace más que solo asignar teclas: en VS Code, Cursor y Devin Desktop también desactiva la aceleración por GPU y ajusta la sensibilidad de la rueda del ratón para el modo de pantalla completa. En Apple Terminal activa Option como tecla Meta y el aviso sonoro; en iTerm2 permite que /copy acceda al portapapeles del sistema.",
       "whenGood": [
         {
-          "title": "Habilitar Shift+Enter en el terminal de VS Code o Cursor",
+          "title": "Activar Shift+Enter en el terminal de VS Code o Cursor",
           "example": "/terminal-setup"
+        },
+        {
+          "title": "Habilitar el acceso al portapapeles para /copy en iTerm2",
+          "example": "Ejecutar /terminal-setup una vez en iTerm2; después /copy puede escribir texto en el portapapeles del sistema."
         }
       ],
       "whenBad": [
         {
-          "title": "Un terminal que ya gestiona los atajos de forma nativa",
-          "why": "el comando ni siquiera se muestra ahí, porque no se necesita configuración.",
-          "alternative": "no hacer nada: los atajos ya funcionan"
+          "title": "Terminal que ya soporta los atajos de fábrica",
+          "why": "Según la documentación, terminales como Ghostty, Kitty, iTerm2, WezTerm, Warp, Apple Terminal o Windows Terminal ya admiten Shift+Enter sin necesidad de configuración.",
+          "alternative": "no hacer nada — los atajos ya funcionan"
+        },
+        {
+          "title": "gnome-terminal o un IDE de JetBrains (PyCharm, Android Studio, …)",
+          "why": "Según la documentación, ahí Shift+Enter no está técnicamente disponible; /terminal-setup no ayuda en ese caso.",
+          "alternative": "usar Ctrl+J o barra invertida seguida de Enter para un salto de línea"
         }
       ],
       "sources": [
@@ -9283,22 +9345,27 @@
       "slug": "voice",
       "name": "/voice",
       "summary": "Activa o desactiva el dictado por voz.",
-      "what": "Activa o desactiva el dictado por voz, o lo habilita en un modo específico.\n\nhold dicta mientras mantienes pulsada la tecla; tap activa o desactiva con un toque; off lo desactiva. Requiere una cuenta de Claude.ai.",
+      "what": "Activa o desactiva el dictado por voz, o activa directamente un modo concreto: /voice hold mantiene una tecla pulsada mientras hablas (modo predeterminado), /voice tap inicia y termina la grabación tocando la tecla, /voice off desactiva. Sin argumento, el comando solo alterna entre activado y desactivado, conservando el último modo usado.\n\nSe requiere una cuenta de Claude.ai — con una clave de API pura, Amazon Bedrock, Google Cloud o Microsoft Foundry, el dictado por voz no funciona. Además, hace falta un micrófono local; en entornos remotos como Claude Code en la web o por SSH, la función no está disponible. La transcripción no consume mensajes ni tokens y no cuenta para el límite en /usage.",
       "whenGood": [
         {
           "title": "Hablar en el terminal en lugar de escribir",
-          "example": "/voice tap"
+          "example": "/voice tap — pulsar la barra espaciadora una vez, hablar, pulsar de nuevo; a partir de tres palabras se envía automáticamente."
         },
         {
-          "title": "Dictar solo mientras mantienes pulsada una tecla",
-          "example": "/voice hold"
+          "title": "Dictar solo mientras se mantiene pulsada una tecla",
+          "example": "/voice hold — mantener pulsada la barra espaciadora, hablar; al soltarla, el texto se inserta en la posición del cursor y espera a Enter."
         }
       ],
       "whenBad": [
         {
-          "title": "Sin una cuenta de Claude.ai",
-          "why": "el dictado por voz requiere una cuenta de Claude.ai.",
+          "title": "Sesión remota o Claude Code en la web",
+          "why": "Según la documentación, el dictado por voz necesita un micrófono local y no funciona en entornos remotos como Claude Code en la web o sesiones SSH.",
           "alternative": "seguir escribiendo con el teclado"
+        },
+        {
+          "title": "Solo clave de API, Amazon Bedrock, Google Cloud o Microsoft Foundry sin cuenta de Claude.ai",
+          "why": "Según la documentación, el servicio de voz a texto solo está disponible con una cuenta de Claude.ai, no con una configuración directa de clave de API de Anthropic, Bedrock, Vertex o Foundry.",
+          "alternative": "Conectar una cuenta de Claude.ai con /login, o seguir escribiendo con el teclado"
         }
       ],
       "sources": [
@@ -9409,18 +9476,22 @@
       "slug": "init",
       "name": "/init",
       "summary": "Genera un esqueleto de AGENTS.md para el proyecto actual.",
-      "what": "Genera un esqueleto de AGENTS.md para el proyecto actual.\n\nAGENTS.md contiene las reglas y el contexto del proyecto que Codex lee en cada sesión — comparable a CLAUDE.md en Claude Code.",
+      "what": "`/init` genera un andamiaje de `AGENTS.md` para el proyecto o directorio actual. `AGENTS.md` recoge instrucciones y contexto específicos del proyecto que Codex lee automáticamente en cada sesión — el equivalente a `CLAUDE.md` en Claude Code. Según la documentación, el archivo recoge instrucciones permanentes para el repositorio o el subdirectorio en el que estás trabajando.\n\n`/init` está documentado tanto en la lista de comandos de la CLI de terminal pura como en la referencia general de comandos de Codex, y funciona de forma idéntica en ambas — a diferencia de `/worktree` o `/cloud`, no es una función exclusiva de la app de escritorio, sino un comando regular de la CLI de terminal. El comando solo crea el andamiaje básico; el mantenimiento del contenido — reglas del proyecto, convenciones de código, comandos de test — lo tienes que completar tú mismo después, o hacer que Codex lo rellene de forma específica.",
       "whenGood": [
         {
-          "title": "Configurar un nuevo proyecto para Codex",
+          "title": "Configurar un proyecto nuevo para Codex",
           "example": "/init"
+        },
+        {
+          "title": "Volver a capturar las reglas del proyecto tras un cambio de estructura importante en el repo",
+          "example": "Invocar /init y después completar manualmente el andamiaje generado con los nuevos comandos de test"
         }
       ],
       "whenBad": [
         {
-          "title": "AGENTS.md ya existe y se mantiene actualizado",
-          "why": "/init escribe un esqueleto nuevo y puede sobrescribir las notas existentes del proyecto.",
-          "alternative": "editar directamente el AGENTS.md existente"
+          "title": "AGENTS.md ya existe y está actualizado",
+          "why": "/init crea un andamiaje nuevo y puede sobrescribir notas de proyecto existentes y cuidadosamente mantenidas.",
+          "alternative": "editar directamente el AGENTS.md existente en lugar de regenerarlo"
         }
       ],
       "sources": [
@@ -9491,18 +9562,22 @@
       "slug": "fast",
       "name": "/fast",
       "summary": "Activa o desactiva un nivel de servicio Fast, cuando está disponible.",
-      "what": "Activa o desactiva un nivel de servicio Fast proporcionado por el catálogo, cuando está disponible.\n\nEl nivel Fast prioriza la velocidad. Que esté disponible depende del catálogo de modelos.",
+      "what": "`/fast` activa o desactiva un llamado nivel de servicio Fast para el modelo elegido actualmente, siempre que el catálogo de modelos ofrezca ese nivel para dicho modelo. El nivel Fast prioriza la velocidad de respuesta; que exista o no depende del modelo y del catálogo en cuestión, no de una configuración manual por tu parte. Tu elección se recuerda durante la sesión en curso.\n\nA diferencia de `/worktree` o `/cloud`, `/fast` está documentado tanto en la lista de comandos de la CLI de terminal pura como en la referencia general de comandos de Codex — se trata, por tanto, de una función real de la CLI de terminal, no de una función exclusiva de la app de escritorio. A pesar de su nombre escueto, no es un easter egg, sino una función oficialmente documentada para el control de modelos, que se sitúa junto a `/model` (selección completa de modelos) y `/reasoning` (nivel de esfuerzo de razonamiento).",
       "whenGood": [
         {
-          "title": "Preferir respuestas más rápidas cuando el nivel está disponible",
+          "title": "Priorizar respuestas más rápidas cuando el modelo actual ofrece un nivel Fast",
           "example": "/fast"
+        },
+        {
+          "title": "Comprobar tras un cambio de modelo si el ajuste Fast sigue teniendo sentido",
+          "example": "Cambiar de modelo con /model y después volver a invocar /fast"
         }
       ],
       "whenBad": [
         {
-          "title": "El catálogo no ofrece ningún nivel Fast",
-          "why": "/fast solo tiene efecto cuando hay disponible un nivel de servicio Fast.",
-          "alternative": "elegir un modelo más rápido con /model"
+          "title": "El modelo actual no ofrece un nivel Fast",
+          "why": "Según la documentación, /fast solo funciona si el catálogo de modelos prevé un nivel Fast para el modelo elegido.",
+          "alternative": "elegir mediante /model un modelo con soporte para Fast"
         }
       ],
       "sources": [
@@ -9517,18 +9592,22 @@
       "slug": "personality",
       "name": "/personality",
       "summary": "Elige cómo responde Codex, cuando el modelo admite personalidades.",
-      "what": "Elige cómo responde Codex, cuando el modelo actual admite personalidades.\n\nLa personalidad da forma al tono y al estilo de las respuestas, no a su contenido técnico.",
+      "what": "`/personality` elige un estilo de comunicación para las respuestas de Codex, siempre que el modelo utilizado en ese momento admita personalidades. Con esto, Codex puede resultar, por ejemplo, más conciso, más explicativo o más colaborativo. Según la documentación, el comando solo cambia el tono y el estilo de las respuestas — no tus instrucciones propiamente dichas ni el contenido técnico del trabajo.\n\nComo `/fast`, `/personality` está documentado tanto en la lista de comandos de la CLI de terminal pura como en la referencia general de comandos de Codex, es decir, es una función regular de la CLI de terminal y no una función exclusiva de la app de escritorio. A pesar de su nombre poco habitual, no se trata de un easter egg, sino de una función oficialmente documentada — que esté disponible para tu modelo actual depende del propio modelo, de forma similar a /fast.",
       "whenGood": [
         {
-          "title": "Ajustar el estilo de respuesta a tu preferencia",
+          "title": "Adaptar el estilo de respuesta a tu propia forma de trabajar, p. ej. más conciso en lugar de extenso",
           "example": "/personality"
+        },
+        {
+          "title": "Comprobar tras un cambio de modelo qué estilos están disponibles ahora",
+          "example": "Cambiar de modelo con /model y después abrir /personality"
         }
       ],
       "whenBad": [
         {
           "title": "El modelo actual no admite personalidades",
-          "why": "/personality solo está disponible cuando el modelo ofrece esta función.",
-          "alternative": "elegir un modelo que admita personalidades"
+          "why": "Según la documentación, /personality solo está disponible si el modelo ofrece esta característica.",
+          "alternative": "elegir mediante /model un modelo que admita personalidades"
         }
       ],
       "sources": [
@@ -9567,20 +9646,29 @@
     {
       "platform": "codex-cli",
       "slug": "ide-context",
-      "name": "/ide-context",
-      "summary": "Activa o desactiva el contexto automático del IDE.",
-      "what": "Activa o desactiva el contexto automático del IDE.\n\nCon el contexto del IDE activado, Codex incorpora automáticamente información del entorno de desarrollo (como los archivos abiertos).",
+      "name": "/ide",
+      "summary": "Activa o desactiva el contexto de IDE.",
+      "what": "El nombre `/ide-context` procede de la referencia general de comandos de Codex, válida en todas las interfaces: ahí el comando activa o desactiva el contexto de IDE compartido. En la documentación propia de la CLI de terminal pura, en cambio, la misma función se llama `/ide` (con argumentos opcionales como `/ide on`, `/ide off` o `/ide status`) e incorpora al siguiente prompt los archivos abiertos, la selección actual y otro contexto del editor procedente de una extensión de IDE conectada.\n\nSe trata de la misma función bajo dos nombres distintos en dos tablas de documentación distintas, no de dos funciones separadas. El requisito es un IDE en ejecución con la extensión de Codex instalada (p. ej. VS Code), que proporcione contexto mediante una conexión IPC local. Según varios problemas reportados en el repositorio de GitHub de Codex, la activación falla ocasionalmente incluso cuando la extensión del IDE está activa.",
       "whenGood": [
         {
-          "title": "Permitir que Codex lea los archivos abiertos del IDE",
-          "example": "/ide-context"
+          "title": "Hacer que Codex lea automáticamente los archivos abiertos y la selección actual del IDE",
+          "example": "/ide (en la CLI de terminal; en la referencia general de comandos se llama /ide-context)"
+        },
+        {
+          "title": "Comprobar o establecer de forma específica si el contexto de IDE está activo en ese momento",
+          "example": "/ide status o /ide on"
         }
       ],
       "whenBad": [
         {
-          "title": "Codex se ejecuta en una terminal simple sin un IDE conectado",
-          "why": "sin un IDE no hay contexto de IDE que este interruptor pueda activar.",
-          "alternative": "indicar tú mismo los archivos que necesitas"
+          "title": "Codex se ejecuta en el terminal puro sin un IDE conectado",
+          "why": "Sin una extensión de IDE activa no hay contexto de IDE que el comando pueda activar o desactivar.",
+          "alternative": "Referenciar tú mismo los archivos de forma específica mediante mención"
+        },
+        {
+          "title": "Buscas exactamente el nombre de comando /ide-context en el terminal y no lo encuentras",
+          "why": "La CLI de terminal pura documenta la misma función bajo el nombre /ide, no /ide-context.",
+          "alternative": "usar /ide en el terminal"
         }
       ],
       "sources": [
@@ -9720,19 +9808,28 @@
       "platform": "codex-cli",
       "slug": "cloud",
       "name": "/cloud",
-      "summary": "Ejecuta el chat en la nube, cuando la ejecución en la nube está disponible.",
-      "what": "Ejecuta el chat en la nube, cuando la ejecución en la nube está disponible.\n\nEn la nube, el trabajo se ejecuta en recursos remotos en lugar de en tu máquina.",
+      "summary": "Ejecuta el chat en la nube (referencia general de comandos de Codex).",
+      "what": "`/cloud` ejecuta el chat actual en la nube en lugar de localmente, siempre que la ejecución en la nube esté disponible — el trabajo se realiza entonces en recursos remotos proporcionados por OpenAI, en lugar de en tu equipo. Así lo describe la referencia general de comandos de Codex, válida en todas las interfaces de Codex.\n\nImportante: en la documentación propia de la CLI de terminal pura, `/cloud` no aparece como comando slash interactivo. Lo que la CLI de terminal ofrece oficialmente en su lugar es el subcomando `codex cloud` (por ejemplo `codex cloud exec`, `codex cloud list`, `codex cloud apply <TASK_ID>`) — con él inicias, listas y aplicas tareas en la nube directamente con la sintaxis normal de línea de comandos, en lugar de con un comando slash de chat. Para ti como usuario exclusivamente de terminal, `codex cloud …` es la vía documentada; `/cloud` pertenece más bien al conjunto general de comandos cercano al Composer.",
       "whenGood": [
         {
-          "title": "Trasladar el cómputo de la máquina local a la nube",
+          "title": "Trasladar la carga de cómputo de la máquina local a la nube, allí donde /cloud está disponible como comando slash",
           "example": "/cloud"
+        },
+        {
+          "title": "Iniciar una tarea en la nube o aplicar un resultado desde la CLI de terminal",
+          "example": "codex cloud exec --env ENV_ID \"arreglar los tests\" o codex cloud apply <TASK_ID>"
         }
       ],
       "whenBad": [
         {
+          "title": "Quieres usarlo directamente como comando slash en la CLI de terminal pura",
+          "why": "Según la documentación específica de la CLI, /cloud no forma parte de la lista de comandos de terminal, sino de la referencia general de comandos de Codex.",
+          "alternative": "usar el subcomando codex cloud (exec/list/apply/status/diff) en el terminal"
+        },
+        {
           "title": "La tarea necesita tus archivos locales directamente",
-          "why": "en la nube, el espacio de trabajo no está en tu máquina.",
-          "alternative": "/local"
+          "why": "En la nube, el espacio de trabajo no está en tu equipo.",
+          "alternative": "/local o seguir trabajando localmente en el terminal"
         }
       ],
       "sources": [
@@ -9816,19 +9913,28 @@
       "platform": "codex-cli",
       "slug": "worktree",
       "name": "/worktree",
-      "summary": "Ejecuta el chat en un nuevo worktree de Git.",
-      "what": "Ejecuta el chat en un nuevo worktree de Git.\n\nUn worktree es una segunda copia de trabajo del mismo repositorio, de modo que los cambios del chat permanecen separados de tu rama principal.",
+      "summary": "Inicia el chat en un nuevo Git worktree.",
+      "what": "`/worktree` inicia el chat actual en un nuevo Git worktree en lugar de en el directorio de trabajo normal. Un worktree es una copia de trabajo adicional, extraída del mismo repositorio, con su propio branch — los cambios del agente se guardan ahí sin tocar tu rama principal. Así pueden trabajar varios chats en paralelo sobre el mismo proyecto sin estorbarse entre sí; según la documentación, incluso las tareas programadas en segundo plano se ejecutan en sus propios worktrees.\n\nImportante para ti como usuario de la CLI: según la documentación oficial, esta selección de worktree solo está disponible en Codex dentro de la app de escritorio de ChatGPT (a través del menú del Composer al iniciar un chat nuevo), no en la CLI de terminal pura. `/worktree` aparece en la referencia general de comandos de Codex, pero no figura en la lista de comandos propia de la CLI de terminal. En el terminal puro te queda `git worktree add` como vía manual.",
       "whenGood": [
         {
-          "title": "Dejar que Codex trabaje de forma aislada sin tocar la rama principal",
-          "example": "/worktree"
+          "title": "Hacer que varios chats trabajen en paralelo sobre el mismo repo sin que se estorben",
+          "example": "/worktree en la app de escritorio, mientras otro chat sigue trabajando en la rama principal"
+        },
+        {
+          "title": "Probar un refactor arriesgado de forma aislada antes de que toque la rama principal",
+          "example": "/worktree, hacer el refactor en la nueva rama y solo después fusionarla (merge)"
         }
       ],
       "whenBad": [
         {
-          "title": "El proyecto no es un repositorio de Git",
-          "why": "un worktree requiere Git.",
-          "alternative": "quedarse en el espacio de trabajo normal"
+          "title": "Trabajas exclusivamente en la CLI de terminal",
+          "why": "Según la documentación, los worktrees solo están disponibles en Codex dentro de la app de escritorio de ChatGPT; la CLI de terminal no reconoce /worktree como comando propio.",
+          "alternative": "trabajar manualmente con `git worktree add` o cambiar a la app de escritorio"
+        },
+        {
+          "title": "No hay ningún repositorio Git",
+          "why": "Un worktree requiere un repositorio Git.",
+          "alternative": "quedarte en el espacio de trabajo normal"
         }
       ],
       "sources": [
@@ -9873,18 +9979,22 @@
       "slug": "opus",
       "name": "/opus",
       "summary": "Salta directamente a la familia de modelos Opus sin abrir el selector.",
-      "what": "Salta directamente a la familia de modelos Opus sin abrir el selector de modelos. El atajo recuerda tu última elección. Desactívalo en \"Model slash commands\" dentro de /config.",
+      "what": "`/opus` es un atajo de modelo: con él saltas directamente a la familia de modelos Opus, sin tener que abrir antes el selector de modelos con `/model` e ir haciendo clic. Según el changelog, cada familia de modelos tiene su propio atajo, y este recuerda la variante elegida por última vez dentro de la familia – si vuelves a invocar `/opus`, aterrizas de nuevo en exactamente la variante de Opus que usaste la última vez.\n\nEl comando se puede desactivar: en \"Model slash commands\" dentro de `/config` puedes desactivar atajos de modelo como `/opus` si te resultan molestos. Ten en cuenta lo siguiente: en la tabla de referencia principal actual de los slash commands (cursor.com/docs/cli/reference/slash-commands) `/opus` no aparece – el comando solo está documentado hasta ahora en el changelog de la CLI del 6 de julio de 2026, que no especifica qué modelos concretos pertenecen a la familia Opus.",
       "whenGood": [
         {
           "title": "Cambiar rápidamente a un modelo Opus",
           "example": "/opus"
+        },
+        {
+          "title": "Volver a la variante de Opus usada por última vez",
+          "example": "/opus – sin pasar por el selector de modelos, porque el atajo recuerda la última variante de Opus elegida"
         }
       ],
       "whenBad": [
         {
           "title": "Elegir un modelo de otra familia",
-          "why": "/opus solo salta a la familia Opus.",
-          "alternative": "/model para ver la lista completa"
+          "why": "Según el changelog, /opus solo salta a la familia Opus; otros modelos no son accesibles a través de él.",
+          "alternative": "/model para ver todas las opciones"
         }
       ],
       "sources": [
@@ -9925,18 +10035,22 @@
       "slug": "fast",
       "name": "/fast",
       "summary": "Activa o desactiva el modo Fast, cuando el modelo actual lo admite.",
-      "what": "Activa o desactiva el modo Fast cuando el modelo actual lo admite. Desactívalo en \"Model slash commands\" dentro de /config.",
+      "what": "`/fast` alterna un nivel de respuesta más rápido, siempre que el modelo activo en ese momento admita este modo Fast según la documentación. El comando en sí no selecciona ningún modelo, sino que actúa adicionalmente sobre el modelo ya configurado – si Fast está realmente disponible depende del modelo que esté en uso.\n\nComo con los atajos de familias de modelos (p. ej. `/opus`), `/fast` se puede desactivar en \"Model slash commands\" dentro de `/config`, por si no quieres activar el cambio mediante un comando. `/fast` tampoco aparece todavía en la tabla de referencia principal de los slash commands en la página de documentación de Cursor, sino que solo está documentado a través de la entrada del changelog de la CLI del 6 de julio de 2026, que lo introduce junto con `/opus` y los demás atajos de modelo.",
       "whenGood": [
         {
-          "title": "Obtener respuestas más rápidas en un modelo compatible",
+          "title": "Responder más rápido con un modelo compatible",
           "example": "/fast"
+        },
+        {
+          "title": "Comprobar tras un cambio de modelo si el ajuste Fast sigue teniendo sentido",
+          "example": "/fast, antes de hacer una pregunta breve de comprensión que no necesita un análisis profundo"
         }
       ],
       "whenBad": [
         {
-          "title": "El modelo actual no tiene modo Fast",
-          "why": "/fast solo tiene efecto cuando el modelo ofrece ese modo.",
-          "alternative": "elige un modelo que admita Fast"
+          "title": "El modelo actual no admite el modo Fast",
+          "why": "Según la documentación, /fast solo funciona si el modelo ofrece ese modo.",
+          "alternative": "elegir un modelo que admita Fast"
         }
       ],
       "sources": [

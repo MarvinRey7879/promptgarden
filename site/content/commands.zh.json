@@ -472,21 +472,21 @@
       "slug": "compact",
       "name": "/compact",
       "summary": "对到目前为止的对话进行总结,以释放上下文。",
-      "what": "对到目前为止的对话进行总结,以释放上下文。\n\n可以为总结附加一条侧重点指令(可选)。",
+      "what": "对之前的对话进行总结,以腾出上下文窗口的空间。你可以选择性地附加一个聚焦指令作为参数,例如 /compact 聚焦于未完成的 TODO 和下一步计划——这样一来,总结就会有针对性地保留你指定的内容,而不是自动流程认为重要的内容。\n\n之后,项目的 CLAUDE.md 和自动记忆(Auto-Memory)会自动从磁盘重新加载;而绑定特定路径的规则以及子文件夹中嵌套的 CLAUDE.md 文件则会丢失,直到相应文件被再次读取。已调用过的 Skill 内容也会被重新载入,但每个 Skill 上限为 5,000 个 token,总量上限为 25,000 个 token。",
       "whenGood": [
         {
-          "title": "在继续同一主题的工作时释放上下文",
+          "title": "在继续处理同一主题时腾出上下文空间",
           "example": "/compact"
         },
         {
-          "title": "带侧重点指令进行总结",
-          "example": "/compact 重点关注:未完成的 TODO 和下一步计划"
+          "title": "有针对性地引导总结方向",
+          "example": "/compact 聚焦于未完成的 TODO 和下一步计划"
         }
       ],
       "whenBad": [
         {
-          "title": "话题需要完全切换",
-          "why": "/compact 会总结此前的对话并保留脉络——如果话题完全切换,这样做只会带来不必要的历史包袱。",
+          "title": "完全切换主题",
+          "why": "/compact 会总结之前的对话并保留其脉络;根据文档,在完全切换主题时,这会拖带不必要的历史包袱——文档明确指出,对于毫不相关的新工作,应使用 /clear。",
           "alternative": "/clear"
         }
       ],
@@ -912,18 +912,27 @@
       "slug": "exit",
       "name": "/exit",
       "summary": "退出 CLI。",
-      "what": "退出 CLI。\n\n在已连接的后台会话中,执行该命令只会断开连接,会话本身会继续运行。别名:/quit。",
+      "what": "退出 CLI,并终止该会话中正在运行的所有后台任务,例如 Bash 进程或监控器——它们会在退出时自动清理,而不是继续运行。\n\n在已连接的后台会话中(参见 /background),/exit 的表现有所不同:此时该命令只会断开与终端的连接,会话本身会继续在后台运行。你可以通过 claude agents 重新连接;如果该会话已经完成,也可以通过 /resume 选择器重新连接,后台会话在其中会标注为 bg。如果你想真正停止这样一个会话,而不只是断开连接,请在仍处于连接状态时使用 /stop。别名:/quit。",
       "whenGood": [
         {
-          "title": "在任务完成后干净利落地结束会话",
-          "example": "/exit — 在工作完成后执行"
+          "title": "任务完成后干净地结束会话",
+          "example": "工作完成后使用 /exit"
+        },
+        {
+          "title": "有意只断开一个后台会话的连接",
+          "example": "/exit,在连接到某个后台会话时使用——该会话会继续运行,你之后可以通过 claude agents 重新连接。"
         }
       ],
       "whenBad": [
         {
-          "title": "实际上想要停止一个已附加的后台会话",
-          "why": "在已附加的后台会话中,/exit 只会断开连接,会话本身仍会继续运行",
-          "alternative": "通过 'claude agents' 管理/终止后台会话,而不是仅使用 /exit"
+          "title": "其实想要停止一个已连接的后台会话",
+          "why": "根据文档,在已连接的后台会话中,/exit 只会断开连接,会话本身会继续运行。",
+          "alternative": "在仍处于连接状态时使用 /stop"
+        },
+        {
+          "title": "希望正在运行的后台 Bash 进程或监控器继续运行",
+          "why": "根据文档,后台任务会在退出时自动清理而不是继续运行——只有把会话转入后台,才能把这些任务交给一个持续运行的会话。",
+          "alternative": "使用 /background 而不是 /exit,让会话连同正在运行的任务一起在后台继续运行"
         }
       ],
       "sources": [
@@ -2315,18 +2324,27 @@
       "slug": "scroll-speed",
       "name": "/scroll-speed",
       "summary": "交互式调整鼠标滚轮的滚动速度。",
-      "what": "交互式调整鼠标滚轮的滚动速度。\n\n对话框打开时可滚动的标尺会即时预览变化。仅在全屏渲染下可用，不适用于 JetBrains IDE 终端。",
+      "what": "/scroll-speed 用来交互式地调整鼠标滚轮的滚动速度。这个命令只在全屏渲染模式下可用——这是一种可选的、实验性的显示模式,需要先通过 /tui fullscreen 开启——而且在这种模式下,JetBrains IDE 终端中并不可用。\n\n对话框会显示一把标尺,你可以在窗口打开的状态下滚动它,立即感受到变化。用 ←/→ 可以整数档调整速度,最高到 10;在支持更精细控制的终端上,还可以从 0.25 开始以四分之一为单位微调。按 r 会重置为自动检测到的默认值,按 Enter 保存。保存的值对应环境变量 CLAUDE_CODE_SCROLL_SPEED,并会永久写入 ~/.claude/settings.json;高于 10 的数值只能通过该环境变量设置。无论基础速度如何,Claude Code 都会自动对快速滚动进行加速——可以在设置中通过 wheelScrollAccelerationEnabled: false 关闭这一行为。",
       "whenGood": [
         {
-          "title": "滚动速度感觉不对",
-          "example": "在全屏终端中调用 /scroll-speed,通过实时标尺预览调整鼠标滚轮速度。"
+          "title": "永久调整滚动速度",
+          "example": "在全屏终端中打开 /scroll-speed,用 ←/→ 调到想要的速度,再按 Enter 保存——该值会写入 ~/.claude/settings.json。"
+        },
+        {
+          "title": "重置为自动检测到的默认值",
+          "example": "打开 /scroll-speed 并按 r,纠正设置过高或过低的速度。"
         }
       ],
       "whenBad": [
         {
-          "title": "JetBrains IDE 终端或非全屏模式",
-          "why": "根据文档,该功能仅在全屏渲染模式下可用,JetBrains IDE 终端不支持。",
-          "alternative": "使用 IDE 终端自带的滚动设置。"
+          "title": "经典渲染模式或 JetBrains IDE 终端",
+          "why": "根据文档,/scroll-speed 只在通过 /tui fullscreen 开启的可选全屏渲染模式下可用,在 JetBrains IDE 终端中则完全不存在。",
+          "alternative": "先启用 /tui fullscreen;在 JetBrains 终端中则改用 IDE 自带的滚动设置(从 JetBrains 2025.3 起,Claude Code 还会针对已知的滚动相关 Bug 提供自动修复)"
+        },
+        {
+          "title": "终端没有转发鼠标滚轮事件",
+          "why": "根据文档,标尺中的实时预览只会响应终端转发给 Claude Code 的鼠标滚轮事件——例如 iTerm2 默认就会通过配置文件设置阻止这一转发。",
+          "alternative": "在 iTerm2 中依次进入 Settings → Profiles → Terminal,启用 \"Enable mouse reporting\",然后重新打开 /scroll-speed"
         }
       ],
       "sources": [
@@ -3768,17 +3786,21 @@
       "slug": "line-numbers",
       "name": "/line-numbers",
       "summary": "切换代码块中是否显示行号。",
-      "what": "/line-numbers 用于切换当前会话代码块中行号的显示。",
+      "what": "`/line-numbers` 用来切换 CLI 在聊天记录中显示代码块时是否带行号。这个命令不需要参数——每次调用都会在当前会话中切换开启和关闭状态。\n\n开启行号后,你在阅读 diff 或代码片段时可以精确指向某一具体行,比如告诉 Agent 该修改哪个位置。这在处理较长的文件或函数时尤其有用,因为像\"有条件判断的那一行\"这种模糊描述会不够精确。而对于非常短的代码片段,多出来的这一列反而更像视觉噪音而不是帮助,所以默认开启与否可以因个人工作习惯而异。",
       "whenGood": [
         {
-          "title": "在 Review 时想引用具体的行",
-          "example": "/line-numbers — 在说“检查第 42 行”之前打开"
+          "title": "指向具体的代码行",
+          "example": "/line-numbers——在说\"检查第 42 行\"之前先开启"
+        },
+        {
+          "title": "在结对讨论前先准备好行号引用",
+          "example": "在通话中一起讨论某个函数、需要指出具体行号之前,先开启 /line-numbers"
         }
       ],
       "whenBad": [
         {
-          "title": "只有不涉及行号的简短代码片段",
-          "why": "对于短代码片段,行号往往是干扰而非帮助。",
+          "title": "只是没有行号需求的简短代码片段",
+          "why": "对于简短的代码片段,行号往往是干扰而非帮助。",
           "alternative": "关闭 /line-numbers,让显示更紧凑"
         }
       ],
@@ -3820,18 +3842,22 @@
       "slug": "status-indicators",
       "name": "/status-indicators",
       "summary": "切换终端标题中是否显示状态指示。",
-      "what": "/status-indicators 用于切换是否在终端窗口标题中显示 Agent 的状态(例如等待中、工作中)。",
+      "what": "`/status-indicators` 用来切换是否在终端窗口标题中显示 CLI 的当前状态。该命令不接受参数,每次调用都会在开启和关闭之间切换。\n\n开启该显示后,你可以通过终端标签页或窗口标题看出这个会话正在运行某项任务,而不必先点进去查看。这在你同时打开多个终端窗口或标签页、想一眼看出哪个会话还在忙碌时尤其有用。如果你的终端标题已经被另作他用,比如通过自定义的 prompt 或状态栏脚本,状态显示会覆盖掉那段文字——这种情况下通常最好保持该命令关闭。",
       "whenGood": [
         {
-          "title": "即使终端窗口最小化也能看到 Agent 状态",
-          "example": "/status-indicators — 在后台运行长任务时打开"
+          "title": "即使终端窗口最小化也能识别 Agent 状态",
+          "example": "/status-indicators——在后台运行一个长任务时开启"
+        },
+        {
+          "title": "同时关注多个并行的终端标签页",
+          "example": "如果你同时在多个标签页中运行 Agent 会话,开启 /status-indicators"
         }
       ],
       "whenBad": [
         {
-          "title": "终端标题另有用途,例如被自定义脚本占用",
-          "why": "状态指示会覆盖掉自己设置的标题文字。",
-          "alternative": "关闭 /status-indicators"
+          "title": "终端标题另有用途,例如由自定义脚本控制",
+          "why": "这样一来,状态显示会覆盖掉你自己的标题文字。",
+          "alternative": "保持 /status-indicators 关闭"
         }
       ],
       "sources": [
@@ -3972,18 +3998,27 @@
       "slug": "feedback",
       "name": "/feedback",
       "summary": "直接向 Cursor 团队发送反馈。",
-      "what": "/feedback 会把一条消息作为反馈发送给 Cursor 团队。",
+      "what": "`/feedback <message>` 可以让你直接把消息发送给 Cursor 团队,不需要离开 CLI 或打开单独的表单。你只需把文本直接附加在命令后面——比如一段错误描述、一个缺失功能的建议,或者对另一个命令行为的观察。\n\n由于该命令按文档说明需要一个文本参数(`/feedback <message>`),不带附加消息的调用不会产生有用的反馈——只有加上文字才能构成有意义的反馈。这个渠道适合简短、有针对性、直接源于当前会话上下文的提示,不适合带附件的详细错误报告,也不适合需要你尽快得到个人回复的请求。对于后者,文档建议使用专门的支持渠道。",
       "whenGood": [
         {
-          "title": "直接报告一个 Bug 或缺失的功能",
-          "example": "/feedback /rewind 有时会跳回两轮而不是一轮"
+          "title": "报告 Bug 或缺失的功能",
+          "example": "/feedback /rewind 有时会一次回退两个轮次,而不是一个"
+        },
+        {
+          "title": "对某个工作流给出正面反馈",
+          "example": "/feedback 新的计划模式在一次大型重构中帮了我大忙"
         }
       ],
       "whenBad": [
         {
-          "title": "属于紧急的个人支持请求",
-          "why": "反馈消息不是为快速的一对一支持设计的。",
+          "title": "这是一个紧急的、个人化的支持请求",
+          "why": "反馈消息并不是为快速的一对一支持而设计的。",
           "alternative": "使用 Cursor 官方支持渠道"
+        },
+        {
+          "title": "调用时缺少消息内容",
+          "why": "根据参考表,/feedback <message> 需要一个文本参数——不附加消息的话,该命令不会产生有用的反馈。",
+          "alternative": "始终直接附上一段简短文字,例如 /feedback <你的观察>"
         }
       ],
       "sources": [
@@ -3998,18 +4033,27 @@
       "slug": "open",
       "name": "/open",
       "summary": "在 Cursor 编辑器中打开当前仓库的 Git 根目录。",
-      "what": "/open 会在 Cursor 中打开该仓库的 Git 根目录。别名:/cursor。",
+      "what": "`/open` 会在编辑器 Cursor 中打开你当前仓库的 Git 根目录。根据文档,同一个命令还有一个别名 `/cursor` 可用——两种写法效果相同。\n\n该命令要求你正处于一个 Git 仓库中,因为它以 Git 根目录为基准;同时也要求本地已安装 Cursor 编辑器,否则根本无法打开任何内容。通常,当你在终端中进行了一段 CLI 会话、完成工作后想转到可视化界面继续操作时会用到 `/open`——比如在 diff 视图中查看改动,或者直接编辑文件,而不是在终端里逐一核对每一处修改。",
       "whenGood": [
         {
-          "title": "在 CLI 工作之后转到编辑器中继续可视化操作",
-          "example": "/open — 在 Agent 提出改动建议之后"
+          "title": "在 CLI 工作之后转向可视化操作",
+          "example": "/open——在 Agent 提出修改建议之后使用"
+        },
+        {
+          "title": "在编辑器中有针对性地继续修改文件",
+          "example": "/open,直接在 Cursor 编辑器中手动细化 Agent 修改过的文件"
         }
       ],
       "whenBad": [
         {
-          "title": "根本没有安装或不想使用 Cursor(编辑器)",
-          "why": "/open 需要本地安装 Cursor。",
-          "alternative": "改用 /changes 直接在终端中 Review 改动"
+          "title": "根本没有安装或不想使用 Cursor 编辑器",
+          "why": "/open 需要本地已安装 Cursor。",
+          "alternative": "改为直接在终端中查看改动,例如使用 git diff"
+        },
+        {
+          "title": "不存在 Git 仓库",
+          "why": "根据文档,/open 打开的是仓库的 Git 根目录——没有 Git 仓库就没有可打开的 Git 根目录。",
+          "alternative": "手动在编辑器中打开文件夹,或者继续沿用常规的终端工作流"
         }
       ],
       "sources": [
@@ -9080,18 +9124,27 @@
       "slug": "stop",
       "name": "/stop",
       "summary": "停止当前的后台会话。",
-      "what": "停止当前的后台会话。\n\n仅在连接到后台会话时可用；转录记录和任何 worktree 都会被保留。若只想断开连接而不停止会话，请使用 /exit。",
+      "what": "彻底停止正在运行的后台会话——进程会被终止,但之后不会被删除。\n\n这个命令只在你连接到某个后台会话时才可用;转录记录以及可能存在的 worktree 会保留下来。如果你只想断开连接而不结束会话,可以使用 /exit,或者在空提示符下按 ←。在未连接会话的情况下,你可以改用 Agent 视图中的 Ctrl+X,或者在终端中执行 claude stop <id>(别名:claude kill)来停止会话。已停止的会话可以通过 claude respawn <id> 在对话内容完整保留的情况下重新启动;要连同 worktree 一起彻底删除,可以使用 claude rm <id>。",
       "whenGood": [
         {
-          "title": "结束正在后台运行的会话",
-          "example": "/stop"
+          "title": "结束一个不再需要的后台会话",
+          "example": "/stop,在连接到某个后台会话时使用——转录记录和 worktree 会保留下来。"
+        },
+        {
+          "title": "在后台任务完成后进行清理",
+          "example": "/stop,在后台 Agent 完成任务后使用,以释放资源;需要时之后可以用 claude respawn <id> 重新启动。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想断开连接但保持会话继续运行",
-          "why": "/stop 会结束会话；转录记录和 worktree 会被保留，但工作不会继续进行。",
-          "alternative": "/exit"
+          "title": "只想断开连接,但让会话继续运行",
+          "why": "根据文档,/stop 会彻底结束会话;虽然日志和 worktree 会保留下来,但工作本身不会继续进行。",
+          "alternative": "使用 /exit,或在空提示符下按 ←"
+        },
+        {
+          "title": "已经(不再)连接到该会话",
+          "why": "根据文档,/stop 只有在你连接着某个后台会话时才可用。",
+          "alternative": "在会话之外:在 Agent 视图中按 Ctrl+X,或在终端中执行 claude stop <id>"
         }
       ],
       "sources": [
@@ -9132,18 +9185,27 @@
       "slug": "terminal-setup",
       "name": "/terminal-setup",
       "summary": "配置终端按键绑定，例如 Shift+Enter。",
-      "what": "配置 Shift+Enter 及其他快捷键的终端按键绑定。\n\n仅在需要它的终端中可见，例如 VS Code、Cursor、Devin Desktop、Alacritty 或 Zed。",
+      "what": "一步完成多项终端设置,其中最主要的是把 Shift+Enter 设为换行而不是发送。这个命令只在 VS Code、Cursor、Devin Desktop、Alacritty 和 Zed 中才需要——其他终端如 Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal 或 Windows Terminal 无需设置就已经支持 Shift+Enter。在 gnome-terminal 和 JetBrains IDE 中根本没有这个命令;在那里可以改用 Ctrl+J 或反斜杠加 Enter。\n\n根据终端不同,这个命令所做的不只是绑定按键:在 VS Code、Cursor 和 Devin Desktop 中,它还会关闭 GPU 加速,并为全屏模式调整鼠标滚轮灵敏度。在 Apple Terminal 中,它会启用 Option 作为 Meta 键以及提示音;在 iTerm2 中,它让 /copy 能够访问系统剪贴板。",
       "whenGood": [
         {
           "title": "在 VS Code 或 Cursor 终端中启用 Shift+Enter",
           "example": "/terminal-setup"
+        },
+        {
+          "title": "在 iTerm2 中为 /copy 开通剪贴板访问权限",
+          "example": "在 iTerm2 中执行一次 /terminal-setup,之后 /copy 就能把文本写入系统剪贴板。"
         }
       ],
       "whenBad": [
         {
-          "title": "一个已经原生支持这些快捷键的终端",
-          "why": "该命令在那里甚至不会显示，因为不需要任何设置。",
-          "alternative": "什么都不用做——快捷键已经可以使用"
+          "title": "本身就已经支持这些快捷键的终端",
+          "why": "根据文档,像 Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal 或 Windows Terminal 这样的终端无需设置就已经支持 Shift+Enter。",
+          "alternative": "什么都不用做——这些快捷键已经可以使用"
+        },
+        {
+          "title": "gnome-terminal 或 JetBrains IDE(PyCharm、Android Studio 等)",
+          "why": "根据文档,Shift+Enter 在这些环境中技术上不可用,/terminal-setup 在这里无济于事。",
+          "alternative": "使用 Ctrl+J 或反斜杠加 Enter 来实现换行"
         }
       ],
       "sources": [
@@ -9283,22 +9345,27 @@
       "slug": "voice",
       "name": "/voice",
       "summary": "开启或关闭语音听写。",
-      "what": "开启或关闭语音听写，或以特定模式启用它。\n\nhold 在按住按键时进行听写；tap 通过轻触切换；off 关闭该功能。需要 Claude.ai 账号。",
+      "what": "开启或关闭语音听写功能,也可以直接激活某个特定模式:/voice hold 在说话时需要按住某个按键(默认模式),/voice tap 通过点按来开始和结束录音,/voice off 则关闭该功能。不带参数时,该命令只会在开和关之间切换,并保留最近使用过的模式。\n\n前提是需要有一个 Claude.ai 账号——仅使用 API Key、Amazon Bedrock、Google Cloud 或 Microsoft Foundry 的情况下,语音听写无法使用。此外还需要本地麦克风;在 Claude Code 网页版或通过 SSH 这类远程环境中,该功能不可用。转录本身不消耗消息数或 token,也不计入 /usage 中的限额。",
       "whenGood": [
         {
-          "title": "对着终端说话而不是打字",
-          "example": "/voice tap"
+          "title": "对着终端说话,而不是打字",
+          "example": "/voice tap——按一下空格键,开始说话,再按一下空格键结束;达到三个词以上会自动发送。"
         },
         {
-          "title": "仅在按住按键时进行听写",
-          "example": "/voice hold"
+          "title": "只在按住某个按键时才进行听写",
+          "example": "/voice hold——按住空格键说话,松开后文本会插入到光标所在位置,并等待你按 Enter。"
         }
       ],
       "whenBad": [
         {
-          "title": "没有 Claude.ai 账号",
-          "why": "语音听写需要 Claude.ai 账号。",
-          "alternative": "继续使用键盘打字"
+          "title": "远程会话或网页版 Claude Code",
+          "why": "根据文档,语音听写需要本地麦克风,在网页版 Claude Code 或 SSH 会话这类远程环境中无法使用。",
+          "alternative": "继续通过键盘输入"
+        },
+        {
+          "title": "只使用 API Key、Amazon Bedrock、Google Cloud 或 Microsoft Foundry,没有 Claude.ai 账号",
+          "why": "根据文档,语音转文字服务只有在使用 Claude.ai 账号时才可用,直接使用 Anthropic API Key、Bedrock、Vertex 或 Foundry 配置时无法使用。",
+          "alternative": "通过 /login 连接一个 Claude.ai 账号,或者继续通过键盘输入"
         }
       ],
       "sources": [
@@ -9409,18 +9476,22 @@
       "slug": "init",
       "name": "/init",
       "summary": "为当前项目生成一个 AGENTS.md 脚手架。",
-      "what": "为当前项目生成一个 AGENTS.md 脚手架。\n\nAGENTS.md 保存 Codex 每次会话都会读取的项目规则与上下文——类似于 Claude Code 中的 CLAUDE.md。",
+      "what": "`/init` 会为当前项目或目录生成一个 `AGENTS.md` 骨架文件。`AGENTS.md` 用来记录 Codex 在每次会话中都会自动读取的项目专属说明和上下文——相当于 Claude Code 中的 `CLAUDE.md`。根据文档,这个文件记录的是你当前所在仓库或子目录的持久性指令。\n\n`/init` 同时被记录在纯终端 CLI 命令列表和 Codex 通用命令参考中,且功能完全一致——因此与 `/worktree` 或 `/cloud` 不同,它不是桌面应用独占功能,而是常规的终端 CLI 命令。这个命令只会生成基础骨架;项目规则、编码规范、测试命令等具体内容,之后需要你自己补充,或者有针对性地让 Codex 来填写。",
       "whenGood": [
         {
           "title": "为 Codex 设置一个新项目",
           "example": "/init"
+        },
+        {
+          "title": "在仓库结构发生较大变化后重新梳理项目规则",
+          "example": "调用 /init,然后手动为生成的骨架补充新的测试命令"
         }
       ],
       "whenBad": [
         {
-          "title": "AGENTS.md 已存在且有人在维护",
-          "why": "/init 会写入一个全新的脚手架，可能覆盖现有的项目笔记。",
-          "alternative": "直接编辑现有的 AGENTS.md"
+          "title": "AGENTS.md 已经存在且维护良好",
+          "why": "/init 会生成一个全新的骨架,可能会覆盖已经悉心维护的项目笔记。",
+          "alternative": "直接编辑现有的 AGENTS.md,而不是重新生成"
         }
       ],
       "sources": [
@@ -9491,18 +9562,22 @@
       "slug": "fast",
       "name": "/fast",
       "summary": "在可用时，开启或关闭 Fast 服务档位。",
-      "what": "在可用时，开启或关闭模型目录提供的 Fast 服务档位。\n\nFast 档位优先保证速度。是否提供该档位取决于模型目录。",
+      "what": "`/fast` 用来开启或关闭当前所选模型的所谓 Fast 服务档位,前提是模型目录本身为该模型提供了这一档位。Fast 档位以响应速度为优先;它是否存在取决于具体的模型和目录,而不是由你手动配置决定。你的选择会在当前会话中被记住。\n\n与 `/worktree` 或 `/cloud` 不同,`/fast` 同时被记录在纯终端 CLI 命令列表和 Codex 通用命令参考中——也就是说,它是一个真正的终端 CLI 功能,而不是桌面应用独占的特性。尽管名字很简短,它并不是彩蛋,而是一个官方记录的模型控制功能,与 `/model`(完整的模型选择)和 `/reasoning`(推理强度)并列。",
       "whenGood": [
         {
-          "title": "在该档位可用时优先选择更快的响应",
+          "title": "当前模型提供 Fast 档位时,优先选择更快的响应",
           "example": "/fast"
+        },
+        {
+          "title": "切换模型后检查 Fast 设置是否仍然合适",
+          "example": "先切换 /model,然后再次调用 /fast"
         }
       ],
       "whenBad": [
         {
-          "title": "模型目录未提供 Fast 档位",
-          "why": "只有存在 Fast 服务档位时，/fast 才会生效。",
-          "alternative": "通过 /model 选择一个更快的模型"
+          "title": "当前模型不提供 Fast 档位",
+          "why": "根据文档,只有当模型目录为所选模型提供了 Fast 档位时,/fast 才会起作用。",
+          "alternative": "通过 /model 选择一个支持 Fast 的模型"
         }
       ],
       "sources": [
@@ -9517,18 +9592,22 @@
       "slug": "personality",
       "name": "/personality",
       "summary": "在模型支持人格设定时，选择 Codex 的回应方式。",
-      "what": "在当前模型支持人格设定时，选择 Codex 的回应方式。\n\n人格设定影响回复的语气与风格，而非其技术内容。",
+      "what": "`/personality` 用来为 Codex 的回答选择一种沟通风格,前提是当前使用的模型支持人格设置。借助它,可以让 Codex 表现得更简洁、更善于讲解,或者更具协作感。根据文档,该命令只改变回答的语气和风格——不会改变你的实际指令,也不会改变工作的专业内容。\n\n和 `/fast` 一样,`/personality` 同时被记录在纯终端 CLI 命令列表和 Codex 通用命令参考中,因此是常规的终端 CLI 功能,而不是桌面应用独占的特性。尽管名字有些特别,它并不是彩蛋,而是一个官方记录的功能——它是否适用于你当前的模型,取决于模型本身,和 `/fast` 的情况类似。",
       "whenGood": [
         {
-          "title": "让回复风格符合你的偏好",
+          "title": "让回答风格贴合自己的工作方式,例如更简洁而非详尽",
           "example": "/personality"
+        },
+        {
+          "title": "切换模型后检查现在有哪些风格可用",
+          "example": "先切换 /model,然后打开 /personality"
         }
       ],
       "whenBad": [
         {
-          "title": "当前模型不支持人格设定",
-          "why": "只有模型提供该功能时，/personality 才可用。",
-          "alternative": "选择一个支持人格设定的模型"
+          "title": "当前模型不支持人格设置",
+          "why": "根据文档,只有当模型提供这一特性时,/personality 才可用。",
+          "alternative": "通过 /model 选择一个支持人格设置的模型"
         }
       ],
       "sources": [
@@ -9567,20 +9646,29 @@
     {
       "platform": "codex-cli",
       "slug": "ide-context",
-      "name": "/ide-context",
-      "summary": "开启或关闭自动 IDE 上下文。",
-      "what": "开启或关闭自动 IDE 上下文。\n\n开启 IDE 上下文后，Codex 会自动从开发环境中获取信息（例如已打开的文件）。",
+      "name": "/ide",
+      "summary": "开启或关闭 IDE 上下文。",
+      "what": "`/ide-context` 这个名字来自适用于所有界面的 Codex 通用命令参考:在那里,这个命令用来开启或关闭共享的 IDE 上下文。而在纯终端 CLI 自己的文档中,同一个功能名为 `/ide`(带有 `/ide on`、`/ide off` 或 `/ide status` 等可选参数),它会把已连接的 IDE 扩展中的打开文件、当前选中内容及其他编辑器上下文,一并纳入下一次提示词中。\n\n这其实是同一个功能在两张不同文档表格中使用了两个不同的名字,而不是两个独立的特性。前提是要有一个正在运行、并已安装 Codex 扩展的 IDE(例如 VS Code),它通过本地 IPC 连接提供上下文。根据 Codex GitHub 仓库中报告的多个问题,即便 IDE 扩展处于活动状态,启用过程也偶尔会失败。",
       "whenGood": [
         {
-          "title": "让 Codex 读取 IDE 中已打开的文件",
-          "example": "/ide-context"
+          "title": "让 Codex 自动读取 IDE 中已打开的文件和当前选中内容",
+          "example": "/ide(在终端 CLI 中;在通用命令参考中称为 /ide-context)"
+        },
+        {
+          "title": "有针对性地检查或设定 IDE 上下文当前是否处于激活状态",
+          "example": "/ide status 或 /ide on"
         }
       ],
       "whenBad": [
         {
-          "title": "Codex 运行在没有连接 IDE 的纯终端环境中",
-          "why": "没有 IDE，就不存在可供该开关切换的 IDE 上下文。",
-          "alternative": "自己指明需要用到的文件"
+          "title": "Codex 在纯终端中运行,没有连接 IDE",
+          "why": "没有活动的 IDE 扩展,就不存在可供该命令开启或关闭的 IDE 上下文。",
+          "alternative": "改为通过 mention 自行有针对性地引用文件"
+        },
+        {
+          "title": "你在终端中查找 /ide-context 这个确切的命令名却找不到",
+          "why": "纯终端 CLI 是把同一个功能记录在 /ide 这个名字下,而不是 /ide-context。",
+          "alternative": "在终端中使用 /ide"
         }
       ],
       "sources": [
@@ -9720,19 +9808,28 @@
       "platform": "codex-cli",
       "slug": "cloud",
       "name": "/cloud",
-      "summary": "在云端执行可用时，在云端运行该聊天。",
-      "what": "在云端执行可用时，在云端运行该聊天。\n\n在云端运行时，任务由远程资源执行，而非你的本机。",
+      "summary": "在云端运行聊天(见 Codex 通用命令参考)。",
+      "what": "`/cloud` 会让当前聊天在云端而不是本地运行,前提是云端执行功能可用——这时工作会运行在 OpenAI 提供的远程资源上,而不是你自己的电脑上。这是适用于所有 Codex 界面的通用命令参考中的描述。\n\n需要注意:在纯终端 CLI 自己的文档中,`/cloud` 并没有作为交互式 Slash 命令出现。终端 CLI 官方提供的对应功能其实是子命令 `codex cloud`(比如 `codex cloud exec`、`codex cloud list`、`codex cloud apply <TASK_ID>`)——你可以用它以常规命令行语法直接启动、列出和获取云端任务的结果,而不是通过聊天中的 Slash 命令。对纯终端用户来说,`codex cloud …` 才是文档记录的方式;`/cloud` 更像是属于通用的、贴近 Composer 的命令集合。",
       "whenGood": [
         {
-          "title": "把计算从本机转移到云端",
+          "title": "把计算负载从本地机器转移到云端(在 /cloud 可作为 Slash 命令使用的地方)",
           "example": "/cloud"
+        },
+        {
+          "title": "从终端 CLI 启动云端任务或获取结果",
+          "example": "codex cloud exec --env ENV_ID \"修复测试\" 或 codex cloud apply <TASK_ID>"
         }
       ],
       "whenBad": [
         {
-          "title": "任务需要直接访问你的本地文件",
-          "why": "在云端运行时，工作区并不在你的机器上。",
-          "alternative": "/local"
+          "title": "你想直接把它当作 Slash 命令在纯终端 CLI 中使用",
+          "why": "根据 CLI 专属文档,/cloud 并不属于终端命令列表,而是属于 Codex 通用命令参考。",
+          "alternative": "在终端中使用子命令 codex cloud(exec/list/apply/status/diff)"
+        },
+        {
+          "title": "任务需要直接用到你本地的文件",
+          "why": "在云端运行时,工作区并不在你自己的电脑上。",
+          "alternative": "使用 /local,或者继续在终端本地工作"
         }
       ],
       "sources": [
@@ -9816,19 +9913,28 @@
       "platform": "codex-cli",
       "slug": "worktree",
       "name": "/worktree",
-      "summary": "在一个新的 Git worktree 中运行该聊天。",
-      "what": "在一个新的 Git worktree 中运行该聊天。\n\nworktree 是同一仓库的第二份工作副本——这样该聊天所做的更改就与你的主分支相互隔离。",
+      "summary": "在一个新的 Git worktree 中启动聊天。",
+      "what": "`/worktree` 会让当前聊天在一个新的 Git worktree 中启动,而不是在常规的工作目录中。worktree 是从同一个仓库检出的一份额外工作副本,拥有自己的分支——Agent 的改动会落在这个副本里,不会触及你的主分支。这样一来,多个聊天就可以并行处理同一个项目而互不干扰;根据文档,预定的后台任务也会运行在各自独立的 worktree 上。\n\n对你这个 CLI 用户来说重要的一点是:根据官方文档,这个 worktree 选择功能只在 ChatGPT 桌面应用内的 Codex 中可用(在新建聊天时通过 Composer 菜单选择),纯终端 CLI 中不可用。`/worktree` 出现在 Codex 通用命令参考中,但不在终端 CLI 自己的命令列表里。在纯终端环境下,你只能用 `git worktree add` 手动实现同样的效果。",
       "whenGood": [
         {
-          "title": "让 Codex 在隔离环境中工作，不触碰主分支",
-          "example": "/worktree"
+          "title": "让多个聊天并行处理同一个仓库,又不互相干扰",
+          "example": "在桌面应用中使用 /worktree,同时另一个聊天继续在主分支上工作"
+        },
+        {
+          "title": "在触及主分支之前,先隔离试验一次有风险的重构",
+          "example": "/worktree,在新分支中完成重构,之后再合并"
         }
       ],
       "whenBad": [
         {
-          "title": "该项目不是 Git 仓库",
-          "why": "worktree 需要依赖 Git。",
-          "alternative": "留在普通工作区中"
+          "title": "你只在终端 CLI 中工作",
+          "why": "根据文档,worktree 功能只在 ChatGPT 桌面应用内的 Codex 中可用;终端 CLI 并没有把 /worktree 作为独立命令。",
+          "alternative": "手动使用 `git worktree add`,或者改用桌面应用"
+        },
+        {
+          "title": "不存在 Git 仓库",
+          "why": "worktree 需要有一个 Git 仓库作为前提。",
+          "alternative": "留在常规工作区中"
         }
       ],
       "sources": [
@@ -9873,18 +9979,22 @@
       "slug": "opus",
       "name": "/opus",
       "summary": "无需打开选择器，直接跳转到Opus模型系列。",
-      "what": "无需打开模型选择器，直接跳转到Opus模型系列。该快捷方式会记住你上次的选择。可在/config的「Model slash commands」下禁用。",
+      "what": "`/opus` 是一个模型快捷方式:它能让你直接跳转到 Opus 模型系列,而不用先打开 `/model` 的模型选择器再一步步点选。根据更新日志,每个模型系列都有各自的快捷方式,并且会记住该系列中你最后一次选用的版本——再次调用 `/opus` 时,会直接回到你上次使用的那个 Opus 版本。\n\n这个命令可以关闭:在 `/config` 的 \"Model slash commands\" 下,你可以停用像 `/opus` 这样的模型快捷方式,如果它们妨碍到你的话。需要注意的是:在当前的 Slash 命令主参考表(cursor.com/docs/cli/reference/slash-commands)中并没有 `/opus`——目前这个命令只在 2026 年 7 月 6 日的 CLI 更新日志中有记录,该日志也没有具体说明哪些模型属于 Opus 系列。",
       "whenGood": [
         {
-          "title": "快速切换到Opus模型",
+          "title": "快速切换到某个 Opus 模型",
           "example": "/opus"
+        },
+        {
+          "title": "回到最近使用过的 Opus 版本",
+          "example": "/opus——不用绕道模型选择器,因为这个快捷方式会记住你最后一次选用的 Opus 版本"
         }
       ],
       "whenBad": [
         {
-          "title": "想选择其他系列的模型",
-          "why": "/opus只会跳转到Opus系列。",
-          "alternative": "使用/model查看完整列表"
+          "title": "选择另一个系列的模型",
+          "why": "根据更新日志,/opus 只会跳转到 Opus 系列,你无法通过它访问其他模型。",
+          "alternative": "使用 /model 获取完整的模型选择"
         }
       ],
       "sources": [
@@ -9925,18 +10035,22 @@
       "slug": "fast",
       "name": "/fast",
       "summary": "在当前模型支持的情况下，切换Fast模式。",
-      "what": "在当前模型支持的情况下，切换Fast模式。可在/config的「Model slash commands」下禁用。",
+      "what": "`/fast` 会切换到更快的响应档位,前提是当前激活的模型按文档说明支持这种 Fast 模式。这个命令本身不选择模型,而是作用在已经设置好的模型之上——Fast 是否真的可用,取决于当前运行的模型。\n\n和模型系列快捷方式(例如 `/opus`)一样,`/fast` 也可以在 `/config` 的 \"Model slash commands\" 下关闭,如果你不想通过命令触发这个切换开关。同样,`/fast` 目前也没有出现在 Cursor 文档页面的 Slash 命令主参考表中,只在 2026 年 7 月 6 日的 CLI 更新日志条目中有记录,该条目将它和 `/opus` 以及其他模型快捷方式一起引入。",
       "whenGood": [
         {
-          "title": "在受支持的模型上获得更快的回复",
+          "title": "在支持的模型上更快得到回应",
           "example": "/fast"
+        },
+        {
+          "title": "为一个简短的即时提问开启 Fast 模式",
+          "example": "/fast,在提出一个不需要深入分析的简短理解性问题之前使用"
         }
       ],
       "whenBad": [
         {
-          "title": "当前模型没有Fast模式",
-          "why": "/fast只有在模型提供该模式时才会生效。",
-          "alternative": "选择一个支持Fast的模型"
+          "title": "当前模型不支持 Fast 模式",
+          "why": "根据文档,只有当模型本身提供该模式时,/fast 才会起作用。",
+          "alternative": "选择一个支持 Fast 的模型"
         }
       ],
       "sources": [
