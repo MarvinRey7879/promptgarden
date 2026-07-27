@@ -97,22 +97,27 @@
       "slug": "agents",
       "name": "/agents",
       "summary": "Gère les configurations des sous-agents.",
-      "what": "Gère les configurations des sous-agents.\n\nÀ partir de la v2.1.198, /agents affiche simplement une invite à demander directement à Claude de créer/gérer des sous-agents, ou à éditer soi-même .claude/agents/ ou ~/.claude/agents/. Jusqu'à la v2.1.197, la commande ouvrait une interface de gestion interactive.",
+      "what": "`/agents` concerne les sous-agents : des configurations autonomes auxquelles Claude délègue des sous-tâches. Depuis la version 2.1.198, la commande n'ouvre plus d'interface propre, mais affiche seulement une indication invitant à demander directement à Claude de créer ou gérer des sous-agents, ou à modifier soi-même `.claude/agents/` ou `~/.claude/agents/`. Jusqu'à la version 2.1.197, `/agents` ouvrait une interface interactive avec un onglet pour les sous-agents en cours d'exécution et un onglet pour créer, modifier et supprimer des définitions.\n\nLes fichiers de sous-agents eux-mêmes, leurs champs de frontmatter et les deux emplacements de stockage n'ont pas changé avec cette évolution : les sous-agents de projet se trouvent dans `.claude/agents/` et ne sont disponibles que dans le dépôt concerné, les sous-agents personnels dans `~/.claude/agents/` sont disponibles à travers tous les projets. Les fichiers nouvellement créés sont détectés automatiquement en quelques secondes, sans nécessiter de redémarrage.",
       "whenGood": [
         {
           "title": "Demander à Claude de créer une nouvelle configuration de sous-agent",
-          "example": "/agents, puis : « crée-moi un sous-agent pour les migrations de base de données »"
+          "example": "/agents, puis : « Crée-moi un sous-agent personnel pour les migrations de base de données dans ~/.claude/agents/. »"
         },
         {
           "title": "Consulter les définitions de sous-agents existantes avant de les adapter dans le projet en cours",
-          "example": "/agents, pour se faire renvoyer vers .claude/agents/"
+          "example": "/agents, pour être renvoyé vers `.claude/agents/` ou `~/.claude/agents/`, puis ouvrir directement le fichier Markdown dans l'éditeur."
         }
       ],
       "whenBad": [
         {
-          "title": "S'attendre à une interface de gestion interactive",
-          "why": "à partir de la v2.1.198, /agents n'affiche plus qu'une invite au lieu d'une UI interactive",
-          "alternative": "éditer directement .claude/agents/ ou ~/.claude/agents/ dans l'éditeur"
+          "title": "Attendre une interface de gestion interactive avec onglet Running/Library",
+          "why": "à partir de la version 2.1.198, /agents n'affiche plus qu'un texte indicatif au lieu de l'ancienne interface interactive",
+          "alternative": "modifier directement `.claude/agents/` ou `~/.claude/agents/` dans l'éditeur, ou revenir à la version 2.1.197 ou antérieure"
+        },
+        {
+          "title": "Vouloir imposer un sous-agent à l'échelle de l'équipe ou de l'organisation",
+          "why": "les sous-agents créés via `.claude/agents/` ou `~/.claude/agents/` sont des sous-agents de projet ou personnels, pas une consigne contraignante pour les autres",
+          "alternative": "faire déployer des sous-agents gérés (Managed Subagents) par les administrateurs de l'organisation via la variante du répertoire de paramètres gérés de `.claude/agents/`"
         }
       ],
       "sources": [
@@ -647,22 +652,27 @@
       "slug": "dataviz",
       "name": "/dataviz",
       "summary": "Fournit une aide au design pour les diagrammes, graphiques et tableaux de bord.",
-      "what": "Fournit une aide au design pour les diagrammes, graphiques et tableaux de bord.\n\n[Skill] Choisit la forme de diagramme adaptée, attribue les couleurs par rôle, valide la palette pour l'accessibilité aux daltoniens/le contraste via un script. Nécessite v2.1.198+.",
+      "what": "Le skill `/dataviz` apporte une aide de conception pour la construction de diagrammes, graphiques et tableaux de bord, quel que soit l'outil utilisé (artefact HTML/React, SVG inline, ou code de tracé en Matplotlib, Plotly, D3, Recharts et similaires). Claude choisit alors la forme de diagramme adaptée aux données présentes, attribue les couleurs selon leur rôle, par exemple catégorie, mise en évidence ou niveau d'alerte, et valide la palette choisie avec un script fourni pour vérifier la sécurité pour le daltonisme et un contraste suffisant. Le skill applique en outre des règles concernant les marqueurs, l'interaction, les légendes, l'étiquetage des axes et l'accessibilité, de sorte que les graphiques paraissent cohérents d'un outil à l'autre.\n\nLe point de départ est une palette de substitution neutre en termes de marque, destinée à être remplacée par ses propres couleurs de marque.\n\nEn tant que [Skill], `/dataviz` peut aussi être activé automatiquement par Claude dès qu'un diagramme est créé quelque part, pas seulement après un appel explicite via slash. La commande nécessite Claude Code à partir de la version 2.1.198 ; elle n'est pas disponible sur les versions antérieures.",
       "whenGood": [
         {
-          "title": "Faire choisir la forme de diagramme adaptée et une palette adaptée aux daltoniens avant de construire un tableau de bord",
-          "example": "/dataviz avant de construire un tableau de bord KPI avec plusieurs types de graphiques"
+          "title": "Faire choisir la forme de diagramme adaptée et une palette sûre pour le daltonisme avant de construire un tableau de bord",
+          "example": "Appeler `/dataviz` avant de construire un tableau de bord KPI avec plusieurs types de graphiques."
         },
         {
-          "title": "Faire vérifier le choix de couleurs existant d'une visualisation pour le contraste/l'accessibilité aux daltoniens",
-          "example": "/dataviz, pour valider l'attribution de couleurs d'un graphique existant"
+          "title": "Faire vérifier le contraste/la sécurité daltonisme du choix de couleurs d'une visualisation existante",
+          "example": "`/dataviz`, pour valider l'attribution des couleurs d'un graphique déjà construit."
         }
       ],
       "whenBad": [
         {
-          "title": "Analyse de données pure sans visualisation ultérieure",
-          "why": "/dataviz aide à la conception de diagrammes, pas à l'analyse des données elle-même",
-          "alternative": "utiliser un prompt d'analyse normal, ne faire appel à /dataviz que lorsque les résultats doivent être représentés en graphique"
+          "title": "Analyse de données pure, sans visualisation ensuite",
+          "why": "`/dataviz` aide à la conception du diagramme, pas à l'analyse des données elle-même",
+          "alternative": "utiliser un prompt d'analyse classique, faire appel à `/dataviz` seulement une fois les résultats présentés sous forme de graphique"
+        },
+        {
+          "title": "Claude Code antérieur à la version 2.1.198",
+          "why": "le skill nécessite au minimum la version 2.1.198 et n'existe pas sur les versions antérieures",
+          "alternative": "mettre à jour Claude Code ou définir manuellement le choix des couleurs/diagrammes"
         }
       ],
       "sources": [
@@ -1012,22 +1022,27 @@
       "slug": "fast",
       "name": "/fast",
       "summary": "Active ou désactive le mode rapide (Fast).",
-      "what": "Active ou désactive le mode rapide (Fast).\n\nEn mode non interactif (-p) uniquement dans les sessions démarrées avec fastMode dans --settings ; le basculement ne vaut que pour la session. Nécessite v2.1.205+.",
+      "what": "La commande `/fast` active ou désactive le « Fast Mode » pour Claude Opus – une configuration qui fournit des réponses jusqu'à 2,5 fois plus rapides, mais nettement plus coûteuse par token. Le Fast Mode n'est pas un modèle à part, mais une configuration API différente offrant la même qualité et les mêmes capacités, avec simplement un prix par token plus élevé. Il fonctionne exclusivement avec `Opus 5` et `Opus 4.8` ; il n'est pas disponible sur `Sonnet`, `Haiku` ou d'autres modèles. Depuis le 24.07.2026, la prise en charge d'Opus 4.7, qui existait auparavant, a été supprimée. À l'activation, Claude Code bascule automatiquement sur Opus si un autre modèle était actif. Le coût est de 10 $ / 50 $ par million de tokens d'entrée/sortie et est facturé via les crédits d'utilisation (usage credits) plutôt que via le quota habituel du plan. Dans les sessions non interactives (`-p`), `/fast` ne peut être activé/désactivé que si la session a été démarrée avec `fastMode` dans `--settings`. Nécessite Claude Code v2.1.205 ou une version ultérieure.",
       "whenGood": [
         {
-          "title": "Privilégier la vitesse à la profondeur pour une série d'éditions simples et répétitives",
-          "example": "/fast pour une série de modifications simples et similaires"
+          "title": "Itération rapide en débogage interactif en direct, lorsque le temps de réponse compte plus que le coût",
+          "example": "Taper /fast et valider avec Tab avant d'enchaîner une série de petites requêtes de débogage"
         },
         {
-          "title": "Redésactiver le mode rapide dès que des tâches plus complexes se présentent",
-          "example": "rappeler /fast pour rebasculer"
+          "title": "Travail sensible au temps avec un délai serré sur Opus 5 ou Opus 4.8",
+          "example": "Activer /fast en début de session, car une activation plus tardive coûte plus cher à cause du cache de prompt"
         }
       ],
       "whenBad": [
         {
-          "title": "Utilisation non interactive sans fastMode dans les paramètres de démarrage",
-          "why": "/fast ne peut être basculé en mode non interactif (-p) que dans les sessions démarrées avec fastMode dans --settings",
-          "alternative": "passer fastMode directement dans --settings au démarrage de la session"
+          "title": "Tâches autonomes longues ou traitement par lots, où le coût prime sur la vitesse",
+          "why": "Le Fast Mode coûte nettement plus cher par token (10 $ / 50 $ par million de tokens) et consomme les crédits d'utilisation plutôt que le quota habituel du plan",
+          "alternative": "Utiliser le mode standard ou configurer fastModePerSessionOptIn pour éviter que le Fast Mode ne persiste automatiquement"
+        },
+        {
+          "title": "Utilisation sur Sonnet, Haiku ou dans l'extension VS Code",
+          "why": "Le Fast Mode est disponible exclusivement pour Opus 5 et Opus 4.8 dans la CLI terminal, pas pour les autres modèles ni pour l'extension VS Code",
+          "alternative": "Passer sur un modèle Opus pris en charge et utiliser /fast dans la CLI terminal"
         }
       ],
       "sources": [
@@ -1077,22 +1092,27 @@
       "slug": "fewer-permission-prompts",
       "name": "/fewer-permission-prompts",
       "summary": "Analyse ses propres transcripts à la recherche d'appels Bash et d'outils MCP fréquents en lecture seule, et ajoute une liste blanche priorisée au .claude/settings.json du projet pour réduire les demandes de permission.",
-      "what": "Analyse ses propres transcripts à la recherche d'appels Bash et d'outils MCP fréquents en lecture seule, et ajoute une liste blanche priorisée au .claude/settings.json du projet pour réduire les demandes de permission.\n\n[Skill]",
+      "what": "Le skill `/fewer-permission-prompts` parcourt ses propres transcripts à la recherche d'appels d'outils Bash et MCP en lecture seule (read-only) fréquemment répétés, comme `git status`, `ls` ou des commandes similaires sans danger. À partir de ces résultats, il génère une allowlist priorisée et l'inscrit dans le `.claude/settings.json` du projet, afin que ces appels s'exécutent désormais sans nouvelle demande d'autorisation et que la session soit moins souvent interrompue pour des validations triviales.\n\nLe skill ne crée volontairement des règles que pour des commandes n'ayant aucun effet d'écriture ou autrement risqué. Il complète ainsi `/doctor`, qui propose également, dans le cadre d'une vérification générale de la configuration, de suggérer des commandes de lecture souvent refusées ; `/fewer-permission-prompts`, lui, travaille de façon ciblée à partir de l'historique des sessions précédentes.\n\nLes commandes d'écriture ou potentiellement risquées restent inchangées et doivent continuer à être autorisées consciemment via `/permissions` ou manuellement dans `.claude/settings.json`, afin qu'aucune automatisation dangereuse ne se mette en place involontairement.",
       "whenGood": [
         {
-          "title": "Faire autoriser automatiquement, après quelques sessions, des commandes récurrentes et sans danger en lecture seule",
-          "example": "/fewer-permission-prompts après plusieurs sessions pleines de demandes répétées d'autorisation pour git status, ls, etc."
+          "title": "Autoriser automatiquement des commandes read-only sans danger et récurrentes après plusieurs sessions",
+          "example": "Lancer `/fewer-permission-prompts` après plusieurs sessions remplies de demandes d'autorisation répétées pour `git status`, `ls` et consorts."
         },
         {
-          "title": "Générer une base de liste blanche sensée pour l'onboarding d'équipe",
-          "example": "/fewer-permission-prompts, pour préremplir .claude/settings.json avec les appels courants en lecture seule"
+          "title": "Générer une base d'allowlist utile pour l'onboarding de l'équipe",
+          "example": "`/fewer-permission-prompts`, pour préremplir `.claude/settings.json` avec les appels read-only courants avant que le projet ne soit intégré au dépôt."
         }
       ],
       "whenBad": [
         {
-          "title": "On veut aussi autoriser globalement des commandes qui écrivent/risquées sans confirmation",
-          "why": "le skill n'analyse volontairement que les appels Bash/MCP fréquents en lecture seule, pas les commandes qui écrivent",
-          "alternative": "continuer à autoriser consciemment et manuellement les commandes qui écrivent/risquées dans .claude/settings.json (par ex. via le skill update-config)"
+          "title": "Vouloir autoriser en bloc aussi des commandes d'écriture/risquées sans demande de confirmation",
+          "why": "le skill ne scanne que les appels Bash/MCP read-only fréquents, jamais les commandes d'écriture",
+          "alternative": "continuer à autoriser consciemment et manuellement les commandes d'écriture/risquées, par exemple via le skill `update-config` ou `/permissions`"
+        },
+        {
+          "title": "Il existe encore très peu d'historique de transcripts",
+          "why": "sans sessions antérieures, le skill n'a pas d'appels récurrents à partir desquels déduire une allowlist",
+          "alternative": "laisser d'abord travailler quelques sessions normalement, puis rappeler `/fewer-permission-prompts`"
         }
       ],
       "sources": [
@@ -1372,22 +1392,27 @@
       "slug": "insights",
       "name": "/insights",
       "summary": "Crée un rapport analysant ses propres sessions Claude Code, entre autres.",
-      "what": "Crée un rapport analysant ses propres sessions Claude Code : zones du projet, schémas d'interaction et points de friction, entre autres.",
+      "what": "La commande `/insights` génère un rapport qui analyse ses propres sessions Claude Code – par exemple quelles zones du projet ont été le plus travaillées, quels schémas d'interaction apparaissent et où se situent les points de friction. Le rapport est produit sous forme de fichier, dont l'emplacement est indiqué en lien dans la réponse, permettant par exemple de voir dans quels dépôts le plus de temps a été passé, ou si certaines demandes entraînent systématiquement des questions de clarification. Contrairement aux tableaux de bord analytiques à l'échelle de l'organisation pour les plans Team et Enterprise, qui montrent l'adoption, les dépenses et les métriques de contribution sur plusieurs utilisateurs, `/insights` n'analyse que l'historique local de ses propres sessions – sans connexion à claude.ai/analytics et sans intégration GitHub. La commande convient donc davantage à la réflexion personnelle sur son propre workflow qu'au reporting d'équipe ou au contrôle des coûts. Elle ne fournit pas de résumé instantané de la session en cours ; c'est le rôle de `/recap`.",
       "whenGood": [
         {
-          "title": "Réfléchir à sa propre utilisation de Claude Code",
-          "example": "Après une semaine de projet intense, exécuter /insights pour voir dans quelles zones du projet on a le plus travaillé."
+          "title": "Faire le bilan de sa propre utilisation de Claude Code après une phase de projet intense",
+          "example": "Exécuter /insights après une semaine de travail pour voir dans quelles zones du projet le plus de travail a été effectué"
         },
         {
-          "title": "Repérer des points de friction récurrents dans son propre workflow",
-          "example": "Utiliser /insights pour rendre visibles des schémas comme des questions fréquentes ou des problèmes d'interaction sur plusieurs sessions."
+          "title": "Repérer des points de friction récurrents dans son propre workflow sur plusieurs sessions",
+          "example": "Utiliser /insights pour faire ressortir des schémas comme des questions fréquentes ou des malentendus"
         }
       ],
       "whenBad": [
         {
-          "title": "Résumé bref et immédiat de la session en cours",
-          "why": "/insights analyse les sessions a posteriori pour en dégager des schémas et points de friction, mais ne fournit pas de résumé rapide en une phrase de la conversation en cours.",
-          "alternative": "utiliser /recap pour un résumé en une ligne de la session en cours."
+          "title": "Analyser l'utilisation, les coûts ou les métriques de contribution à l'échelle de l'équipe",
+          "why": "/insights n'analyse que l'historique local de ses propres sessions, aucune donnée d'autres utilisateurs",
+          "alternative": "Utiliser le tableau de bord analytique sur claude.ai/analytics/claude-code (Team/Enterprise) ou platform.claude.com/claude-code (API)"
+        },
+        {
+          "title": "Résumé instantané en une phrase de la session en cours",
+          "why": "/insights analyse les sessions a posteriori pour en dégager des schémas, mais ne fournit pas de statut rapide",
+          "alternative": "Utiliser /recap pour un résumé en une ligne de la session en cours"
         }
       ],
       "sources": [
@@ -1432,22 +1457,27 @@
       "slug": "install-slack-app",
       "name": "/install-slack-app",
       "summary": "Installe l'application Slack de Claude.",
-      "what": "Installe l'application Slack de Claude.\n\nOuvre le navigateur pour finaliser le flux OAuth.",
+      "what": "La commande `/install-slack-app` installe l'application Claude pour Slack et ouvre le navigateur pour finaliser le flux OAuth. Un administrateur du workspace installe d'abord l'application depuis le Slack App Marketplace ; ensuite, chaque personne connecte son propre compte Claude via l'App Home dans Slack. Il devient alors possible de déléguer des tâches de code directement depuis les canaux Slack, via une mention `@Claude`, à une session Claude Code on the web qui s'exécute sous son propre compte GitHub et son propre quota de plan. Cela nécessite un plan Pro, Max, Team ou Enterprise avec accès à Claude Code, l'accès activé à Claude Code on the web, ainsi qu'un compte GitHub connecté avec au moins un dépôt authentifié. Le mode de routage dans l'App Home permet de définir si les messages vont toujours vers Claude Code ou si le contenu détermine la bascule entre sessions de code et de chat. Pour les workspaces Team et Enterprise, cette intégration est actuellement remplacée progressivement par Claude Tag, qui utilise la même application Slack mais fonctionne comme une identité d'organisation partagée et gérée par les administrateurs.",
       "whenGood": [
         {
-          "title": "Rendre Claude utilisable dans le Slack de l'équipe",
-          "example": "Exécuter /install-slack-app pour activer Claude Tag dans l'espace de travail de l'entreprise pour les collègues."
+          "title": "Rendre Claude Code utilisable depuis le Slack de l'équipe",
+          "example": "Exécuter /install-slack-app, puis connecter son propre compte Claude dans l'App Home"
         },
         {
-          "title": "Faire des demandes directement depuis un canal Slack",
-          "example": "Après l'installation, mentionner Claude dans un canal Slack pour lancer une demande directement depuis le chat."
+          "title": "Faire traiter des rapports de bugs directement depuis un canal Slack",
+          "example": "Après l'installation, ajouter @Claude au canal avec /invite et mentionner @Claude dans le fil du bug"
         }
       ],
       "whenBad": [
         {
-          "title": "Aucun usage de Slack ou pas de droits admin dans l'espace de travail",
-          "why": "L'installation nécessite un flux OAuth dans le navigateur et les permissions d'espace de travail correspondantes — sans usage de Slack, elle n'apporte aucun bénéfice.",
-          "alternative": "utiliser Claude Code directement dans le terminal ou dans l'IDE."
+          "title": "Aucun workspace Slack disponible ou pas de droits admin pour l'installation",
+          "why": "L'installation nécessite un administrateur du workspace et un flux OAuth dans le navigateur",
+          "alternative": "Utiliser Claude Code directement dans le terminal ou l'IDE"
+        },
+        {
+          "title": "Workspace Team ou Enterprise déjà migré vers Claude Tag",
+          "why": "Claude Tag remplace l'application Slack connectée individuellement par une identité d'organisation gérée par les administrateurs",
+          "alternative": "Utiliser le guide de migration vers Claude Tag plutôt que de reconnecter l'application individuellement"
         }
       ],
       "sources": [
@@ -1962,22 +1992,27 @@
       "slug": "recap",
       "name": "/recap",
       "summary": "Crée à la demande un résumé en une ligne de la session en cours.",
-      "what": "Crée à la demande un résumé en une ligne de la session en cours.\n\nRésumé automatique après une absence : voir la documentation « Session recap ».",
+      "what": "La commande `/recap` génère à la demande un résumé en une ligne de la session en cours. Elle complète la fonction de récapitulatif automatique que Claude Code affiche par défaut lorsqu'on revient à la session après au moins trois minutes d'absence avec le terminal non focalisé – à condition que la session compte déjà au moins trois tours de conversation et que le dernier récapitulatif ne date pas d'immédiatement avant. La version automatique s'exécute en arrière-plan, de sorte que le résumé est déjà prêt au moment du retour ; elle peut être désactivée via `/config` (option « Session recap ») ou forcée à s'éteindre avec `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0`, par exemple lorsque la télémétrie est désactivée de manière générale. Dans les sessions non interactives, aucun récapitulatif n'apparaît jamais, ni automatique ni manuel. Après un `/compact`, Claude Code ne génère plus non plus de récapitulatif introductif avant de poursuivre. `/recap` en lui-même ne fournit que cette seule ligne, pas l'historique complet de la conversation – c'est le rôle de `/export`, qui sauvegarde la conversation entière sous forme de texte.",
       "whenGood": [
         {
-          "title": "Reprise rapide après une interruption",
-          "example": "après une pause, appeler /recap pour voir en une phrase où en est la session"
+          "title": "Reprise après une courte pause, avant l'apparition du récapitulatif automatique",
+          "example": "Appeler /recap juste après être revenu dans le terminal pour voir immédiatement où en est la session"
         },
         {
-          "title": "Transmettre un statut succinct pour une mise à jour rapide",
-          "example": "utiliser /recap pour obtenir un résumé en une phrase de l'état actuel de la session et le transmettre à des collègues"
+          "title": "Partager un statut rapide avec des collègues",
+          "example": "Exécuter /recap et partager le résumé en une ligne dans le chat d'équipe"
         }
       ],
       "whenBad": [
         {
           "title": "Sauvegarder ou transmettre l'historique complet de la conversation",
-          "why": "/recap ne fournit qu'un résumé en une ligne, pas le texte complet de la conversation.",
-          "alternative": "utiliser /export pour exporter la conversation complète en texte brut."
+          "why": "/recap ne fournit qu'une ligne, pas le texte complet de la conversation",
+          "alternative": "Utiliser /export pour exporter la conversation entière en texte brut"
+        },
+        {
+          "title": "Attendre un récapitulatif automatique dans une session non interactive (-p)",
+          "why": "Les récapitulatifs automatiques sont toujours ignorés en mode non interactif",
+          "alternative": "Travailler en mode interactif, où le récapitulatif apparaît automatiquement ou via /recap manuel"
         }
       ],
       "sources": [
@@ -2582,22 +2617,27 @@
       "slug": "skills",
       "name": "/skills",
       "summary": "Liste les skills disponibles.",
-      "what": "Liste les skills disponibles.\n\nÀ partir de la v2.1.121, filtrable en tapant. 't' trie par nombre de tokens. La barre d'espace bascule la visibilité, Entrée enregistre.",
+      "what": "La commande `/skills` liste tous les skills disponibles – ceux personnels, ceux du projet et ceux intégrés à Claude Code comme `/doctor` ou `/code-review`. Depuis la v2.1.121, la liste peut être filtrée par nom en tapant directement ; la touche `t` trie par nombre de tokens, ce qui permet de voir quels skills coûtent le plus de contexte dans le system prompt. La barre d'espace bascule la visibilité d'un skill individuel pour Claude et le menu `/`, `Enter` enregistre le changement de façon durable dans les paramètres. Depuis la fusion des commandes personnalisées et des skills, les deux sont techniquement identiques : un fichier sous `.claude/commands/deploy.md` produit la même commande `/deploy` qu'un dossier de skill sous `.claude/skills/deploy/SKILL.md`. Les skills intégrés sont disponibles dans chaque session, mais peuvent être désactivés globalement via le paramètre `disableBundledSkills` (sauf `/doctor`, qui reste visible à part). `/skills` en lui-même n'affiche que la liste ; il n'installe, ne répare ni ne crée aucun skill.",
       "whenGood": [
         {
-          "title": "Vue d'ensemble des skills chargés",
-          "example": "appeler /skills et trier par nombre de tokens avec 't' pour voir quels skills coûtent le plus de contexte"
+          "title": "Avoir une vue d'ensemble des skills actuellement chargés et de leur coût en contexte",
+          "example": "Appeler /skills et trier par nombre de tokens avec t"
         },
         {
-          "title": "Masquer des skills inutilisés",
-          "example": "dans la liste /skills, rendre certains skills invisibles avec la barre d'espace pour économiser du contexte, et enregistrer avec Entrée"
+          "title": "Masquer volontairement des skills peu utilisés pour économiser du contexte",
+          "example": "Dans la liste /skills, rendre un skill invisible avec la barre d'espace et enregistrer avec Enter"
         }
       ],
       "whenBad": [
         {
-          "title": "Diagnostic d'installations de skills cassées",
-          "why": "/skills ne fait, selon la documentation, que lister les skills disponibles, sans diagnostiquer de problèmes d'installation.",
-          "alternative": "utiliser /doctor, qui vérifie l'installation, les skills doublons/cassés et le coût en contexte."
+          "title": "Diagnostiquer des installations de skills cassées, des doublons ou des erreurs de chargement",
+          "why": "/skills n'affiche que la liste, sans vérifier les problèmes d'installation",
+          "alternative": "Utiliser /doctor, qui vérifie l'installation, les skills dupliqués ou cassés et le coût en contexte"
+        },
+        {
+          "title": "Vouloir utiliser immédiatement un skill tout juste créé, sans redémarrer la session",
+          "why": "/skills affiche le dernier état scanné ; les fichiers nouvellement créés sur le disque ne sont pas détectés automatiquement",
+          "alternative": "Exécuter /reload-skills pour relire les répertoires de skills"
         }
       ],
       "sources": [
@@ -2741,23 +2781,28 @@
       "platform": "claude-code",
       "slug": "tasks",
       "name": "/tasks",
-      "summary": "Liste les tâches en arrière-plan de la session en cours et des sessions en arrière-plan rattachées.",
-      "what": "Liste les tâches en arrière-plan de la session en cours et des sessions en arrière-plan rattachées.",
+      "summary": "Montre le travail en arrière-plan de la session actuelle, pas d'autres sessions.",
+      "what": "`/tasks` ouvre la vue du travail en arrière-plan de la session en cours : sous-agents actifs et déjà terminés, ainsi que commandes shell en arrière-plan en cours d'exécution. Les sous-agents terminés restent marqués et consultables jusqu'à ce que la session nettoie sa liste de tâches. La commande s'exécute immédiatement, comme `/status` et `/usage`, et n'interrompt donc pas non plus une réponse en cours. Son alias est `/bashes`.\n\nCeci est différent de la checklist de tâches de Claude (`Ctrl+T`), qui affiche les étapes de travail planifiées d'une tâche plutôt que les processus techniques en arrière-plan. Si une session cloud ou en arrière-plan distincte a en plus été démarrée depuis la session en cours, par exemple via `claude --cloud`, elle apparaît également comme une ligne dans `/tasks` ; la touche `t` permet d'y basculer directement par téléportation depuis cet endroit. Un aperçu complet de toutes ses propres sessions en arrière-plan à travers tous les projets est en revanche fourni par `claude agents` (Agent View).",
       "whenGood": [
         {
-          "title": "Vérifier les sous-agents en arrière-plan en cours",
-          "example": "après avoir démarré plusieurs sous-agents avec /batch, appeler /tasks pour voir ce qui reste ouvert dans la session en cours et les sessions en arrière-plan rattachées"
+          "title": "Vérifier les sous-agents en arrière-plan en cours d'exécution de la session actuelle",
+          "example": "Après avoir démarré plusieurs sous-agents avec `/batch`, appeler `/tasks` pour voir ce qui tourne encore et ce qui est déjà terminé."
         },
         {
-          "title": "Vue d'ensemble avant de terminer la session",
-          "example": "avant /exit, vérifier brièvement /tasks pour s'assurer qu'aucune tâche en arrière-plan qu'on ne veut pas perdre n'est encore en cours"
+          "title": "Vérifier le travail en arrière-plan en attente avant de terminer la session",
+          "example": "Avant `/exit`, appeler brièvement `/tasks` pour voir si des sous-agents ou des commandes shell tournent encore et qu'on ne veut pas perdre."
         }
       ],
       "whenBad": [
         {
-          "title": "Consulter des plannings cron/loop programmés",
-          "why": "/tasks liste, selon la documentation, les tâches en arrière-plan de la session, pas les plannings programmés via /loop ou /schedule.",
-          "alternative": "demander directement à Claude ('quelles tâches planifiées ai-je ?') pour les plannings /loop, ou utiliser /schedule pour les routines cloud."
+          "title": "Vouloir consulter les plannings cron/loop programmés ou la checklist de tâches de Claude",
+          "why": "`/tasks` affiche les shells et sous-agents en cours d'exécution, pas la checklist de tâches (`Ctrl+T`) ni les plannings programmés via `/loop` ou `/schedule`",
+          "alternative": "`Ctrl+T` pour la checklist de tâches, `/schedule` pour les routines cloud, ou demander directement à Claude les exécutions planifiées"
+        },
+        {
+          "title": "Garder une vue sur toutes ses propres sessions en arrière-plan à travers tous les projets",
+          "why": "`/tasks` est lié à la session en cours et affiche avant tout ses sous-agents/shells, pas par défaut chaque session en arrière-plan d'autres répertoires",
+          "alternative": "ouvrir `claude agents` (Agent View) pour la vue d'ensemble multi-projets de toutes les sessions en arrière-plan"
         }
       ],
       "sources": [
@@ -2772,22 +2817,27 @@
       "slug": "teleport",
       "name": "/teleport",
       "summary": "Rapatrie une session web dans le terminal.",
-      "what": "Rapatrie une session web dans le terminal.\n\nÀ l'inverse, /remote-control permet de reprendre la session locale depuis un autre appareil.",
+      "what": "`/teleport` (alias `/tp`) rapatrie dans le terminal local une session cloud en cours d'exécution sur Claude Code on the web (claude.ai/code). La commande ouvre un sélecteur interactif parmi ses propres sessions cloud et en arrière-plan ; après la sélection, Claude Code vérifie que le répertoire local appartient au même dépôt, effectue le checkout de la branche de la session et recharge l'historique complet de la conversation.\n\nPrérequis : un statut Git propre (en cas de modifications non indexées, un stash est proposé au préalable), un checkout du même dépôt, une branche déjà poussée sur le remote, ainsi qu'une connexion avec le même compte claude.ai que celui de la session cloud. Un abonnement claude.ai est requis.\n\nLe basculement se fait à sens unique : à partir du téléport, la copie web et la copie terminal évoluent indépendamment, et les modifications locales n'apparaissent plus sur claude.ai ni dans l'application mobile. Pour continuer à accéder à la session locale depuis un appareil mobile, il faut ensuite démarrer en plus `/remote-control`.",
       "whenGood": [
         {
-          "title": "Continuer localement une session web",
-          "example": "rapatrier avec /teleport dans le terminal local une session démarrée sur claude.ai/code, pour continuer à travailler avec l'accès aux fichiers locaux"
+          "title": "Poursuivre localement une session web démarrée en déplacement",
+          "example": "Récupérer sur son poste de travail, via `/teleport`, une tâche démarrée sur claude.ai/code depuis un téléphone, afin de continuer avec un accès complet aux fichiers et aux outils locaux."
         },
         {
-          "title": "Continuer sur un ordinateur plus puissant",
-          "example": "rapatrier avec /teleport sur l'ordinateur de travail une tâche démarrée en déplacement sur mobile via claude.ai/code, pour continuer avec un accès complet aux tools"
+          "title": "Poursuivre localement une session cloud longue une fois terminée",
+          "example": "Rapatrier dans le terminal, via `/teleport`, une tâche démarrée avec `claude --cloud` une fois celle-ci achevée, afin de tester et committer le résultat localement."
         }
       ],
       "whenBad": [
         {
-          "title": "Cas inverse : continuer la session locale en déplacement",
-          "why": "/teleport rapatrie une session web dans le terminal, pas l'inverse.",
-          "alternative": "utiliser /remote-control pour piloter à distance la session locale depuis un autre appareil."
+          "title": "Transférer une session locale vers un autre appareil",
+          "why": "`/teleport` ne fonctionne que dans un sens : du cloud vers le terminal, pas l'inverse.",
+          "alternative": "`/remote-control` pour piloter la session locale depuis un autre appareil, ou utiliser le menu « Continue in » de l'application de bureau"
+        },
+        {
+          "title": "La branche de la session cloud n'a pas encore été poussée",
+          "why": "Le téléport a besoin que la branche soit déjà sur le remote, sinon le checkout échoue",
+          "alternative": "Committer/pousser d'abord depuis la session web, puis réessayer `/teleport`"
         }
       ],
       "sources": [
@@ -2872,22 +2922,27 @@
       "slug": "verify",
       "name": "/verify",
       "summary": "Lance l'application du projet et vérifie qu'une modification fonctionne de bout en bout.",
-      "what": "Lance l'application du projet et vérifie qu'une modification fonctionne de bout en bout.\n\n[Skill] Voir « Run and verify your app ». Nécessite v2.1.145+.",
+      "what": "La commande `/verify` est un skill intégré qui confirme une modification de code en construisant et démarrant réellement le projet, puis en observant le résultat – plutôt que de se fier uniquement aux tests ou aux vérifications de types. Elle fait partie d'un trio de skills apparentés : `/run` démarre et pilote l'application pour voir une modification en action, `/verify` confirme spécifiquement qu'une modification fonctionne comme prévu, et `/run-skill-generator` enregistre une fois pour toutes une recette de démarrage propre au projet sous `.claude/skills/run-<name>/`, lorsque la construction ou le démarrage ne peuvent pas être détectés automatiquement, par exemple à cause d'une base de données, d'un fichier d'environnement ou d'une construction en plusieurs étapes. Depuis la v2.1.215, `/verify` ne s'exécute plus que sur appel explicite ; auparavant, Claude pouvait aussi le déclencher de lui-même. Sans recette enregistrée, `/verify` déduit le démarrage à partir du type de projet, du README, de `package.json` ou du `Makefile`, ce qui fonctionne de façon fiable pour des configurations standards, mais peut devenir imprécis pour des workflows plus complexes. Nécessite Claude Code v2.1.145 ou une version ultérieure.",
       "whenGood": [
         {
-          "title": "Avant le commit d'une modification non triviale",
-          "example": "après un correctif sur un flux de connexion, utiliser /verify pour réellement rejouer le flux de bout en bout, plutôt que de se contenter des tests/du typecheck"
+          "title": "Observer le déroulement réel avant de valider une modification non triviale",
+          "example": "Après un correctif sur le flux de connexion, appeler /verify pour rejouer le flux en conditions réelles"
         },
         {
-          "title": "Retracer spécifiquement le flux concerné",
-          "example": "après une modification de la logique de checkout, appeler /verify pour observer si le flux fonctionne réellement en conditions réelles"
+          "title": "Enregistrer une recette de démarrage fixe après une détection automatique répétée peu fiable",
+          "example": "Exécuter /run-skill-generator une fois par projet, puis rappeler /verify"
         }
       ],
       "whenBad": [
         {
-          "title": "Le diff ne touche que des tests ou de la documentation",
-          "why": "il n'y a alors aucune surface d'exécution à observer.",
-          "alternative": "exécuter la suite de tests habituelle, /verify n'est pas nécessaire."
+          "title": "Le diff ne concerne que des tests, de la documentation ou de la configuration sans comportement d'exécution",
+          "why": "Il n'y a alors ni interface active ni comportement observable à vérifier",
+          "alternative": "Lancer la suite de tests habituelle, /verify n'est pas nécessaire ici"
+        },
+        {
+          "title": "Le projet ne fonctionne qu'avec une base de données, des identifiants ou une construction en plusieurs étapes que /verify ne connaît pas",
+          "why": "Sans recette enregistrée, /verify devine le démarrage à partir du README ou de package.json, ce qui peut échouer pour des configurations plus complexes",
+          "alternative": "Exécuter d'abord /run-skill-generator pour que la recette de démarrage soit enregistrée durablement"
         }
       ],
       "sources": [
@@ -2957,7 +3012,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -2987,7 +3042,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3017,7 +3072,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3047,7 +3102,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3077,7 +3132,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3107,7 +3162,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3137,7 +3192,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3167,7 +3222,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3197,7 +3252,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3227,7 +3282,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3257,7 +3312,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3287,7 +3342,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3317,7 +3372,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Non-interactive Mode",
-          "url": "https://developers.openai.com/codex/noninteractive"
+          "url": "https://learn.chatgpt.com/docs/non-interactive-mode"
         }
       ]
     },
@@ -3352,7 +3407,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Reference",
-          "url": "https://developers.openai.com/codex/cli/reference"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3387,7 +3442,7 @@
       "sources": [
         {
           "title": "doc Codex CLI : Reference",
-          "url": "https://developers.openai.com/codex/cli/reference"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3396,28 +3451,33 @@
       "slug": "apply",
       "name": "codex apply",
       "summary": "Applique localement un diff créé dans le cloud.",
-      "what": "codex apply intègre localement, dans le répertoire de travail, un diff issu par exemple d'une tâche cloud (cloud/cloud exec/cloud list).",
+      "what": "`codex apply <TASK_ID>` (forme courte : `codex a`) applique localement, dans le répertoire de travail courant, le dernier diff généré par un chat Codex Cloud. La commande récupère la tâche cloud concernée via son ID, en extrait le diff et l'applique via `git apply` ; l'authentification et l'accès au chat concerné sont des prérequis. En cas de succès, Codex indique les fichiers repris ; en cas d'échec de `git apply` (par exemple à cause de conflits), la commande se termine avec un code d'erreur et liste les chemins appliqués, ignorés et en conflit. Dans la documentation officielle, la commande est classée « Stable ». Pour trouver l'ID de tâche correspondant, on utilise `codex cloud list`, qui liste les chats cloud existants avec leur statut et leur URL ; `codex cloud exec`, à l'inverse, déclenche une nouvelle tâche cloud. `codex apply` n'est donc que la dernière étape : appliquer localement un diff déjà généré dans le cloud, pas démarrer ou gérer les tâches cloud elles-mêmes.",
       "whenGood": [
         {
           "title": "Récupérer localement le résultat d'une tâche cloud",
-          "example": "codex apply <task-id> — intégrer localement le diff généré dans le cloud"
+          "example": "codex apply <task-id> — appliquer localement le diff généré dans le cloud"
         },
         {
-          "title": "Vérifier le résultat cloud avant de l'intégrer localement, puis l'appliquer",
-          "example": "codex cloud list, puis codex apply pour la tâche souhaitée"
+          "title": "Examiner un résultat cloud avant de l'appliquer localement",
+          "example": "codex cloud list --json, pour trouver l'ID de tâche, puis codex apply <task-id>"
         }
       ],
       "whenBad": [
         {
-          "title": "Il n'y a aucun diff cloud, seulement des modifications locales",
-          "why": "codex apply est conçu pour appliquer localement des diffs cloud, pas pour des modifications purement locales.",
-          "alternative": "Effectuer les modifications directement en local avec la session Codex normale"
+          "title": "Il n'y a aucun diff cloud, seulement des modifications locales non versionnées",
+          "why": "codex apply attend un ID de tâche cloud valide et récupère son diff ; pour du travail purement local, il n'y a rien à récupérer.",
+          "alternative": "effectuer les modifications directement en local avec la session Codex normale (codex) ou codex exec"
+        },
+        {
+          "title": "On veut démarrer une nouvelle tâche cloud",
+          "why": "codex apply ne fait qu'appliquer des diffs déjà existants, il ne démarre lui-même aucune nouvelle tâche cloud.",
+          "alternative": "utiliser codex cloud exec pour déclencher une nouvelle tâche cloud"
         }
       ],
       "sources": [
         {
           "title": "doc Codex CLI : Reference",
-          "url": "https://developers.openai.com/codex/cli/reference"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -5011,18 +5071,27 @@
       "slug": "login",
       "name": "agent login",
       "summary": "Authentifie la CLI avec le compte Cursor via le flux de connexion dans le navigateur.",
-      "what": "agent login ouvre le flux de connexion dans le navigateur et relie la CLI au compte Cursor. L'authentification sans navigateur est aussi possible via --api-key (ou la variable d'environnement CURSOR_API_KEY) ou --auth-token (CURSOR_AUTH_TOKEN). Avec NO_OPEN_BROWSER=1, seule l'URL de connexion est affichée au lieu d'ouvrir automatiquement un navigateur, pratique pour des serveurs distants sans interface graphique.",
+      "what": "`agent login` démarre le flux de connexion OAuth basé sur le navigateur et relie la CLI au compte Cursor ; les identifiants sont ensuite stockés localement en sécurité. Pour les environnements automatisés comme le CI/CD ou les serveurs sans navigateur, des alternatives existent : une clé API générée via le tableau de bord Cursor peut être définie comme variable d'environnement `CURSOR_API_KEY` ou transmise directement avec le flag global `--api-key <key>`, ce qui évite complètement le flux de connexion. Si aucun navigateur ne peut être ouvert automatiquement, `NO_OPEN_BROWSER=1 agent login` affiche à la place uniquement l'URL de connexion, à ouvrir manuellement. Depuis début juillet 2026, il est également possible, pendant la connexion (ou au premier démarrage), d'afficher avec la touche `q` un QR code pour cette même URL, afin de finaliser la connexion confortablement depuis un smartphone, par exemple lors d'une session SSH. Le statut de connexion peut être vérifié à tout moment avec `agent status`.",
       "whenGood": [
         {
-          "title": "Première configuration de la CLI sur une nouvelle machine",
+          "title": "Première configuration de la CLI sur un nouvel ordinateur",
           "example": "agent login"
+        },
+        {
+          "title": "Connexion via SSH sur un serveur distant sans fenêtre de navigateur propre",
+          "example": "appuyer sur q pendant agent login et scanner le QR code affiché depuis un smartphone"
         }
       ],
       "whenBad": [
         {
-          "title": "La CLI tourne en headless sur un serveur sans accès navigateur",
-          "why": "agent login suppose normalement un flux de navigateur interactif",
-          "alternative": "définir l'authentification via --api-key/CURSOR_API_KEY, ou exporter NO_OPEN_BROWSER=1 pour que seule l'URL de connexion soit affichée"
+          "title": "La CLI tourne en mode headless en CI/CD sans session interactive",
+          "why": "agent login suppose un flux interactif via navigateur ou QR code et bloque sans saisie utilisateur.",
+          "alternative": "définir CURSOR_API_KEY ou transmettre --api-key <key> pour sauter l'étape de connexion"
+        },
+        {
+          "title": "Le navigateur ne peut pas s'ouvrir automatiquement sur la machine",
+          "why": "agent login tente par défaut de lancer directement le navigateur par défaut.",
+          "alternative": "définir NO_OPEN_BROWSER=1 agent login et ouvrir manuellement l'URL affichée"
         }
       ],
       "sources": [
@@ -5422,18 +5491,27 @@
       "slug": "create-chat",
       "name": "agent create-chat",
       "summary": "Crée un nouveau chat vide et renvoie son ID, par ex. pour un usage dans des scripts.",
-      "what": "agent create-chat crée une session de chat vide et affiche son ID dans la console, sans démarrer directement une session interactive. L'ID peut ensuite être ciblé à nouveau avec --resume [chatId], par exemple depuis un script.",
+      "what": "`agent create-chat` crée une nouvelle session de chat vide et affiche uniquement son ID de chat dans la console, sans ouvrir de session interactive ni envoyer de prompt. La commande convient donc aux scripts et automatisations qui veulent d'abord réserver un identifiant de session pour ensuite le cibler précisément. L'ID renvoyé peut être repris avec l'option globale `--resume [chatId]`, par exemple pour envoyer des prompts vers cette session précise depuis un processus ou un script séparé. Cela distingue la commande de `agent ls`, qui liste les chats existants de tous les workspaces, et de `agent resume`, qui, sans indication d'ID, reprend directement la dernière session active. `create-chat` appartient à la même famille de commandes que `login`, `logout`, `status` et `models`, toutes documentées via `agent help [command]`.",
       "whenGood": [
         {
-          "title": "Réserver un ID de session à l'avance pour le cibler plus tard depuis un script via --resume",
+          "title": "Réserver au préalable un ID de session pour le cibler plus tard depuis un script via --resume",
           "example": "CHAT_ID=$(agent create-chat); agent --resume \"$CHAT_ID\" -p \"start task\""
+        },
+        {
+          "title": "Créer à l'avance plusieurs ID de chat indépendants avant de répartir des prompts",
+          "example": "for i in 1 2 3; do agent create-chat; done > chat-ids.txt"
         }
       ],
       "whenBad": [
         {
-          "title": "On veut juste se lancer et discuter tout de suite avec l'agent",
-          "why": "agent create-chat crée seulement une session vide, il ne démarre pas de conversation",
+          "title": "Se lancer directement et discuter immédiatement avec l'agent",
+          "why": "agent create-chat crée seulement une session vide, mais n'envoie aucun prompt et ne démarre aucune conversation.",
           "alternative": "utiliser simplement agent ou agent \"<prompt>\""
+        },
+        {
+          "title": "Retrouver et reprendre une session antérieure",
+          "why": "create-chat génère toujours un nouvel ID de chat vide au lieu de rechercher une session existante.",
+          "alternative": "utiliser agent ls pour lister, ou agent resume pour la dernière session active"
         }
       ],
       "sources": [
@@ -8021,18 +8099,27 @@
       "slug": "list-agents",
       "name": "agy agent / agy agents",
       "summary": "Liste les agents personnalisés disponibles.",
-      "what": "agy agent ou agy agents (sous-commande, depuis la 1.1.1) affiche les agents personnalisés disponibles. Le nom trouvé peut être transmis directement à --agent au démarrage ; dans une session en cours, c'est le panneau /agents qui prend le relais pour la sélection et la surveillance des subagents en cours.",
+      "what": "`agy agent` (ou `agy agents`) est une sous-commande de l'Antigravity CLI (depuis la version 1.1.1) qui liste en ligne de commande tous les agents personnalisés disponibles avant le démarrage d'une session. Les Custom Agents sont définis comme un fichier Markdown `agent.md` avec frontmatter YAML, au choix au niveau du projet sous `.agents/agents/<name>/agent.md` ou globalement sous `~/.gemini/config/agents/<name>/agent.md`. Le nom trouvé avec `agy agents` peut être transmis directement à l'option de démarrage `--agent` pour lancer la CLI directement avec cet agent, par exemple `agy --agent code-reviewer`. Au sein d'une session déjà en cours, c'est en revanche le panneau interactif `/agents` qui prend en charge le choix entre agents ainsi que la surveillance et l'arrêt des sous-agents en cours d'exécution. Les deux approches se complètent : la sous-commande sert à consulter avant le démarrage, le panneau au pilotage pendant la session. Il faut distinguer cette commande de `agy models`, qui liste à la place les modèles disponibles.",
       "whenGood": [
         {
-          "title": "Consulter les agents personnalisés disponibles avant de démarrer",
-          "example": "agy agents, pour trouver le nom exact à passer à --agent"
+          "title": "Consulter les agents personnalisés disponibles avant le démarrage",
+          "example": "agy agents, pour trouver le nom exact à utiliser avec --agent"
+        },
+        {
+          "title": "Sélectionner précisément un agent défini globalement au démarrage",
+          "example": "agy agents affiche code-reviewer ; ensuite agy --agent code-reviewer démarre directement avec cet agent"
         }
       ],
       "whenBad": [
         {
-          "title": "Tu es déjà dans une session en cours et veux gérer des agents ou surveiller des subagents",
-          "why": "La sous-commande ne fournit qu'une liste ponctuelle en dehors de la TUI.",
-          "alternative": "Utiliser /agents dans agy en cours d'exécution"
+          "title": "On est déjà dans une session en cours et on veut basculer entre agents ou surveiller des sous-agents",
+          "why": "La sous-commande ne fournit qu'une liste ponctuelle en dehors du TUI, mais aucune fonction de sélection ou de surveillance.",
+          "alternative": "utiliser /agents dans l'agy en cours d'exécution"
+        },
+        {
+          "title": "On cherche les modèles disponibles plutôt que les agents",
+          "why": "agy agent/agents liste uniquement les agents personnalisés, pas les modèles.",
+          "alternative": "utiliser agy models pour lister les modèles disponibles"
         }
       ],
       "sources": [
@@ -9769,22 +9856,27 @@
       "slug": "theme",
       "name": "/theme",
       "summary": "Change le thème de couleurs.",
-      "what": "Change le thème de couleurs.\n\nInclut une option auto qui s'aligne sur le fond clair ou sombre de votre terminal, des variantes claires et sombres, des thèmes accessibles aux daltoniens (daltonisés), des thèmes ANSI qui utilisent la palette de couleurs de votre terminal, ainsi que tout thème personnalisé provenant de ~/.claude/themes/ ou de plugins. Sélectionnez « New custom theme… » pour en créer un.",
+      "what": "La commande `/theme` ouvre le sélecteur de thème de couleurs de Claude Code. Les options disponibles sont une option `auto`, qui s'adapte à l'arrière-plan clair ou sombre du terminal, des variantes claires et sombres fixes, des thèmes adaptés au daltonisme, ainsi que des thèmes ANSI qui reprennent la palette de couleurs du terminal lui-même. S'ajoutent les thèmes personnels issus de `~/.claude/themes/` ainsi que les thèmes provenant de plugins installés. L'entrée « New custom theme… » permet de créer un thème personnalisé de façon interactive : donner un nom, puis remplacer certains tokens de couleur individuellement ; `Ctrl+E` sur un thème personnalisé sélectionné rouvre l'éditeur. Techniquement, chaque thème personnalisé est un fichier JSON avec les champs optionnels `name`, `base` (préréglage comme `dark` ou `light-daltonized`) et `overrides`. Claude Code surveille le dossier et applique les changements sans redémarrage, sauf si le dossier n'existait pas encore au premier démarrage – un redémarrage unique est alors nécessaire. Les thèmes personnalisés nécessitent Claude Code v2.1.118 ou une version ultérieure.",
       "whenGood": [
         {
-          "title": "Passer à un thème clair ou sombre",
-          "example": "/theme"
+          "title": "Passer à un thème sombre ou clair adapté au terminal",
+          "example": "Appeler /theme et choisir auto pour que le schéma s'aligne automatiquement sur l'arrière-plan du terminal"
         },
         {
-          "title": "Choisir un thème accessible aux daltoniens",
-          "example": "/theme"
+          "title": "Créer un schéma de couleurs personnalisé avec des couleurs d'accent adaptées",
+          "example": "Ouvrir /theme, choisir New custom theme… et remplacer certains tokens de couleur comme la teinte d'erreur ou de succès"
         }
       ],
       "whenBad": [
         {
-          "title": "Changer la police ou la taille du terminal",
-          "why": "/theme contrôle uniquement les couleurs de Claude Code, pas le rendu propre du terminal.",
-          "alternative": "utilisez les paramètres de votre application de terminal"
+          "title": "Changer la police, la taille de police ou la taille de la fenêtre du terminal",
+          "why": "/theme contrôle uniquement les couleurs à l'intérieur de Claude Code, pas l'affichage du terminal lui-même",
+          "alternative": "Utiliser les paramètres du programme de terminal"
+        },
+        {
+          "title": "Personnaliser la barre de statut avec le modèle, le répertoire ou la branche Git",
+          "why": "Cela ne fait pas partie de /theme, mais d'une configuration de statusline distincte",
+          "alternative": "Utiliser /statusline pour configurer une barre de statut personnalisée"
         }
       ],
       "sources": [
@@ -9833,23 +9925,28 @@
       "platform": "claude-code",
       "slug": "ultrareview",
       "name": "/ultrareview",
-      "summary": "Exécute une revue de code approfondie multi-agents dans un sandbox cloud.",
-      "what": "Exécute une revue de code approfondie multi-agents dans un sandbox cloud.\n\nIndiquez une référence de PR pour examiner cette pull request, ou un nom de branche pour changer la base de comparaison. L'invocation privilégiée est désormais /code-review ultra, et /ultrareview reste disponible comme alias. Inclut 3 exécutions gratuites sur Pro et Max, puis nécessite des crédits d'utilisation.",
+      "summary": "La commande actuelle est code-review ultra ; ultrareview n'est qu'un alias obsolète.",
+      "what": "`/code-review ultra` lance une revue de code approfondie multi-agents dans un sandbox cloud de Claude Code on the web : une flotte d'agents reviewers examine la modification en parallèle et vérifie chaque constat par rapport au code réel. `/ultrareview` était le nom d'origine ; il fonctionne toujours, mais n'est désormais plus qu'un alias obsolète de `/code-review ultra`.\n\nSans argument, la commande compare la branche courante à la branche par défaut, y compris les modifications non committées ou indexées ; un dépôt Git local suffit, un remote GitHub n'est pas nécessaire. Un nom de branche change la base de comparaison. Avec un numéro de PR à la place d'un nom de branche, elle examine directement une pull request GitHub, sans rien pousser localement ; cela suppose un dépôt sur github.com ou GitHub Enterprise Server.\n\nL'examen s'exécute en arrière-plan (progression visible via `/tasks`) et dure environ 5 à 10 minutes. Sur Pro et Max, 3 exécutions sont gratuites, au-delà des crédits d'utilisation sont facturés.",
       "whenGood": [
         {
-          "title": "Faire examiner une pull request en profondeur",
-          "example": "/ultrareview 42"
+          "title": "Un contrôle plus approfondi que la revue locale avant de fusionner une modification importante",
+          "example": "Lancer `/code-review ultra` sur sa propre branche avant de fusionner une branche de fonctionnalité conséquente."
         },
         {
-          "title": "Comparer avec une branche de base différente",
-          "example": "/ultrareview main"
+          "title": "Examiner en profondeur une pull request GitHub indépendamment de son propre checkout",
+          "example": "`/code-review ultra 1234` pour examiner la PR #1234 directement depuis le cloud, sans faire de checkout local de la branche."
         }
       ],
       "whenBad": [
         {
-          "title": "Un rapide coup d'œil local sur un petit changement",
-          "why": "/ultrareview lance une revue cloud lourde ; c'est excessif pour un simple coup d'œil.",
-          "alternative": "demandez directement à Claude d'examiner le diff local"
+          "title": "Revue locale rapide de petites modifications",
+          "why": "l'exécution cloud dure 5 à 10 minutes et consomme des crédits d'utilisation au-delà des 3 exécutions gratuites ; disproportionné pour un simple coup d'œil",
+          "alternative": "utiliser `/code-review` local ou demander directement à Claude de relire le diff"
+        },
+        {
+          "title": "Utilisation dans des organisations à rétention de données zéro, ou sur Amazon Bedrock/Google Cloud/Microsoft Foundry",
+          "why": "Ultrareview nécessite l'infrastructure cloud de Claude Code on the web, qui n'y est pas disponible",
+          "alternative": "utiliser `/code-review` local avec un niveau d'effort élevé"
         }
       ],
       "sources": [
@@ -9999,18 +10096,27 @@
       "slug": "pr-comments",
       "name": "/pr-comments",
       "summary": "N'existe plus — supprimée dans la version 2.1.91.",
-      "what": "N'existe plus — supprimée dans la version 2.1.91.\n\nAu lieu d'une commande dédiée, vous demandez désormais directement à Claude de consulter les commentaires d'une pull request. Sur les versions antérieures, /pr-comments récupérait les commentaires d'une pull request GitHub (en détectant automatiquement la PR de la branche actuelle, ou en prenant une URL ou un numéro de PR) et nécessitait la gh CLI.",
+      "what": "`/pr-comments` n'existe plus — la commande a été supprimée dans Claude Code v2.1.91. Sur les versions jusqu'à v2.1.90 incluse, elle récupérait les commentaires d'une pull request GitHub : détection automatique de la PR de la branche courante, ou en alternative indication d'une URL ou d'un numéro de PR en argument ; cela nécessitait la CLI `gh`.\n\nAujourd'hui, il suffit de demander directement à Claude de consulter les commentaires d'une pull request, par exemple ceux de la branche courante ou d'un numéro/URL de PR précis ; cela fonctionne sans commande dédiée, avec la même fiabilité qu'avant. Claude continue d'utiliser en arrière-plan la CLI `gh`, qui doit donc être installée et connectée, faute de quoi la requête échoue.\n\nPour une revue rapide, en lecture seule, d'une pull request entière avec son diff, `/review <PR>` constitue une alternative ; pour un contrôle local en plusieurs niveaux avec effort ajustable, `/code-review <level> <PR>`.",
       "whenGood": [
         {
-          "title": "Rien — la commande a disparu",
-          "example": "Demandez directement à Claude : « Regarde les commentaires sur la PR 42. »"
+          "title": "Récupérer les commentaires de PR de la branche courante",
+          "example": "Demander directement à Claude : « Regarde les commentaires de la pull request de cette branche. »"
+        },
+        {
+          "title": "Récupérer les commentaires d'un numéro ou d'une URL de PR précis",
+          "example": "Demander directement à Claude : « Montre-moi les commentaires de revue de la PR https://github.com/org/repo/pull/42. »"
         }
       ],
       "whenBad": [
         {
-          "title": "Sur la version 2.1.91 ou ultérieure",
-          "why": "la commande a été supprimée dans la 2.1.91 et n'a aucun effet.",
-          "alternative": "demandez directement à Claude les commentaires de la PR"
+          "title": "Taper `/pr-comments` en version 2.1.91 ou ultérieure",
+          "why": "la commande a été supprimée et ne fait plus rien",
+          "alternative": "demander directement à Claude les commentaires de la PR"
+        },
+        {
+          "title": "La CLI `gh` n'est pas installée ou pas connectée",
+          "why": "aussi bien l'ancienne commande que la demande directe actuelle ont besoin de la CLI `gh` pour les données de PR GitHub",
+          "alternative": "exécuter `gh auth login`, puis redemander les commentaires"
         }
       ],
       "sources": [
@@ -10046,7 +10152,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10081,7 +10187,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10116,7 +10222,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10146,7 +10252,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10176,7 +10282,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10211,7 +10317,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10246,7 +10352,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10276,7 +10382,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10311,7 +10417,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10346,7 +10452,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10381,7 +10487,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10416,7 +10522,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10451,7 +10557,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10486,7 +10592,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10521,7 +10627,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10551,7 +10657,7 @@
       "sources": [
         {
           "title": "Doc Codex CLI : Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },

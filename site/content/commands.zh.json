@@ -97,22 +97,27 @@
       "slug": "agents",
       "name": "/agents",
       "summary": "管理子代理(Subagent)配置。",
-      "what": "管理子代理(Subagent)配置。\n\n从 v2.1.198 起,/agents 只会显示一条提示,建议直接让 Claude 创建/管理子代理,或自行编辑 .claude/agents/ 或 ~/.claude/agents/。v2.1.197 及之前版本会打开一个交互式管理界面。",
+      "what": "`/agents` 涉及的是子代理（subagents）：Claude 用来委派子任务的独立配置。自 2.1.198 版本起，该命令不再打开专门的界面，而只是显示一段提示，建议直接让 Claude 创建或管理子代理，或者自行编辑 `.claude/agents/` 或 `~/.claude/agents/`。在 2.1.197 及更早版本中，`/agents` 会打开一个交互式界面，其中一个标签页显示正在运行的子代理，另一个标签页用于创建、编辑和删除定义。\n\n这次调整并没有改变子代理文件本身、它们的 frontmatter 字段以及两个存放位置：项目级子代理位于 `.claude/agents/`，只在对应仓库中可用；个人子代理位于 `~/.claude/agents/`，可跨项目使用。新建的文件会在几秒钟内被自动识别，无需重启。",
       "whenGood": [
         {
           "title": "让 Claude 创建一个新的子代理配置",
-          "example": "/agents,然后输入:\"帮我创建一个用于数据库迁移的子代理\""
+          "example": "执行 /agents，然后说：“帮我在 ~/.claude/agents/ 中创建一个用于数据库迁移的个人子代理。”"
         },
         {
-          "title": "在当前项目中调整之前,先查看已有的子代理定义",
-          "example": "/agents,以便获取指向 .claude/agents/ 的引用"
+          "title": "在当前项目中调整之前，先查看已有的子代理定义",
+          "example": "执行 /agents，让系统提示 `.claude/agents/` 或 `~/.claude/agents/` 的位置，然后直接在编辑器中打开对应的 Markdown 文件。"
         }
       ],
       "whenBad": [
         {
-          "title": "期望有一个交互式管理界面",
-          "why": "自 v2.1.198 起,/agents 只会显示一条提示信息,而不再提供交互式 UI",
-          "alternative": "直接在编辑器中编辑 .claude/agents/ 或 ~/.claude/agents/"
+          "title": "期望出现带有运行中/库标签页的交互式管理界面",
+          "why": "从 2.1.198 版本起，/agents 只会显示一段提示文字，而不再是以前的交互式界面",
+          "alternative": "直接在编辑器中编辑 `.claude/agents/` 或 `~/.claude/agents/`，或者使用 2.1.197 及更早的版本"
+        },
+        {
+          "title": "想在团队或组织范围内强制统一使用某个子代理",
+          "why": "通过 `.claude/agents/` 或 `~/.claude/agents/` 创建的子代理只是项目级或个人子代理，对其他人没有强制约束力",
+          "alternative": "由组织管理员通过 `.claude/agents/` 的托管设置目录（Managed Settings）方式发布托管子代理（Managed Subagents）"
         }
       ],
       "sources": [
@@ -647,22 +652,27 @@
       "slug": "dataviz",
       "name": "/dataviz",
       "summary": "为图表、图形和仪表盘提供设计辅助。",
-      "what": "为图表、图形和仪表盘提供设计辅助。\n\n[Skill] 选择合适的图表形式,按角色分配颜色,并通过脚本校验配色方案的色盲安全性和对比度。需要 v2.1.198 及以上版本。",
+      "what": "`/dataviz` 技能在构建图表、图形和仪表盘时提供设计方面的帮助，与所使用的具体工具无关（HTML/React artifact、内联 SVG，或者 Matplotlib、Plotly、D3、Recharts 等库中的绘图代码）。Claude 会据此为现有数据选择合适的图表形式，按照颜色的作用来分配颜色（例如分类、突出显示或警示级别），并用配套脚本验证所选调色板是否对色觉障碍者友好、对比度是否充足。此外，该技能还会应用关于标记、交互、图例、坐标轴标注和无障碍性的规则，让不同工具生成的图表看起来风格统一。\n\n起点是一套品牌中立的占位调色板，使用时应替换成自己的品牌色。\n\n作为 [Skill]，`/dataviz` 也可以由 Claude 自动激活，只要有图表生成的场景就会触发，不局限于显式输入斜杠命令。该命令需要 Claude Code 2.1.198 或更高版本；在更早的版本上不可用。",
       "whenGood": [
         {
-          "title": "在构建仪表盘(Dashboard)之前,让其选择合适的图表形式和色盲安全的配色方案",
-          "example": "/dataviz — 在搭建包含多种图表类型的 KPI 仪表盘之前使用"
+          "title": "在构建仪表盘之前，让系统选出合适的图表形式和对色觉障碍者友好的调色板",
+          "example": "在搭建包含多种图表类型的 KPI 仪表盘之前，先调用 `/dataviz`。"
         },
         {
-          "title": "检查现有可视化图表的配色在对比度/色盲安全性方面是否合格",
-          "example": "/dataviz,用于验证现有图表的颜色分配"
+          "title": "检查已有可视化图表的配色在对比度/色觉障碍友好性方面是否合格",
+          "example": "用 `/dataviz` 验证一张已经做好的图表的配色方案。"
         }
       ],
       "whenBad": [
         {
-          "title": "只做纯数据分析,不涉及后续可视化",
-          "why": "/dataviz 帮助的是图表设计,而不是数据分析本身",
-          "alternative": "使用普通的分析 Prompt,只有在需要将结果以图表形式呈现时才引入 /dataviz"
+          "title": "只做纯数据分析，不需要后续的可视化",
+          "why": "`/dataviz` 帮助的是图表设计，而不是数据分析本身",
+          "alternative": "使用普通的分析提示，等结果需要以图表形式呈现时再引入 `/dataviz`"
+        },
+        {
+          "title": "使用 2.1.198 之前版本的 Claude Code",
+          "why": "该技能至少需要 2.1.198 版本，在更早的版本中不存在",
+          "alternative": "升级 Claude Code，或者手动确定配色和图表选择"
         }
       ],
       "sources": [
@@ -1012,22 +1022,27 @@
       "slug": "fast",
       "name": "/fast",
       "summary": "开启或关闭 Fast 模式。",
-      "what": "开启或关闭 Fast 模式。\n\n非交互式(-p)调用仅在以 --settings 中的 fastMode 启动的会话中可用;开关状态仅对当前会话生效。需要 v2.1.205 及以上版本。",
+      "what": "`/fast` 命令用于开启或关闭 Claude Opus 的“快速模式”（Fast Mode）——这是一种能让响应速度提升最多 2.5 倍的配置，但每个 token 的费用明显更高。快速模式并不是一个独立的模型，而是另一种 API 配置，质量和能力与普通模式相同，只是单个 token 的价格更高。它只能配合 `Opus 5` 和 `Opus 4.8` 使用；在 `Sonnet`、`Haiku` 或其他模型上均不可用。自 2026 年 7 月 24 日起，此前对 Opus 4.7 的支持已被移除。开启快速模式时，如果当前激活的是其他模型，Claude Code 会自动切换到 Opus。费用为每百万输入/输出 token 10 美元 / 50 美元，从使用额度（usage credits）中扣除，而不是计入常规套餐额度。在非交互式会话（`-p`）中，只有当会话是以 `--settings` 中的 `fastMode` 启动时，才能切换 `/fast`。需要 Claude Code v2.1.205 或更高版本。",
       "whenGood": [
         {
-          "title": "在一系列简单、重复的编辑中优先追求速度而非深度",
-          "example": "/fast — 在处理一系列同类型的简单更改时使用"
+          "title": "在交互式实时调试中需要快速迭代、响应速度比成本更重要时",
+          "example": "在提出一连串小型调试请求之前，输入 /fast 并按 Tab 确认"
         },
         {
-          "title": "一旦出现更复杂的任务,就再次关闭 Fast 模式",
-          "example": "再次调用 /fast 以切换回原状态"
+          "title": "在 Opus 5 或 Opus 4.8 上进行时间紧迫、有明确截止时限的工作",
+          "example": "在会话开始时就启用 /fast，因为之后再启用会因提示缓存（prompt cache）的缘故更贵"
         }
       ],
       "whenBad": [
         {
-          "title": "在启动设置(Start-Settings)中未配置 fastMode 的非交互式使用",
-          "why": "/fast 只能在启动时通过 --settings 配置了 fastMode 的会话中以非交互式(-p)方式切换",
-          "alternative": "在会话启动时直接通过 --settings 传入 fastMode"
+          "title": "长时间的自主任务或批处理，成本比速度更重要时",
+          "why": "快速模式的单 token 费用明显更高（每百万 token 10 美元 / 50 美元），并且从使用额度中扣除，而非常规套餐额度",
+          "alternative": "使用标准模式，或通过 fastModePerSessionOptIn 设置，确保快速模式不会自动持续生效"
+        },
+        {
+          "title": "在 Sonnet、Haiku 或 VS Code 扩展中使用",
+          "why": "快速模式仅在终端 CLI 中的 Opus 5 和 Opus 4.8 上可用，不支持其他模型或 VS Code 扩展",
+          "alternative": "切换到受支持的 Opus 模型，并在终端 CLI 中使用 /fast"
         }
       ],
       "sources": [
@@ -1077,22 +1092,27 @@
       "slug": "fewer-permission-prompts",
       "name": "/fewer-permission-prompts",
       "summary": "扫描自己的会话记录,找出常见的只读 Bash 和 MCP 工具调用,并将一份按优先级排序的白名单添加到项目级 .claude/settings.json 中,以减少权限确认弹窗。",
-      "what": "扫描自己的会话记录,找出常见的只读 Bash 和 MCP 工具调用,并将一份按优先级排序的白名单添加到项目级 .claude/settings.json 中,以减少权限确认弹窗。\n\n[Skill]",
+      "what": "`/fewer-permission-prompts` 技能会在你自己的会话记录中搜索频繁出现的只读（read-only）Bash 和 MCP 工具调用，例如 `git status`、`ls` 或类似的无风险命令。基于搜索结果，它会生成一份按优先级排序的允许列表（allowlist），并写入项目级的 `.claude/settings.json`，这样这些调用今后就无需再次请求授权，会话也不会再频繁因为这类琐碎的授权而被打断。\n\n该技能有意只为那些不涉及写操作、也没有其他风险的命令生成规则。它与 `/doctor` 是互补关系——后者在通用的设置检查中也会建议把经常被拒绝的只读命令加入白名单；而 `/fewer-permission-prompts` 则是专门基于以往的会话历史来针对性处理。\n\n写操作或潜在有风险的命令不会被触碰，仍然需要通过 `/permissions` 或手动编辑 `.claude/settings.json` 有意识地授权，以避免无意中形成危险的自动化。",
       "whenGood": [
         {
-          "title": "在经过若干次会话后,自动放行重复出现的、无风险的只读(Read-only)命令",
-          "example": "/fewer-permission-prompts — 在经历了多次会话、反复被要求为 git status、ls 等命令授权之后使用"
+          "title": "在经过多个会话后，自动放行反复出现的无风险只读命令",
+          "example": "在经历了多次因 `git status`、`ls` 等命令反复弹出授权请求的会话后，运行 `/fewer-permission-prompts`。"
         },
         {
-          "title": "为团队新成员入职(Onboarding)生成一份合理的许可列表(Allowlist)基础",
-          "example": "/fewer-permission-prompts,用常见的只读调用预先填充 .claude/settings.json"
+          "title": "为团队入职准备一份合理的允许列表基础",
+          "example": "在项目提交入库之前，用 `/fewer-permission-prompts` 预先在 `.claude/settings.json` 中填入常见的只读调用。"
         }
       ],
       "whenBad": [
         {
-          "title": "想要一概允许写入类/有风险的命令而不再询问",
-          "why": "该 Skill 只针对性地扫描常见的只读 Bash/MCP 调用,不涉及写入类命令",
-          "alternative": "写入类/有风险的命令仍需在 .claude/settings.json 中手动、有意识地放行(例如通过 update-config Skill)"
+          "title": "想一概允许写操作/有风险的命令而无需再次确认",
+          "why": "该技能只有针对性地扫描常见的只读 Bash/MCP 调用，不涉及写操作命令",
+          "alternative": "写操作/有风险的命令仍需有意识地手动授权，例如通过 `update-config` 技能或 `/permissions`"
+        },
+        {
+          "title": "几乎还没有会话记录历史",
+          "why": "没有以往的会话，该技能就没有可供推导出允许列表的反复出现的调用",
+          "alternative": "先正常进行几次会话，再重新运行 `/fewer-permission-prompts`"
         }
       ],
       "sources": [
@@ -1372,22 +1392,27 @@
       "slug": "insights",
       "name": "/insights",
       "summary": "生成一份报告,分析你自己的 Claude Code 会话情况,包括",
-      "what": "生成一份报告,分析你自己的 Claude Code 会话情况,包括项目分布、交互模式以及摩擦点等。",
+      "what": "`/insights` 命令生成一份报告，分析你自己的 Claude Code 会话——例如哪些项目区域被处理得最多、出现了哪些互动模式，以及在哪里遇到了摩擦点。这份报告会生成为一个文件，回复中会附上其存放位置的链接，比如可以看出在哪些仓库中花费的时间最多，或者某些请求是否反复引发追问。与面向 Team 和 Enterprise 套餐的组织级分析仪表盘不同——那类仪表盘展示跨多个用户的采用率、支出和贡献指标——`/insights` 只分析你自己本地的会话历史，无需登录 claude.ai/analytics，也不涉及 GitHub 集成。因此，这个命令更适合用于个人反思自己的工作流程，而不是团队报告或成本管控。它不会提供当前会话的即时简短摘要，那是 `/recap` 的用途。",
       "whenGood": [
         {
-          "title": "回顾自己对 Claude Code 的使用情况",
-          "example": "在高强度工作了一周后执行 /insights，查看哪些项目领域投入的工作量最多。"
+          "title": "在一段高强度的项目阶段后，回顾自己对 Claude Code 的使用情况",
+          "example": "工作一周后执行 /insights，查看哪些项目区域投入的工作最多"
         },
         {
-          "title": "发现自己工作流中反复出现的痛点",
-          "example": "使用 /insights 来揭示多个会话中反复出现的模式，例如频繁追问或交互问题。"
+          "title": "识别多个会话中反复出现的工作流摩擦点",
+          "example": "使用 /insights 揭示诸如频繁追问或理解偏差之类的模式"
         }
       ],
       "whenBad": [
         {
-          "title": "需要当前会话的即时简要总结",
-          "why": "/insights 是事后分析会话中的模式和痛点，并不会为当前对话提供快速的一句话总结。",
-          "alternative": "使用 /recap 获取当前会话的单行摘要。"
+          "title": "评估团队整体的使用情况、成本或贡献指标",
+          "why": "/insights 只分析你自己本地的会话历史，不包含其他用户的数据",
+          "alternative": "使用 claude.ai/analytics/claude-code（Team/Enterprise）或 platform.claude.com/claude-code（API）下的分析仪表盘"
+        },
+        {
+          "title": "想要当前会话的即时一句话摘要",
+          "why": "/insights 是事后分析会话中的模式，不会给出快速的简短状态",
+          "alternative": "使用 /recap 获取当前会话的单行摘要"
         }
       ],
       "sources": [
@@ -1432,22 +1457,27 @@
       "slug": "install-slack-app",
       "name": "/install-slack-app",
       "summary": "安装 Claude Slack App。",
-      "what": "安装 Claude Slack App。\n\n会打开浏览器以完成 OAuth 授权流程。",
+      "what": "`/install-slack-app` 命令用于安装 Claude 的 Slack 应用，并打开浏览器完成 OAuth 授权流程。首先由工作区管理员从 Slack App Marketplace 安装该应用；之后每个人都可以在 Slack 的应用主页（App Home）中连接自己的 Claude 账号。连接完成后，就可以直接在 Slack 频道里通过 `@Claude` 提及，把编程任务委派给一个 Claude Code Web 会话，该会话使用你自己的 GitHub 账号和套餐额度运行。前提条件是拥有可访问 Claude Code 的 Pro、Max、Team 或 Enterprise 套餐、已启用对 Claude Code on the web 的访问权限，并且连接了至少含一个已认证仓库的 GitHub 账号。在应用主页的路由模式中，可以设置消息是始终发给 Claude Code，还是根据内容在代码会话和聊天会话之间自动区分。对于 Team 和 Enterprise 工作区，这一集成方式目前正逐步被 Claude Tag 取代，后者使用同一个 Slack 应用，但作为由管理员统一管理的共享组织身份运行。",
       "whenGood": [
         {
-          "title": "让团队 Slack 中可以使用 Claude",
-          "example": "执行 /install-slack-app，为公司 Workspace 中的同事开通 Claude Tag 功能。"
+          "title": "让团队可以直接在 Slack 中使用 Claude Code",
+          "example": "执行 /install-slack-app，然后在应用主页中连接自己的 Claude 账号"
         },
         {
-          "title": "直接从 Slack 频道发起请求",
-          "example": "安装完成后，在 Slack 频道中 @Claude，即可直接从聊天中发起请求。"
+          "title": "直接在 Slack 频道中处理 bug 报告",
+          "example": "安装完成后，用 /invite @Claude 把它加入频道，然后在 bug 讨论串中提及 @Claude"
         }
       ],
       "whenBad": [
         {
-          "title": "未使用 Slack，或在 Workspace 中没有管理员权限",
-          "why": "安装需要在浏览器中完成 OAuth 流程并具备相应的 Workspace 权限——如果不使用 Slack，安装它没有任何意义。",
-          "alternative": "直接在终端或 IDE 中使用 Claude Code。"
+          "title": "没有 Slack 工作区，或没有安装所需的管理员权限",
+          "why": "安装过程需要工作区管理员权限，并要在浏览器中完成 OAuth 授权流程",
+          "alternative": "直接在终端或 IDE 中使用 Claude Code"
+        },
+        {
+          "title": "已经切换到 Claude Tag 的 Team 或 Enterprise 工作区",
+          "why": "Claude Tag 用一个由管理员统一管理的组织身份，取代了逐个连接的 Slack 应用方式",
+          "alternative": "使用 Claude Tag 的迁移指南，而不是再单独重新连接应用"
         }
       ],
       "sources": [
@@ -1962,22 +1992,27 @@
       "slug": "recap",
       "name": "/recap",
       "summary": "按需为当前会话生成一句话摘要。",
-      "what": "按需为当前会话生成一句话摘要。\n\n关于离开后自动生成 Recap 的说明,参见文档 'Session recap'。",
+      "what": "`/recap` 命令按需生成当前会话的单行摘要。它是对 Claude Code 默认自动回顾功能的补充：当终端失焦离开至少三分钟后重新返回会话时，Claude Code 会自动显示回顾——前提是该会话已经进行了至少三轮对话，且上一次回顾不是刚发生不久。自动版本在后台运行，因此切换回来时摘要已经准备好；可以通过 `/config`（“Session recap” 选项）关闭它，或者用 `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0` 强制禁用，例如在整体关闭遥测的情况下。在非交互式会话中，无论自动还是手动，都不会出现回顾。执行 `/compact` 之后，Claude Code 在继续对话前也不再生成引导性回顾。`/recap` 本身只提供这一行摘要，不是完整的对话记录——如果需要完整记录，应使用 `/export`，它会将整个对话导出为文本。",
       "whenGood": [
         {
-          "title": "中断后快速找回状态",
-          "example": "休息后调用 /recap，用一句话了解会话目前进行到哪里。"
+          "title": "短暂中断后重新进入会话，在自动回顾出现之前",
+          "example": "返回终端后立即执行 /recap，马上查看当前进度"
         },
         {
-          "title": "分享简短状态以便快速同步进展",
-          "example": "使用 /recap 获取当前会话状态的一句话总结，并转发给同事。"
+          "title": "把简短状态发给同事，做一次快速更新",
+          "example": "执行 /recap，把这行摘要分享到团队聊天中"
         }
       ],
       "whenBad": [
         {
-          "title": "保存或转发完整的对话记录",
-          "why": "/recap 只提供单行摘要，不会输出对话的完整文本。",
-          "alternative": "使用 /export 将完整对话导出为纯文本。"
+          "title": "想要保存或转发完整的对话记录",
+          "why": "/recap 只提供一行摘要，不包含完整的对话文本",
+          "alternative": "使用 /export，将完整对话导出为纯文本"
+        },
+        {
+          "title": "期望在非交互式（-p）会话中出现自动回顾",
+          "why": "在非交互模式下，自动回顾一律会被跳过",
+          "alternative": "在交互模式下工作，那里回顾会自动出现，也可以手动执行 /recap"
         }
       ],
       "sources": [
@@ -2582,22 +2617,27 @@
       "slug": "skills",
       "name": "/skills",
       "summary": "列出可用的 Skill。",
-      "what": "列出可用的 Skill。\n\n自 v2.1.121 起支持输入过滤。按 't' 可按 Token 数量排序。空格键切换可见性,回车键保存。",
+      "what": "`/skills` 命令列出所有可用的技能（skills）——包括自定义的、项目级的，以及 Claude Code 自带的技能，比如 `/doctor` 或 `/code-review`。自 v2.1.121 起，可以通过输入名称来筛选列表；按 `t` 键可按 token 数量排序，从而看出哪些技能在系统提示中占用的上下文最多。按空格键可以切换单个技能对 Claude 和 `/` 菜单的可见性，按 `Enter` 会把改动永久保存到设置中。自从自定义命令（Custom Commands）与技能合并以来，两者在技术上是完全相同的东西：位于 `.claude/commands/deploy.md` 下的文件，和位于 `.claude/skills/deploy/SKILL.md` 下的技能文件夹，生成的是同一个 `/deploy` 命令。内置技能在每个会话中都可用，但可以通过 `disableBundledSkills` 设置全局关闭（`/doctor` 除外，它始终保持可见）。`/skills` 本身只显示列表，不会安装、修复或创建任何技能。",
       "whenGood": [
         {
-          "title": "查看已加载 Skill 的概览",
-          "example": "调用 /skills 并按 't' 键按 Token 数量排序,查看哪些 Skill 占用的上下文最多。"
+          "title": "了解当前加载了哪些技能，以及它们各自占用多少上下文",
+          "example": "执行 /skills，然后按 t 按 token 数量排序"
         },
         {
-          "title": "隐藏未使用的 Skill",
-          "example": "在 /skills 列表中用空格键将单个 Skill 设为不可见以节省上下文,然后按回车保存。"
+          "title": "有针对性地隐藏不常用的技能，以节省上下文",
+          "example": "在 /skills 列表中用空格键把某个技能设为不可见，再按 Enter 保存"
         }
       ],
       "whenBad": [
         {
-          "title": "诊断损坏的 Skill 安装",
-          "why": "根据文档,/skills 只列出可用的 Skill,不会诊断安装问题。",
-          "alternative": "使用 /doctor,它会检查安装情况、重复/损坏的 Skill 以及上下文开销。"
+          "title": "诊断损坏的技能安装、重复的技能或加载错误",
+          "why": "/skills 只显示列表，不会检查安装方面的问题",
+          "alternative": "使用 /doctor，它会检查安装情况、重复或损坏的技能以及上下文占用"
+        },
+        {
+          "title": "想在不重启会话的情况下立即使用刚创建的技能",
+          "why": "/skills 显示的是上一次扫描时的状态；磁盘上新建的文件不会被自动识别",
+          "alternative": "执行 /reload-skills，重新读取技能目录"
         }
       ],
       "sources": [
@@ -2741,23 +2781,28 @@
       "platform": "claude-code",
       "slug": "tasks",
       "name": "/tasks",
-      "summary": "列出当前会话及其所连接的后台会话中的后台任务。",
-      "what": "列出当前会话及其所连接的后台会话中的后台任务。",
+      "summary": "显示的是当前会话自身的后台工作，不包括单独附加的其他会话。",
+      "what": "`/tasks` 会打开当前会话中后台工作的视图：正在运行和已经完成的子代理，以及正在运行的后台 shell 命令。已完成的子代理会保持标记状态、可供查看，直到会话清理其任务列表。和 `/status`、`/usage` 一样，这个命令会立即执行，也不会打断正在进行中的回复。别名是 `/bashes`。\n\n这与 Claude 的待办清单（`Strg+T`）不同，后者显示的是某项任务规划中的工作步骤，而不是技术性的后台进程。如果从当前会话中额外启动了一个独立的云端或后台会话，例如通过 `claude --cloud`，它也会作为一行出现在 `/tasks` 中；在那里按 `t` 键即可直接通过传送（teleport）切换进入该会话。而要跨项目全面查看自己所有的后台会话，则需要使用 `claude agents`（Agent View）。",
       "whenGood": [
         {
-          "title": "检查正在运行的后台子代理",
-          "example": "在用 /batch 启动多个子代理后调用 /tasks,查看当前会话及关联的后台会话中还有哪些任务未完成。"
+          "title": "查看当前会话中正在运行的后台子代理",
+          "example": "用 `/batch` 启动多个子代理后，执行 `/tasks`，查看哪些仍在运行、哪些已经完成。"
         },
         {
-          "title": "结束会话前先了解概况",
-          "example": "在执行 /exit 之前先用 /tasks 检查是否还有不想丢失的后台任务在运行。"
+          "title": "在结束会话之前，检查是否还有未完成的后台工作",
+          "example": "在执行 `/exit` 之前先执行一下 `/tasks`，确认是否还有不想丢失的子代理或 shell 命令在运行。"
         }
       ],
       "whenBad": [
         {
-          "title": "查看已安排的 Cron/Loop 计划",
-          "why": "根据文档,/tasks 列出的是会话的后台任务,而不是通过 /loop 或 /schedule 安排的计划任务。",
-          "alternative": "直接向 Claude 提问(例如“what scheduled tasks do I have?”)查看 /loop 计划,或使用 /schedule 管理云端例行任务(Routine)。"
+          "title": "想查看已安排的 cron/loop 计划或 Claude 的待办清单",
+          "why": "`/tasks` 显示的是正在运行的 shell 和子代理，而不是待办清单（`Strg+T`），也不是通过 `/loop` 或 `/schedule` 安排的计划",
+          "alternative": "用 `Strg+T` 查看待办清单，用 `/schedule` 查看云端例行任务，或者直接询问 Claude 已安排的运行计划"
+        },
+        {
+          "title": "想跨所有项目全面掌握自己的所有后台会话",
+          "why": "`/tasks` 是绑定在当前会话上的，主要显示该会话自己的子代理/shell，默认不会显示来自其他目录的所有后台会话",
+          "alternative": "打开 `claude agents`（Agent View），获取跨项目的所有后台会话总览"
         }
       ],
       "sources": [
@@ -2772,22 +2817,27 @@
       "slug": "teleport",
       "name": "/teleport",
       "summary": "把一个 Web 会话接入终端。",
-      "what": "把一个 Web 会话接入终端。\n\n反过来,/remote-control 可以让你从另一台设备继续本地会话。",
+      "what": "`/teleport`（别名 `/tp`）把一个正在 Claude Code on the web（claude.ai/code）上运行的云端会话拉取到本地终端。该命令会打开一个交互式选择器，列出你自己的云端和后台会话；选定之后，Claude Code 会检查本地目录是否属于同一个仓库，检出该会话所在的分支，并加载完整的对话记录。\n\n前提条件：干净的 Git 状态（如果有未暂存的改动，系统会先建议进行 stash）、已检出同一个仓库、该分支已经推送到远程，并且使用与云端会话相同的 claude.ai 账号登录。需要有 claude.ai 订阅。\n\n这种切换是单向的：从传送（teleport）那一刻起，Web 端和终端端的副本会各自独立运行，本地的改动不会再同步显示在 claude.ai 或移动端应用中。如果之后还想在移动设备上访问这个本地会话，需要额外再启动 `/remote-control`。",
       "whenGood": [
         {
-          "title": "在本地继续 Web 会话",
-          "example": "用 /teleport 将在 claude.ai/code 上启动的会话转移到本地终端,以便利用本地文件访问权限继续工作。"
+          "title": "把在外出时启动的 Web 会话带回本地继续处理",
+          "example": "把在手机上通过 claude.ai/code 启动的任务，用 `/teleport` 拉到工作电脑上，从而获得完整的文件访问权限和本地工具继续处理。"
         },
         {
-          "title": "在性能更强的电脑上继续工作",
-          "example": "将在路上用手机通过 claude.ai/code 启动的任务,用 /teleport 转移到工作电脑的终端上,以获得完整的工具访问权限继续处理。"
+          "title": "长时间运行的云端会话完成后，转到本地继续构建",
+          "example": "把用 `claude --cloud` 启动的任务完成后，通过 `/teleport` 拉入终端，在本地测试并提交结果。"
         }
       ],
       "whenBad": [
         {
-          "title": "反过来的情况:在外出时继续本地会话",
-          "why": "/teleport 是把 Web 会话转移到终端,而不是反过来。",
-          "alternative": "使用 /remote-control 从另一台设备远程控制本地会话。"
+          "title": "想把本地会话转移到另一台设备上",
+          "why": "`/teleport` 只能单向工作：从云端转到终端，反过来不行。",
+          "alternative": "启动 `/remote-control`，从另一台设备远程控制本地会话，或者在桌面应用中使用“Continue in”菜单"
+        },
+        {
+          "title": "云端会话所在的分支还没有推送",
+          "why": "传送需要该分支已经存在于远程，否则检出会失败",
+          "alternative": "先在 Web 会话中完成提交/推送，再重新尝试 `/teleport`"
         }
       ],
       "sources": [
@@ -2872,22 +2922,27 @@
       "slug": "verify",
       "name": "/verify",
       "summary": "启动项目应用,并端到端验证某个改动确实生效。",
-      "what": "启动项目应用,并端到端验证某个改动确实生效。\n\n[Skill] 参见 'Run and verify your app'。需要 v2.1.145 及以上版本。",
+      "what": "`/verify` 命令是一个内置技能，它通过实际构建、启动项目并观察运行结果来确认一处代码改动是否生效——而不只是依赖测试或类型检查。它属于一组相关的三个技能之一：`/run` 启动并操作应用，以便亲眼看到改动的实际效果；`/verify` 专门用来确认某项改动是否按预期工作；而 `/run-skill-generator` 会在构建或启动方式无法自动识别时（例如涉及数据库、环境变量文件或多阶段构建），一次性在 `.claude/skills/run-<name>/` 下保存一份针对该项目的启动方案。自 v2.1.215 起，`/verify` 只在被显式调用时才运行；此前 Claude 也可以自行触发它。如果没有保存的启动方案，`/verify` 会根据项目类型、README、`package.json` 或 `Makefile` 推断启动方式，这在标准配置下通常可靠，但在更复杂的流程中可能不够准确。需要 Claude Code v2.1.145 或更高版本。",
       "whenGood": [
         {
-          "title": "在提交非小改动之前",
-          "example": "在修复登录流程的 Bug 后使用 /verify,真正端到端地走一遍该流程,而不是只运行测试/类型检查。"
+          "title": "在提交一项非琐碎的改动之前，观察其真实运行效果",
+          "example": "修复登录流程的 bug 后执行 /verify，在实际运行中完整走一遍该流程"
         },
         {
-          "title": "有针对性地追踪受影响的流程",
-          "example": "在改动结账逻辑后调用 /verify,观察该流程在实际运行中是否真的正常工作。"
+          "title": "在自动识别反复不可靠之后，保存一份固定的启动方案",
+          "example": "每个项目执行一次 /run-skill-generator，之后再次执行 /verify"
         }
       ],
       "whenBad": [
         {
-          "title": "Diff 只涉及测试或文档",
-          "why": "这种情况下没有可观察的运行时界面。",
-          "alternative": "运行常规测试套件即可,无需 /verify。"
+          "title": "改动只涉及测试、文档或配置，不影响运行时行为",
+          "why": "这种情况下没有可运行的界面或可观察的行为需要检查",
+          "alternative": "运行常规测试套件即可，这里不需要 /verify"
+        },
+        {
+          "title": "项目运行依赖 /verify 并不了解的数据库、访问凭据或多阶段构建",
+          "why": "没有保存的方案时，/verify 会根据 README 或 package.json 猜测启动方式，在较复杂的配置下可能会失败",
+          "alternative": "提前执行 /run-skill-generator，把启动方案固定保存下来"
         }
       ],
       "sources": [
@@ -2957,7 +3012,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -2987,7 +3042,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3017,7 +3072,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3047,7 +3102,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3077,7 +3132,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3107,7 +3162,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3137,7 +3192,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3167,7 +3222,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3197,7 +3252,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3227,7 +3282,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3257,7 +3312,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3287,7 +3342,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3317,7 +3372,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Non-interactive Mode",
-          "url": "https://developers.openai.com/codex/noninteractive"
+          "url": "https://learn.chatgpt.com/docs/non-interactive-mode"
         }
       ]
     },
@@ -3352,7 +3407,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Reference",
-          "url": "https://developers.openai.com/codex/cli/reference"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3387,7 +3442,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Reference",
-          "url": "https://developers.openai.com/codex/cli/reference"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -3396,28 +3451,33 @@
       "slug": "apply",
       "name": "codex apply",
       "summary": "在本地应用一个在云端生成的 Diff。",
-      "what": "codex apply 会把例如通过云端任务(cloud/cloud exec/cloud list)生成的 Diff,应用到本地工作目录中。",
+      "what": "`codex apply <TASK_ID>`（简写：`codex a`）会把某个 Codex 云端聊天最新生成的 diff 应用到当前本地工作目录中。该命令通过 ID 获取对应的云端任务，提取其 diff，并通过 `git apply` 应用；前提是已完成身份验证，并且对该聊天有访问权限。成功时，Codex 会报告已应用的文件；如果 `git apply` 失败（例如出现冲突），命令会以错误码结束，并列出已应用、被跳过和发生冲突的路径。在官方文档中，该命令被标记为“Stable”（稳定）。要找到对应的任务 ID，可以使用 `codex cloud list`，它会列出现有的云端聊天及其状态和 URL；而 `codex cloud exec` 则用于发起一个新的云端任务。因此，`codex apply` 只是最后一步：把已经在云端生成好的 diff 应用到本地，而不涉及启动或管理云端任务本身。",
       "whenGood": [
         {
-          "title": "在本地采纳一次云端任务的结果",
-          "example": "codex apply <task-id> — 将云端生成的 Diff 应用到本地"
+          "title": "把云端任务的结果应用到本地",
+          "example": "codex apply <task-id> —— 把云端生成的 diff 应用到本地"
         },
         {
-          "title": "先检查云端结果,再决定是否在本地应用",
-          "example": "codex cloud list,然后对目标任务执行 codex apply"
+          "title": "在本地应用之前先查看云端结果，然后再应用",
+          "example": "codex cloud list --json，先找到任务 ID，然后执行 codex apply <task-id>"
         }
       ],
       "whenBad": [
         {
-          "title": "根本没有云端 Diff,只有本地改动",
-          "why": "codex apply 是用于在本地应用云端 Diff 的,不适用于纯本地的改动。",
-          "alternative": "直接在本地使用普通的 Codex 会话进行改动"
+          "title": "根本没有云端 diff，只有本地未纳入版本控制的改动",
+          "why": "codex apply 需要一个有效的云端任务 ID，并据此拉取对应的 diff；对于纯本地的工作，没有可供拉取的内容。",
+          "alternative": "直接用普通的 Codex 会话（codex）或 codex exec 在本地进行修改"
+        },
+        {
+          "title": "想要启动一个新的云端任务",
+          "why": "codex apply 只应用已经存在的 diff，本身不会启动新的云端任务。",
+          "alternative": "使用 codex cloud exec 来发起一个新的云端任务"
         }
       ],
       "sources": [
         {
           "title": "Codex CLI 文档：Reference",
-          "url": "https://developers.openai.com/codex/cli/reference"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -5011,18 +5071,27 @@
       "slug": "login",
       "name": "agent login",
       "summary": "通过浏览器登录流程,让 CLI 与 Cursor 账户完成身份验证。",
-      "what": "agent login 会打开浏览器登录流程,把 CLI 与你的 Cursor 账户关联起来。也可以不经浏览器,通过 --api-key(或环境变量 CURSOR_API_KEY)或 --auth-token(CURSOR_AUTH_TOKEN)完成身份验证。设置 NO_OPEN_BROWSER=1 后,会只输出登录 URL,而不自动在浏览器中打开,适合没有图形界面的远程服务器。",
+      "what": "`agent login` 会启动基于浏览器的 OAuth 登录流程，将 CLI 与 Cursor 账号关联；之后凭据会被安全地保存在本地。对于 CI/CD 或没有浏览器的服务器等自动化环境，还有其他方式：可以将通过 Cursor 控制台生成的 API 密钥设置为环境变量 `CURSOR_API_KEY`，或者直接通过全局参数 `--api-key <key>` 传入，这样就完全不需要登录流程了。如果无法自动打开浏览器，`NO_OPEN_BROWSER=1 agent login` 会改为只输出登录 URL，供手动打开。自 2026 年 7 月初起，在登录过程中（或首次启动时），还可以按 `q` 键为同一个 URL 显示一个二维码，方便例如通过 SSH 会话时用手机扫码完成登录。随时可以用 `agent status` 检查登录状态。",
       "whenGood": [
         {
-          "title": "在新电脑上首次配置 CLI",
+          "title": "在新电脑上首次设置该 CLI",
           "example": "agent login"
+        },
+        {
+          "title": "在没有浏览器窗口的远程服务器上通过 SSH 登录",
+          "example": "在执行 agent login 期间按下 q，用手机扫描显示出的二维码"
         }
       ],
       "whenBad": [
         {
-          "title": "CLI 以无图形界面(Headless)方式在服务器上运行,无法访问浏览器",
-          "why": "agent login 通常需要一个交互式的浏览器流程。",
-          "alternative": "通过 --api-key/CURSOR_API_KEY 设置身份验证,或导出 NO_OPEN_BROWSER=1,让它只输出登录 URL"
+          "title": "CLI 在 CI/CD 中以无头（headless）方式运行，没有交互式会话",
+          "why": "agent login 需要一个交互式的浏览器或二维码流程，没有用户输入就会一直阻塞。",
+          "alternative": "设置 CURSOR_API_KEY，或传入 --api-key <key>，跳过登录步骤"
+        },
+        {
+          "title": "电脑上无法自动打开浏览器",
+          "why": "agent login 默认会尝试直接启动系统默认浏览器。",
+          "alternative": "设置 NO_OPEN_BROWSER=1 agent login，然后手动打开输出的 URL"
         }
       ],
       "sources": [
@@ -5422,18 +5491,27 @@
       "slug": "create-chat",
       "name": "agent create-chat",
       "summary": "创建一个新的空聊天,并返回其 ID,便于在脚本中使用。",
-      "what": "agent create-chat 会创建一个空的聊天会话,并把它的 ID 打印到控制台,而不会直接开启交互式会话。之后可以用 --resume [chatId] 重新定位到这个 ID,例如从脚本中调用。",
+      "what": "`agent create-chat` 会创建一个新的空聊天会话，并且只在控制台输出该会话的 Chat ID，不会打开交互式会话，也不会发送任何提示。因此这个命令适合用在脚本和自动化流程中：先预留一个会话 ID，之后再有针对性地使用它。返回的 ID 可以通过全局选项 `--resume [chatId]` 重新调用，例如从一个独立的进程或脚本向这个特定会话发送提示。这使它区别于 `agent ls`（列出所有工作区中已有的聊天）和 `agent resume`（不指定 ID 时会直接继续最近活跃的会话）。`create-chat` 与 `login`、`logout`、`status` 和 `models` 属于同一个命令家族，都可以通过 `agent help [command]` 查阅文档。",
       "whenGood": [
         {
-          "title": "提前预留一个会话 ID,之后从脚本中通过 --resume 使用它",
+          "title": "提前预留一个会话 ID，以便之后在脚本中通过 --resume 使用",
           "example": "CHAT_ID=$(agent create-chat); agent --resume \"$CHAT_ID\" -p \"start task\""
+        },
+        {
+          "title": "在分发提示之前，预先创建多个独立的聊天 ID",
+          "example": "for i in 1 2 3; do agent create-chat; done > chat-ids.txt"
         }
       ],
       "whenBad": [
         {
-          "title": "只想直接开始和 Agent 聊天",
-          "why": "agent create-chat 只会创建一个空会话,不会开启对话。",
+          "title": "想直接开始，立刻与代理对话",
+          "why": "agent create-chat 只会创建一个空会话，不会发送提示，也不会开始对话。",
           "alternative": "直接使用 agent 或 agent \"<prompt>\""
+        },
+        {
+          "title": "想找回并继续之前的某个会话",
+          "why": "create-chat 总是创建一个新的空聊天 ID，而不会去查找已有的会话。",
+          "alternative": "使用 agent ls 列出会话，或使用 agent resume 继续最近活跃的会话"
         }
       ],
       "sources": [
@@ -8021,18 +8099,27 @@
       "slug": "list-agents",
       "name": "agy agent / agy agents",
       "summary": "列出可用的自定义 agent。",
-      "what": "agy agent 或 agy agents(子命令,自 1.1.1 版本起)显示可用的自定义 agent。查到的名称可以直接传给启动时的 --agent;在运行中的会话里,则由 /agents 面板负责选择 agent 以及监控正在运行的子 agent。",
+      "what": "`agy agent`（或 `agy agents`）是 Antigravity CLI 的一个子命令（自 1.1.1 版本起提供），会在启动会话之前，在命令行中列出所有可用的自定义代理（Custom Agents）。自定义代理以带有 YAML frontmatter 的 Markdown 文件 `agent.md` 定义，可以是项目级的 `.agents/agents/<name>/agent.md`，也可以是全局的 `~/.gemini/config/agents/<name>/agent.md`。用 `agy agents` 找到的名称可以直接传给启动选项 `--agent`，从而直接以该代理启动 CLI，例如 `agy --agent code-reviewer`。而在已经运行中的会话内，则由交互式的 `/agents` 面板来负责在多个代理之间切换，以及监控和终止正在运行的子代理。这两种方式相辅相成：子命令用于启动前的查询，面板用于会话期间的控制。需要将该命令与 `agy models` 区分开——后者列出的是可用模型，而不是代理。",
       "whenGood": [
         {
-          "title": "在启动前查询可用的自定义 agent",
-          "example": "运行 agy agents 来查找 --agent 需要的确切名称"
+          "title": "在启动前查询可用的自定义代理",
+          "example": "执行 agy agents，找到 --agent 需要的确切名称"
+        },
+        {
+          "title": "在启动时有针对性地选择一个全局定义的代理",
+          "example": "agy agents 显示了 code-reviewer；随后执行 agy --agent code-reviewer 就会直接以该代理启动"
         }
       ],
       "whenBad": [
         {
-          "title": "已经处于运行中的会话中,想要管理 agent 或监控子 agent",
-          "why": "该子命令只在 TUI 之外提供一次性的列表。",
-          "alternative": "在运行中的 agy 里使用 /agents"
+          "title": "已经处于运行中的会话，想在代理之间切换或监控子代理",
+          "why": "该子命令只在 TUI 之外提供一次性的列表，不具备选择或监控功能。",
+          "alternative": "在正在运行的 agy 中使用 /agents"
+        },
+        {
+          "title": "想查找的是可用模型而不是代理",
+          "why": "agy agent/agents 只列出自定义代理，不涉及模型。",
+          "alternative": "使用 agy models 列出可用的模型"
         }
       ],
       "sources": [
@@ -9769,22 +9856,27 @@
       "slug": "theme",
       "name": "/theme",
       "summary": "更改配色主题。",
-      "what": "更改配色主题。\n\n包括一个能匹配终端明暗背景的 auto 选项、明亮和深色变体、色盲友好（daltonized）主题、使用终端调色板的 ANSI 主题，以及来自 ~/.claude/themes/ 或插件的任何自定义主题。选择「新建自定义主题…」即可创建一个。",
+      "what": "`/theme` 命令打开 Claude Code 的配色方案选择界面。可选项包括：能根据终端背景是浅色还是深色自动适配的 `auto` 选项、固定的浅色和深色版本、适合色觉障碍者使用的（daltonized）主题，以及直接使用终端自身调色板的 ANSI 主题。此外还会显示来自 `~/.claude/themes/` 的自定义主题，以及已安装插件带来的主题。通过“New custom theme…”条目可以交互式创建自己的主题：先起名字，再逐个覆写颜色标记（color tokens）；在已选中的自定义主题上按 `Ctrl+E` 可以重新打开编辑器。从技术上说，每个自定义主题都是一个 JSON 文件，包含可选字段 `name`、`base`（预设，例如 `dark` 或 `light-daltonized`）和 `overrides`。Claude Code 会监视该文件夹并在不重启的情况下应用更改，除非该文件夹在首次启动时还不存在——这种情况下需要重启一次。自定义主题需要 Claude Code v2.1.118 或更高版本。",
       "whenGood": [
         {
-          "title": "切换到明亮或深色主题",
-          "example": "/theme"
+          "title": "切换到与终端匹配的深色或浅色主题",
+          "example": "执行 /theme 并选择 auto，让配色方案自动跟随终端背景"
         },
         {
-          "title": "选择一个色盲友好主题",
-          "example": "/theme"
+          "title": "创建带有自定义强调色的专属配色方案",
+          "example": "打开 /theme，选择 New custom theme…，覆写错误色、成功色等单个颜色标记"
         }
       ],
       "whenBad": [
         {
-          "title": "更改终端字体或大小",
-          "why": "/theme 只控制 Claude Code 的颜色，不涉及终端本身的渲染。",
-          "alternative": "使用你的终端应用自身的设置"
+          "title": "更改终端的字体、字号或窗口大小",
+          "why": "/theme 只控制 Claude Code 内部的颜色，不涉及终端本身的显示设置",
+          "alternative": "使用终端程序自身的设置"
+        },
+        {
+          "title": "自定义显示模型、目录或 Git 分支的状态栏",
+          "why": "这不属于 /theme 的功能范围，而是另一项独立的状态栏配置",
+          "alternative": "使用 /statusline 来设置自己的状态栏"
         }
       ],
       "sources": [
@@ -9833,23 +9925,28 @@
       "platform": "claude-code",
       "slug": "ultrareview",
       "name": "/ultrareview",
-      "summary": "在云端沙盒中运行深度、多智能体代码审查。",
-      "what": "在云端沙盒中运行深度、多智能体代码审查。\n\n传入 PR 引用即可审查该拉取请求，或传入分支名以更改对比基准。目前推荐的调用方式是 /code-review ultra，/ultrareview 仍作为别名保留。Pro 和 Max 计划包含 3 次免费运行，之后需要消耗使用额度。",
+      "summary": "实际命令现在是 code-review ultra，ultrareview 只是已废弃的别名。",
+      "what": "`/code-review ultra` 会在 Claude Code on the web 的云端沙箱中启动一次深度的多代理（multi-agent）代码审查：一组审查代理并行检查这处改动，并逐一对照实际代码验证每个发现。`/ultrareview` 是最初的名称，现在仍然可以使用，但目前只作为 `/code-review ultra` 的废弃别名保留。\n\n不带参数时，该命令会将当前分支与默认分支进行比较，同时包含未提交/已暂存的改动；只需要一个本地 Git 仓库，不需要 GitHub 远程仓库。传入一个分支名可以更改比较基准。传入 PR 编号而不是分支名，则会直接检查一个 GitHub Pull Request，无需本地上传任何内容；这需要仓库位于 github.com 或 GitHub Enterprise Server 上。\n\n审查在后台运行（可通过 `/tasks` 查看进度），大约需要 5 到 10 分钟。在 Pro 和 Max 套餐下，前 3 次运行免费，之后会消耗使用额度。",
       "whenGood": [
         {
-          "title": "对一个拉取请求进行彻底审查",
-          "example": "/ultrareview 42"
+          "title": "在合并较大改动之前，进行一次比本地审查更深入的检查",
+          "example": "在合并一个大型 feature 分支之前，在自己的分支上运行 `/code-review ultra`。"
         },
         {
-          "title": "与不同的基准分支进行对比",
-          "example": "/ultrareview main"
+          "title": "独立于本地检出，对一个 GitHub Pull Request 进行深度检查",
+          "example": "用 `/code-review ultra 1234` 直接从云端检查 PR #1234，无需在本地检出该分支。"
         }
       ],
       "whenBad": [
         {
-          "title": "只想快速本地查看一个小改动",
-          "why": "/ultrareview 会启动一次繁重的云端审查，对于快速浏览来说小题大做。",
-          "alternative": "直接让 Claude 查看本地 diff"
+          "title": "对小改动进行快速的本地审查",
+          "why": "云端运行需要 5 到 10 分钟，超出 3 次免费额度后会消耗使用额度；对于快速浏览来说过于重量级",
+          "alternative": "使用本地的 `/code-review`，或者直接让 Claude 查看 diff"
+        },
+        {
+          "title": "在零数据保留（Zero-Data-Retention）组织中使用，或在 Amazon Bedrock/Google Cloud/Microsoft Foundry 上使用",
+          "why": "Ultrareview 需要依赖 Claude Code on the web 的云端基础设施，在这些环境中不可用",
+          "alternative": "使用本地的 `/code-review`，并设置较高的 effort 级别"
         }
       ],
       "sources": [
@@ -9999,18 +10096,27 @@
       "slug": "pr-comments",
       "name": "/pr-comments",
       "summary": "已不存在——已在 2.1.91 版本中移除。",
-      "what": "已不存在——已在 2.1.91 版本中移除。\n\n现在不再有专门的命令，你可以直接让 Claude 查看拉取请求的评论。在更早的版本中，/pr-comments 会获取 GitHub 拉取请求的评论（自动检测当前分支对应的 PR，或接受 PR 的 URL 或编号），并需要 gh CLI。",
+      "what": "`/pr-comments` 已经不存在了——该命令在 Claude Code v2.1.91 中被移除。在 v2.1.90 及更早的版本中，它用于获取一个 GitHub Pull Request 的评论：自动识别当前分支对应的 PR，或者以参数形式指定 PR 的 URL 或编号；这需要 `gh` CLI 的支持。\n\n如今，只需直接让 Claude 查看某个 Pull Request 的评论即可，比如针对当前分支，或指定具体的 PR 编号或 URL；这种方式不需要专门的命令，效果和以前一样可靠。Claude 在后台仍然依赖 `gh` CLI 来完成这项工作，因此需要事先安装并登录该工具，否则查询会失败。\n\n如果想快速、只读地审查整个 Pull Request（包括 diff），可以改用 `/review <PR>`；如果想进行可调节投入程度的多阶段本地审查，可以使用 `/code-review <level> <PR>`。",
       "whenGood": [
         {
-          "title": "没有——该命令已不存在",
-          "example": "直接让 Claude：「看看 PR 42 上的评论。」"
+          "title": "获取当前分支对应 PR 的评论",
+          "example": "直接让 Claude：“查看一下这个分支对应 Pull Request 的评论。”"
+        },
+        {
+          "title": "获取指定 PR 编号或 URL 的评论",
+          "example": "直接让 Claude：“给我看看 PR https://github.com/org/repo/pull/42 的审查评论。”"
         }
       ],
       "whenBad": [
         {
-          "title": "在 2.1.91 或更高版本上",
-          "why": "该命令已在 2.1.91 版本中移除，不再有任何作用。",
+          "title": "在 2.1.91 或更新版本中输入 `/pr-comments`",
+          "why": "该命令已被移除，不再有任何作用",
           "alternative": "直接向 Claude 询问 PR 评论"
+        },
+        {
+          "title": "`gh` CLI 未安装或未登录",
+          "why": "无论是以前的命令还是现在的直接询问方式，获取 GitHub PR 数据都需要依赖 `gh` CLI",
+          "alternative": "执行 `gh auth login`，然后重新询问评论内容"
         }
       ],
       "sources": [
@@ -10046,7 +10152,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10081,7 +10187,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10116,7 +10222,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10146,7 +10252,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10176,7 +10282,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10211,7 +10317,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10246,7 +10352,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10276,7 +10382,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10311,7 +10417,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10346,7 +10452,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10381,7 +10487,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10416,7 +10522,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10451,7 +10557,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10486,7 +10592,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10521,7 +10627,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
@@ -10551,7 +10657,7 @@
       "sources": [
         {
           "title": "Codex CLI 文档：Slash Commands",
-          "url": "https://developers.openai.com/codex/cli/slash-commands"
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli"
         }
       ]
     },
