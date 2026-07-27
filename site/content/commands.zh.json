@@ -887,22 +887,27 @@
       "slug": "effort",
       "name": "/effort",
       "summary": "设置模型的 Effort 等级(思考强度)。",
-      "what": "设置模型的 Effort 等级(思考强度)。\n\n可选值:low、medium、high、xhigh、max、ultracode——具体取决于模型;max/ultracode 仅对当前会话生效。ultracode = xhigh 推理强度 + 自动工作流编排。'auto' 表示使用模型默认值。不带参数时会出现交互式滑块。设置后立即生效。自 v2.1.205 起也支持非交互式(-p)调用。",
+      "what": "`/effort` 用于控制模型在每一步上投入多少自适应推理。根据模型不同，可选值有 `low`、`medium`、`high`、`xhigh`、`max` 和 `ultracode`；其中 `max` 和 `ultracode` 仅对当前会话生效。`auto` 会重置回模型默认值。不带参数调用 `/effort` 会打开一个交互式滑块；带参数调用则会立即生效，不用等当前回答结束。\n\n`ultracode` 并不是一个真正的模型 Effort 档位，而是 Claude Code 自身的一项设置：它会向模型发送 `xhigh`，同时让 Claude 为更大规模的任务额外编排动态工作流。\n\n从 2.1.205 版本起，带档位参数的 `/effort` 在非交互模式（`-p`）下也能使用，但仅对当前这次会话生效。对某些模型，Claude Code 一开始会锁定其默认 Effort；只要这个锁定仍然生效，非交互式的 `/effort` 就只会报告 \"Not applied\"——此时只能通过启动时的 `--effort` 来解决。",
       "whenGood": [
         {
-          "title": "在处理棘手任务前提高思考强度",
+          "title": "在处理棘手任务前提高推理强度",
           "example": "/effort high"
         },
         {
-          "title": "通过交互式滑块选择等级",
+          "title": "通过交互式滑块选择档位",
           "example": "/effort"
         }
       ],
       "whenBad": [
         {
-          "title": "需要的是完全不同的模型",
-          "why": "/effort 只会调整当前模型的思考强度等级,不会改变模型本身的能力。",
+          "title": "根本上需要换一个不同的模型",
+          "why": "/effort 只会改变当前模型的推理强度档位，不会改变模型本身的能力。",
           "alternative": "/model"
+        },
+        {
+          "title": "想在存在模型默认锁定的情况下非交互式修改",
+          "why": "对某些模型，Claude Code 在首次使用时会锁定其默认 Effort；只要这个锁定仍然生效，非交互式的 /effort（-p）就只会报告「Not applied」。",
+          "alternative": "在启动 Claude Code 时传入 --effort，而不是在运行中的 -p 调用里设置 /effort。"
         }
       ],
       "sources": [
@@ -1813,21 +1818,21 @@
       "slug": "powerup",
       "name": "/powerup",
       "summary": "通过简短的交互式课程和动画演示来展示 Claude Code 的功能。",
-      "what": "通过简短的交互式课程和动画演示来展示 Claude Code 的功能。",
+      "what": "`/powerup` 通过简短的交互式课程和动画演示，让你直接在终端里熟悉 Claude Code 的各项功能，不用为此另外去翻阅文档。\n\n该命令在 2.1.90 版本中被引入，面向那些想要亲自试用新功能或不常用功能、而不只是阅读说明的用户：每节课都会通过一个动画演示来展示某项功能，让你直接看到它在实际使用中的效果。\n\n`/powerup` 并不是所有命令的纯粹查阅式参考——如果需要总览，`/help` 会给出命令列表，code.claude.com 上的官方文档则提供详细说明。`/powerup` 更像是一种循序渐进、寓教于乐地熟悉 Claude Code 的方式，而不是用来查找具体问题答案的工具书。",
       "whenGood": [
         {
-          "title": "以轻松的方式了解 Claude Code 的新功能",
-          "example": "更新后启动 /powerup，通过带演示的简短交互式课程发现新功能。"
+          "title": "以趣味方式了解新功能",
+          "example": "更新之后启动 /powerup，通过简短的交互式课程和演示来发现新功能。"
         },
         {
-          "title": "帮助新手熟悉 Claude Code 的各项功能",
-          "example": "让新加入的团队成员完成 /powerup，而不是要求他们通读全部文档。"
+          "title": "帮助新人熟悉 Claude Code",
+          "example": "让新加入的团队成员走一遍 /powerup，而不是让他们从头读完整的文档。"
         }
       ],
       "whenBad": [
         {
-          "title": "有针对性地查找已经了解的某个功能",
-          "why": "/powerup 展示的是精心编排的课程，而不是可供检索的单个命令参考手册。",
+          "title": "想针对性地查找某个已知功能",
+          "why": "/powerup 展示的是精选课程，而不是可供检索的单个命令参考。",
           "alternative": "使用 /help 查看命令总览，或直接查阅文档。"
         }
       ],
@@ -2203,22 +2208,27 @@
       "slug": "rewind",
       "name": "/rewind",
       "summary": "将对话和/或代码回退到更早的节点,或者从某条选定消息开始进行总结。",
-      "what": "将对话和/或代码回退到更早的节点,或者从某条选定消息开始进行总结。\n\n详情参见 code.claude.com/docs/en/checkpointing。别名:/checkpoint、/undo。",
+      "what": "`/rewind` 会打开一个菜单，列出你在本次会话中发送过的每一条 Prompt。你先选择一个时间点，再选择一个操作：恢复代码和对话、只恢复对话、只恢复代码、从该处开始汇总，或汇总到该处为止。只有在该时间点确实存在被追踪的文件改动时，两个「代码」相关的选项才会出现。\n\n除了使用该命令，你也可以在输入框为空时连按两次 `Esc`，打开同一个菜单。从 2.1.191 版本起，你甚至可以回退到一次已被清空的对话之前：执行 `/clear` 之后，菜单中会出现一个额外条目，用于返回上一个会话。\n\n汇总操作不会改动任何文件，只是把部分对话记录压缩成一份摘要；原始消息仍会保留在记录中。\n\n别名：`/checkpoint`、`/undo`。",
       "whenGood": [
         {
-          "title": "在修复失败后,把对话和代码状态一并回退",
-          "example": "/rewind"
+          "title": "撤销一次失败的修复",
+          "example": "调用 /rewind，选择那次失败尝试之前的时间点，使用 \"Restore code and conversation\" 将代码和对话一并恢复。"
         },
         {
-          "title": "从某条选定消息开始总结,而不是完全回退",
-          "example": "/rewind"
+          "title": "只压缩一部分对话",
+          "example": "打开 /rewind，在较早的一条消息处选择 \"Summarize from here\"，从那里开始汇总以释放上下文，同时不改动代码。"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想重新查看之前的文字内容",
-          "why": "/rewind 会回退对话、甚至可能回退代码状态——如果只是想查阅历史内容,这样做对当前代码状态来说存在不必要的风险。",
-          "alternative": "直接在对话记录中向上滚动查看"
+          "title": "只是想回看之前的一段文字",
+          "why": "/rewind 会重置对话、乃至代码状态——如果只是想回看内容，这样做对当前代码状态而言风险过大、没有必要。",
+          "alternative": "直接在记录中向上滚动查看。"
+        },
+        {
+          "title": "想撤销 Claude 执行过的 Bash 命令",
+          "why": "Checkpoint 机制只追踪 Claude 自身编辑工具所做的文件改动，不追踪像 rm、mv 或 cp 这类 Bash 命令带来的改动——这些改动无法通过 /rewind 撤销。",
+          "alternative": "使用 Git 来撤销这类改动。"
         }
       ],
       "sources": [
@@ -2453,22 +2463,22 @@
       "slug": "setup-vertex",
       "name": "/setup-vertex",
       "summary": "为 Google Cloud 的 Agent Platform 配置身份验证、项目、区域和模型固定版本。",
-      "what": "为 Google Cloud 的 Agent Platform 配置身份验证、项目、区域和模型固定版本。\n\n仅在设置 CLAUDE_CODE_USE_VERTEX=1 时可见。",
+      "what": "`/setup-vertex` 通过一个交互式向导，为 Google Cloud 的 Agent Platform（文档如今这样称呼此前的「Vertex AI」，但登录界面仍然显示「Google Vertex AI」）配置身份验证、项目、区域和模型锁定。\n\n作为独立的斜杠命令，`/setup-vertex` 只有在设置了 `CLAUDE_CODE_USE_VERTEX=1` 时才可见。即使没有设置这个变量，你依然可以进入同一个向导：首次启动 `claude` 时，在登录提示界面选择 \"3rd-party platform\"，再选择 \"Google Vertex AI\"；如果已经登录，则用 `/login` 打开同一个菜单。\n\n向导第一次跑完之后，你可以随时再次调用 `/setup-vertex`，用来修改凭据、项目、区域或模型锁定；此时模型锁定这一步会以你当前已锁定的模型作为起点。结果会保存在 `~/.claude/settings.json`，如果设置了 `CLAUDE_CONFIG_DIR` 变量，则保存在 `$CLAUDE_CONFIG_DIR/settings.json`。",
       "whenGood": [
         {
           "title": "团队使用 Google Cloud 的 Agent Platform",
-          "example": "在设置了 CLAUDE_CODE_USE_VERTEX=1 的情况下运行 /setup-vertex,配置身份验证、项目、区域和模型固定版本(Model-Pins)。"
+          "example": "在设置了 CLAUDE_CODE_USE_VERTEX=1 的情况下执行 /setup-vertex，通过向导配置身份验证、项目、区域和模型锁定。"
         },
         {
-          "title": "Vertex 项目或区域变更",
-          "example": "在更换 Google Cloud 项目后,重新运行一遍 /setup-vertex 以调整配置。"
+          "title": "之后再调整模型锁定",
+          "example": "在更换了 Google Cloud 项目之后再次调用 /setup-vertex；模型锁定这一步会以当前已锁定的模型作为起点。"
         }
       ],
       "whenBad": [
         {
-          "title": "未设置环境变量的情况下",
-          "why": "根据文档,只有设置了 CLAUDE_CODE_USE_VERTEX=1,/setup-vertex 才可见。",
-          "alternative": "先设置该环境变量,或者在正常使用 Anthropic 账户时使用 /login。"
+          "title": "没有设置环境变量时，作为斜杠命令使用",
+          "why": "/setup-vertex 只有在设置了 CLAUDE_CODE_USE_VERTEX=1 时才会出现在斜杠命令菜单中。",
+          "alternative": "启动 claude，在登录提示界面选择 \"3rd-party platform\" → \"Google Vertex AI\"；如果已登录，则使用 /login——这两种方式即使不设置该环境变量，也能打开同一个向导。"
         }
       ],
       "sources": [
@@ -2762,23 +2772,28 @@
       "platform": "claude-code",
       "slug": "usage",
       "name": "/usage",
-      "summary": "显示 API 使用情况、Token 数量和花费。",
-      "what": "显示 API 使用情况、Token 数量和花费。\n\n别名:/cost、/stats。",
+      "summary": "还会显示套餐限额和活动统计，不只是 API 成本",
+      "what": "`/usage` 展示你在当前会话中的消耗情况：Token 数量、一个估算的成本指标，以及——在 Pro、Max、Team 和 Enterprise 套餐上——你的套餐限额和活动统计数据。\n\n会话区块中的成本指标是 Claude Code 在本地根据 Token 数量、按标准公开定价计算得出的；因此它可能与你实际的账单不同，主要面向 API 用户。在订阅套餐上，`/usage` 还会额外展示一份细分，说明哪些内容计入你的限额——按 Skill、子代理、插件以及各个 MCP 服务器分类，并在占比达到 10% 以上时，提示诸如长上下文或缓存未命中之类的成本驱动因素。用 `d`/`w` 可以在最近 24 小时和最近 7 天之间切换。这些数字仅来自这台设备上的本地会话历史，不包含其他设备或 claude.ai 上的数据。\n\n别名：`/cost` 和 `/stats`（后者会直接打开 Stats 标签页）。",
       "whenGood": [
         {
-          "title": "定期查看费用概况",
-          "example": "在启动较大任务之前调用 /usage,掌握 Token 数量和支出情况。"
+          "title": "定期查看成本概览",
+          "example": "在启动一个较大的任务之前调用 /usage，查看 Token 数量、估算成本，以及（在订阅套餐上）套餐限额。"
         },
         {
-          "title": "追溯高开销任务的费用",
-          "example": "在完成一次长时间的 /batch 运行或 Agent 循环后,查看 /usage,了解该任务花费了多少。"
+          "title": "按 Skill 查找消耗来源",
+          "example": "在一次较长的 /batch 运行之后检查 /usage，通过按 Skill、子代理、插件和 MCP 服务器的细分，查看哪一项占用了最大份额。"
         }
       ],
       "whenBad": [
         {
-          "title": "检查会话的上下文窗口占用情况",
-          "why": "/usage 显示的是 API 使用量/费用,而不是当前上下文窗口的占用程度。",
-          "alternative": "使用 /context 以彩色网格形式查看上下文使用情况。"
+          "title": "想查看上下文窗口的占用情况",
+          "why": "/usage 显示的是 Token 消耗、成本和套餐限额，而不是当前上下文窗口的占用程度。",
+          "alternative": "使用 /context，它会以彩色网格的形式可视化上下文占用情况。"
+        },
+        {
+          "title": "需要确切的账单金额",
+          "why": "会话区块中的美元数字是 Claude Code 在本地按标准公开定价、根据 Token 数量计算出来的——由于没有计入促销价格和折扣，可能与实际账单存在出入。",
+          "alternative": "如需确切的账单信息，请使用 Claude Console 中的 Usage 页面。"
         }
       ],
       "sources": [
@@ -2823,18 +2838,22 @@
       "slug": "vim",
       "name": "/vim",
       "summary": "已不存在——在 2.1.92 版本中移除。",
-      "what": "已不存在——在 2.1.92 版本中移除。\n\n现在通过 /config → Editor mode 切换 Vim 模式。快捷键本身保留，只是取消了专用命令。",
+      "what": "`/vim` 已经不存在了。该命令在 2.1.92 版本中从 Claude Code 中被移除——与它一起移除的还有同一版本中的 `/tag`。\n\n此后，你需要通过 `/config` → Editor mode 来切换 Vim 模式。功能本身没有变化：NORMAL、INSERT 和 VISUAL 模式及其快捷键仍和以前一样正常工作，只是专门对应的斜杠命令没有了。一个实用的细节是：`/config` 菜单中的搜索同样会匹配选项的取值——在那里输入「vim」，会直接跳转到对应的 Editor Mode 设置，而不用在列表中手动翻找。\n\n在 2.1.92 之前的版本中，`/vim` 命令依然正常存在。",
       "whenGood": [
         {
-          "title": "没有了——该命令已移除",
-          "example": "运行 /config，在“Editor mode”下在 Vim 与 Normal 之间切换。"
+          "title": "没有了——命令已被移除",
+          "example": "调用 /config，在 \"Editor mode\" 下在 Vim 和 Normal 之间切换。"
+        },
+        {
+          "title": "快速找到 Vim 相关设置",
+          "example": "在 /config 菜单中输入 \"vim\"，直接跳转到 Editor Mode 选项，而不用在列表中手动滚动查找。"
         }
       ],
       "whenBad": [
         {
-          "title": "在 2.1.92 及更高版本上",
-          "why": "该命令在 2.1.92 中被移除，已无作用",
-          "alternative": "改用 /config → Editor mode"
+          "title": "在 2.1.92 及以上版本中",
+          "why": "该命令已在 2.1.92 中被移除，不再有任何作用。",
+          "alternative": "使用 /config → Editor mode。"
         }
       ],
       "sources": [
@@ -3243,22 +3262,27 @@
       "slug": "review-cli",
       "name": "codex review",
       "summary": "通过 CLI 对改动执行 Review。",
-      "what": "codex review 用于对代码改动执行 Review,支持 --uncommitted、--base、--commit 和 --title 等参数,用来指定要检查哪些改动以及如何为该次 Review 命名。",
+      "what": "`codex review` 通过命令行非交互式地执行代码审查，也就是说不会打开一个正在运行的 TUI 会话。\n\n根据文档，你需要恰好选择一个审查目标：`--uncommitted`（已暂存、未暂存以及未跟踪的改动）、`--base <branch>`（与某个基准分支的差异）、`--commit <SHA>`（某个特定提交的改动），或者以自由文本形式给出自己的审查指令 `PROMPT`（也可用 `-` 从 stdin 读取）——根据文档，这些选项彼此互斥。`--title` 用于设置审查摘要中显示的提交标题，但只有配合 `--commit` 使用时才生效。此外还有 `--strict-config`，当 `config.toml` 中包含未知字段时会触发报错。需要与独立的 `codex review` 调用区分开的是斜杠命令 `/review`，根据 Codex 源码，它是在已经运行中的交互式会话内使用的，同样可以接受内联参数作为指令。",
       "whenGood": [
         {
-          "title": "在提交前对尚未提交的改动进行 Review",
+          "title": "提交前审查未提交的改动",
           "example": "codex review --uncommitted"
         },
         {
-          "title": "针对某个特定分支对改动进行 Review",
-          "example": "codex review --base main"
+          "title": "审查带标题的特定提交",
+          "example": "codex review --commit a1b2c3d --title \"修复登录 Bug\""
         }
       ],
       "whenBad": [
         {
-          "title": "希望 Review 是正在运行的交互式会话的一部分",
-          "why": "codex review 是在 TUI 会话之外独立运行的 CLI 调用。",
-          "alternative": "在正在运行的会话中改用 /review"
+          "title": "同时指定多个审查目标",
+          "why": "根据文档，--uncommitted、--base、--commit 和自定义的 PROMPT 彼此互斥——只允许选择一个选项。",
+          "alternative": "只选择一个目标选项，例如仅使用 --base main"
+        },
+        {
+          "title": "希望审查是正在进行的交互式会话的一部分",
+          "why": "codex review 是一个独立的、非交互式的 CLI 调用，在运行中的 TUI 会话之外执行。",
+          "alternative": "在运行中的会话内改用 /review"
         }
       ],
       "sources": [
@@ -3273,22 +3297,27 @@
       "slug": "resume-cli",
       "name": "codex resume",
       "summary": "通过 CLI 继续此前的 Codex 会话。",
-      "what": "codex resume 用于继续此前的会话,可以使用 resume --last 继续最近一次使用的会话,也可以指定具体的会话 ID。同样的续接逻辑在非交互模式下也存在,对应 exec resume --last/<ID>。",
+      "what": "`codex resume` 从终端继续一个此前的交互式会话，既可以通过指定 `SESSION_ID` 精确定位，也可以用 `--last` 笼统地指向最近使用过的会话。\n\n`--last` 默认只针对当前工作目录下的会话；加上 `--all` 后，也会包含当前目录之外的会话。`--include-non-interactive` 会进一步把非交互式会话也纳入选择范围（无论是选择器还是 `--last`）。对于非交互模式，同样的续接逻辑以 `codex exec resume [SESSION_ID]` 的形式存在，同样支持 `--last`/`--all`，此外还可以直接附加一个后续 `PROMPT`，以及用 `--image`/`-i` 为这个后续任务附加图片。需要与独立的 `codex resume` 调用区分开的是斜杠命令 `/resume`，根据 Codex 源码，它是在已经运行中的会话内使用的，用于切换到另一个已保存的会话。",
       "whenGood": [
         {
-          "title": "直接从命令行继续最近一次会话",
+          "title": "直接继续上一个会话",
           "example": "codex resume --last"
         },
         {
-          "title": "有针对性地继续某个特定的历史会话",
-          "example": "codex resume <ID>"
+          "title": "在脚本中非交互式地继续会话",
+          "example": "codex exec resume --last \"简要总结一下最近的改动\""
         }
       ],
       "whenBad": [
         {
           "title": "已经处于正在运行的交互式会话中",
-          "why": "在 TUI 内部续接会话时,不需要使用独立的 CLI 调用。",
-          "alternative": "在会话内部使用 /resume"
+          "why": "若只是想在 TUI 内切换会话，单独调用 codex resume 没有必要。",
+          "alternative": "在会话内使用 /resume"
+        },
+        {
+          "title": "想继续另一个目录下的会话",
+          "why": "--last 默认只针对当前工作目录。",
+          "alternative": "使用 codex resume --all，将当前目录之外的会话也纳入范围"
         }
       ],
       "sources": [
@@ -3512,18 +3541,27 @@
       "slug": "logs",
       "name": "/logs",
       "summary": "显示当前调试日志文件的路径,并复制到剪贴板。",
-      "what": "/logs 显示当前会话调试日志文件的路径,并将其复制到剪贴板。每个会话都会持续写入调试日志。",
+      "what": "`/logs` 是一个斜杠命令，你在运行中的 Cursor CLI 会话内输入它。它会显示当前会话调试日志文件的路径，并同时将其复制到剪贴板。\n\nCursor 会持续为每个会话记录调试日志。在多人共用的机器上，自 2026 年 6 月起，这些日志会按用户分开存放，以避免同一台主机上多个账号之间出现权限错误；此外，在这种情况下显示的路径会在屏幕上停留更长时间。\n\n因此，该命令只会提供本地日志文件的路径——它既不会显示文件内容，也不会把文件上传到任何地方。如果是为了具体的支持请求，搭配使用 `/copy-request-id`（复制最近一次请求的 ID）或 `/about`（版本和系统信息）会更有意义。",
       "whenGood": [
         {
           "title": "为支持请求准备日志文件",
-          "example": "/logs — 复制路径并附加到支持工单(Support Ticket)中"
+          "example": "/logs——复制路径并附加到支持工单中"
+        },
+        {
+          "title": "在多人共用的机器上找到自己的日志路径，且不出现权限错误",
+          "example": "在共用机器上执行 /logs，获取按用户区分的日志路径"
         }
       ],
       "whenBad": [
         {
-          "title": "只需要最后一次请求的 ID,而不是完整日志文件",
-          "why": "/logs 给出的是文件路径,而不是单个 ID。",
-          "alternative": "使用 /copy-request-id 获取最后一次请求的 ID"
+          "title": "只需要最近一次的 Request ID，而不是完整日志文件",
+          "why": "/logs 提供的是文件路径，不是单个 ID。",
+          "alternative": "使用 /copy-request-id 获取最近一次的 Request ID"
+        },
+        {
+          "title": "想直接在终端中查看日志内容",
+          "why": "/logs 只复制路径，不会显示文件内容。",
+          "alternative": "用复制到的路径手动打开该文件，例如用编辑器打开"
         }
       ],
       "sources": [
@@ -4368,19 +4406,28 @@
       "platform": "cursor-cli",
       "slug": "copy",
       "name": "/copy",
-      "summary": "把自己更早发送的一条消息复制到剪贴板。",
-      "what": "/copy 会把会话中自己早前发送的一条消息复制到剪贴板。",
+      "summary": "根据更新日志，还能通过步骤选择器复制 Agent 的回答，不只是自己的消息",
+      "what": "`/copy` 是运行中的 Cursor CLI 会话内的一个斜杠命令。根据官方参考表格，它会把记录中你自己发过的一条消息复制到剪贴板；你需要从列表中选择想要的那条消息。\n\n2026 年 6 月 22 日的更新日志描述了一个增强版本：通过一个选择器，还可以进一步选取一次多步骤 Agent 回答中的某一个步骤，这样 `/copy` 除了你自己的消息之外，也能复制 Agent 的回答内容；此外，复制较长回答时终端不会再卡住。\n\n斜杠命令参考文档中的这段简短描述，因此比更新日志中实际记录的功能范围要简略——所以不要想当然地以为 `/copy` 只能复制你自己的消息。",
       "whenGood": [
         {
           "title": "在另一个会话中复用之前用过的 Prompt",
-          "example": "/copy — 选择对应的消息,再粘贴到新聊天中"
+          "example": "/copy——选择对应的自己发过的消息，再粘贴到新的对话中"
+        },
+        {
+          "title": "有针对性地复制多步骤 Agent 回答中的某一步",
+          "example": "/copy——在选择器中选取想要的 Agent 回答步骤"
         }
       ],
       "whenBad": [
         {
-          "title": "想复制 Agent 的完整回复,而不是自己发的消息",
-          "why": "/copy 针对的是自己发送的消息,而不是 Agent 的回复。",
-          "alternative": "在终端中手动选中并复制 Agent 的回复"
+          "title": "只是需要一个用于支持请求的 ID",
+          "why": "/copy 复制的是消息内容（自己的消息，或根据更新日志也可以是 Agent 的步骤），而不是 Request ID。",
+          "alternative": "使用 /copy-request-id"
+        },
+        {
+          "title": "想当然地认为按参考表格的说法，/copy 只能复制自己的消息",
+          "why": "2026 年 6 月 22 日的更新日志额外记录了一个针对 Agent 回答步骤的选择器——参考表格在这一点上并不完整。",
+          "alternative": "在选择器中仔细确认选中的到底是自己的消息，还是 Agent 的某个步骤"
         }
       ],
       "sources": [
@@ -5454,18 +5501,27 @@
       "slug": "mcp-list-tools",
       "name": "agent mcp list-tools <identifier>",
       "summary": "列出某个具体 MCP 服务器上可用的工具及其参数。",
-      "what": "agent mcp list-tools <identifier> 会显示某个 MCP 服务器上的工具名称、描述,以及必填和可选参数及其类型。",
+      "what": "`agent mcp list-tools <identifier>` 是 Cursor CLI 的一个终端子命令——你在 Shell 中以 `cursor-agent mcp list-tools <identifier>` 的形式直接调用它，而不是在运行中的会话内作为斜杠命令使用。在会话内，`/mcp list-tools` 提供了类似的功能。\n\n该命令会展示某个已配置好的 MCP 服务器所提供的全部工具：名称、描述，以及各自的参数（含必填/可选状态和类型）。`<identifier>` 对应你 `mcp.json` 中的服务器名称；包含空格的名称同样受支持。\n\n由此，该命令与 `agent mcp list` 有所不同——后者只列出已配置的服务器及其连接状态，不提供工具细节。配置的优先级顺序与编辑器中一致：项目级优先于全局级，全局级优先于嵌套配置。",
       "whenGood": [
         {
-          "title": "在使用前检查某个 MCP 工具需要哪些参数",
-          "example": "agent mcp list-tools playwright"
+          "title": "在首次使用某个 MCP 工具前检查其参数",
+          "example": "cursor-agent mcp list-tools playwright"
+        },
+        {
+          "title": "修改 mcp.json 后查看某个服务器目前提供哪些工具",
+          "example": "cursor-agent mcp list-tools github"
         }
       ],
       "whenBad": [
         {
-          "title": "还不知道服务器的标识符(Identifier)",
+          "title": "还不知道服务器的标识符",
           "why": "agent mcp list-tools 需要一个具体的标识符作为参数。",
-          "alternative": "先用 agent mcp list 查看已配置的标识符"
+          "alternative": "先使用 cursor-agent mcp list 查看已配置的标识符"
+        },
+        {
+          "title": "只是想快速确认某个服务器是否已连接",
+          "why": "list-tools 展示的是工具细节，而不是服务器的连接状态。",
+          "alternative": "使用 cursor-agent mcp list"
         }
       ],
       "sources": [
@@ -5514,18 +5570,27 @@
       "slug": "mcp-disable",
       "name": "agent mcp disable <identifier>",
       "summary": "禁用某个 MCP 服务器,使其不再加载,也不再请求授权。",
-      "what": "agent mcp disable <identifier> 会彻底禁用一个已配置的 MCP 服务器;此后它既不会加载,也不会再请求授权。",
+      "what": "`agent mcp disable <identifier>` 是一个终端子命令——在 Shell 中直接以 `cursor-agent mcp disable <identifier>` 的形式调用，不是斜杠命令。它会彻底禁用一个已配置的 MCP 服务器：此后该服务器既不会在启动时加载，CLI 也不会再为它请求批准。\n\n它的对应命令是 `agent mcp enable <identifier>`，用于把某个服务器重新加入本地已批准的列表。同样的操作也可以在运行中的会话内，通过 `/mcp` 的交互式详情视图完成——在那里还可以针对每个服务器执行登录、退出登录（并删除已保存的 OAuth 凭据）、启用和禁用。\n\n该设置是针对整个服务器、长期生效的，而不是只对当前这一次请求或会话生效——它会一直保持，直到你重新启用该服务器。",
       "whenGood": [
         {
-          "title": "关闭一个有问题或不再需要的 MCP 服务器",
-          "example": "agent mcp disable old-server"
+          "title": "关闭一个出错或不再需要的 MCP 服务器",
+          "example": "cursor-agent mcp disable old-server"
+        },
+        {
+          "title": "在演示前隐藏一个内部/实验性服务器，避免它反复请求批准",
+          "example": "cursor-agent mcp disable playwright-experimental"
         }
       ],
       "whenBad": [
         {
-          "title": "只想在一次运行中暂时忽略某个服务器",
-          "why": "agent mcp disable 是一项持久的、针对具体服务器的设置。",
-          "alternative": "在相关 Prompt 中干脆不涉及该服务器,或调整项目专属的 mcp.json"
+          "title": "只是想在单次运行中临时忽略某个服务器",
+          "why": "agent mcp disable 是一项针对服务器的长期设置。",
+          "alternative": "直接在相关 Prompt 中不引用该服务器，或者调整项目专属的 mcp.json"
+        },
+        {
+          "title": "只是想临时下线服务器，但保留已保存的 OAuth 凭据",
+          "why": "disable 只改变加载/批准状态，不会改变凭据。",
+          "alternative": "通过 /mcp 打开详情视图，如果需要移除凭据，就有针对性地选择 Logout 而不是 Disable"
         }
       ],
       "sources": [
@@ -5657,18 +5722,27 @@
       "slug": "sandbox-help",
       "name": "agent sandbox help [command]",
       "summary": "显示沙箱子命令的帮助信息。",
-      "what": "agent sandbox help [command] 会显示沙箱子命令(enable、disable、reset、run)的帮助信息,也可以针对某个具体子命令查看详情。",
+      "what": "`agent sandbox help [command]` 是一个终端子命令——以 `cursor-agent sandbox help [command]` 的形式调用，而不是斜杠命令。它会显示 `agent sandbox` 各个子命令的帮助文本：`enable`、`disable`、`reset` 和 `run <cmd> [args...]`。不带参数时会列出全部四个子命令；带某个子命令作为参数时，则显示该子命令的细节，例如 `run` 的各项选项。\n\n沙箱模式本身会在一个受限环境中执行命令，默认阻止文件访问和网络活动（`--network` 默认值为 `false`，`--sandbox` 默认值为 `true`）。通过 `run`，可以指定额外的读写路径（`--allow-paths`）、只读路径（`--readonly-paths`），以及类似 gitignore 的屏蔽模式（`--blocked-patterns`）；`--sb-debug` 会把沙箱调试日志写入一个临时目录。\n\n需要与之区分的是交互式斜杠命令 `/sandbox`，它会在会话内打开一个用于配置沙箱模式的菜单。",
       "whenGood": [
         {
-          "title": "查阅 sandbox run 可用的参数选项",
-          "example": "agent sandbox help run"
+          "title": "查阅 sandbox run 的可用选项",
+          "example": "cursor-agent sandbox help run"
+        },
+        {
+          "title": "了解所有沙箱子命令的总览",
+          "example": "cursor-agent sandbox help"
         }
       ],
       "whenBad": [
         {
-          "title": "只想快速看一下正在输入的 sandbox 命令的选项",
-          "why": "agent sandbox help command 是单独的一次调用。",
-          "alternative": "直接附加 -h 或 --help,例如 agent sandbox run --help"
+          "title": "只想快速查看当前正在输入的 sandbox 命令的选项",
+          "why": "agent sandbox help command 是一次单独的调用。",
+          "alternative": "直接在命令后加上 -h 或 --help，例如 cursor-agent sandbox run --help"
+        },
+        {
+          "title": "想在当前会话中交互式地切换沙箱模式",
+          "why": "agent sandbox help 只显示帮助文本，不会更改任何设置。",
+          "alternative": "在运行中的会话内使用 /sandbox"
         }
       ],
       "sources": [
@@ -5744,18 +5818,27 @@
       "slug": "worker-help",
       "name": "agent worker help [command]",
       "summary": "显示 Worker 子命令的帮助信息。",
-      "what": "agent worker help [command] 会显示 Worker 子命令(start、debug)的帮助信息,也可以针对某个具体子命令查看详情。",
+      "what": "`agent worker help [command]` 是一个终端子命令——在 Shell 中以 `cursor-agent worker help [command]` 的形式调用，不是斜杠命令。它会显示 `agent worker` 各个子命令 `start` 和 `debug` 的帮助文本；不带参数时会列出这两个子命令，带其中一个作为参数时，则显示该子命令的细节和各项 Flag。\n\nWorker 是一个自托管实例，它会与 Cursor 云端建立一条持久的出站 HTTPS 连接，并在你自己的基础设施中执行终端命令、文件改动以及其他工具调用——例如用于 Cloud Agents，或者作为个人的「My Machines」机器。`agent worker start` 会注册并启动这条连接，可用的 Flag 包括 `--pool`、`--worker-dir`、`--label` 或 `--idle-release-timeout` 等。`agent worker debug` 则会预先检查身份验证、隐私路由、仓库标签，以及 Cursor 是否真的能看到匹配的 Worker。",
       "whenGood": [
         {
-          "title": "查阅 worker start 可用的参数,例如资源池(Pool)相关配置",
-          "example": "agent worker help start"
+          "title": "查阅 worker start 的可用 Flag，例如用于配置 Pool",
+          "example": "cursor-agent worker help start"
+        },
+        {
+          "title": "在正式使用前了解 worker debug 具体检查什么",
+          "example": "cursor-agent worker help debug"
         }
       ],
       "whenBad": [
         {
-          "title": "只想快速看一下正在输入的 worker 命令的选项",
-          "why": "agent worker help command 是单独的一次调用。",
-          "alternative": "直接附加 -h 或 --help,例如 agent worker start --help"
+          "title": "只想快速查看当前正在输入的 worker 命令的选项",
+          "why": "agent worker help command 是一次单独的调用。",
+          "alternative": "直接在命令后加上 -h 或 --help，例如 cursor-agent worker start --help"
+        },
+        {
+          "title": "想直接启动或测试一个 Worker",
+          "why": "agent worker help 只显示帮助文本，不会把任何 Worker 连接到 Cursor。",
+          "alternative": "直接执行 cursor-agent worker start 或 cursor-agent worker debug"
         }
       ],
       "sources": [
@@ -9671,18 +9754,27 @@
       "slug": "compact",
       "name": "/compact",
       "summary": "压缩当前聊天的上下文。",
-      "what": "压缩当前聊天的上下文，为上下文窗口腾出空间。\n\nCodex 会用一份精简摘要替换之前的历史记录，让会话得以继续，而不会丢失较早的消息。",
+      "what": "汇总当前可见的对话记录，以便释放上下文窗口中的 Token。在 Codex CLI 的源码中，其用途被逐字描述为「summarize conversation to prevent hitting the context limit」——也就是说，`/compact` 的作用是预防性地避免对话触及上下文上限。\n\n根据源码，当 Codex 正在积极处理某个任务时，无法触发该命令；因此你必须等到当前轮次结束后才能使用。如今 Codex 本身也会在后台自动压缩对话记录，一旦达到某个 Token 预算阈值就会触发——根据发布说明（包括 2026 年 7 月的 rust-v0.143.0 和 rust-v0.145.0），这项自动压缩现已配有可配置的回退设置，以及围绕它的 session-start 钩子。`/compact` 额外让你能够在 Codex 自行触发之前，主动抢先手动执行一次压缩。该命令同时出现在终端 CLI 参考文档和通用 App 输入框总览中。",
       "whenGood": [
         {
-          "title": "在不重新开始的情况下为长对话腾出空间",
-          "example": "/compact"
+          "title": "在长任务开始前腾出空间",
+          "example": "在启动一个新的、规模较大的调研任务之前调用 /compact，避免此前的对话记录不必要地占用上下文。"
+        },
+        {
+          "title": "手动压缩，而不是等待",
+          "example": "在一段较长的调试过程之后直接输入 /compact，而不是等待后台自动压缩。"
         }
       ],
       "whenBad": [
         {
-          "title": "聊天内容还很短",
-          "why": "压缩会损失细节；只要上下文空间还够用，压缩就没有意义。",
-          "alternative": "继续正常使用即可"
+          "title": "Codex 仍在积极工作时",
+          "why": "根据源码，/compact 属于任务执行期间不可用的命令之一。",
+          "alternative": "等待当前任务完成（或取消任务），再调用 /compact"
+        },
+        {
+          "title": "对话还很短",
+          "why": "汇总会牺牲细节；只要上下文窗口还有足够空间，压缩带来的收益就很有限。",
+          "alternative": "直接继续工作"
         }
       ],
       "sources": [
@@ -9696,23 +9788,28 @@
       "platform": "codex-cli",
       "slug": "reasoning",
       "name": "/reasoning",
-      "summary": "为当前聊天选择推理强度。",
-      "what": "为当前聊天选择推理强度。\n\n推理程度越高，回答越周全，但速度更慢、成本更高；推理程度越低则更快更省。该设置作用于正在进行的这个聊天。",
+      "summary": "在 Codex 终端 CLI 中没有独立命令，参见 /model",
+      "what": "根据通用的 Codex 斜杠命令参考文档（该页面明确标注为 ChatGPT 桌面应用参考），`/reasoning` 用于为当前对话选择推理强度（Reasoning Effort）。\n\n对终端 CLI 而言有一个重要限制：在 CLI 界面参考页面自带的「Built-in slash commands」表格中并未出现 `/reasoning`，Codex CLI 的开源代码（文件 slash_command.rs）中同样不存在这个命令。取而代之的是 `/model`，根据源码它被描述为「choose what model and reasoning effort to use」。不过 Reasoning Effort 这个概念在 Codex 中是真实存在且仍在持续开发的：2026 年 7 月的发布说明提到，除了已知的几档强度外，还新增了「Max」和「Ultra」等新档位。因此在终端 CLI 中，你是通过 `/model` 而不是一个独立的 `/reasoning` 命令来设置思考深度的。",
       "whenGood": [
         {
-          "title": "为一项棘手任务提高推理强度",
-          "example": "/reasoning"
+          "title": "在桌面版输入框中调整推理强度",
+          "example": "在 ChatGPT 桌面应用的输入框中调用 /reasoning，为当前对话在更彻底和更快速之间做出选择——根据文档，这里它是一个独立命令。"
         },
         {
-          "title": "在简单任务上追求更快更省",
-          "example": "/reasoning"
+          "title": "在终端 CLI 中达到相同目标",
+          "example": "在 Codex 终端 CLI 中改为调用 /model，根据源码，它会同时设置模型和 Reasoning Effort。"
         }
       ],
       "whenBad": [
         {
-          "title": "想切换模型而不只是调整推理深度",
-          "why": "/reasoning 只改变推理强度，不会切换模型。",
-          "alternative": "/model"
+          "title": "期望在终端 CLI 中也能用到这个命令",
+          "why": "/reasoning 既不在 CLI 参考表格中，也不存在于 Codex CLI 的开源代码里（没有 SlashCommand::Reasoning）。",
+          "alternative": "在终端 CLI 中使用 /model"
+        },
+        {
+          "title": "只想切换模型",
+          "why": "在可用的地方，/reasoning 只会改变推理强度，不会改变模型本身。",
+          "alternative": "使用 /model 来同时切换模型"
         }
       ],
       "sources": [
@@ -9787,18 +9884,27 @@
       "slug": "memories",
       "name": "/memories",
       "summary": "在 Memories 功能可用时，设置该聊天是否可以使用或创建记忆。",
-      "what": "在该功能可用时，配置聊天是否可以使用或生成记忆。\n\nMemories 用于跨会话保存信息。该命令只控制当前聊天是否可以使用它们。",
+      "what": "设定当前对话是否可以访问 Memories（跨会话保留的记忆）或生成新的记忆。终端 CLI 文档将其逐字描述为开启/关闭「memory injection or memory generation」，并且无需离开终端界面（TUI）。\n\n这个功能有一个可用性前提条件：「仅当 Memories 可用时」。根据 Codex 发布说明（rust-v0.145.0，2026 年 7 月 21 日——距离本文撰写时间仅几天），其内部用于 Memories 的功能开关正是在那时才刚刚被稳定下来，与此同时，分页式会话历史仍被标记为实验性功能。也就是说，这项功能目前仍在扩展中，较旧版本的 Codex 可能尚不认识这个命令，或者只能有限地支持它。根据源码，`/memories` 同样无法在 Codex 正积极处理某个任务时被调用——你必须先让当前轮次结束，该命令才会有响应。",
       "whenGood": [
         {
-          "title": "为一次敏感聊天关闭记忆创建",
-          "example": "/memories"
+          "title": "在敏感对话中关闭 Memories",
+          "example": "在讨论机密细节之前调用 /memories，为这一次对话单独关闭新记忆的生成。"
+        },
+        {
+          "title": "快速查看 Memories 是否处于启用状态",
+          "example": "打开 /memories，查看当前对话是否正在使用或生成记忆，而无需离开设置界面。"
         }
       ],
       "whenBad": [
         {
-          "title": "你的环境中没有 Memories 功能",
-          "why": "该命令仅在提供 Memories 功能时适用。",
-          "alternative": "不使用 Memories 继续操作"
+          "title": "所安装的版本中没有 Memories 功能",
+          "why": "根据发布说明，该功能开关直到 2026 年 7 月 21 日才被稳定下来；在更旧或受限的安装环境中，该命令可能还不存在。",
+          "alternative": "升级 Codex CLI，或在没有 Memories 的情况下继续工作"
+        },
+        {
+          "title": "Codex 仍在处理某个任务时",
+          "why": "根据源码，/memories 属于任务执行期间被锁定的命令之一。",
+          "alternative": "等待当前任务完成，再调用 /memories"
         }
       ],
       "sources": [
@@ -9913,18 +10019,27 @@
       "slug": "side",
       "name": "/side",
       "summary": "启动一个临时的旁支聊天，不打扰主聊天。",
-      "what": "启动一个临时的旁支聊天，不打断主聊天。\n\n旁支聊天适合用于不应计入主任务历史记录的简短插话。",
+      "what": "启动一个临时的附属对话（side conversation），不会打断主对话记录。在 Codex CLI 的开源代码中，该命令被逐字描述为「start a side conversation in an ephemeral fork」；别名 `/btw` 同样可用。\n\n你可以直接附加一条消息，例如 `/side 这张表怎么导出成 CSV？` ——这样附属对话会立即带着这条内容启动，而不是先打开一个空白输入框。根据源码，在一个正在进行的附属对话里，只能使用少数几个其他命令，例如 `/copy`、`/diff`、`/status`、`/usage`、`/mention` 或 `/ide`——其余大多数斜杠命令仍只保留给主对话使用。根据 Codex rust-v0.145.0 版本（2026 年 7 月 21 日），临近截稿前还修复了一个可靠性 Bug：附属对话此后不会再错误地继承已有的对话轮次，启动时的一个竞态条件也被移除了。该命令同时出现在终端 CLI 命令表和通用 App 输入框总览中。",
       "whenGood": [
         {
-          "title": "提出一个题外问题而不稀释主线对话",
-          "example": "/side"
+          "title": "分流一个简短的临时问题",
+          "example": "/side 这张表怎么导出成 CSV？——回答不会出现在主对话记录里。"
+        },
+        {
+          "title": "直接带内容启动",
+          "example": "/side 快速告诉我 Git rebase 的语法，这样我可以继续在主对话里工作。"
         }
       ],
       "whenBad": [
         {
-          "title": "答案应当保留在主聊天历史中",
-          "why": "旁支聊天是临时的，且与主聊天相互独立。",
-          "alternative": "直接在主聊天中提问"
+          "title": "回答需要出现在主对话里",
+          "why": "根据源码，/side 是在一个独立的临时分支中运行，与主对话记录是分开的。",
+          "alternative": "直接在主对话中提问"
+        },
+        {
+          "title": "在附属对话里需要用到更多斜杠命令",
+          "why": "根据源码，只有一小部分命令（如 /copy、/diff、/status、/usage）在活跃的附属对话中被开放。",
+          "alternative": "切回主对话，那里所有命令都可用"
         }
       ],
       "sources": [

@@ -887,7 +887,7 @@
       "slug": "effort",
       "name": "/effort",
       "summary": "Définit le niveau d'effort (effort de réflexion) du modèle.",
-      "what": "Définit le niveau d'effort (effort de réflexion) du modèle.\n\nValeurs : low, medium, high, xhigh, max, ultracode — selon le modèle ; max/ultracode uniquement pour la session en cours. ultracode = raisonnement xhigh + orchestration automatique du workflow. 'auto' = valeur par défaut du modèle. Sans argument, curseur interactif. Effet immédiat. À partir de la v2.1.205, aussi en mode non interactif (-p).",
+      "what": "`/effort` contrôle la quantité de raisonnement adaptatif que le modèle applique à chaque étape. Selon le modèle, sont disponibles `low`, `medium`, `high`, `xhigh`, `max` et `ultracode` ; `max` et `ultracode` ne valent que pour la session en cours. `auto` réinitialise au standard du modèle. Sans argument, `/effort` ouvre un curseur interactif ; avec un argument, le changement agit immédiatement, sans attendre la fin de la réponse en cours.\n\n`ultracode` n'est pas un véritable niveau d'effort de modèle, mais un réglage propre à Claude Code : il envoie `xhigh` au modèle et laisse en plus Claude orchestrer des workflows dynamiques pour des tâches plus vastes.\n\nDepuis la version 2.1.205, `/effort` avec un argument de niveau fonctionne aussi en mode non interactif (`-p`), mais alors uniquement pour la session en cours. Pour certains modèles, Claude Code fige au départ leur effort standard ; tant que ce verrou est actif, un `/effort` non interactif signale « Not applied » — seul `--effort` au démarrage aide alors.",
       "whenGood": [
         {
           "title": "Augmenter l'effort de réflexion avant une tâche délicate",
@@ -903,6 +903,11 @@
           "title": "Un modèle fondamentalement différent est nécessaire",
           "why": "/effort ne change que le niveau d'effort de réflexion du modèle actuel, pas ses capacités.",
           "alternative": "/model"
+        },
+        {
+          "title": "Modifier en non interactif alors qu'un verrou de modèle par défaut est actif",
+          "why": "pour certains modèles, Claude Code fige leur effort standard dès la première utilisation ; tant que ce verrou est actif, un /effort non interactif (-p) signale simplement « Not applied ».",
+          "alternative": "passer --effort au démarrage de Claude Code, plutôt que de définir /effort dans un appel -p en cours."
         }
       ],
       "sources": [
@@ -1813,22 +1818,22 @@
       "slug": "powerup",
       "name": "/powerup",
       "summary": "Présente les fonctionnalités de Claude Code via de courtes leçons interactives avec des démos animées.",
-      "what": "Présente les fonctionnalités de Claude Code via de courtes leçons interactives avec des démos animées.",
+      "what": "`/powerup` te fait découvrir les fonctionnalités de Claude Code via de courtes leçons interactives avec démos animées — directement dans le terminal, sans avoir à ouvrir la doc séparément pour cela.\n\nLa commande a été introduite dans la version 2.1.90 et s'adresse à toutes les personnes qui veulent essayer des fonctionnalités nouvelles ou peu utilisées plutôt que simplement les lire : chaque leçon montre une fonctionnalité via une démo animée, pour que tu voies directement comment elle se comporte en pratique.\n\n`/powerup` n'est pas conçu comme une simple référence de consultation de toutes les commandes — pour cela, `/help` fournit la vue d'ensemble, et la doc officielle sur code.claude.com les détails correspondants. `/powerup` est plutôt une entrée en matière ludique pour mieux connaître Claude Code étape par étape, plutôt qu'un ouvrage de référence pour des questions ciblées.",
       "whenGood": [
         {
-          "title": "Découvrir de façon ludique de nouvelles fonctionnalités de Claude Code",
-          "example": "après une mise à jour, lancer /powerup pour découvrir de nouvelles fonctionnalités via de courtes leçons interactives avec démos"
+          "title": "Découvrir de nouvelles fonctionnalités de façon ludique",
+          "example": "après une mise à jour, lancer /powerup pour découvrir de nouvelles fonctionnalités dans de courtes leçons interactives avec démos."
         },
         {
-          "title": "Familiariser les débutants avec les fonctionnalités de Claude Code",
-          "example": "faire parcourir /powerup à un nouveau membre de l'équipe plutôt que de lui faire lire toute la documentation"
+          "title": "Familiariser un débutant avec Claude Code",
+          "example": "faire suivre /powerup à un nouveau membre d'équipe, plutôt que de lui faire lire toute la doc."
         }
       ],
       "whenBad": [
         {
-          "title": "Rechercher spécifiquement une fonctionnalité déjà connue",
-          "why": "/powerup présente des leçons organisées, pas une référence consultable commande par commande.",
-          "alternative": "utiliser /help pour l'aperçu des commandes, ou consulter directement la documentation."
+          "title": "Chercher spécifiquement une fonctionnalité connue",
+          "why": "/powerup montre des leçons sélectionnées, pas une référence consultable commande par commande.",
+          "alternative": "utiliser /help pour la vue d'ensemble des commandes, ou directement la doc."
         }
       ],
       "sources": [
@@ -2203,22 +2208,27 @@
       "slug": "rewind",
       "name": "/rewind",
       "summary": "Ramène la conversation et/ou le code à un point antérieur, ou résume à partir d'un message sélectionné.",
-      "what": "Ramène la conversation et/ou le code à un point antérieur, ou résume à partir d'un message sélectionné.\n\nDétails : code.claude.com/docs/en/checkpointing. Alias : /checkpoint, /undo.",
+      "what": "`/rewind` ouvre un menu avec chaque prompt que tu as envoyé pendant la session. Tu choisis un point puis une action : réinitialiser le code et la conversation, réinitialiser uniquement la conversation, réinitialiser uniquement le code, résumer à partir de ce point, ou résumer jusqu'à ce point. Les deux options liées au code n'apparaissent que s'il existe réellement des modifications de fichiers suivies à ce point.\n\nAu lieu de la commande, tu peux aussi appuyer deux fois sur `Esc` avec une ligne de saisie vide pour ouvrir le même menu. Depuis la version 2.1.191, tu peux même remonter au-delà d'une conversation supprimée : après `/clear`, une entrée supplémentaire apparaît dans le menu pour revenir à la session précédente.\n\nRésumer ne modifie aucun fichier, cela ne fait que compresser une partie de l'historique de conversation en un résumé ; les messages originaux restent dans la transcription.\n\nAlias : `/checkpoint`, `/undo`.",
       "whenGood": [
         {
-          "title": "Réinitialiser la conversation et l'état du code après un correctif raté",
-          "example": "/rewind"
+          "title": "Annuler un correctif raté",
+          "example": "appeler /rewind, choisir le point avant la tentative ratée et utiliser « Restore code and conversation » pour réinitialiser ensemble le code et la conversation."
         },
         {
-          "title": "Résumer à partir d'un message sélectionné plutôt que de tout réinitialiser",
-          "example": "/rewind"
+          "title": "Compresser uniquement une partie de la conversation",
+          "example": "ouvrir /rewind et choisir « Summarize from here » sur un message ancien, pour résumer à partir de là et libérer du contexte, sans modifier le code."
         }
       ],
       "whenBad": [
         {
           "title": "Simplement relire un texte antérieur",
-          "why": "/rewind réinitialise la conversation et, le cas échéant, l'état du code - pour simplement relire, c'est inutilement risqué pour l'état actuel du code.",
-          "alternative": "faire défiler le transcript vers le haut"
+          "why": "/rewind réinitialise la conversation et éventuellement l'état du code — pour une simple relecture, c'est un risque inutile pour l'état actuel du code.",
+          "alternative": "faire défiler vers le haut dans la transcription."
+        },
+        {
+          "title": "Annuler des commandes Bash exécutées par Claude",
+          "why": "le checkpointing ne suit que les modifications de fichiers effectuées par les propres outils d'édition de Claude, pas les modifications faites par des commandes Bash comme rm, mv ou cp — celles-ci ne peuvent pas être annulées via /rewind.",
+          "alternative": "utiliser Git pour annuler ce type de modifications."
         }
       ],
       "sources": [
@@ -2453,22 +2463,22 @@
       "slug": "setup-vertex",
       "name": "/setup-vertex",
       "summary": "Configure l'authentification, le projet, la région et les épinglages de modèle pour l'Agent Platform de Google Cloud.",
-      "what": "Configure l'authentification, le projet, la région et les épinglages de modèle pour l'Agent Platform de Google Cloud.\n\nVisible uniquement avec CLAUDE_CODE_USE_VERTEX=1.",
+      "what": "`/setup-vertex` configure l'authentification, le projet, la région et les épingles de modèle pour Google Cloud's Agent Platform (la doc appelle désormais ainsi ce qui s'appelait auparavant « Vertex AI », mais l'écran de connexion affiche encore « Google Vertex AI ») via un assistant interactif.\n\nEn tant que commande slash à part, `/setup-vertex` n'est visible que si `CLAUDE_CODE_USE_VERTEX=1` est défini. Sans cette variable, tu accèdes malgré tout au même assistant : au premier démarrage de `claude`, tu choisis à l'invite de connexion « 3rd-party platform » puis « Google Vertex AI » ; si tu es déjà connecté, `/login` ouvre le même menu.\n\nUne fois l'assistant terminé, tu peux à tout moment rappeler `/setup-vertex` par la suite pour modifier les identifiants, le projet, la région ou les épingles de modèle ; l'étape d'épinglage de modèle repart alors de tes modèles actuellement épinglés. Le résultat est enregistré dans `~/.claude/settings.json`, ou dans `$CLAUDE_CONFIG_DIR/settings.json` si cette variable est définie.",
       "whenGood": [
         {
-          "title": "L'équipe utilise l'Agent Platform de Google Cloud",
-          "example": "avec CLAUDE_CODE_USE_VERTEX=1 défini, exécuter /setup-vertex pour configurer l'authentification, le projet, la région et les épinglages de modèle"
+          "title": "L'équipe utilise Google Cloud's Agent Platform",
+          "example": "avec CLAUDE_CODE_USE_VERTEX=1 défini, exécuter /setup-vertex pour configurer l'authentification, le projet, la région et les épingles de modèle via l'assistant."
         },
         {
-          "title": "Changement de projet ou de région chez Vertex",
-          "example": "après un changement de projet Google Cloud, relancer /setup-vertex pour adapter la configuration"
+          "title": "Adapter les épingles de modèle plus tard",
+          "example": "après un changement de projet Google Cloud, rappeler /setup-vertex ; l'étape d'épinglage de modèle repart alors des modèles actuellement épinglés."
         }
       ],
       "whenBad": [
         {
-          "title": "Sans variable d'environnement définie",
-          "why": "/setup-vertex n'est, selon la documentation, visible que si CLAUDE_CODE_USE_VERTEX=1 est défini.",
-          "alternative": "définir d'abord la variable d'environnement, ou utiliser /login pour une utilisation normale du compte Anthropic."
+          "title": "Comme commande slash sans variable d'environnement définie",
+          "why": "/setup-vertex n'apparaît dans le menu slash, selon la doc, que si CLAUDE_CODE_USE_VERTEX=1 est défini.",
+          "alternative": "démarrer claude et choisir à l'invite de connexion « 3rd-party platform » → « Google Vertex AI », ou /login si déjà connecté — cela ouvre le même assistant, même sans la variable d'environnement."
         }
       ],
       "sources": [
@@ -2762,23 +2772,28 @@
       "platform": "claude-code",
       "slug": "usage",
       "name": "/usage",
-      "summary": "Affiche l'utilisation de l'API, le nombre de tokens et les dépenses.",
-      "what": "Affiche l'utilisation de l'API, le nombre de tokens et les dépenses.\n\nAlias : /cost, /stats.",
+      "summary": "Affiche aussi les limites de forfait et les stats d'activité, pas seulement les coûts API",
+      "what": "`/usage` t'indique combien tu as consommé dans la session en cours : nombres de tokens, un indicateur de coût estimé ainsi que — sur les forfaits Pro, Max, Team et Enterprise — tes limites de forfait et des statistiques d'activité.\n\nL'indicateur de coût dans le bloc de session est calculé localement par Claude Code à partir des nombres de tokens, aux prix catalogue standards ; il peut donc différer de ta facture réelle et concerne surtout les utilisateurs de l'API. Sur un forfait par abonnement, `/usage` affiche en plus une ventilation de ce qui compte dans ta limite — par skill, sous-agent, plugin et serveurs MCP individuels, avec en plus des indications sur les facteurs de coût comme un contexte long ou les cache misses à partir de 10 % de part. Avec `d`/`w`, tu bascules entre les dernières 24 heures et les 7 derniers jours. Les chiffres proviennent uniquement de l'historique de session local sur cet appareil ; les autres appareils ou claude.ai n'y entrent pas.\n\nAlias : `/cost` et `/stats` (ce dernier ouvre directement l'onglet Stats).",
       "whenGood": [
         {
           "title": "Aperçu régulier des coûts",
-          "example": "appeler /usage pour garder un œil sur le nombre de tokens et les dépenses avant de démarrer une tâche plus importante"
+          "example": "appeler /usage pour garder un œil sur les nombres de tokens, les coûts estimés et, pour les forfaits par abonnement, les limites de forfait, avant de démarrer une tâche importante."
         },
         {
-          "title": "Retracer le coût d'une tâche coûteuse",
-          "example": "après un long passage de /batch ou une boucle d'agent, vérifier /usage pour voir ce que la tâche a coûté"
+          "title": "Trouver les facteurs de consommation par skill",
+          "example": "après une longue exécution de /batch, vérifier /usage et voir via la ventilation par skill, sous-agent, plugin et serveur MCP ce qui a consommé le plus."
         }
       ],
       "whenBad": [
         {
-          "title": "Vérifier l'occupation de la fenêtre de contexte de la session",
-          "why": "/usage affiche l'utilisation de l'API/les coûts, pas le taux de remplissage de la fenêtre de contexte actuelle.",
-          "alternative": "utiliser /context pour l'utilisation du contexte sous forme de grille colorée."
+          "title": "Vérifier le taux d'occupation de la fenêtre de contexte",
+          "why": "/usage affiche la consommation de tokens, les coûts et les limites de forfait, mais pas à quel point la fenêtre de contexte actuelle est pleine.",
+          "alternative": "utiliser /context, qui visualise l'utilisation du contexte sous forme de grille colorée."
+        },
+        {
+          "title": "Besoin d'un montant de facturation contraignant",
+          "why": "le montant en dollars dans le bloc de session est calculé localement par Claude Code à partir des nombres de tokens, aux prix catalogue standards — cela peut différer de la facture réelle, car les tarifs promotionnels et les remises n'y figurent pas.",
+          "alternative": "pour une facturation contraignante, utiliser la page Usage dans la Claude Console."
         }
       ],
       "sources": [
@@ -2823,18 +2838,22 @@
       "slug": "vim",
       "name": "/vim",
       "summary": "N’existe plus — supprimé dans la version 2.1.92.",
-      "what": "N’existe plus — supprimé dans la version 2.1.92.\n\nLe mode Vim se règle désormais via /config → Editor mode. Les raccourcis clavier sont restés ; seule la commande dédiée a disparu.",
+      "what": "`/vim` n'existe plus. La commande a été supprimée de Claude Code dans la version 2.1.92 — en même temps que `/tag`, disparue dans la même version.\n\nTu bascules désormais le mode Vim via `/config` → Editor mode. La fonctionnalité elle-même reste inchangée : les modes NORMAL, INSERT et VISUAL avec leurs raccourcis clavier continuent de fonctionner exactement comme avant, seule la commande slash dédiée a disparu. Astuce pratique : la recherche dans le menu `/config` correspond aussi aux valeurs des options — si tu y tapes « vim », tu sautes directement au réglage Editor mode correspondant, au lieu de faire défiler la liste manuellement.\n\nSur les versions antérieures à 2.1.92, `/vim` existe encore normalement comme commande.",
       "whenGood": [
         {
-          "title": "Rien — la commande a disparu",
-          "example": "Lance /config et bascule entre Vim et Normal sous « Editor mode »."
+          "title": "Plus rien — la commande a disparu",
+          "example": "appeler /config et basculer entre Vim et Normal sous « Editor mode »."
+        },
+        {
+          "title": "Trouver rapidement le réglage Vim",
+          "example": "taper « vim » dans le menu /config pour sauter directement à l'option Editor mode, au lieu de faire défiler la liste manuellement."
         }
       ],
       "whenBad": [
         {
-          "title": "Sur une version 2.1.92 ou ultérieure",
-          "why": "la commande a été supprimée en 2.1.92 et ne fait plus rien",
-          "alternative": "Utiliser /config → Editor mode"
+          "title": "Sur une version à partir de 2.1.92",
+          "why": "la commande a été supprimée en 2.1.92 et n'a plus aucun effet.",
+          "alternative": "utiliser /config → Editor mode."
         }
       ],
       "sources": [
@@ -3243,22 +3262,27 @@
       "slug": "review-cli",
       "name": "codex review",
       "summary": "Effectue une revue des modifications via la CLI.",
-      "what": "codex review examine des modifications de code et prend en charge les options --uncommitted, --base, --commit et --title pour déterminer quelles modifications sont examinées et comment la revue est intitulée.",
+      "what": "codex review exécute une revue de code de façon non interactive depuis la ligne de commande, donc sans ouvrir de session TUI en cours d'exécution.\n\nTu choisis à cette occasion exactement une cible de revue selon la doc : soit `--uncommitted` (modifications indexées, non indexées et non suivies), `--base <branch>` (diff par rapport à une branche de base), `--commit <SHA>` (modifications d'un commit précis), soit tes propres instructions de revue en texte libre sous forme de `PROMPT` (également lisible depuis stdin avec `-`) — ces options s'excluent mutuellement selon la doc. `--title` définit le titre de commit affiché dans le résumé de la revue, mais ne fonctionne qu'en combinaison avec `--commit`. Il existe en outre `--strict-config`, qui déclenche une erreur si le `config.toml` contient des champs inconnus. Il faut distinguer cela de l'appel autonome `codex review` de la commande slash `/review`, qui, selon le code source de Codex, est utilisée à l'intérieur d'une session interactive déjà en cours et y accepte elle aussi des instructions en argument inline.",
       "whenGood": [
         {
-          "title": "Examiner les modifications non encore commitées avant le commit",
+          "title": "Revoir les modifications non validées avant un commit",
           "example": "codex review --uncommitted"
         },
         {
-          "title": "Examiner les modifications par rapport à une branche précise",
-          "example": "codex review --base main"
+          "title": "Revoir un commit précis avec un titre",
+          "example": "codex review --commit a1b2c3d --title \"Fix Login-Bug\""
         }
       ],
       "whenBad": [
         {
+          "title": "Indiquer plusieurs cibles de revue à la fois",
+          "why": "selon la doc, --uncommitted, --base, --commit et un PROMPT personnalisé s'excluent mutuellement — une seule option est autorisée.",
+          "alternative": "choisir exactement une option cible, par exemple uniquement --base main"
+        },
+        {
           "title": "La revue doit faire partie d'une session interactive en cours",
-          "why": "codex review est un appel CLI autonome, en dehors d'une session TUI en cours.",
-          "alternative": "Utiliser plutôt /review au sein d'une session en cours"
+          "why": "codex review est un appel CLI autonome et non interactif, en dehors d'une session TUI en cours.",
+          "alternative": "utiliser plutôt /review à l'intérieur d'une session en cours"
         }
       ],
       "sources": [
@@ -3273,22 +3297,27 @@
       "slug": "resume-cli",
       "name": "codex resume",
       "summary": "Reprend une session Codex antérieure via la CLI.",
-      "what": "codex resume reprend une session antérieure, notamment via resume --last pour la dernière session utilisée, ou avec un identifiant de session précis. La même logique de reprise existe aussi sous la forme exec resume --last/<ID> pour le mode non interactif.",
+      "what": "codex resume reprend depuis le terminal une session interactive antérieure, soit précisément via un `SESSION_ID`, soit globalement via `--last` pour la dernière session utilisée.\n\n`--last` se réfère par défaut selon la doc uniquement aux sessions du répertoire de travail actuel ; avec `--all`, les sessions en dehors du répertoire actuel sont aussi incluses. `--include-non-interactive` élargit en plus la sélection (sélecteur ou `--last`) aux sessions non interactives. Pour le mode non interactif, la même logique de reprise existe sous la forme `codex exec resume [SESSION_ID]`, également avec `--last`/`--all`, plus en option un `PROMPT` de suite directement joint ainsi que `--image`/`-i` pour joindre des images à cette tâche de suite. Il faut distinguer cela de l'appel autonome `codex resume` de la commande slash `/resume`, qui, selon le code source de Codex, est utilisée à l'intérieur d'une session déjà en cours pour basculer vers une autre session enregistrée.",
       "whenGood": [
         {
-          "title": "Reprendre directement la dernière session depuis la ligne de commande",
+          "title": "Reprendre directement la dernière session",
           "example": "codex resume --last"
         },
         {
-          "title": "Reprendre spécifiquement une session antérieure précise",
-          "example": "codex resume <ID>"
+          "title": "Reprendre une session de façon non interactive dans un script",
+          "example": "codex exec resume --last \"résume brièvement les dernières modifications\""
         }
       ],
       "whenBad": [
         {
           "title": "On est déjà dans une session interactive en cours",
-          "why": "Pour reprendre au sein de la TUI, l'appel CLI autonome est superflu.",
-          "alternative": "Utiliser /resume au sein de la session"
+          "why": "pour basculer à l'intérieur de la TUI, l'appel CLI autonome codex resume est superflu.",
+          "alternative": "utiliser /resume à l'intérieur de la session"
+        },
+        {
+          "title": "Reprendre une session depuis un autre répertoire",
+          "why": "--last se réfère par défaut selon la doc uniquement au répertoire de travail actuel.",
+          "alternative": "utiliser codex resume --all pour inclure aussi les sessions en dehors du répertoire actuel"
         }
       ],
       "sources": [
@@ -3512,18 +3541,27 @@
       "slug": "logs",
       "name": "/logs",
       "summary": "Affiche le chemin du fichier de log de debug actuel et le copie dans le presse-papiers.",
-      "what": "/logs affiche le chemin du fichier de log de debug de la session en cours et le copie dans le presse-papiers. Des logs de debug sont écrits en continu pour chaque session.",
+      "what": "`/logs` est une commande slash que tu saisis à l'intérieur d'une session Cursor CLI en cours. Elle t'affiche le chemin du fichier journal de débogage de la session en cours et le copie en même temps dans le presse-papiers.\n\nPour chaque session, Cursor écrit en continu des logs de débogage. Sur les machines partagées, ces logs sont stockés séparément par utilisateur depuis juin 2026, afin d'éviter des erreurs de permission lorsque plusieurs comptes se trouvent sur le même hôte ; de plus, le chemin affiché y reste visible à l'écran plus longtemps.\n\nLa commande te fournit donc uniquement le chemin vers le fichier journal local — elle n'en affiche pas le contenu et ne le téléverse nulle part. Pour une demande de support concrète, tu la complètes utilement avec `/copy-request-id`, qui copie à la place l'ID de la dernière requête, ou `/about` pour la version et les infos système.",
       "whenGood": [
         {
-          "title": "Préparer une demande de support avec un fichier de log",
+          "title": "Préparer une demande de support avec le fichier journal",
           "example": "/logs — copier le chemin et le joindre à un ticket de support"
+        },
+        {
+          "title": "Sur une machine partagée, trouver son propre chemin de log sans erreur de permission",
+          "example": "exécuter /logs sur une machine partagée pour obtenir le chemin de log spécifique à l'utilisateur"
         }
       ],
       "whenBad": [
         {
-          "title": "On a seulement besoin du dernier ID de requête, pas du fichier de log complet",
-          "why": "/logs donne un chemin de fichier, pas un ID unique",
-          "alternative": "utiliser /copy-request-id pour le dernier ID de requête"
+          "title": "On n'a besoin que de la dernière ID de requête, pas du fichier journal complet",
+          "why": "/logs fournit le chemin du fichier, pas un identifiant unique.",
+          "alternative": "utiliser /copy-request-id pour la dernière ID de requête"
+        },
+        {
+          "title": "Le contenu du journal doit s'afficher directement dans le terminal",
+          "why": "/logs ne copie que le chemin, mais n'affiche pas le contenu du fichier.",
+          "alternative": "ouvrir manuellement le fichier au chemin copié, par exemple avec un éditeur"
         }
       ],
       "sources": [
@@ -4368,19 +4406,28 @@
       "platform": "cursor-cli",
       "slug": "copy",
       "name": "/copy",
-      "summary": "Copie un ancien message personnel dans le presse-papiers.",
-      "what": "/copy copie un ancien message envoyé par soi-même dans la session vers le presse-papiers.",
+      "summary": "Copie aussi les réponses d'agent via un sélecteur d'étape, pas seulement ses propres messages",
+      "what": "`/copy` est une commande slash à l'intérieur de la session Cursor CLI en cours. Selon le tableau de référence officiel, elle copie un message antérieur qui t'appartient depuis l'historique vers le presse-papiers ; tu choisis pour cela le message souhaité dans une liste.\n\nLe changelog du 22 juin 2026 décrit une version étendue : via un sélecteur, on peut en plus choisir une étape unique d'une réponse d'agent en plusieurs parties, si bien que `/copy` peut aussi copier des réponses de l'agent en plus de tes propres messages ; de plus, la copie de longues réponses fonctionne désormais sans que le terminal ne se bloque.\n\nLa courte description dans la référence des commandes slash est donc plus succincte que ce que le changelog décrit comme étendue de fonctionnalité — ne pars donc pas du principe que `/copy` ne capture que tes propres messages.",
       "whenGood": [
         {
-          "title": "Réutiliser un prompt déjà utilisé dans une autre session",
-          "example": "/copy — sélectionner le message correspondant, puis le coller dans un nouveau chat"
+          "title": "Réutiliser un prompt utilisé auparavant dans une autre session",
+          "example": "/copy — choisir le message personnel correspondant, puis le coller dans un nouveau chat"
+        },
+        {
+          "title": "Copier spécifiquement une seule étape d'une réponse d'agent en plusieurs parties",
+          "example": "/copy — choisir dans le sélecteur l'étape de réponse souhaitée de l'agent"
         }
       ],
       "whenBad": [
         {
-          "title": "La réponse complète de l'agent doit être copiée, pas son propre message",
-          "why": "/copy concerne les messages personnels, pas les réponses de l'agent",
-          "alternative": "sélectionner et copier manuellement la réponse de l'agent dans le terminal"
+          "title": "Seul un ID est nécessaire pour une demande de support",
+          "why": "/copy copie des contenus de messages (les tiens ou, selon le changelog, aussi des étapes d'agent), pas un ID de requête.",
+          "alternative": "utiliser /copy-request-id"
+        },
+        {
+          "title": "On se fie au fait que /copy, selon le tableau de référence, ne peut copier que ses propres messages",
+          "why": "le changelog du 22.06.2026 documente en plus un sélecteur pour les étapes de réponse d'agent — le tableau de référence est incomplet sur ce point.",
+          "alternative": "vérifier précisément dans le sélecteur si un message personnel ou une étape d'agent a été choisi"
         }
       ],
       "sources": [
@@ -5454,18 +5501,27 @@
       "slug": "mcp-list-tools",
       "name": "agent mcp list-tools <identifier>",
       "summary": "Liste les tools disponibles et leurs paramètres pour un serveur MCP précis.",
-      "what": "agent mcp list-tools <identifier> affiche, pour un seul serveur MCP, les noms de tools, leurs descriptions ainsi que les paramètres requis/optionnels avec leurs types.",
+      "what": "`agent mcp list-tools <identifier>` est une sous-commande terminal de Cursor CLI — tu l'appelles sous la forme `cursor-agent mcp list-tools <identifier>` directement dans le shell, pas comme commande slash à l'intérieur d'une session en cours. À l'intérieur d'une session, `/mcp list-tools` offre une fonction comparable.\n\nLa commande affiche, pour un seul serveur MCP déjà configuré, tous les outils fournis : noms, descriptions ainsi que les paramètres associés avec leur statut obligatoire/optionnel et leur type. Le `<identifier>` correspond au nom du serveur tiré de ton `mcp.json` ; les noms contenant des espaces sont aussi pris en charge.\n\nCela distingue la commande de `agent mcp list`, qui ne liste que les serveurs configurés avec leur statut de connexion, sans détails sur les outils. La configuration suit le même ordre de priorité que dans l'éditeur : projet avant global avant imbriqué.",
       "whenGood": [
         {
-          "title": "Vérifier quels paramètres un tool MCP attend avant de l'utiliser",
-          "example": "agent mcp list-tools playwright"
+          "title": "Vérifier les paramètres d'un outil MCP avant sa première utilisation",
+          "example": "cursor-agent mcp list-tools playwright"
+        },
+        {
+          "title": "Après des modifications du mcp.json, voir quels outils un serveur propose désormais",
+          "example": "cursor-agent mcp list-tools github"
         }
       ],
       "whenBad": [
         {
           "title": "On ne connaît pas encore l'identifiant du serveur",
-          "why": "agent mcp list-tools nécessite un identifiant concret en argument",
-          "alternative": "utiliser d'abord agent mcp list pour voir les identifiants configurés"
+          "why": "agent mcp list-tools nécessite un identifiant concret comme argument.",
+          "alternative": "utiliser d'abord cursor-agent mcp list pour voir les identifiants configurés"
+        },
+        {
+          "title": "Tu veux juste savoir rapidement si un serveur est connecté",
+          "why": "list-tools affiche des détails d'outils, pas le statut de connexion d'un serveur.",
+          "alternative": "utiliser cursor-agent mcp list"
         }
       ],
       "sources": [
@@ -5514,18 +5570,27 @@
       "slug": "mcp-disable",
       "name": "agent mcp disable <identifier>",
       "summary": "Désactive un serveur MCP, qui cesse de se charger ou de demander une autorisation.",
-      "what": "agent mcp disable <identifier> désactive entièrement un serveur MCP configuré ; il ne se chargera plus ni ne demandera d'autorisation à l'avenir.",
+      "what": "`agent mcp disable <identifier>` est une sous-commande terminal — appel sous la forme `cursor-agent mcp disable <identifier>` directement dans le shell, pas une commande slash. Elle désactive entièrement un serveur MCP déjà configuré : le serveur n'est ensuite plus chargé au démarrage, et la CLI ne demandera plus d'autorisation pour lui à l'avenir.\n\nLa contrepartie est `agent mcp enable <identifier>`, qui remet un serveur sur la liste localement autorisée. La même action peut aussi s'exécuter, en alternative, à l'intérieur d'une session en cours via la vue détaillée interactive de `/mcp` — on y trouve aussi login, logout avec suppression des identifiants OAuth enregistrés, enable et disable par serveur.\n\nLe réglage agit sur l'ensemble du serveur et de façon durable, pas seulement pour la requête ou la session en cours — il reste en place jusqu'à ce que tu réactives le serveur.",
       "whenGood": [
         {
-          "title": "Éteindre un serveur MCP défaillant ou inutile",
-          "example": "agent mcp disable old-server"
+          "title": "Désactiver un serveur MCP défaillant ou inutile",
+          "example": "cursor-agent mcp disable old-server"
+        },
+        {
+          "title": "Avant une démo, masquer un serveur interne/expérimental pour qu'il ne demande pas sans cesse d'autorisation",
+          "example": "cursor-agent mcp disable playwright-experimental"
         }
       ],
       "whenBad": [
         {
-          "title": "Le serveur ne doit être ignoré que brièvement pour une exécution",
-          "why": "agent mcp disable est un paramètre durable, propre au serveur",
-          "alternative": "ne simplement pas solliciter ce serveur dans le prompt concerné, ou ajuster un mcp.json spécifique au projet"
+          "title": "Le serveur ne doit être ignoré que brièvement, pour une seule exécution",
+          "why": "agent mcp disable est un réglage durable, lié au serveur.",
+          "alternative": "ne simplement pas inclure le serveur dans le prompt concerné, ou adapter le mcp.json propre au projet"
+        },
+        {
+          "title": "On veut seulement déconnecter le serveur à titre d'essai, mais garder les identifiants OAuth enregistrés",
+          "why": "disable ne change que le statut de chargement/autorisation, pas les identifiants.",
+          "alternative": "ouvrir la vue détaillée via /mcp et y choisir spécifiquement Logout plutôt que Disable, si les identifiants doivent être supprimés"
         }
       ],
       "sources": [
@@ -5657,18 +5722,27 @@
       "slug": "sandbox-help",
       "name": "agent sandbox help [command]",
       "summary": "Affiche l'aide des sous-commandes sandbox.",
-      "what": "agent sandbox help [command] affiche l'aide des sous-commandes sandbox (enable, disable, reset, run), en détail pour une seule sous-commande si précisé.",
+      "what": "`agent sandbox help [command]` est une sous-commande terminal — appelée sous la forme `cursor-agent sandbox help [command]`, pas comme commande slash. Elle affiche des textes d'aide sur les sous-commandes `agent sandbox` : `enable`, `disable`, `reset` et `run <cmd> [args...]`. Sans argument, elle liste les quatre ; avec une sous-commande en argument, elle en affiche les détails, par exemple les options de `run`.\n\nLe mode sandbox lui-même exécute les commandes dans un environnement restreint qui bloque par défaut les accès fichiers et l'activité réseau (`--network` vaut `false` par défaut, `--sandbox` vaut `true` par défaut). Via `run`, on peut indiquer des chemins de lecture/écriture supplémentaires (`--allow-paths`), des chemins en lecture seule (`--readonly-paths`) et des motifs de blocage de type gitignore (`--blocked-patterns`) ; `--sb-debug` écrit des logs de débogage sandbox dans un dossier temporaire.\n\nIl faut distinguer cela de la commande slash interactive `/sandbox`, qui ouvre un menu de configuration du mode sandbox à l'intérieur de la session.",
       "whenGood": [
         {
           "title": "Consulter les options disponibles de sandbox run",
-          "example": "agent sandbox help run"
+          "example": "cursor-agent sandbox help run"
+        },
+        {
+          "title": "Obtenir une vue d'ensemble de toutes les sous-commandes sandbox",
+          "example": "cursor-agent sandbox help"
         }
       ],
       "whenBad": [
         {
-          "title": "On veut juste voir rapidement les options de la commande sandbox qu'on est en train de taper",
-          "why": "agent sandbox help command est un appel séparé",
-          "alternative": "ajouter -h ou --help directement, par ex. agent sandbox run --help"
+          "title": "Voir rapidement uniquement les options de la commande sandbox en cours de saisie",
+          "why": "agent sandbox help command est un appel distinct.",
+          "alternative": "ajouter directement -h ou --help, par exemple cursor-agent sandbox run --help"
+        },
+        {
+          "title": "Basculer le mode sandbox de façon interactive pour la session en cours",
+          "why": "agent sandbox help ne fait qu'afficher un texte d'aide et ne modifie aucun réglage.",
+          "alternative": "utiliser /sandbox à l'intérieur de la session en cours"
         }
       ],
       "sources": [
@@ -5744,18 +5818,27 @@
       "slug": "worker-help",
       "name": "agent worker help [command]",
       "summary": "Affiche l'aide des sous-commandes worker.",
-      "what": "agent worker help [command] affiche l'aide des sous-commandes worker (start, debug), en détail pour une sous-commande précise si indiqué.",
+      "what": "`agent worker help [command]` est une sous-commande terminal — appelée sous la forme `cursor-agent worker help [command]` dans le shell, pas une commande slash. Elle affiche des textes d'aide sur les sous-commandes `agent worker` `start` et `debug` ; sans argument, elle liste les deux, avec l'une des deux en argument, elle en affiche les détails avec les flags.\n\nUn worker est une instance auto-hébergée qui établit une connexion HTTPS sortante durable vers le cloud de Cursor et y exécute des commandes terminal, des modifications de fichiers et d'autres appels d'outils dans ta propre infrastructure — par exemple pour les Cloud Agents ou comme machine personnelle « My Machines ». `agent worker start` enregistre et démarre cette connexion, entre autres avec des flags comme `--pool`, `--worker-dir`, `--label` ou `--idle-release-timeout`. `agent worker debug` vérifie au préalable l'authentification, le routage de confidentialité, les labels de dépôt et si Cursor voit effectivement des workers appropriés.",
       "whenGood": [
         {
-          "title": "Consulter les flags disponibles de worker start, par ex. pour la configuration de pool",
-          "example": "agent worker help start"
+          "title": "Consulter les flags disponibles de worker start, par exemple pour la configuration du pool",
+          "example": "cursor-agent worker help start"
+        },
+        {
+          "title": "Vérifier avant un usage en production ce que worker debug contrôle exactement",
+          "example": "cursor-agent worker help debug"
         }
       ],
       "whenBad": [
         {
-          "title": "On veut juste voir rapidement les options de la commande worker qu'on est en train de taper",
-          "why": "agent worker help command est un appel séparé",
-          "alternative": "ajouter -h ou --help directement, par ex. agent worker start --help"
+          "title": "Voir rapidement uniquement les options de la commande worker en cours de saisie",
+          "why": "agent worker help command est un appel distinct.",
+          "alternative": "ajouter directement -h ou --help, par exemple cursor-agent worker start --help"
+        },
+        {
+          "title": "On veut directement démarrer ou tester un worker",
+          "why": "agent worker help n'affiche qu'un texte d'aide, mais ne connecte aucun worker à Cursor.",
+          "alternative": "exécuter directement cursor-agent worker start ou cursor-agent worker debug"
         }
       ],
       "sources": [
@@ -9671,18 +9754,27 @@
       "slug": "compact",
       "name": "/compact",
       "summary": "Compacte le contexte de la conversation actuelle.",
-      "what": "Compacte le contexte de la conversation actuelle pour libérer de l'espace dans la fenêtre de contexte.\n\nCodex remplace l'historique précédent par un résumé compact afin que la session puisse continuer sans perdre les messages plus anciens.",
+      "what": "Résume l'historique visible du chat afin de libérer des tokens dans la fenêtre de contexte. Dans le code source de Codex CLI, l'objectif est nommé littéralement ainsi : « summarize conversation to prevent hitting the context limit » — `/compact` doit donc empêcher préventivement la conversation d'atteindre la limite de contexte.\n\nSelon le code source, la commande ne peut pas être déclenchée pendant que Codex travaille activement sur une tâche ; tu dois donc attendre que le tour en cours soit terminé. Codex compresse désormais de toute façon l'historique automatiquement en arrière-plan dès qu'un seuil de budget de tokens est atteint — selon les notes de version (entre autres rust-v0.143.0 et rust-v0.145.0, juillet 2026), avec entre-temps des paramètres de repli configurables et des hooks de démarrage de session autour de cette compression automatique. `/compact` te donne en plus la possibilité de déclencher cela toi-même de manière proactive, avant que Codex ne le fasse spontanément. La commande figure aussi bien dans la référence CLI du terminal que dans l'aperçu général du composer de l'application.",
       "whenGood": [
         {
-          "title": "Faire de la place dans une longue conversation sans tout recommencer",
-          "example": "/compact"
+          "title": "Faire de la place avant une longue tâche",
+          "example": "appeler /compact avant de démarrer une nouvelle tâche de recherche volumineuse, pour que l'historique existant ne bloque pas inutilement du contexte."
+        },
+        {
+          "title": "Compresser manuellement plutôt qu'attendre",
+          "example": "saisir /compact juste après une longue session de débogage, plutôt que d'attendre la compression automatique en arrière-plan."
         }
       ],
       "whenBad": [
         {
-          "title": "La conversation est encore courte",
-          "why": "compacter coûte du détail ; tant qu'il reste assez de contexte libre, cela n'apporte rien.",
-          "alternative": "continuer à travailler simplement"
+          "title": "Pendant que Codex travaille encore activement",
+          "why": "selon le code source, /compact fait partie des commandes indisponibles pendant une tâche en cours.",
+          "alternative": "attendre la fin de la tâche en cours (ou l'annuler), puis appeler /compact"
+        },
+        {
+          "title": "Le chat est encore court",
+          "why": "le résumé coûte des détails ; tant qu'il reste assez de fenêtre de contexte libre, cela n'apporte pas grand-chose.",
+          "alternative": "continuer simplement à travailler"
         }
       ],
       "sources": [
@@ -9696,23 +9788,28 @@
       "platform": "codex-cli",
       "slug": "reasoning",
       "name": "/reasoning",
-      "summary": "Choisit l'effort de raisonnement pour la conversation actuelle.",
-      "what": "Choisit l'effort de raisonnement pour la conversation actuelle.\n\nPlus de raisonnement signifie des réponses plus approfondies mais plus lentes et plus coûteuses ; moins de raisonnement les rend plus rapides et moins chères. Le choix s'applique à la conversation en cours.",
+      "summary": "Aucune commande dédiée dans la CLI terminal Codex, voir /model",
+      "what": "Selon la référence générale des commandes slash de Codex (explicitement intitulée là comme référence pour l'application de bureau ChatGPT), `/reasoning` choisit l'intensité de réflexion (reasoning effort) pour le chat en cours.\n\nRestriction importante pour la CLI terminal : dans le tableau propre à la CLI « Built-in slash commands » de la page de référence pour l'interface CLI, `/reasoning` n'apparaît pas, et dans le code source ouvert de Codex CLI non plus (fichier slash_command.rs), aucune commande de ce nom n'existe. C'est `/model` qui y assume cette tâche en plus — selon le code source, décrite littéralement comme « choose what model and reasoning effort to use ». Le concept de reasoning effort est cependant bien réel dans Codex de manière générale et activement développé : les notes de version de juillet 2026 mentionnent, en plus des niveaux connus, de nouveaux niveaux comme « Max » et « Ultra ». Dans la CLI terminal, tu règles donc la profondeur de réflexion via `/model`, pas via une commande `/reasoning` autonome.",
       "whenGood": [
         {
-          "title": "Accorder plus de raisonnement à une tâche complexe",
-          "example": "/reasoning"
+          "title": "Ajuster la profondeur de réflexion dans le composer de bureau",
+          "example": "appeler /reasoning pour choisir, dans le composer de l'application de bureau ChatGPT, entre plus de minutie et plus de rapidité pour le chat en cours — disponible là-bas comme commande à part selon la doc."
         },
         {
-          "title": "Travailler plus vite et moins cher sur des tâches simples",
-          "example": "/reasoning"
+          "title": "Même objectif dans la CLI terminal",
+          "example": "dans la CLI terminal Codex, appeler plutôt /model, qui règle conjointement le modèle et le reasoning effort selon le code source."
         }
       ],
       "whenBad": [
         {
-          "title": "Changer de modèle plutôt que seulement la profondeur",
-          "why": "/reasoning ne change que le niveau d'effort, pas le modèle.",
-          "alternative": "/model"
+          "title": "S'attendre à trouver la commande dans la CLI terminal",
+          "why": "/reasoning manque à la fois dans le tableau de référence CLI et dans le code source ouvert de Codex CLI (pas de SlashCommand::Reasoning).",
+          "alternative": "utiliser /model dans la CLI terminal"
+        },
+        {
+          "title": "Changer uniquement le modèle",
+          "why": "/reasoning, là où elle est disponible, ne change que l'intensité de réflexion, pas le modèle lui-même.",
+          "alternative": "utiliser /model pour changer aussi de modèle"
         }
       ],
       "sources": [
@@ -9787,18 +9884,27 @@
       "slug": "memories",
       "name": "/memories",
       "summary": "Définit si la conversation peut utiliser ou créer des mémoires, lorsque Memories est disponible.",
-      "what": "Configure si la conversation peut utiliser ou générer des mémoires, lorsque la fonctionnalité est disponible.\n\nLes mémoires transportent des informations d'une session à l'autre. La commande contrôle uniquement si la conversation actuelle peut les utiliser.",
+      "what": "Détermine si le chat en cours peut accéder aux Memories (souvenirs persistant entre les sessions) ou en générer de nouveaux. La doc de la CLI terminal décrit cela littéralement comme l'activation/désactivation de « memory injection or memory generation », sans quitter l'interface terminal (TUI).\n\nLa fonction dépend d'une condition de disponibilité : « sofern Memories verfügbar ist » (si Memories est disponible). Selon les notes de version de Codex (rust-v0.145.0 du 21.07.2026 — seulement quelques jours avant cet état des lieux), le feature flag interne pour Memories n'y a été stabilisé que récemment, en parallèle d'un historique de session paginé encore marqué comme expérimental. La portée de la fonctionnalité est donc encore en cours d'extension, et les versions plus anciennes de Codex ne connaissent peut-être pas encore cette commande, ou seulement de façon limitée. `/memories` ne peut en outre pas être appelée, selon le code source, pendant que Codex travaille activement sur une tâche — tu dois d'abord laisser le tour en cours se terminer avant que la commande ne réagisse.",
       "whenGood": [
         {
-          "title": "Désactiver la création de mémoires pour une conversation sensible",
-          "example": "/memories"
+          "title": "Désactiver Memories pour un chat sensible",
+          "example": "appeler /memories et désactiver la création de nouveaux souvenirs pour ce chat précis, avant d'aborder des détails confidentiels."
+        },
+        {
+          "title": "Vérifier rapidement si Memories est actif",
+          "example": "ouvrir /memories pour vérifier si le chat en cours utilise ou génère actuellement des souvenirs, sans quitter les réglages pour cela."
         }
       ],
       "whenBad": [
         {
-          "title": "Memories n'est pas disponible dans votre environnement",
-          "why": "la commande ne s'applique que lorsque la fonctionnalité Memories est proposée.",
-          "alternative": "continuer sans Memories"
+          "title": "Memories indisponible dans la version installée",
+          "why": "selon les notes de version, le feature flag n'a été stabilisé que le 21.07.2026 ; sur des installations plus anciennes ou restreintes, la commande manque encore.",
+          "alternative": "mettre à jour Codex CLI ou continuer sans Memories"
+        },
+        {
+          "title": "Pendant que Codex travaille encore sur une tâche",
+          "why": "selon le code source, /memories fait partie des commandes verrouillées pendant une tâche en cours.",
+          "alternative": "attendre la fin de la tâche en cours, puis appeler /memories"
         }
       ],
       "sources": [
@@ -9913,18 +10019,27 @@
       "slug": "side",
       "name": "/side",
       "summary": "Démarre une conversation annexe temporaire sans perturber la conversation principale.",
-      "what": "Démarre une conversation annexe temporaire sans interrompre la conversation principale.\n\nLa conversation annexe convient pour un aparté rapide qui ne doit pas s'intégrer à l'historique de la tâche principale.",
+      "what": "Démarre une conversation secondaire éphémère, sans interrompre le fil principal. Dans le code source ouvert de Codex CLI, la commande est décrite littéralement comme « start a side conversation in an ephemeral fork » ; `/btw` fonctionne aussi comme alias.\n\nTu peux directement joindre un message, par exemple `/side comment exporter ça en CSV ?` — la conversation secondaire démarre alors immédiatement avec ce contenu, au lieu d'ouvrir d'abord une saisie vide. À l'intérieur d'une conversation secondaire active, seules quelques autres commandes sont disponibles selon le code source, comme `/copy`, `/diff`, `/status`, `/usage` ou `/mention` — la plupart des autres commandes slash restent réservées au chat principal. Selon la version rust-v0.145.0 de Codex (21.07.2026), un bug de fiabilité a été corrigé peu avant la clôture de rédaction : les conversations secondaires ne reprennent plus par erreur des tours hérités, et une condition de concurrence au démarrage a été supprimée. La commande figure aussi bien dans le tableau CLI du terminal que dans l'aperçu général du composer de l'application.",
       "whenGood": [
         {
-          "title": "Poser une question annexe sans diluer le fil principal",
-          "example": "/side"
+          "title": "Détacher une question secondaire courte",
+          "example": "/side comment exporter ce tableau en CSV ? — la réponse n'atterrit pas dans le fil principal."
+        },
+        {
+          "title": "Démarrer directement avec du contenu",
+          "example": "/side donne-moi rapidement la syntaxe pour un rebase Git, pour que je puisse continuer dans le fil principal."
         }
       ],
       "whenBad": [
         {
-          "title": "La réponse doit rester dans l'historique principal",
-          "why": "la conversation annexe est temporaire et séparée de la conversation principale.",
-          "alternative": "poser la question directement dans la conversation principale"
+          "title": "La réponse doit atterrir dans le fil principal",
+          "why": "/side fonctionne selon le code source dans une branche éphémère à part, séparée du fil principal.",
+          "alternative": "poser la question directement dans le chat principal"
+        },
+        {
+          "title": "D'autres commandes slash sont nécessaires dans la conversation secondaire",
+          "why": "selon le code source, seule une courte liste de commandes (dont /copy, /diff, /status, /usage) est activée pour les conversations secondaires actives.",
+          "alternative": "retourner dans le chat principal, où toutes les commandes sont disponibles"
         }
       ],
       "sources": [

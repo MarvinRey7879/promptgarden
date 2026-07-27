@@ -2187,3 +2187,29 @@ BOM-Prüfung vor dem Merge eingebaut (nach dem Vorfall in Batch 4) — diesmal
 schrieb kein Übersetzer mit BOM.
 Build 0, Deploy dc78cf1a, Prod 200. Playwright über 5 Seiten in 3 Sprachen:
 kein H-Scroll auf 390px, keine Backticks, alle Texte >500 Zeichen.
+
+## Iteration 250 — 27.07.2026 ~14:13 UTC — Batch 6 (18 Befehle) + 3 Korrekturen
+Poll grün (0/0/0, views_7d 30, visitors 28, mail_clicks 0), Smoke grün.
+Batch 6: 18 dünnste Befehle aus Codex, Claude Code, Cursor CLI — Ø65 → Ø208
+Wörter, ×5 Sprachen. Gesamt-Ø 320 Befehle: 130 → **138** Wörter, Seiten unter
+100 Wörtern: 119 → **101** (Start: 209). **108 von 320 fertig.**
+DREI KORREKTUREN im Bestand:
+① Codex `/reasoning`: existiert in der Terminal-CLI GAR NICHT — der Agent hat
+   das nicht nur in der Doku, sondern zusätzlich im Quellcode (slash_command.rs)
+   gegengeprüft. Nur in der ChatGPT-App-Tabelle vorhanden; in der CLI übernimmt
+   `/model` Modell + Reasoning gemeinsam. summary korrigiert.
+② Claude Code `/usage`: Kurzbeschreibung betonte „API-Nutzung", der Befehl zeigt
+   auf Abo-Plänen aber primär Plan-Limits und Aktivitätsstatistiken. Korrigiert.
+③ Cursor `/copy`: Referenztabelle und Changelog widersprechen sich (nur eigene
+   Nachricht vs. Picker inkl. Agent-Antworten) — Changelog ist neuer, korrigiert
+   und der Widerspruch dokumentiert.
+🔴 WICHTIGE TOOLING-ERKENNTNIS: Zwei WebFetch-Abrufe lieferten HALLUZINIERTE
+Syntax („/usage [session|all]", „/rewind [target]"). Der Agent hat das per curl
+gegen die Rohdatei geprüft und verworfen. → Regel: bei Syntax-Angaben nicht auf
+WebFetch-Zusammenfassungen verlassen, sondern die Rohdatei ziehen
+(code.claude.com/docs/en/commands.md ist direkt curl-bar).
+Struktur-Panne: der Codex-Agent schrieb eine Ebene zu tief verschachtelt
+({"codex-cli": {slug: …}} statt {slug: …}) → nur 12/18 gemerged. Erkannt am
+Zähler, entschachtelt, neu gemerged. Übersetzer-Prompts enthalten jetzt einen
+expliziten Struktur-Hinweis; Merge prüft die Verschachtelung vorab.
+Build 0, Deploy 2a53cd8c, Prod 200. Playwright über 5 Seiten in 3 Sprachen sauber.
