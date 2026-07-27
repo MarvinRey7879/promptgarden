@@ -1282,22 +1282,27 @@
       "slug": "ide",
       "name": "/ide",
       "summary": "管理 IDE 集成并显示其状态。",
-      "what": "管理 IDE 集成并显示其状态。",
+      "what": "/ide 用于管理 Claude Code 与你编辑器之间的连接，并显示连接状态。在外部终端中——也就是不在 IDE 自带的集成终端里——该命令会与一个已识别的 VS Code 或 JetBrains IDE（例如 IntelliJ IDEA、PyCharm、WebStorm）建立连接，并启用编辑器内 Diff 视图、共享选区上下文以及自动共享诊断信息等功能。\n\n如果检测到一个受支持的 IDE 正在运行，但尚未安装对应的插件，/ide 会自动安装该插件，随后请你重启 IDE；连接成功后，Claude Code 会用类似“Connected to IntelliJ IDEA.”这样的消息进行确认。而如果你是直接从 IDE 的集成终端启动 claude，Claude Code 通常会自动连接，无需你手动调用 /ide。",
       "whenGood": [
         {
-          "title": "检查 IDE 连接状态",
-          "example": "在终端旁打开 VS Code 后调用 /ide，确认 Claude Code 已成功连接。"
+          "title": "从外部终端建立连接",
+          "example": "从普通终端（而非 IDE 的终端）启动 claude，并在其中执行 /ide，与正在运行的 VS Code 或 JetBrains IDE 建立连接"
         },
         {
-          "title": "查看多个已打开 IDE 集成的状态",
-          "example": "在同时打开多个编辑器窗口时使用 /ide，查看当前哪个集成处于活动状态。"
+          "title": "检查 IDE 连接状态",
+          "example": "在终端旁打开 VS Code 后调用 /ide，确认 Claude Code 已连接"
         }
       ],
       "whenBad": [
         {
-          "title": "首次安装 IDE 扩展",
-          "why": "/ide 只能管理并显示已存在的集成状态——它不会安装新的编辑器扩展。",
-          "alternative": "直接在编辑器的插件市场（例如 VS Code Marketplace）中安装对应的 Claude Code 扩展。"
+          "title": "想要首次安装 IDE 扩展",
+          "why": "/ide 只有在检测到一个正在运行但尚未连接的 IDE 时才会自动补装插件——没有正在运行的 IDE，这个命令不足以完成首次安装。",
+          "alternative": "直接在编辑器的插件市场中安装相应的 Claude Code 扩展（VS Code Marketplace 或 JetBrains Marketplace）"
+        },
+        {
+          "title": "Claude 已经在 IDE 集成终端中运行",
+          "why": "在这种情况下，Claude Code 通常会自动连接；此时一般不需要 /ide。",
+          "alternative": "在再次调用该命令之前，先检查连接是否已经处于激活状态（例如通过 Diff 视图查看）"
         }
       ],
       "sources": [
@@ -1697,18 +1702,27 @@
       "slug": "passes",
       "name": "/passes",
       "summary": "与朋友分享一周免费的 Claude Code 使用权限。",
-      "what": "与朋友分享一周免费的 Claude Code 使用权限。\n\n仅在账户具备资格时可见。",
+      "what": "/passes 用于与朋友分享一周免费的 Claude Code：如果你的账号符合资格，通过这个命令可以生成一个 Pass，让另一个人免费使用 Claude Code 一周。该命令明确只有在你的账号被判定为符合资格时才会显示；官方文档没有说明还有哪些其他标准来判断哪些方案或账号符合条件、你可以分发多少个 Pass，或者单个 Pass 的有效期有多长。\n\n如果在命令菜单（输入 /）中没有看到 /passes，说明你的账号目前不在该计划的适用范围内——目前没有文档记录的方法可以手动强制让它显示出来。该命令只涉及把免费使用权分享给他人，与管理你自己的订阅无关。",
       "whenGood": [
         {
-          "title": "与朋友分享一周免费的 Claude Code",
-          "example": "执行 /passes（前提是账户有此资格），赠送一周免费使用权。"
+          "title": "与朋友分享一周免费使用",
+          "example": "执行 /passes（前提是账号符合资格），赠送一周免费的 Claude Code"
+        },
+        {
+          "title": "检查自己的账号是否符合资格",
+          "example": "在命令菜单中输入 /，然后筛选 passes——如果 /passes 出现在列表中，说明账号已获得该计划的资格"
         }
       ],
       "whenBad": [
         {
-          "title": "管理自己的订阅或查看账户状态",
-          "why": "/passes 仅用于赠送免费使用周，且只有账户具备相应资格时才可见——它与自身的套餐管理无关。",
-          "alternative": "使用 /upgrade 或 /status 查看自己的订阅或账户状态。"
+          "title": "管理自己的订阅或查看账号状态",
+          "why": "/passes 只用于向他人分享免费周，不用于管理自己的方案或账号状态。",
+          "alternative": "使用 /upgrade 更换方案，或使用 /status 查看账号状态"
+        },
+        {
+          "title": "菜单中没有该命令却仍期望它存在",
+          "why": "只有当 Anthropic 判定账号符合资格时，/passes 才会显示；没有这一资格，该命令根本不会出现在菜单中。",
+          "alternative": "目前没有已知方法可以自行强制获得该资格；可以尝试联系 Anthropic 支持团队询问"
         }
       ],
       "sources": [
@@ -2078,22 +2092,27 @@
       "slug": "remote-env",
       "name": "/remote-env",
       "summary": "选择云端代理(Cloud Agent)的默认环境。",
-      "what": "选择云端代理(Cloud Agent)的默认环境。",
+      "what": "/remote-env 用于设置：当你从终端启动一个新的云端会话（例如通过 `claude --cloud`）时，默认使用哪个云端环境。云端环境决定了网络访问权限、环境变量，以及一个在会话启动前运行的 Setup 脚本。如果你目前只创建了一个环境，该命令只会显示这个环境当前的配置。/remote-env 只能选择默认环境——新建、编辑或归档环境只能通过 claude.ai/code 上的网页界面进行。\n\n该命令要求你已使用 claude.ai 订阅登录（Claude Code on the web 目前对 Pro、Max、Team 用户，以及拥有 Premium 或 Chat+Claude Code 席位的 Enterprise 用户开放 Research Preview），并且在 Amazon Bedrock、Google Cloud 的 Agent Platform 和 Microsoft Foundry 上不可用，因为这些平台上不运行云端会话。",
       "whenGood": [
         {
-          "title": "一次性设置默认环境",
-          "example": "在频繁通过 claude.ai/code 启动云端代理之前,先用 /remote-env 选择默认环境,这样就不用每次都重新选择。"
+          "title": "预先设置好默认环境",
+          "example": "在频繁通过 claude --cloud 或 claude.ai/code 启动云端会话之前，用 /remote-env 选择默认环境，这样就不必每次都重新选择"
         },
         {
-          "title": "在多个云端环境之间切换",
-          "example": "在两个使用不同云端环境的仓库之间切换时,在启动下一个云端代理之前,用 /remote-env 将新环境设为默认。"
+          "title": "查看当前的环境配置",
+          "example": "在只创建了一个环境的情况下调用 /remote-env，查看当前配置的环境及其设置"
         }
       ],
       "whenBad": [
         {
-          "title": "纯本地终端会话",
-          "why": "/remote-env 只影响云端代理的默认环境,不影响本地会话。",
-          "alternative": "无需任何操作——本地照常工作即可。"
+          "title": "新建或编辑一个环境",
+          "why": "/remote-env 只能选择默认环境；添加、编辑和归档环境只能通过网页界面完成。",
+          "alternative": "在 claude.ai/code 上打开环境选择界面，使用其中的“Add environment”或某个环境的设置图标"
+        },
+        {
+          "title": "通过 Amazon Bedrock、Vertex 或 Foundry 使用",
+          "why": "云端会话只能运行在 Anthropic 自己的基础设施上，通过 Amazon Bedrock 等第三方平台无法使用。",
+          "alternative": "继续在本地正常工作，或者使用直接的 claude.ai 账号登录以使用云端会话"
         }
       ],
       "sources": [
@@ -2433,22 +2452,22 @@
       "slug": "setup-bedrock",
       "name": "/setup-bedrock",
       "summary": "通过交互式向导配置 Amazon Bedrock 的身份验证、区域和模型固定版本(Model Pin)。",
-      "what": "通过交互式向导配置 Amazon Bedrock 的身份验证、区域和模型固定版本(Model Pin)。\n\n仅在设置 CLAUDE_CODE_USE_BEDROCK=1 时可见。",
+      "what": "/setup-bedrock 会打开一个交互式向导，用于设置 Amazon Bedrock 的登录：它会询问身份验证方式（一个识别到的 AWS Profile、一个 Amazon Bedrock API Key、Access Key/Secret，或已经设置好的环境变量），获取你的 AWS 区域，并检查你的账号可以调用哪些 Claude 模型，以便你把它们固定为模型 Pin。再次执行时，模型选择会从你当前已固定的模型开始。向导会把结果写入你 settings.json 的 `env` 区块（`~/.claude/settings.json` 或 `$CLAUDE_CONFIG_DIR/settings.json`）——也就是说，你不再需要手动导出环境变量。\n\n该命令只有在 Bedrock 配置完成后才会出现在命令菜单中，但只要设置了 `CLAUDE_CODE_USE_BEDROCK=1`，在此之前输入它也同样有效。首次使用的用户也可以直接通过登录界面进入同一个向导。",
       "whenGood": [
         {
-          "title": "团队迁移到 Amazon Bedrock",
-          "example": "在设置了 CLAUDE_CODE_USE_BEDROCK=1 的情况下运行 /setup-bedrock,以交互方式配置身份验证、区域和模型固定版本(Model-Pins)。"
+          "title": "团队切换到 Amazon Bedrock",
+          "example": "在设置了 `CLAUDE_CODE_USE_BEDROCK=1` 的情况下执行 `/setup-bedrock`，以交互方式设置身份验证、区域和模型 Pin"
         },
         {
-          "title": "Bedrock 变更后更新模型固定版本",
-          "example": "在可用的 Bedrock 模型发生变化后,重新运行一遍 /setup-bedrock,重新设置固定版本(Pins)。"
+          "title": "之后修改登录凭据或模型 Pin",
+          "example": "再次执行 `/setup-bedrock`，更新凭据、区域或已固定的模型版本——选择会从之前固定的模型开始"
         }
       ],
       "whenBad": [
         {
-          "title": "未设置环境变量的情况下",
-          "why": "根据文档,只有设置了 CLAUDE_CODE_USE_BEDROCK=1,/setup-bedrock 才可见。",
-          "alternative": "先设置该环境变量,或者在正常使用 Anthropic 账户时直接使用 /login。"
+          "title": "未设置相应环境变量，或使用常规 Anthropic 账号",
+          "why": "/setup-bedrock 是为 Amazon Bedrock 登录设计的，只有设置了 CLAUDE_CODE_USE_BEDROCK=1 后才会出现在菜单中；直接使用 Anthropic 账号并不需要这个命令。",
+          "alternative": "先设置 CLAUDE_CODE_USE_BEDROCK=1，或者在直接使用 Anthropic API 时直接使用 /login"
         }
       ],
       "sources": [
@@ -2588,22 +2607,22 @@
       "slug": "status",
       "name": "/status",
       "summary": "打开设置界面的 Status 标签页,显示版本、模型、账户和连接状态。",
-      "what": "打开设置界面的 Status 标签页,显示版本、模型、账户和连接状态。\n\n即使 Claude 正在回复时也可以使用。",
+      "what": "/status 会直接打开设置界面的 Status 标签页，让你一目了然地看到已安装的 Claude Code 版本、当前使用的模型、已登录的账号，以及与 Anthropic 的连接状态。这在快速排查问题时很实用：如果 Claude 表现异常、似乎用错了模型，或者出现连接问题，在这里就能立刻看到当前状态。在 Amazon Bedrock 上，/status 还会额外显示所使用的 AWS 区域来自哪个来源。\n\n与大多数命令不同，/status——以及 /tasks 和 /usage——会立即执行，不会打断正在进行的回复：也就是说，你可以在 Claude 回合进行到一半时输入它，而不必等 Claude 回答完毕。",
       "whenGood": [
         {
-          "title": "检查版本/模型/账户",
-          "example": "调用 /status 查看当前使用的 Claude Code 版本、模型和账户,例如在调试异常行为时使用。"
+          "title": "检查版本/模型/账号/连接状态",
+          "example": "调用 /status，查看当前激活的 Claude Code 版本、模型和账号，例如在排查异常行为时"
         },
         {
-          "title": "在回答过程中检查连接状态",
-          "example": "在 Claude 仍在作答时打开 /status 检查连接状态,而不打断正在进行的回答。"
+          "title": "在回复进行中查询状态",
+          "example": "在 Claude 仍在作答时输入 /status，检查版本或连接情况，而不打断或等待当前回复完成"
         }
       ],
       "whenBad": [
         {
-          "title": "想查找 Token/费用信息",
-          "why": "/status 显示的是版本、模型、账户和连接状态,不显示使用量/费用数据。",
-          "alternative": "使用 /usage。"
+          "title": "想查看 Token / 费用信息",
+          "why": "/status 显示的是版本、模型、账号和连接状态，并不包含使用量或费用数据。",
+          "alternative": "使用 /usage（别名：/cost、/stats）"
         }
       ],
       "sources": [
@@ -3601,19 +3620,28 @@
       "platform": "cursor-cli",
       "slug": "max-mode",
       "name": "/max-mode",
-      "summary": "切换当前所选模型的“Max Mode”(如果支持的话)。",
-      "what": "/max-mode 用于切换当前所选模型的 Max Mode。状态会显示在页脚(Footer),并且会跨会话保留。",
+      "summary": "仅在旧版按请求计费方案上可用，并非普遍可用",
+      "what": "/max-mode 是官方 CLI 参考文档中的一个斜杠命令，用于切换“Max Mode”——根据文档，这明确仅适用于旧版按请求计费的方案（“legacy request-based plans”）。Max Mode 会把模型的上下文窗口扩展到超出默认上限，这对上下文异常庞大的任务有帮助；不过据 Cursor 介绍，大多数编码任务用默认窗口就已经足够。\n\n在当前（非旧版）的计费档位上，这个开关已不再独立存在——需要 Max Mode 的模型会在那里自动启用它。在旧版方案上，Max Mode 会按模型 API 价格加收 20% 的附加费用计费。该状态会作为指示器显示在页脚，自 2026 年 7 月起还会额外显示在 Prompt 栏中，并且会在多个会话之间保持。",
       "whenGood": [
         {
-          "title": "为复杂任务发挥模型的最大能力",
-          "example": "/max-mode — 在进行大型架构分析之前打开"
+          "title": "在旧版方案上为大型任务解锁更多上下文",
+          "example": "在让某个默认上下文窗口较小的模型处理一个非常大的仓库之前，先启用 /max-mode"
+        },
+        {
+          "title": "检查 Max Mode 当前是否处于启用状态",
+          "example": "调用 /max-mode，并查看页脚或 Prompt 栏中的 MAX 指示器"
         }
       ],
       "whenBad": [
         {
-          "title": "当前模型不支持 Max Mode",
-          "why": "该开关只对提供 Max Mode 的模型有效。",
-          "alternative": "先用 /model 切换到支持 Max Mode 的模型"
+          "title": "你使用的是当前（非旧版）计费方案",
+          "why": "根据文档，Max Mode 这个开关只对使用旧版按请求计费订阅的用户可用；在当前方案上不存在这个开关。",
+          "alternative": "使用 /model 直接选择一个上下文窗口更大的模型"
+        },
+        {
+          "title": "常规的小型编码任务",
+          "why": "据 Cursor 介绍，默认上下文窗口足以应对大多数任务；在旧版方案上，Max Mode 还会额外产生 20% 的附加费用。",
+          "alternative": "不开启 Max Mode 正常工作，只在确实需要更多上下文时再启用"
         }
       ],
       "sources": [
@@ -3836,18 +3864,27 @@
       "slug": "vim",
       "name": "/vim",
       "summary": "切换输入框中的 Vim 快捷键。",
-      "what": "/vim 用于切换 Prompt 输入框中的 Vim 按键绑定(Keybindings),包括搜索移动和可视模式(Visual Mode);编辑操作可以从输入框中的任意光标位置触发,不仅限于空输入框。",
+      "what": "/vim 是官方 CLI 参考文档中的一个斜杠命令，用于切换 Prompt 输入框中的 Vim 快捷键（“Toggle Vim keys”）。根据 Changelog，自 2026 年 5 月起，/vim 可以在输入框中任意光标位置触发，不再局限于 Prompt 为空时。当前激活的模式会显示在页脚中。\n\n功能范围逐步扩展：搜索移动和操作符组合，如 f/F/t/T/;/,（例如 df, 或 ct.）、带有删除和修改操作符的 Visual Mode，以及单字符命令，如用于替换单个字符的 r。此外，Ctrl+G 会在外部 $EDITOR 中打开当前 Prompt，方便在那里撰写较长的输入内容，然后再传回——对于更喜欢在自己习惯的编辑器中输入的人来说，配合 /vim 使用会很实用。",
       "whenGood": [
         {
-          "title": "在编写长 Prompt 时使用熟悉的 Vim 移动方式",
-          "example": "/vim — 然后用 hjkl/dw/ct. 在输入框中导航"
+          "title": "在编写长 Prompt 时使用习惯的 Vim 移动方式",
+          "example": "启用 /vim，然后在输入框中用 f/t 搜索移动以及 df, 或 ct. 等操作符组合进行导航"
+        },
+        {
+          "title": "在输入 Prompt 的过程中随时切换 Insert 模式和 Normal 模式",
+          "example": "即使输入框中已有文本，也可以直接在当前光标位置输入 /vim"
         }
       ],
       "whenBad": [
         {
-          "title": "更习惯标准快捷键",
-          "why": "Vim 快捷键会改变 i、dd、Escape 等熟悉按键的行为。",
-          "alternative": "再次调用 /vim 将其关闭"
+          "title": "更习惯使用标准快捷键",
+          "why": "Vim 按键绑定会改变输入框中 i、dd 或 Escape 等熟悉按键的行为。",
+          "alternative": "再次调用 /vim，将该模式重新关闭"
+        },
+        {
+          "title": "更倾向于在惯用的外部编辑器中撰写长 Prompt",
+          "why": "Vim 模式有助于在 CLI 输入框内部编辑，但无法替代一个完整功能的编辑器。",
+          "alternative": "使用 Ctrl+G，在 $EDITOR 中打开该 Prompt"
         }
       ],
       "sources": [
@@ -4946,18 +4983,27 @@
       "slug": "agent-logout",
       "name": "agent logout",
       "summary": "让 CLI 退出 Cursor 账户登录,并清除本地保存的凭证。",
-      "what": "agent logout 会让当前的 CLI 安装退出登录,并移除本地保存的凭证(默认存放在 macOS 钥匙串(Keychain)中;设置 AGENT_CLI_CREDENTIAL_STORE=file 后则改为存放在一个未加密的文件中)。",
+      "what": "agent logout 是 CLI 参考文档中的一个顶层命令，会将当前 CLI 安装从 Cursor 账号注销（“Sign out and clear stored authentication”）。之后本地保存的登录凭据会被清除，下次使用前需要重新执行 agent login。\n\n关于凭据具体如何在技术上存储，官方文档并未详细说明——身份验证参考文档只提到登录后凭据会“安全地保存在本地”，并未提及 Keychain 或具体的存储变量。对于脚本和 CI 环境，也可以完全不通过交互式登录，而是通过环境变量 CURSOR_API_KEY 或参数 --api-key <key> 提供身份验证，这样一来通常也就无需注销。",
       "whenGood": [
         {
-          "title": "在共用电脑上切换账户",
-          "example": "agent logout — 然后用另一个账户执行 agent login"
+          "title": "在共用机器上切换账号",
+          "example": "执行 agent logout，然后用另一个账号执行 agent login"
+        },
+        {
+          "title": "在该机器上的登录凭据不再需要使用前做干净收尾",
+          "example": "在一台不再用于该 Cursor 账号的机器上执行 agent logout"
         }
       ],
       "whenBad": [
         {
-          "title": "只想查看一下身份验证状态,不想退出登录",
-          "why": "agent logout 会立即删除已保存的凭证。",
-          "alternative": "使用 agent status 或 agent whoami 只查看状态"
+          "title": "只是想快速查看认证状态，不想注销",
+          "why": "agent logout 会立即清除该安装保存的登录凭据。",
+          "alternative": "使用 agent status 或 agent whoami，仅查看状态"
+        },
+        {
+          "title": "自动化脚本/CI 希望在没有交互式登录状态下运行",
+          "why": "注销会彻底移除交互式会话，对于一次性、非交互式的调用来说没有必要。",
+          "alternative": "设置 CURSOR_API_KEY，或在每次调用时传入 --api-key <key>，而不是进行交互式登录/注销"
         }
       ],
       "sources": [
@@ -4972,18 +5018,22 @@
       "slug": "status",
       "name": "agent status | agent whoami",
       "summary": "显示当前的身份验证状态,以及账户和端点(Endpoint)信息。",
-      "what": "agent status(别名:agent whoami)显示 CLI 当前是否已登录、登录的是哪个账户,以及端点配置信息。加上 --format json 可以获得机器可读的输出,而不是默认的文本格式。",
+      "what": "agent status（别名：agent whoami）是 CLI 参考文档中的一个顶层命令，用于显示当前的身份验证状态。根据身份验证参考文档，输出内容包括你是否已登录、你的账号信息，以及当前的 Endpoint 配置——例如在使用不同或自托管的 API Endpoint 时会用到。\n\n通过参数 --format <format>，可以在 text（默认）和 json 之间选择，使输出便于机器读取，很适合用于脚本或 CI 检查。根据文档，status 和 whoami 完全等价；两者都调用同一个功能。该命令本身不会更改登录状态，只是读取当前状态。",
       "whenGood": [
         {
-          "title": "在执行脚本前检查 CLI 是否已登录",
-          "example": "agent status --format json"
+          "title": "在脚本运行前以机器可读方式检查 CLI 是否已登录",
+          "example": "在 CI 脚本中加入 agent status --format json，在正式运行前检查认证状态"
+        },
+        {
+          "title": "快速查看当前激活的账号和 Endpoint",
+          "example": "调用 agent whoami，以默认文本格式显示账号和 Endpoint 配置"
         }
       ],
       "whenBad": [
         {
-          "title": "想切换账户,而不只是查看状态",
-          "why": "agent status 不会改变任何东西,只显示当前状态。",
-          "alternative": "先执行 agent logout,再执行 agent login"
+          "title": "想要切换账号，而不只是查看",
+          "why": "agent status 不会更改任何内容，它只显示当前状态。",
+          "alternative": "先执行 agent logout，再执行 agent login"
         }
       ],
       "sources": [
@@ -5540,18 +5590,27 @@
       "slug": "mcp-enable",
       "name": "agent mcp enable <identifier>",
       "summary": "把某个 MCP 服务器加入本地已授权列表。",
-      "what": "agent mcp enable <identifier> 会把一个已配置的 MCP 服务器加入本地已授权列表,之后使用它时就不会再重复弹出授权确认。",
+      "what": "agent mcp enable <identifier> 是“agent mcp”类别（MCP 服务器管理）下的一个子命令，根据 Cursor 文档，它会把一个已配置好的 MCP 服务器永久加入本地已批准列表，使其今后加载时无需再次确认授权。<identifier> 指的是此前已记录在 .cursor/mcp.json（项目级）或 ~/.cursor/mcp.json（全局）中的某个服务器。\n\n相关的兄弟子命令有 agent mcp list（显示已配置的服务器及其状态）、agent mcp list-tools <identifier>（显示某服务器可用的工具）、agent mcp login <identifier>（对某服务器进行身份验证），以及作为 enable 对应操作的 agent mcp disable <identifier>。根据 Changelog，在运行中的会话内（通过 /mcp）执行 enable/disable 也会立即影响可用工具，完全无需重启。",
       "whenGood": [
         {
-          "title": "为一个已经信任的服务器做永久授权",
+          "title": "永久批准一个已经可信的服务器",
           "example": "agent mcp enable github"
+        },
+        {
+          "title": "批准之前先检查究竟配置了哪些服务器",
+          "example": "执行 agent mcp list，记下对应的 identifier，然后调用 agent mcp enable <identifier>"
         }
       ],
       "whenBad": [
         {
-          "title": "想为单次脚本运行一次性放行所有已配置的服务器",
-          "why": "agent mcp enable 是按服务器生效且长期有效的,不是针对单次运行的。",
-          "alternative": "在对应的 agent 调用中使用 --approve-mcps 参数"
+          "title": "想要为单次脚本运行一次性批准所有已配置的服务器",
+          "why": "agent mcp enable 只能针对单个服务器且是永久生效，不能只对一次运行有效。",
+          "alternative": "在对应的 agent 调用中设置全局参数 --approve-mcps，例如 agent --approve-mcps \"...\""
+        },
+        {
+          "title": "该服务器尚未记录在任何 mcp.json 中",
+          "why": "enable 只能批准已经配置好的服务器，不会创建新的服务器。",
+          "alternative": "先在 .cursor/mcp.json 或 ~/.cursor/mcp.json 中登记该服务器，然后再使用 agent mcp enable"
         }
       ],
       "sources": [
@@ -5661,18 +5720,22 @@
       "slug": "sandbox-reset",
       "name": "agent sandbox reset",
       "summary": "把沙箱配置重置为默认值。",
-      "what": "agent sandbox reset 会放弃对沙箱配置的自定义修改(例如 allow/readonly 路径、网络设置),恢复默认值。",
+      "what": "agent sandbox reset 是“agent sandbox”类别下的一个子命令，会把对 Sandbox 配置所做的个别调整重置为默认值（“Reset sandbox configuration to defaults”）。\n\n相关的兄弟子命令有 agent sandbox enable（启用命令执行的 Sandbox 模式）、agent sandbox disable（关闭 Sandbox，转而使用 Allowlist 模式），以及 agent sandbox run <cmd> [args...]——用于在 Sandbox 中执行一条具有工作区读写权限的单独命令；run 还带有一个 --network 参数，默认值为 false。根据 Cursor 关于 Sandbox 配置的通用参考文档，默认的文件系统访问权限是“workspace_readwrite”，默认的网络规则是“deny”，也就是说，除非明确允许，否则网络访问原则上会被阻止。",
       "whenGood": [
         {
-          "title": "在多次尝试路径或规则之后,重新得到一个干净的起点",
-          "example": "agent sandbox reset"
+          "title": "在多次尝试路径或网络规则后恢复到干净的初始状态",
+          "example": "在反复尝试 sandbox enable/disable 及网络设置之后，执行 agent sandbox reset"
+        },
+        {
+          "title": "在开始新项目前确保没有旧的 Sandbox 调整仍处于激活状态",
+          "example": "先执行 agent sandbox reset，再执行 agent sandbox enable，确保以完全干净的配置开始"
         }
       ],
       "whenBad": [
         {
-          "title": "只想修改单一一项设置,而不是全部",
-          "why": "agent sandbox reset 会重置整个配置,而不只是一个值。",
-          "alternative": "有针对性地使用 agent sandbox enable/disable,或在 sandbox run 上使用 --allow-paths/--network 参数"
+          "title": "只想修改单个设置，而不是全部",
+          "why": "agent sandbox reset 会重置整个配置，而不仅仅是单个值。",
+          "alternative": "有针对性地使用 agent sandbox enable/disable，或使用 agent sandbox run 的 --network 参数"
         }
       ],
       "sources": [
@@ -7807,18 +7870,22 @@
       "slug": "agent-flag",
       "name": "agy --agent <name>",
       "summary": "在启动时选择一个自定义 agent。",
-      "what": "agy --agent <name>(自 1.1.1 版本起)会在启动时选择一个自定义 agent,而不是默认 agent。可以先用子命令 agy agent 或 agy agents 列出所有自定义 agent。",
+      "what": "`agy --agent <name>` 同样是终端调用 `agy` 时使用的启动参数（不是斜杠命令），根据官方 Changelog，它在 1.1.1 版本中引入。它会在启动时直接选择一个此前定义好的 Custom Agent，而不是以默认 Agent 启动。\n\n根据 Changelog，与该 Flag 同时引入的还有子命令 `agent`/`agents`，你可以用它列出可用的 Custom Agent，然后再通过 `--agent <name>` 选择其中之一。\n\n自 1.1.6 版本起，Custom Agent 还可以定义为带有 YAML frontmatter 的 Markdown 文件（`agent.md`），这让该 Flag 在实践中更有意义，因为这样一来 Agent 更容易版本化，也更方便在团队内维护。",
       "whenGood": [
         {
-          "title": "以专门的自定义 agent 而非默认 agent 启动",
-          "example": "agy --agent code-reviewer"
+          "title": "以 Custom Agent 启动",
+          "example": "agy --agent code-reviewer，直接以专门负责代码审查的 Agent 启动"
+        },
+        {
+          "title": "提前查看可用的 Agent",
+          "example": "执行 agy agents 查看已定义的 Custom Agent，然后有针对性地使用 agy --agent <name>"
         }
       ],
       "whenBad": [
         {
-          "title": "不知道想要的自定义 agent 的名称",
-          "why": "--agent 需要一个确实存在且精确匹配的 agent 名称。",
-          "alternative": "先用 agy agents 列出所有 agent,再设置 --agent <name>"
+          "title": "不知道 Agent 名称",
+          "why": "--agent 需要一个确切存在的 Agent 名称。",
+          "alternative": "先用 agy agents 列出可用项，再设置 --agent <name>"
         }
       ],
       "sources": [
@@ -7867,17 +7934,21 @@
       "slug": "project-flag",
       "name": "agy --project <name>",
       "summary": "在启动时显式指定要使用的项目。",
-      "what": "agy --project <name>(自 1.0.12 版本起)会在启动时显式指定要使用哪个项目,而不是自动根据当前工作区推断项目。与 --new-project 互补,后者用于新建项目。",
+      "what": "`agy --project <name>` 是终端调用时使用的启动参数（不是斜杠命令），根据 Changelog，它与 `--new-project` 一同在 1.0.12 版本中引入。它会在启动时明确指定使用哪个已有项目，而不是让 CLI 从当前工作目录自动推断项目。\n\n它与 `agy --new-project <name>` 相辅相成：`--project` 加载一个已有项目，而 `--new-project` 则总是创建一个全新项目。\n\n这两个 Flag 都能帮你在启动时不依赖自动项目识别——例如当多个项目位于同一个上级目录下，或某个脚本从不同的工作目录调用 `agy` 时。和 `--new-project` 一样，`--project` 只在启动时有意义，无法在运行中的会话内使用。",
       "whenGood": [
         {
-          "title": "不受当前目录限制,选择一个已存在的项目",
-          "example": "agy --project my-project"
+          "title": "不受所在目录限制地选择项目",
+          "example": "即使终端当前处于其他目录，也可执行 agy --project mein-projekt"
+        },
+        {
+          "title": "在脚本中明确引用项目",
+          "example": "在 CI 脚本中调用 agy --project ci-projekt，确保始终加载同一个项目"
         }
       ],
       "whenBad": [
         {
-          "title": "希望创建一个全新的项目",
-          "why": "--project 只能在已有项目中选择,并不会创建新项目。",
+          "title": "想要创建一个全新项目",
+          "why": "--project 只能在已有项目中选择，并不会创建新项目。",
           "alternative": "使用 agy --new-project <name>"
         }
       ],
@@ -7893,18 +7964,22 @@
       "slug": "new-project",
       "name": "agy --new-project <name>",
       "summary": "在启动时创建一个新项目。",
-      "what": "agy --new-project <name>(自 1.0.12 版本起)会在启动时创建一个使用指定名称的新项目。如果不指定名称,自 1.1.1 版本起 CLI 会默认将新初始化的项目命名为“CLI Project”。",
+      "what": "`agy --new-project <name>` 是一个启动参数（Flag），在终端调用 `agy` 时传入（不是斜杠命令）。自 1.0.12 版本起，它会在启动时直接以指定名称创建一个新项目，而不是加载已有项目。\n\n如果省略 `<name>`，自 1.1.1 版本起 Antigravity CLI 会自动为新初始化的项目分配默认名称“CLI Project”，即便没有显式命名，也能确保工作区可被唯一识别。\n\n该 Flag 与 `agy --project <name>` 相辅相成：后者用于选择一个已存在的项目。`--new-project` 在任何情况下都会创建一个新项目，而 `--project` 则加载已有项目。两者都是仅在终端调用 `agy` 时使用的启动参数，而不是运行中会话内的斜杠命令。",
       "whenGood": [
         {
-          "title": "为新任务创建一个全新的项目",
-          "example": "agy --new-project my-new-project"
+          "title": "创建全新项目",
+          "example": "在终端执行 agy --new-project kundenprojekt-x，立即在新项目中开始工作"
+        },
+        {
+          "title": "无需命名即可快速开始",
+          "example": "调用 agy --new-project 时不带 <name>——CLI 会自动分配名称“CLI Project”"
         }
       ],
       "whenBad": [
         {
-          "title": "希望继续使用一个已存在的项目",
-          "why": "--new-project 总是会创建一个新项目,而不是加载已有项目。",
-          "alternative": "使用 agy --project <name>"
+          "title": "想要继续使用已有项目",
+          "why": "根据 Changelog（v1.0.12），--new-project 总是会创建一个新项目，而不是加载已有项目。",
+          "alternative": "启动时使用 agy --project <name>"
         }
       ],
       "sources": [
@@ -8328,18 +8403,22 @@
       "slug": "clear-prompt-esc-esc",
       "name": "esc esc",
       "summary": "在没有正在进行的回复流时,清空提示词输入框。",
-      "what": "连续按两次 esc,会清空提示词输入框中当前的输入内容,前提是当前没有正在进行的回复流。",
+      "what": "`esc esc` 指的是在 Antigravity CLI 的 TUI 中连按两次 Escape 键——也就是说，这是一个键盘快捷键，而不是斜杠命令。根据官方“Using AGY CLI”页面，该组合键会清空 Prompt 输入框中当前的内容，但仅在没有回复流（Stream）正在进行时才生效。\n\n在标准按键绑定表中，Escape 键还整体映射为“停止流、关闭菜单或清空 Prompt”，而 `esc esc` 则专门用于快速清空一个输错或不再需要的输入。\n\n根据 Changelog（1.0.11 版本），要中断正在进行的 Agent 回复流，文档记录的方式是 `ctrl+c`：第一次按下会取消当前活动的操作，第二次按下则触发 CLI 的退出流程。可以通过 `keybindings.json` 自定义按键组合，但据文档说明，`cli.exit` 和 `cli.enter` 不受此影响。",
       "whenGood": [
         {
-          "title": "快速丢弃输错或不再需要的输入内容",
-          "example": "按 esc esc 清空当前已输入的内容"
+          "title": "快速丢弃输错的内容",
+          "example": "按 esc esc 清空当前已输入但尚未发送的内容"
+        },
+        {
+          "title": "无需鼠标即可重新开始",
+          "example": "在 Prompt 输入框中粘贴出错后，连按两次 esc，重新完整输入"
         }
       ],
       "whenBad": [
         {
-          "title": "想要中止正在进行的 agent 回复流",
-          "why": "esc esc 只会清空提示词输入框;文档中说明中止正在进行的回复流应使用 ctrl+c。",
-          "alternative": "使用 ctrl+c 来中断正在执行的 agent"
+          "title": "想要中断正在进行的回复流",
+          "why": "根据文档，esc esc 只会清空 Prompt 输入框，且明确只有在没有流处于活动状态时才生效；中断流的方式文档记录的是 ctrl+c。",
+          "alternative": "使用 ctrl+c 中断正在进行的 Agent 执行"
         }
       ],
       "sources": [
@@ -8846,18 +8925,27 @@
       "slug": "hooks",
       "name": "/hooks",
       "summary": "浏览当前激活的 pre-/post-hook。",
-      "what": "/hooks 属于 Tools & Tasks 分类,会打开一个可搜索的列表,展示当前激活的 pre-hook 和 post-hook,例如通过插件安装的那些。",
+      "what": "根据官方 CLI 参考文档，`/hooks` 属于“Tools & Tasks”类别，会在 TUI 中打开一个可搜索的概览，列出当前所有已加载且处于激活状态的 Pre-Hook 和 Post-Hook。这些是 Antigravity 在特定 Agent 操作前后自动执行的脚本，例如工具调用前的预检查（Pre-Flight-Check），或文件写入后的自动格式化。\n\nHooks 既可以直接在你的 `settings.json` 中定义，也可以作为插件的一部分通过独立的 `hooks.json` 提供；`/hooks` 会把两种来源中当前激活加载的内容汇总展示给你。底层配置默认位于 `~/.gemini/config/hooks.json`——此前有一个 bug（已在 1.0.8 版本中修复）会把修改意外写入另一个未共享的路径。\n\n该命令本身不会更改任何内容：它纯粹是一个检查工具，而不是 Hooks 的编辑器。",
       "whenGood": [
         {
-          "title": "查看当前有哪些 hook 处于激活状态",
-          "example": "打开 /hooks,查看是哪个插件注册了某个 hook"
+          "title": "在会话开始前检查激活的 Hooks",
+          "example": "输入 /hooks，查看是否有插件（例如）注册了 Post-Edit 格式化 Hook"
+        },
+        {
+          "title": "排查异常行为的根源",
+          "example": "保存后出现意外的自动格式化时，打开 /hooks，检查是哪个 Hook 导致的"
         }
       ],
       "whenBad": [
         {
-          "title": "想完整地启用/停用一个插件,而不只是查看 hook",
-          "why": "/hooks 只提供总览,并不能管理插件。",
-          "alternative": "agy plugin enable/disable <name>"
+          "title": "想要完全启用/禁用某个插件",
+          "why": "/hooks 只显示概览，并不能直接管理插件。",
+          "alternative": "使用 agy plugin enable <name> 或 agy plugin disable <name>"
+        },
+        {
+          "title": "想要直接编辑 Hooks",
+          "why": "根据文档，/hooks 纯粹是检查工具，不是 hooks.json 的编辑器。",
+          "alternative": "直接在 settings.json 或相应的插件目录中编辑 hooks.json"
         }
       ],
       "sources": [
@@ -9067,19 +9155,28 @@
       "platform": "antigravity-cli",
       "slug": "planning",
       "name": "/planning",
-      "summary": "开启多轮计划生成模式。",
-      "what": "根据斜杠命令总参考,/planning 属于 Configurations 分类,会开启一种模式:agent 在执行前会通过多轮交互先制定计划,而不是直接动手。",
+      "summary": "根据 Changelog/模式页面，该命令自 1.1.0 起已被移除，改用 /plan 前缀",
+      "what": "`/planning` 最初是“Configurations”类别下的一个斜杠命令，用于启用一种模式：Agent 在执行前会先跨多个回合制定计划，而不是直接行动——专为依赖关系众多的复杂工程任务而设计。\n\n重要提示：根据 Antigravity CLI 关于执行模式的专门页面以及官方 Changelog，`/planning`（连同旧的 `/fast`）已在 1.1.0 版本中作为“vestigial command”被移除。取而代之的是一套统一的模式系统：你可以按 `Shift+Tab` 在 `default`、`accept-edits` 和 `plan` 三种模式之间切换，也可以在提示词前加上 `/plan`，让 CLI 自动切换到计划模式。\n\n请注意：通用命令参考页面仍然把 `/planning` 列为一个有效命令，并沿用同样的旧描述——这与专门的模式页面和 Changelog 相矛盾，看起来像是一处过时的文档。",
       "whenGood": [
         {
-          "title": "为涉及多个依赖关系的复杂任务做出周密规划",
-          "example": "在开始一项较大的重构任务之前打开 /planning"
+          "title": "让多步骤任务先制定计划",
+          "example": "在进行较大的重构任务前，在提示词前加上 /plan（旧版 /planning 的后继方式）"
+        },
+        {
+          "title": "在执行模式之间切换",
+          "example": "用 Shift+Tab 在 default、accept-edits 和 plan 之间循环切换，而不是输入已被移除的 /planning"
         }
       ],
       "whenBad": [
         {
-          "title": "简单、明确的单个操作",
-          "why": "对于琐碎的操作,规划模式只会带来不必要的开销。",
-          "alternative": "对快速、简单的操作使用 /fast"
+          "title": "像以前那样输入 /planning",
+          "why": "根据模式页面和 Changelog，该命令自 1.1.0 版本起已被视为移除的旧版命令。",
+          "alternative": "在提示词前加上 /plan，或用 Shift+Tab 切换模式"
+        },
+        {
+          "title": "为琐碎的单一操作也走一遍规划流程",
+          "why": "根据模式页面，对于修正拼写错误之类的琐碎操作，规划带来的开销并不划算。",
+          "alternative": "通过 Shift+Tab 选择 Fast 模式（根据 Changelog，旧版 /fast 也已在 1.1.0 中被移除）"
         }
       ],
       "sources": [
@@ -9407,18 +9504,22 @@
       "slug": "team-onboarding",
       "name": "/team-onboarding",
       "summary": "根据你的使用历史生成团队入职指南。",
-      "what": "根据你的使用历史生成团队入职指南。\n\nClaude 会分析你过去 30 天的会话、命令和 MCP 服务器使用情况，生成一份 Markdown 指南，队友可以将其作为第一条消息粘贴进去，快速完成配置。对于订阅 Pro、Max、Team 和 Enterprise 计划的 claude.ai 用户，它还会返回一个分享链接。",
+      "what": "/team-onboarding 会分析你过去 30 天在 Claude Code 中的使用情况——会话、用过的命令以及接入的 MCP 服务器——并据此自动生成一份 Markdown 指南。团队成员只需把这段文字作为新会话的第一条消息粘贴进去，就能立刻了解你的典型配置：你使用了哪些工具、Skill 和服务器，以及你通常是怎么工作的。该命令不需要参数，只会分析你自己本地的历史记录。\n\n如果你是 claude.ai 的 Pro、Max、Team 或 Enterprise 方案订阅用户，`/team-onboarding` 还会额外生成一个分享链接，同事可以直接在 Claude Code 中打开，无需手动复制生成的文本。没有此类订阅时，只会生成本地的 Markdown 文件。",
       "whenGood": [
         {
-          "title": "为新队友提供一个有据可依的起点",
-          "example": "/team-onboarding"
+          "title": "为新团队成员做 Onboarding",
+          "example": "在几周的活跃项目工作之后执行 `/team-onboarding`，让新团队成员把你的配置作为第一条消息直接使用"
+        },
+        {
+          "title": "以链接形式分享自己的配置",
+          "example": "拥有 claude.ai 订阅（Pro/Max/Team/Enterprise）时，直接把生成的分享链接发给同事，让他们无需复制粘贴即可在 Claude Code 中打开"
         }
       ],
       "whenBad": [
         {
-          "title": "一个没有你自己使用历史的全新项目",
-          "why": "该指南依赖于你过去 30 天的使用记录；没有历史记录时内容会很单薄。",
-          "alternative": "/init"
+          "title": "全新项目，还没有自己的使用历史",
+          "why": "该指南的内容来自你过去 30 天的会话、命令以及 MCP 服务器使用情况；没有历史记录时，生成的内容会很单薄甚至为空。",
+          "alternative": "使用 `/init` 生成基于项目的 CLAUDE.md"
         }
       ],
       "sources": [

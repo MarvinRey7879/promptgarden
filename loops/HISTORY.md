@@ -2213,3 +2213,28 @@ Struktur-Panne: der Codex-Agent schrieb eine Ebene zu tief verschachtelt
 Zähler, entschachtelt, neu gemerged. Übersetzer-Prompts enthalten jetzt einen
 expliziten Struktur-Hinweis; Merge prüft die Verschachtelung vorab.
 Build 0, Deploy 2a53cd8c, Prod 200. Playwright über 5 Seiten in 3 Sprachen sauber.
+
+## Iteration 251 — 27.07.2026 ~15:45 UTC — Batch 7 (18 Befehle) + 3 Korrekturen
+Poll grün (0/0/0, views_7d 30, visitors 28, mail_clicks 0), Smoke grün.
+Batch 7: 18 dünnste Befehle aus Antigravity, Cursor CLI, Claude Code — Ø68 →
+Ø201 Wörter, ×5 Sprachen. Gesamt-Ø 320 Befehle: 138 → **145** Wörter, Seiten
+unter 100 Wörtern: 101 → **83** (Start: 209). **126 von 320 fertig.**
+DREI KORREKTUREN:
+① Antigravity `/planning`: laut dedizierter Modi-Seite UND Changelog seit v1.1.0
+   ENTFERNT (ersetzt durch `/plan`-Präfix + `Shift+Tab`-Moduswechsel) — die
+   Referenztabelle listet ihn aber weiter als aktiv. Widerspruch dokumentiert,
+   summary korrigiert, damit Leser nicht ins Leere laufen.
+② Cursor `/max-mode`: gilt laut Doku NUR auf alten anfragebasierten Plänen,
+   nicht generell — Kurzbeschreibung war zu pauschal.
+③ Cursor `agent logout`: der Bestand behauptete macOS-Keychain-Nutzung und eine
+   Variable `AGENT_CLI_CREDENTIAL_STORE=file` — dafür gibt es KEINEN Beleg in der
+   offiziellen Doku. Unbelegte Behauptung entfernt statt stehen zu lassen.
+Sauber gearbeitet: bei Claude Code `/passes` ist die Doku extrem knapp
+(eine Tabellenzeile, keine Eligibility-Kriterien) — der Agent hat das vermerkt
+statt Kriterien zu erfinden.
+Kategorien weiter sauber getrennt: 3 Start-Flags (`agy --new-project` etc.),
+1 Tastatur-Shortcut (`esc esc`), 4 Terminal-Subcommands (`agent …`) sind als
+solche beschrieben, nicht als Slash-Befehle.
+Struktur- und BOM-Prüfung lief diesmal vorab (nach der Panne in Batch 6) —
+alle 3 Recherche-Dateien und alle 4 Übersetzungen korrekt.
+Build 0, Deploy 9b327c20, Prod 200. Playwright über 5 Seiten in 3 Sprachen sauber.
