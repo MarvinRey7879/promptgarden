@@ -3595,18 +3595,22 @@
       "slug": "update",
       "name": "/update",
       "summary": "直接在当前会话中把 Cursor Agent 更新到最新版本。",
-      "what": "/update 会原地更新 CLI,无需离开当前会话。终端中执行 agent update 也能达到同样效果。",
+      "what": "/update 是这一组命令中的第二个真正的斜杠命令——一个在正在运行的 Cursor CLI 会话内输入的交互式命令。根据官方斜杠命令参考文档，它会把 CLI 更新到最新版本；更新日志中的描述更精确，称其为“从会话内部原地”更新，也就是说不需要退出会话。\n\n需要与之区分的是同名的终端子命令 agent update：它是单独在 shell 中调用，脱离正在运行的会话——比如在你启动 CLI 之前执行。两者最终安装的内容是一样的最新版本，只是调用的场景不同。\n\n执行 /update 之后，通常建议重启一次会话，让新代码真正被加载生效——在版本切换这种场景下，单纯的内存内切换在正在运行的会话中是行不通的。",
       "whenGood": [
         {
-          "title": "想使用更新日志(Changelog)里提到的新功能",
-          "example": "/update — 之后重启会话以加载新版本"
+          "title": "无需中断会话即可获得新功能",
+          "example": "执行 /update，在不退出当前会话的情况下获得更新日志中的新功能"
+        },
+        {
+          "title": "在对话过程中快速更新",
+          "example": "直接在交互式会话中输入 /update，而不用切换到终端"
         }
       ],
       "whenBad": [
         {
-          "title": "正处于关键任务执行过程中",
-          "why": "中途更新可能干扰当前会话的状态。",
-          "alternative": "把更新推迟到任务完成之后,或者在终端中单独执行 agent update"
+          "title": "正处于关键任务进行中",
+          "why": "在任务进行中途更新可能会干扰当前会话的状态。",
+          "alternative": "把更新推迟到任务完成之后，或者单独在终端中执行 agent update"
         }
       ],
       "sources": [
@@ -4819,17 +4823,21 @@
       "slug": "rules",
       "name": "/rules",
       "summary": "交互式浏览器,用于查看和编辑已加载的 Cursor 规则(Rules)。",
-      "what": "/rules 打开一个交互式浏览器,用于查看当前加载的 Cursor 规则,支持内联编辑。子目录中 .cursor/rules 里的规则都会被发现,行为与 IDE 一致。记录于官方 Changelog,(暂)未列入命令参考表。",
+      "what": "/rules 是这一组命令中——与 /update 一样——两个真正的斜杠命令之一：它是在正在运行的 Cursor CLI 会话内使用的交互式命令，而不是终端子命令。它会打开一个交互式浏览器，展示当前已加载的 Cursor Rules，并支持直接在对话中进行内联编辑。\n\n目前 /rules 只在更新日志中有官方记录（2026 年 1 月，与用于自定义命令的相关 /commands 浏览器一同推出），并未出现在单独的斜杠命令参考表中——该表目前列出了大约 30 个命令，其中还没有 /rules 和 /commands。这只是参考页面相对于更新日志存在的一处遗漏，并不代表命令本身有什么不确定之处。\n\nRules 在项目侧以 `.mdc` 文件的形式存放在 `.cursor/rules` 下。用 /rules 可以一眼看到当前会话中哪些规则真正被加载并生效，还能直接对其进行调整，而无需在编辑器中手动打开对应文件。",
       "whenGood": [
         {
-          "title": "检查当前会话中生效的是哪些规则",
-          "example": "/rules — 在开始任务之前查看适用哪些项目约定"
+          "title": "任务开始前检查生效的规则",
+          "example": "在开始新任务之前打开 /rules，查看当前生效的项目约定"
+        },
+        {
+          "title": "快速直接调整规则",
+          "example": "打开 /rules，通过内联编辑修正已加载的 .mdc 规则，而无需在编辑器中打开该文件"
         }
       ],
       "whenBad": [
         {
-          "title": "涉及的是 Skill 或自定义命令,而不是规则",
-          "why": "/rules 只显示 Cursor 规则。",
+          "title": "想查找 Skills 或 Commands",
+          "why": "/rules 只显示 Cursor Rules，不涉及 Skills 或自定义命令。",
           "alternative": "使用 /skills 或 /commands"
         }
       ],
@@ -5048,18 +5056,22 @@
       "slug": "agent-about",
       "name": "agent about",
       "summary": "显示 CLI 安装的版本、系统和账户信息。",
-      "what": "agent about 会输出已安装 CLI 版本、系统以及登录账户的概览信息。加上 --format json 可获得机器可读的输出。交互模式下的 /about 效果相同,并会额外把信息复制到剪贴板。",
+      "what": "agent about 是一个终端子命令（不是斜杠命令），需要直接在 shell 中调用。根据参考文档，它会显示当前 CLI 安装的版本、系统和账号信息——适合用来附在支持请求中，或快速确认当前连接的是哪个账号。\n\n通过 `--format` 参数（可选值 `text` 或 `json`，默认为 `text`）可以让输出变成机器可读的格式，方便嵌入脚本或 bug 报告。\n\n在交互模式下有一个对应命令 /about，根据参考文档，它显示相同的信息，并且还会自动把内容复制到剪贴板——这一行为在终端子命令 agent about 中官方并未记录。如果只是想要单纯的版本号而不需要其他细节，agent about 提供的信息通常比实际需要的更多；这种情况下用全局参数 `-v` 或 `--version` 就足够了。",
       "whenGood": [
         {
-          "title": "为一个支持工单收集诊断信息",
-          "example": "agent about --format json"
+          "title": "为支持请求收集诊断信息",
+          "example": "执行 agent about --format json，并把输出附加到支持工单中"
+        },
+        {
+          "title": "快速检查账号连接情况",
+          "example": "执行 agent about，查看 CLI 当前连接的是哪个账号"
         }
       ],
       "whenBad": [
         {
           "title": "只需要版本号",
-          "why": "agent about 给出的信息比单纯查版本所需要的多。",
-          "alternative": "改用 agent -v 或 agent --version(参见 Global Options)"
+          "why": "agent about 提供的信息比单纯查询版本号所需的更多。",
+          "alternative": "使用 agent -v 或 agent --version"
         }
       ],
       "sources": [
@@ -5261,18 +5273,22 @@
       "slug": "agent-update",
       "name": "agent update",
       "summary": "把 Cursor Agent 更新到最新版本。",
-      "what": "agent update 会下载并安装最新的 CLI 版本。后台自动更新默认是开启的;交互会话中的 /update 可以直接完成同样的操作。",
+      "what": "agent update 是 Cursor CLI 的一个终端子命令，不是斜杠命令——你需要直接在 shell 中调用它（语法为 agent update），与是否有正在运行的会话无关。该命令会下载并安装最新可用的 CLI 版本。\n\n需要与之区分的是同名的斜杠命令 /update：它是在已经启动的交互式会话内部运行，能够原地更新安装，无需你退出或重启会话。两种方式最终安装的都是同一个最新版本。\n\n默认情况下，CLI 本来就会在后台持续检查新版本并自动更新；根据更新日志，可以用 `--disable-auto-update` 参数关闭这个行为。因此 agent update 主要用于需要立即、主动触发更新的场景，比如想不等后台检查、马上用上刚发布的新功能。要单独查看当前安装的版本，可以用 `agent --version`。",
       "whenGood": [
         {
-          "title": "手动更新到最新版本,例如为了使用某个新的功能开关(Feature Flag)",
-          "example": "agent update"
+          "title": "立即使用新功能",
+          "example": "执行 agent update，立即获得更新日志中刚发布的新功能，而不是等待下一次自动检查"
+        },
+        {
+          "title": "在启动会话前先更新 CLI",
+          "example": "在启动 cursor-agent 之前，先在 shell 中执行 agent update"
         }
       ],
       "whenBad": [
         {
-          "title": "不希望有自动的后台更新(例如 CI 中固定了某个版本)",
-          "why": "agent update 是一次性的手动命令,不影响自动更新的行为。",
-          "alternative": "设置 --disable-auto-update 彻底关闭后台更新(参见 Global Options)"
+          "title": "想永久关闭自动更新",
+          "why": "agent update 只是一次性的手动命令，不会改变后台自动更新的行为。",
+          "alternative": "根据更新日志，设置 --disable-auto-update 来永久关闭后台更新"
         }
       ],
       "sources": [
@@ -5287,18 +5303,22 @@
       "slug": "ls",
       "name": "agent ls",
       "summary": "打开一个历史聊天列表供选择,以便继续某个会话。",
-      "what": "agent ls 会显示可供选择的历史聊天会话,与交互模式下的 /resume 类似。这个名字有点误导:虽然叫“ls”,但它列出的不是文件,而是会话。",
+      "what": "agent ls 是一个终端子命令，直接在 shell 中调用，事先不需要有正在运行的会话。根据参考文档，官方描述很简单，就是 \"Resume a chat session\"——尽管名字叫 ls，它列出的并不是文件，而是提供之前的聊天会话供你选择，之后再继续该会话。\n\n自 2026 年 6 月的一次更新起，agent ls、--resume 参数和斜杠命令 /resume（\"Open recent chats and resume one\"）默认打开的是同一份列表：涵盖所有工作区的全部聊天记录，而不再只是当前目录下的记录。\n\n并不存在单独的斜杠命令 /ls；/resume 是最接近的交互式对应命令。相反，如果你想跳过选择列表、直接继续最近使用的会话，用 agent resume 或全局参数 --continue 会更快捷。",
       "whenGood": [
         {
-          "title": "不确定该继续最近哪一个会话",
-          "example": "agent ls"
+          "title": "不确定该选哪个会话",
+          "example": "在不确定该继续哪个最近会话时执行 agent ls"
+        },
+        {
+          "title": "查找其他工作区的聊天记录",
+          "example": "打开 agent ls，找回其他项目目录中的会话"
         }
       ],
       "whenBad": [
         {
-          "title": "已经明确知道就是最近使用的那个会话",
-          "why": "agent ls 会先显示一个选择列表,这是多余的一步。",
-          "alternative": "使用 agent resume 或 agent --continue 直接继续最近的会话"
+          "title": "想直接继续最近使用的会话",
+          "why": "agent ls 会先显示一个选择列表，这意味着多了一个步骤。",
+          "alternative": "使用 agent resume 或全局参数 --continue，直接继续上一个会话"
         }
       ],
       "sources": [
@@ -5465,18 +5485,22 @@
       "slug": "agent-help",
       "name": "agent help [command]",
       "summary": "显示 CLI 或某个具体命令的帮助信息。",
-      "what": "agent help [command] 会显示总体帮助信息;如果带上命令名作为参数,则显示该命令的详细帮助。功能上等同于全局参数 -h/--help,后者可以用在任意单个命令上。",
+      "what": "agent help [command] 是一个终端子命令，直接在 shell 中调用，而不是在正在运行的会话内使用。不带参数时，它显示 CLI 的总体帮助；带上命令名作为参数时（例如 agent help worker），它会显示该子命令的详细帮助，包括其所有子命令和选项。\n\n在内容上，这与全局参数 `-h` 或 `--help` 是一致的——后者可以直接附加在任意命令后面（例如 agent worker --help），无需单独调用就能立即得到相同的帮助信息。\n\n在交互模式下，有对应的斜杠命令 /help（\"Show help. Use /help <command> for command details.\"），用于在正在运行的会话中完成同样的任务。因此 agent help [command] 是用于会话之外场景的终端版本，比如初次配置或写脚本时使用。",
       "whenGood": [
         {
-          "title": "查阅某个子命令可用的参数选项",
-          "example": "agent help worker"
+          "title": "查阅某个子命令的选项",
+          "example": "执行 agent help worker，查看 worker 的所有子命令和参数"
+        },
+        {
+          "title": "不带参数查看总体帮助",
+          "example": "执行 agent help，获得所有可用命令的总览"
         }
       ],
       "whenBad": [
         {
-          "title": "只想快速看一下正在输入的命令的选项",
-          "why": "agent help command 意味着单独调用一次,而不是直接附加在命令后面。",
-          "alternative": "直接在命令后加上 -h 或 --help,例如 agent worker --help"
+          "title": "想直接查看刚输入命令的帮助",
+          "why": "agent help command 意味着需要另外多执行一次调用，而不是直接附加在命令上。",
+          "alternative": "直接在命令后加上 -h 或 --help，例如 agent worker --help"
         }
       ],
       "sources": [
@@ -5491,17 +5515,21 @@
       "slug": "mcp-login",
       "name": "agent mcp login <identifier>",
       "summary": "与 mcp.json 中配置的某个 MCP 服务器完成身份验证。",
-      "what": "agent mcp login <identifier> 会为 .cursor/mcp.json 或 ~/.cursor/mcp.json 中配置的某个 MCP 服务器启动登录流程,并自动处理回调(Callback)。登录成功后,Agent 会立即获得该服务器已授权工具的访问权限。",
+      "what": "agent mcp login <identifier> 是一个终端子命令，直接在 shell 中调用。它用来对配置在 `.cursor/mcp.json`（项目级）或 `~/.cursor/mcp.json`（全局）中的某个 MCP 服务器进行身份验证——对于像 OAuth 这类需要单独认证的服务器来说是必需的。根据文档说明，CLI 为此使用了一套简化的登录流程，并自动处理回调；登录成功后，代理会立即获得该服务器已认证工具的访问权限。\n\n在交互模式下并没有单独的斜杠命令 /mcp login：登录改为通过 /mcp 浏览器完成，你在其中选择一个服务器，再在菜单里选择 Login 选项——功能上完全一致，只是通过菜单操作，而不是直接的终端调用。\n\n如果只是想把一个已经通过身份验证的服务器进行全局启用，而不是重新登录，正确的命令是 agent mcp enable <identifier>。",
       "whenGood": [
         {
-          "title": "让一个有自己身份验证方式(例如 OAuth)的 MCP 服务器首次可用",
-          "example": "agent mcp login linear"
+          "title": "首次启用需要 OAuth 的服务器",
+          "example": "执行 agent mcp login linear，获得对需要单独认证的服务器的访问权限"
+        },
+        {
+          "title": "刷新已过期的登录",
+          "example": "当此前已连接的服务器不再处于已认证状态时，重新执行 agent mcp login <identifier>"
         }
       ],
       "whenBad": [
         {
-          "title": "服务器已经配置好了,只是想在本地放行",
-          "why": "agent mcp login 处理的是身份验证,而不是服务器的授权放行。",
+          "title": "只是想把服务器全局启用",
+          "why": "agent mcp login 涉及的是身份验证，不是服务器的启用。",
           "alternative": "使用 agent mcp enable <identifier>"
         }
       ],
@@ -5521,18 +5549,22 @@
       "slug": "mcp-list",
       "name": "agent mcp list",
       "summary": "列出已配置的 MCP 服务器及其状态(已连接/已断开、来源、传输方式)。",
-      "what": "agent mcp list 会打开一个交互式菜单,显示所有已配置的 MCP 服务器:名称、连接状态、配置来源(项目级或全局)以及传输方式(stdio、HTTP、SSE)。交互模式下的 /mcp list 会给出同样的概览。",
+      "what": "agent mcp list 是 Cursor CLI 的一个终端子命令，直接在 shell 中调用。它会打开一个交互式菜单，列出所有已配置的 MCP 服务器，并显示每个服务器的名称、连接状态（已连接/已断开）、配置来源（项目配置或全局配置）以及传输方式（stdio、HTTP 或 SSE）。\n\n底层配置保存在 `.cursor/mcp.json`（项目级）或 `~/.cursor/mcp.json`（全局），根据文档说明，其结构与 Cursor IDE 中的配置相同。\n\n在交互模式下，/mcp list 会在正在运行的会话内以分页器的形式提供同样的概览，还可以直接在菜单中完成登录、启用以及浏览工具等操作。因此 agent mcp list 是用于会话之外场景的终端版本，比如在启动任务前通过脚本检查哪些服务器当前是可用的。",
       "whenGood": [
         {
-          "title": "在开始任务前检查当前有哪些 MCP 服务器处于连接状态",
-          "example": "agent mcp list"
+          "title": "任务开始前检查服务器状态",
+          "example": "执行 agent mcp list，查看所需的服务器是否已连接"
+        },
+        {
+          "title": "确认某个服务器的配置来源",
+          "example": "打开 agent mcp list，检查某个服务器是项目级配置还是全局配置"
         }
       ],
       "whenBad": [
         {
-          "title": "想查看某个具体工具的参数,而不只是服务器列表",
-          "why": "agent mcp list 只显示服务器状态,不显示工具细节。",
-          "alternative": "针对某个具体服务器使用 agent mcp list-tools <identifier>"
+          "title": "想查看某个服务器的工具参数",
+          "why": "agent mcp list 只显示服务器状态，不显示工具的详细信息。",
+          "alternative": "针对特定服务器使用 agent mcp list-tools <identifier>"
         }
       ],
       "sources": [
@@ -5855,18 +5887,22 @@
       "slug": "worker-debug",
       "name": "agent worker debug",
       "summary": "对私有 Worker 运行预检诊断(身份验证、隐私、路由)。",
-      "what": "agent worker debug 会在真正启动之前检查私有 Worker 的身份验证、隐私设置和路由情况,并输出一份诊断报告。加上 --json 可以得到机器可读的报告。",
+      "what": "agent worker debug 是一个终端子命令，直接在 shell 中调用。根据参考文档，它会为私有云 worker 执行预检诊断，在 worker 真正运行之前检查身份验证、隐私设置和路由是否正常。加上 `--json` 参数后，命令会以机器可读的格式输出诊断报告，方便在脚本中进一步处理，或附加到 bug 报告中。\n\nworker 相关功能没有对应的斜杠命令；worker 功能只能通过 agent worker 下的终端子命令访问，比如还有 agent worker start。\n\nagent worker debug 本身不会启动 worker，只是检查启动所需的前提条件是否满足。如果配置已经确认可以正常工作，比如之前成功运行过一次，你可以跳过诊断步骤，直接调用 agent worker start 来连接 worker。",
       "whenGood": [
         {
-          "title": "在新 Worker 首次正式启动之前发现配置错误",
-          "example": "agent worker debug --json"
+          "title": "首次启动前先排查问题",
+          "example": "在新 worker 正式投入使用之前执行 agent worker debug --json"
+        },
+        {
+          "title": "缩小 worker 连接问题的范围",
+          "example": "执行 agent worker debug，检查问题出在身份验证、隐私设置还是路由"
         }
       ],
       "whenBad": [
         {
-          "title": "想让 Worker 直接投入运行,不做事先检查",
-          "why": "agent worker debug 不会启动 Worker,只检查前置条件。",
-          "alternative": "在配置已确认可用的情况下,直接使用 agent worker start"
+          "title": "想让 worker 立刻投入使用",
+          "why": "agent worker debug 不会启动 worker，它只检查前提条件。",
+          "alternative": "如果配置已经确认可用，直接使用 agent worker start"
         }
       ],
       "sources": [
@@ -8084,17 +8120,21 @@
       "slug": "plugin-list",
       "name": "agy plugin list",
       "summary": "显示已安装的插件及其加载的组件。",
-      "what": "agy plugin list 显示当前激活的插件包及其加载的组件(例如 skill、agent、MCP 服务器)。插件遵循 plugin.json 结构,必须包含 name 字段(仅允许字母数字、连字符、下划线),description 字段为可选。",
+      "what": "`agy plugin list` 是一个终端子命令（不是斜杠命令），会列出所有已安装的插件包及其加载的组件——文档中的描述是 \"Shows active packages and their loaded components\"，也就是说，会显示某个插件带来了哪些 Skills、Agents 或 MCP 服务器等。\n\n每个插件都带有一个 `plugin.json`。必填字段是 `name`（只允许字母数字、连字符和下划线），可选字段是 `description`；加上指向官方 Antigravity Schema URL 的 `$schema` 引用后，在 VS Code 等编辑器中就能获得自动校验。\n\n`agy plugin list` 本身不会改动任何东西，只是提供一份清单——要改变插件的状态，需要用 `agy plugin enable/disable <name>`；要彻底移除，则需要 `agy plugin uninstall <name>`。",
       "whenGood": [
         {
-          "title": "了解当前已安装插件的整体情况",
-          "example": "在计划卸载或更新之前运行 agy plugin list"
+          "title": "卸载前先了解全貌",
+          "example": "在计划卸载或更新前执行 agy plugin list"
+        },
+        {
+          "title": "安装后检查已加载的组件",
+          "example": "在执行 agy plugin install 后立即执行 agy plugin list，确认加载的组件"
         }
       ],
       "whenBad": [
         {
-          "title": "想要停用/重新启用或移除某个插件",
-          "why": "list 只展示当前状态,不会做任何改动。",
+          "title": "想启用/禁用或移除插件",
+          "why": "list 只显示清单，不会做任何改动。",
           "alternative": "使用 agy plugin enable/disable <name> 或 agy plugin uninstall <name>"
         }
       ],
@@ -8174,17 +8214,21 @@
       "slug": "plugin-disable",
       "name": "agy plugin disable <name>",
       "summary": "暂停一个插件,但不卸载它。",
-      "what": "agy plugin disable <plugin_name> 会暂停一个插件的工具,但不会删除插件目录或其配置。随时可以用 agy plugin enable <name> 重新启用。",
+      "what": "`agy plugin disable <plugin_name>` 是一个终端子命令（不是斜杠命令），会暂停某个已安装插件的工具，但不会删除其目录或配置——文档中将其描述为 \"Suspend a plugin's tools without deleting its assets\"。插件依然完整保留在磁盘上，只是不再作为可用能力出现在代理中。\n\n用 `agy plugin enable <name>` 可以随时把这个状态再切换回来。每个插件都带有一个 `plugin.json`，必填字段是 `name`（只允许字母数字、连字符和下划线），可选字段是 `description`。\n\n如果要彻底清除，`disable` 是不够的：目录和注册表条目仍会保留，这时需要用 `agy plugin uninstall <name>`。",
       "whenGood": [
         {
-          "title": "临时关闭一个插件进行测试,同时不丢失它",
-          "example": "运行 agy plugin disable my-plugin,排查与另一个插件的冲突"
+          "title": "先试着关闭插件",
+          "example": "执行 agy plugin disable mein-plugin 来排查与另一个插件的冲突"
+        },
+        {
+          "title": "调试前先缩小错误来源范围",
+          "example": "依次用 agy plugin disable 关闭多个插件，找出到底是哪一个引发了错误"
         }
       ],
       "whenBad": [
         {
-          "title": "希望彻底、永久地移除该插件",
-          "why": "disable 不会动插件目录和注册表条目。",
+          "title": "想要永久彻底删除插件",
+          "why": "disable 不会动目录和注册表条目。",
           "alternative": "使用 agy plugin uninstall <name>"
         }
       ],
@@ -8808,19 +8852,28 @@
       "platform": "antigravity-cli",
       "slug": "fast",
       "name": "/fast",
-      "summary": "开启快速模式,跳过针对快速操作的推理计划。",
-      "what": "根据斜杠命令总参考,/fast 属于 Configurations 分类,会开启一种加速模式,让 agent 在执行操作前跳过推理计划,从而更快地作出响应。",
+      "summary": "该命令自 1.1.0 版本起已移除，由 Shift+Tab 模式切换取代",
+      "what": "/fast 在 1.1.0 版本（2026 年 7 月 8 日）中已从 CLI 中移除——中心命令参考页面虽然仍在 Configurations 下列出这个命令，并沿用旧描述 \"Enable fast mode (bypass reasoning plans) for quick actions\"，但根据模式说明页面和官方更新日志，这一描述已经过时。\n\n1.1.0 的更新日志条目是这样写的：\"Added /plan mode to replace legacy /planning, and removed /fast slash commands: consolidated and simplified execution mode switching around shift+tab mode cycling and the /plan mode prefix.\" 也就是说，/fast 和 /planning 是一起被移除的，取而代之的是一套模式循环切换机制。\n\n从那以后，你可以用 `Shift+Tab` 在三种模式之间循环切换：`default`（改动前先做 diff 审查）、`accept-edits`（自动批准）和 `plan`（自动为 prompt 加上 `/plan` 前缀）——也可以通过 `/settings` 或 `--mode` 参数来设置。以前 /fast 那种跳过计划、直接快速执行的行为，如今其实就等同于默认模式。",
       "whenGood": [
         {
-          "title": "执行简单、明确的操作,无需长时间规划",
-          "example": "在请求一次简单的文件重命名之前打开 /fast"
+          "title": "历史用法：加速简单操作",
+          "example": "在 1.1.0 之前的 CLI 版本中启用 /fast，跳过简单文件重命名操作的推理步骤"
+        },
+        {
+          "title": "如今直接使用默认模式",
+          "example": "不用输入任何命令——当前的 default 模式本身就已经和以前的 /fast 表现一致"
         }
       ],
       "whenBad": [
         {
-          "title": "涉及多个依赖关系的复杂任务",
-          "why": "没有推理计划时,复杂任务出现步骤遗漏或出错的风险会升高。",
-          "alternative": "保持 /fast 关闭,对多步骤任务使用 /planning"
+          "title": "在当前版本中输入 /fast",
+          "why": "该命令自 1.1.0 版本（2026 年 7 月 8 日）起已不存在，执行后不会有任何效果，或会报出未知命令的错误。",
+          "alternative": "按 Shift+Tab 在 default、accept-edits 和 plan 之间切换"
+        },
+        {
+          "title": "在没有规划的情况下处理复杂任务",
+          "why": "对于多层次的复杂任务，如果不使用 plan 模式或 /plan 前缀，出现步骤不完整或错误的风险会更高。",
+          "alternative": "通过 Shift+Tab 切换到 plan 模式，或者在 prompt 前加上 /plan"
         }
       ],
       "sources": [
@@ -8865,18 +8918,22 @@
       "slug": "fork",
       "name": "/fork",
       "summary": "把当前对话线程复制出来,用于并行会话。别名:/branch。",
-      "what": "/fork 属于 Conversations 分类,别名 /branch。该命令会把目前为止的线程连同上下文一起复制到一个新的、并行运行的会话中,以便独立地尝试不同的解决方案。",
+      "what": "/fork 属于 Conversations 分类，别名是 `/branch`。该命令会将你到目前为止的完整对话历史克隆到一个新的独立会话中：CLI 会分配一个新的会话 ID，同时复制代理线程的状态和此前的对话记录，并立即将终端切换到这个新的并行分支。\n\n这样你就可以独立地继续尝试不同的解决方案，而不会丢失原始线程——随时可以用 `/resume` 回到最初的会话。\n\n需要注意：`/fork` 只复制对话线程，不会复制你本地的 Git checkout。如果在并行实验中还想隔离文件改动，你还需要额外创建独立的 Git 分支，或者在切换时先做 stash——否则两个会话会共用同一个工作目录，互相覆盖对方的改动。",
       "whenGood": [
         {
-          "title": "并行尝试两种解决方案",
-          "example": "执行 /fork 来测试另一种实现方式,同时不丢失主线程"
+          "title": "并行测试不同的解决方案",
+          "example": "在针对同一任务独立尝试两种不同架构方案之前，先输入 /fork"
+        },
+        {
+          "title": "在分支前为高风险改动做好保障",
+          "example": "使用 /fork 来试验一次实验性改动，同时保持原始线程不受影响"
         }
       ],
       "whenBad": [
         {
-          "title": "只是想回到同一线程中较早的某个节点",
-          "why": "/fork 会创建一个新的并行线程,不会改动已有线程。",
-          "alternative": "/rewind"
+          "title": "只是想在同一线程内跳回之前的状态",
+          "why": "/fork 会创建一个拥有独立会话 ID 的全新并行线程，但不会改动现有线程。",
+          "alternative": "使用 /rewind 在同一线程内跳回到之前的某个节点"
         }
       ],
       "sources": [
@@ -8998,18 +9055,22 @@
       "slug": "logout",
       "name": "/logout",
       "summary": "断开当前账号,并从密钥库中删除认证令牌。",
-      "what": "/logout 属于 Account 分类,会通过从操作系统密钥库(Keychain/Secret Service/Credential Manager)中移除已保存的认证令牌,来登出已连接的 Google 账号。下次启动时需要重新走一遍浏览器或“URL+代码”的认证流程。",
+      "what": "/logout 属于 Account 分类，通过从操作系统原生的 Keyring 中删除已保存的身份验证信息来断开当前连接的 Google 账号——在 macOS 上是从 Apple Keychain 删除，在 Linux 上是从 Secret Service/dbus 删除，在 Windows 上是从 Credential Manager 删除。\n\n正常情况下，`agy` 在启动时会静默检查 Keyring 中是否已有有效的令牌，如果有就直接登录，无需打开浏览器；只有在找不到令牌时，才会打开浏览器登录流程。通过 SSH 远程连接时情况不同：由于无法启动浏览器，CLI 会显示一个授权 URL，你需要在本地浏览器中打开它并登录，再把得到的验证码填回 SSH 终端。\n\n执行 `/logout` 之后，只需重新启动 `agy`，对应的验证流程就会重新开始。",
       "whenGood": [
         {
-          "title": "切换账号",
-          "example": "执行 /logout,然后重新启动 agy 并用另一个 Google 账号登录"
+          "title": "完全切换 Google 账号",
+          "example": "先执行 /logout，然后重新启动 agy，用另一个 Google 账号登录"
+        },
+        {
+          "title": "不再占用当前设备",
+          "example": "在归还共用或他人的电脑之前执行 /logout"
         }
       ],
       "whenBad": [
         {
-          "title": "只想结束当前会话,账号仍保持连接",
-          "why": "/logout 会完全删除认证令牌;如果只是想结束会话,直接退出会话即可。",
-          "alternative": "/exit"
+          "title": "只想结束会话，账号仍要保留登录",
+          "why": "/logout 会把身份验证令牌从 Keyring 中彻底删除；如果只是想结束会话，这样做没有必要。",
+          "alternative": "使用 Ctrl+D 或 Ctrl+C（受保护的快捷键 cli.exit）——据文档说明，并不存在单独的 /exit 命令"
         }
       ],
       "sources": [
@@ -9028,18 +9089,27 @@
       "slug": "mcp",
       "name": "/mcp",
       "summary": "打开 MCP 服务器管理器。",
-      "what": "/mcp 属于 Tools & Tasks 分类,会打开一个面板,用于管理已连接的 MCP 服务器(stdio 以及通过 serverUrl 连接的远程服务器),并显示连接状态。配置分别保存在一个全局文件(~/.gemini/config/mcp_config.json)和一个工作区文件(.agents/mcp_config.json)中。",
+      "what": "/mcp 属于 Tools & Tasks 分类，会打开一个悬浮面板，用来管理所有已配置的 MCP 服务器（Model Context Protocol）。在其中你可以实时看到每个服务器的连接状态——已连接、已断开或正在加载——还可以手动重新加载配置，并实时查看连接日志。\n\n服务器定义保存在专门的 `mcp_config.json` 文件中，与其他设置分开存放：全局配置在 `~/.gemini/config/mcp_config.json`，项目级配置在工作区内的 `.agents/mcp_config.json`。两者都遵循相同的 `mcpServers` 结构。\n\n支持通过 `command`/`args` 配置的本地 stdio 进程，也支持通过 `serverUrl` 字段（HTTP/SSE 或 WebSocket）配置的远程服务器——这里只认 `serverUrl`；较旧的 `url` 或 `httpUrl` 字段在当前版本的 CLI 中已不再受支持。",
       "whenGood": [
         {
-          "title": "查看已连接的 MCP 服务器及其状态",
-          "example": "打开 /mcp,查看某个服务器是否已连接"
+          "title": "实时查看 MCP 服务器状态",
+          "example": "打开 /mcp 查看新添加的服务器是否已经真正连接成功"
+        },
+        {
+          "title": "调试卡住的服务器连接",
+          "example": "打开 /mcp，查看某个服务器停留在 \"loading\" 状态时的连接日志"
         }
       ],
       "whenBad": [
         {
-          "title": "想为单个 MCP 工具设置权限",
-          "why": "/mcp 管理的是服务器连接;精细化的 mcp(server/tool) 规则要通过权限管理来设置。",
-          "alternative": "/permissions"
+          "title": "想设置单个工具的权限",
+          "why": "/mcp 只管理服务器连接，不涉及细粒度的工具权限。",
+          "alternative": "使用 /permissions"
+        },
+        {
+          "title": "想使用已废弃的 url 字段",
+          "why": "当前版本的 CLI 对远程服务器只接受 serverUrl；url 或 httpUrl 会被忽略。",
+          "alternative": "直接在 mcp_config.json 中改用 serverUrl"
         }
       ],
       "sources": [
@@ -9191,18 +9261,22 @@
       "slug": "rename",
       "name": "/rename",
       "summary": "重命名当前会话线程。",
-      "what": "/rename 属于 Conversations 分类,会为当前对话线程赋予一个新名称,方便之后在对话选择器中重新找到它。",
+      "what": "/rename 属于 Conversations 分类，用来给当前处于活动状态的对话线程重命名为一个自定义的可读标题——语法为：`/rename <name>`。这样一来，之后在会话选择器（`/resume`）里就更容易找到对应线程：一长串带着通用时间戳、未命名的会话列表，对快速找回上下文帮助不大。\n\n另外，也可以直接在会话选择器里给某个线程重命名，而无需先把它激活打开：用方向键选中目标会话后按 `F2`，面板底部会弹出一个输入框，预填了当前标题；输入新名称后按 Enter 确认，或按 Esc 取消。\n\n相比之下，`/rename` 本身只作用于当前活动的线程，并且必须在命令后面直接跟一个名称参数。",
       "whenGood": [
         {
-          "title": "在切换到其他话题前,给线程起一个清晰的名字",
-          "example": "/rename Migration-Auth-Refactor"
+          "title": "在切换话题前给线程命名",
+          "example": "在切换到新话题之前执行 /rename Migration-Auth-Refactor"
+        },
+        {
+          "title": "直接在会话选择器中重命名",
+          "example": "在 /resume 选择器中选中会话并按 F2，无需重新打开即可完成重命名"
         }
       ],
       "whenBad": [
         {
-          "title": "想重命名一个已保存的线程,但它当前并非活动状态",
-          "why": "/rename 作用于当前活动的线程;对于已保存的线程,resume 选择器中有单独的重命名选项。",
-          "alternative": "打开 /resume,在其中用 F2 重命名"
+          "title": "想在不激活的情况下给已保存的线程重命名",
+          "why": "/rename 只对当前活动的线程生效；其他已保存的线程需要用别的方式。",
+          "alternative": "打开 /resume，用方向键选中会话，再按 F2 重命名"
         }
       ],
       "sources": [
@@ -9285,18 +9359,22 @@
       "slug": "skills",
       "name": "/skills",
       "summary": "浏览已加载的本地和全局 agent skill。",
-      "what": "/skills 属于 Tools & Tasks 分类,会显示当前从工作区(.agents/skills/*.md)和全局目录(~/.gemini/antigravity-cli/skills/)中加载的 skill。每个 Markdown skill 文件都会自动成为一个独立的 /<skill-name> 命令。",
+      "what": "/skills 属于 Tools & Tasks 分类，用来显示当前已加载的 Agent Skills，来源有两处：项目目录中工作区本地的 `.agents/skills/`（`agy` 启动时会读取该文件夹），以及全局的 `~/.gemini/antigravity-cli/skills/`，后者会在所有工作区中自动导入。\n\n一个 Skill 就是一个带有 frontmatter 元数据（至少包含 `name` 和 `description`）的 Markdown 文件，后面跟着具体的指令内容。frontmatter 中指定的 name 会自动变成一个专属的 `/<skill-name>` 命令——比如一个 `name: format-tests` 的文件，无需手动注册就会以 `/format-tests` 的形式可用。\n\n`/skills` 本身只显示已加载的内容；创建或删除 Skill 文件仍然需要在 CLI 之外通过文件系统完成。",
       "whenGood": [
         {
-          "title": "查看当前有哪些 skill 可用",
-          "example": "打开 /skills,查看新放入的 skill 文件是否已被识别"
+          "title": "查看可用的 Skills",
+          "example": "打开 /skills，查看新放入 .agents/skills/ 的 .md 文件是否已被识别"
+        },
+        {
+          "title": "区分全局 Skills 和项目专属 Skills",
+          "example": "用 /skills 确认某个命令来自全局 Skills 文件夹还是当前工作区"
         }
       ],
       "whenBad": [
         {
-          "title": "想完整地安装或卸载一个插件",
-          "why": "/skills 只显示已加载的 skill,并不能管理插件。",
-          "alternative": "agy plugin install/uninstall"
+          "title": "想完整地安装或卸载插件",
+          "why": "/skills 只显示已加载的 Skill 文件，不负责管理插件。",
+          "alternative": "使用 agy plugin install/uninstall"
         }
       ],
       "sources": [
@@ -9314,23 +9392,23 @@
       "platform": "antigravity-cli",
       "slug": "statusline",
       "name": "/statusline",
-      "summary": "打开状态栏自定义设置。",
-      "what": "/statusline 属于 Configurations 分类。不带参数时,该命令会切换状态栏的开/关;on/enable 打开状态栏,off/disable 关闭状态栏,传入一个 shell 命令可以设置自定义渲染器,reset 会重置状态栏,help 显示所有可用选项。",
+      "summary": "不是面板——/statusline 直接切换或配置状态栏",
+      "what": "/statusline 属于 Configurations 分类，用来控制 TUI 底部的状态栏。不带参数时，命令会在开启和关闭之间切换；`on`/`enable` 用来明确开启，`off`/`disable` 用来明确关闭。\n\n如果改为传入一个 shell 命令或脚本路径，比如 `/statusline ~/.gemini/antigravity-cli/statusline.sh`，CLI 之后就会通过这个脚本来渲染状态栏，并把当前的代理状态以 JSON 形式传给它——适合用来自定义显示模型、费用或正在运行的子代理等信息。`/statusline delete` 或 `/statusline reset` 可以移除这种自定义配置，恢复内置的默认显示；`/statusline help` 会列出所有选项。\n\n关于自定义渲染器所用 JSON 负载的结构和字段细节，专属命令页面上附带的 Status-Line-Customization-Guide 有详细说明。",
       "whenGood": [
         {
-          "title": "打开或关闭状态栏",
+          "title": "开启或关闭状态栏",
           "example": "/statusline off"
         },
         {
-          "title": "通过 shell 命令设置自定义渲染器",
-          "example": "/statusline <shell-command> 用于自定义状态显示"
+          "title": "通过脚本配置自定义渲染器",
+          "example": "执行 /statusline ~/.gemini/antigravity-cli/statusline.sh，自行格式化模型信息和 token 用量"
         }
       ],
       "whenBad": [
         {
-          "title": "想修改的是终端窗口标题,而不是状态栏",
-          "why": "/statusline 影响的是 TUI 内部的状态栏,而不是终端的窗口标题。",
-          "alternative": "/title"
+          "title": "想修改的其实是终端窗口标题而不是状态栏",
+          "why": "/statusline 只涉及 TUI 内部的状态栏，不涉及终端模拟器的窗口标题。",
+          "alternative": "这一点无法通过 CLI 控制——请使用所用终端模拟器自身的标题设置"
         }
       ],
       "sources": [

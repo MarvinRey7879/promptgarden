@@ -2238,3 +2238,26 @@ solche beschrieben, nicht als Slash-Befehle.
 Struktur- und BOM-Prüfung lief diesmal vorab (nach der Panne in Batch 6) —
 alle 3 Recherche-Dateien und alle 4 Übersetzungen korrekt.
 Build 0, Deploy 9b327c20, Prod 200. Playwright über 5 Seiten in 3 Sprachen sauber.
+
+## Iteration 252 — 27.07.2026 ~17:09 UTC — Batch 8 (18 Befehle) + entfernter Befehl entlarvt
+Poll grün (0/0/0, views_7d 30, visitors 28, mail_clicks 0), Smoke grün.
+Batch 8: die 18 dünnsten Befehle lagen diesmal nur bei ZWEI Plattformen →
+2 Sonnet-Agenten mit je 9 statt 3 mit je 6. Ø68 → Ø182 Wörter, ×5 Sprachen.
+Gesamt-Ø 320 Befehle: 145 → **152** Wörter, Seiten unter 100 Wörtern:
+83 → **65** (Start: 209). **144 von 320 fertig.**
+🔴 WICHTIGSTER FUND — Verdacht bestätigt: Antigravity `/fast` ist wie `/planning`
+seit v1.1.0 (08.07.2026) ENTFERNT, ersetzt durch den Shift+Tab-Moduswechsel
+(default/accept-edits/plan) plus `/plan`-Präfix. Die reference-Tabelle listet
+ihn weiterhin als aktiv. Ich hatte den Agenten gezielt danach fragen lassen,
+weil sich das Muster bei `/planning` schon gezeigt hatte — richtig geraten,
+sauber belegt. summary korrigiert.
+Zwei weitere Korrekturen: `/statusline` beschrieb ein „Panel", tatsächlich ist es
+ein direkter Toggle/Konfig-Befehl. Bei Antigravity-`/logout` verwies die
+Alternative auf `/exit` (unbelegt) → auf Ctrl+D/Ctrl+C korrigiert.
+Zurückhaltung, wo nötig: Cursors `/rules` — die Behauptung „findet Regeln in
+Unterverzeichnissen wie die IDE" ließ sich nicht belegen und wurde NICHT
+übernommen. `--disable-auto-update` steht nur im Changelog, nicht in der
+Parameter-Referenz — als Quellenlage vermerkt statt als Fehler behandelt.
+Build 0, Deploy 044ee49a, Prod 200. Playwright über 5 Seiten in 3 Sprachen sauber.
+Merke: wenn eine Doku-Referenztabelle einmal veraltet war, gezielt nach dem
+gleichen Muster bei verwandten Befehlen suchen — hat hier direkt getroffen.
