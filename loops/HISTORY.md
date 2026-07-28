@@ -2467,3 +2467,48 @@ eine still nicht durchgelaufene Sprache auffallen lassen.
 Build 0, Deploy 76e55111, Live-Verify 6×200, `/clone` und die korrigierte
 fork-Meta-Description im HTML bestätigt. Playwright 6 Seiten × 2 Viewports
 in 4 Sprachen sauber.
+
+## It. 257 — 28.07.2026, 00:48 UTC — Rosetta-Abgleich, Feed, API-Check
+Poll sauber, Smoke 4/4. views_7d 30 → 20 (rollendes Fenster).
+MCP-Finalspec weiterhin nur `2026-07-28-RC` (prerelease); vom Agenten
+zusätzlich gegen modelcontextprotocol.io bestätigt. Claude Code: kein
+Release am 27./28.07., letztes v2.1.220 vom 25.07.
+
+🎯 **Hypothese bestätigt**: /rosetta/ wurde am 18.07. gebaut — VOR den 33
+Befehlskorrekturen dieser Woche. Systematischer Abgleich aller 98 gefüllten
+Zellen gegen die korrigierte commands.json: 0 tote Slugs, 0 Namens-Drift,
+aber **ein echter Treffer** — die Zeile „Plan-Modus" nannte für Antigravity
+`/planning`, den es seit 1.1.0 nicht mehr gibt. Zelle jetzt
+`Shift+Tab · /plan` (die zwei belegten Wege), Slug unverändert, damit der
+Link weiter auf die Seite führt, die den Wechsel erklärt. Grep über ALLE
+übrigen Content-Dateien nach `/planning`, `/pr-comments`, `/ultrareview`,
+`/ide-context`, `skip-aliases`, `skip-path`: 0 Treffer.
+
+⚠️ Eigener Fehler dabei: Ich hatte `stand` erst pro Sprache lokalisiert
+(28.07.2026 / 28/07/2026 / …). Gegenprüfung an prompts/timeline/vergleiche
+zeigt: die Seite nutzt durchgehend ISO und in allen Sprachen IDENTISCH.
+Zurückgedreht auf `2026-07-28` — Rosetta war mit `18.07.2026` ohnehin der
+Ausreißer. Merke: vor einer „Verbesserung" die bestehende Konvention der
+Nachbarn prüfen.
+
+Feed: +2 Meldungen (NVIDIA Open Secure AI Alliance, GitHub-Copilot-App-
+Policy), beide 27.07. Der Agent verwarf 6 Kandidaten (Policy-Essay,
+Arbeitsmarktstudie, Minor-Fixes, Meldung außerhalb des Fensters) — richtig.
+🔴 Bei der Gegenprüfung selbst gefunden: Der Entwurf behauptete „36 Partner".
+Diese Zahl steht NUR bei The Hacker News, nicht in NVIDIAs eigener
+Ankündigung → Zahl entfernt, stattdessen die dort tatsächlich genannten
+Mitglieder. Umgekehrt hielt die Apache-2.0-Angabe stand: GitHubs API meldet
+`NOASSERTION`, die LICENSE-Datei ist aber Standard-Apache-2.0 (184 Zeilen,
+nur NVIDIA-Copyright, kein Sonderzusatz) — das war MEIN Fehlalarm.
+Digest-Fenster ab 27.07. jetzt 3 Meldungen aus 3 Kategorien statt 1.
+
+**Neuer Audit-Blickwinkel (llms.txt + freie API):** alle 12 in llms.txt
+versprochenen Endpunkte 200 mit `application/json`, Sprachvarianten
+stichprobenartig 200, alle 5 RSS-Feeds 200, und `/api/commands.de.json`
+liefert tatsächlich 320 Befehle. Auch die Bestandsangaben in llms.txt (111
+Kapitel, 320 Befehle, 5 Plattformen) stimmen. Kein Handlungsbedarf.
+
+Build 0, Deploy f21a0d7e, Live-Verify: `Shift+Tab · /plan` im HTML,
+`>/planning<` 0×, beide Feed-Items in HTML UND RSS. Playwright 5 Seiten ×
+2 Viewports (Rosetta-Tabelle mit dem längeren Zellentext, 4 Sprachen):
+kein Seiten-H-Scroll.
