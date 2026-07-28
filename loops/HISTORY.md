@@ -2679,3 +2679,50 @@ a winner". Agent hatte recht, mein erster Grep war zu grob.
 
 Build 0, Deploy 4b6bafdb. 14 Benchmarks je Sprache, id/url-Hash über alle 5
 identisch, i18n-Parität 0. Playwright 3 Sprachen × 2 Viewports sauber.
+
+## It. 262 — 28.07.2026, 07:16 UTC — 🔴 Datenschutz-Falschaussage in 5 Sprachen korrigiert
+Poll sauber, Smoke 4/4. MCP weiterhin nur `2026-07-28-RC`.
+
+**Einstieg war harmlos:** Quiz-Antwortverteilung prüfen — häufen sich die
+richtigen Antworten auf Index 0? Nein: 29/25/28/18 über 111 Kapitel, sauber.
+Optionsanzahl je Kapitel in allen Sprachen identisch.
+**Dabei aufgefallen:** EN weicht bei 16 Kapiteln im `correct`-Index ab,
+ES/FR/ZH folgen DE zu 100 %. Ursache geprüft — es sind EIGENSTÄNDIGE
+englische Fragen, keine Übersetzungen (z.B. DE fragt nach Exit-Code 0 und
+warum Agenten ihn lesen, EN nach `cd ..`). Der Index-Unterschied war also
+Folge, nicht Fehler.
+
+🔴 **Der eigentliche Fund** kam aus der Richtigkeitsprüfung dieser 16:
+15 ok, **1 falsch** — `datenschutz-und-ki-tools`. Und der Fehler steckte
+nicht nur im Quiz, sondern im KAPITELTEXT ALLER FÜNF SPRACHEN:
+„Für Consumer-Apps wie Claude Free/Pro/Max gilt ein Opt-out-Modell: Eingaben
+werden dort standardmäßig fürs Training genutzt, bis du das abschaltest."
+Anthropics Privacy Center sagt wörtlich das Gegenteil — selbst per curl aus
+dem Rohdokument geholt: „We will use your chats and coding sessions … **if**:
+• You choose to allow us … • flagged for safety review … • By otherwise
+explicitly opting in (e.g. Trusted Tester Program)". Plus: Incognito-Chats
+bleiben ausgenommen, selbst wenn Model Improvement AN ist. Also Opt-in.
+Bei einem Datenschutzthema wirkt so eine Inversion in beide Richtungen: man
+meidet ein Werkzeug grundlos, oder sucht eine Einstellung, die man nie
+umlegen musste.
+
+Umfang: DE/ES/FR/ZH je 1 Stelle in `bodyDetail`. EN hatte VIER: Satz in
+`body`, die gesamte Abschnittsüberschrift („Consumer products default to
+opt-out, not opt-in"), das `example`-Feld („Turn training opt-out ON … it is
+off by default") und das Quiz. Die vierte (example) hat der Agent selbst
+gemeldet, weil sie außerhalb meiner 3-Stellen-Liste lag — richtig gemeldet
+statt eigenmächtig geändert. Alte Fehlannahme steht jetzt als Quiz-Distraktor
+(sie ist der verbreitete Irrtum und war früher zutreffend).
+Der Teil über KOMMERZIELLE Produkte war korrekt und blieb unangetastet.
+
+⚠️ Fehlalarme Nr. 9 und 10 derselben Serie, beide vor der Reaktion erkannt:
+9. Restbestand-Suche meldete FR+ZH — dort stand die KORREKTE Aussage
+   („n'utilise PAS … par défaut", „默认不会…用于训练"). Muster ohne Verneinung.
+10. Playwright meldete den neuen Text als fehlend — er steht in `bodyDetail`,
+    also der 🔬-Detailstufe, die erst nach Umschalten erscheint. Im
+    ausgelieferten HTML ist er da (je 1×), die alte Aussage 0×; nach Klick
+    auf den 🔬-Umschalter auch sichtbar. Gegengeprüft statt geschlossen.
+
+Build 0, Deploy 62fb4967. i18n-Parität 0.
+Merke: Bevor ein „fehlt auf der Seite" gilt, prüfen ob der Text hinter einem
+Umschalter (Detailstufe, Tab, Accordion) liegt.
