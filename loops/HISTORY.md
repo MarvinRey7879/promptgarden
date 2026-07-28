@@ -2512,3 +2512,51 @@ Build 0, Deploy f21a0d7e, Live-Verify: `Shift+Tab · /plan` im HTML,
 `>/planning<` 0×, beide Feed-Items in HTML UND RSS. Playwright 5 Seiten ×
 2 Viewports (Rosetta-Tabelle mit dem längeren Zellentext, 4 Sprachen):
 kein Seiten-H-Scroll.
+
+## It. 258 — 28.07.2026, 02:10 UTC — Opus 5 nachgetragen + 3 Totlinks
+Poll sauber, Smoke 4/4. MCP weiterhin nur `2026-07-28-RC`.
+
+🎯 **Zweite Qualitätsrunde, erste Ernte.** Mechanischer Blick auf timeline
+(Stand 20.07.) und vergleiche (Stand 19.07.): beide kennen **Claude Opus 5
+(24.07.) nicht** — obwohl unser eigener Feed die Meldung führt. Die Lücke war
+größer als vermutet, Opus 5 fehlte an FÜNF Stellen: Anthropic-Modellliste,
+Quadrant, Ratio-Tabelle, Szenario-Picker („Alt-Code refactorn" empfahl noch
+Opus 4.8) und `imTool`-Standardmodell von Claude Code. Plus Timeline.
+
+Heikelster Punkt war der Intelligenz-Index, weil er die Spitze umsortiert:
+Der Agent las 60.6918740157091 aus den eingebetteten Daten von
+artificialanalysis.ai/models/claude-opus-5. SELBST nachgeprüft — der Wert
+steht dort neben Fable 5 (59.8606463217303). Opus 5 führt den Quadranten
+damit an und landet in der Ratio-Tabelle auf Platz 15 (6.1), darunter alles
+um eins verschoben. `blended` = 0,75×Input + 0,25×Output (an drei
+Bestandszeilen verifiziert: 10/50→20, 5/25→10, 2/10→4).
+Korrektur am Agenten: Er schrieb „Vertex" für die Fast-Mode-Einschränkung;
+die Doku sagt wörtlich „Amazon Bedrock, Google Cloud's Agent Platform,
+Microsoft Foundry, or Claude Platform on AWS" — angeglichen.
+Kimi-K3-Quadrantpunkt trug noch „Open Weights angekündigt für 27.07.2026" →
+auf den eingetretenen Stand, `open: true`.
+
+⚠️ Playwright meldete den Kimi-Hinweis als fehlend. Ursache geprüft:
+`components/ModelQuadrant.tsx` deklariert `hinweis` am Modell (Z. 16),
+RENDERT es aber nie — nur der quadrant-weite Hinweis (Z. 129) und `badge`
+(Z. 104) erscheinen. Der veraltete Text war also für Seitenbesucher nie
+sichtbar, WOHL ABER über `/api/vergleiche.<lang>.json`, das llms.txt
+ausdrücklich bewirbt. Fix zählt also — über die API, nicht über die Seite.
+(Ob man das Feld rendern sollte, ist Weiterentwicklung → nicht angefasst.)
+
+**Neuer Audit-Blickwinkel (Quell-URLs außerhalb der Befehle):** 334 URLs aus
+entries/fehler/addons/benchmarks/vergleiche/timeline/loops/prompts/rosetta
+geprüft, Status UND Zielumleitung. **3 echte Totlinks**, alle vom selben
+Verkettungsfehler (ein Pfad an einen anderen angehängt):
+`…/overview/introduction` + `docs/overview/introduction` und zweimal
+`…/getting-started/intro` + `specification/2025-06-18/…`. Alle drei standen
+in den KAPITELN, also dort wo die Seite Belege verspricht. Ersatzziele
+einzeln per curl bestätigt, in 5 Sprachen ersetzt (4 Vorkommen je Sprache).
+Fehlalarme: 403 von npmjs/openai.com/x.ai (bekanntes Bot-Blocking),
+1× `000` bei docs.ollama.com — beim zweiten Versuch 200, also transient.
+
+Build 0, Deploy 9ade7aed. i18n-Parität 0 Probleme; Quadrant- und
+Ratio-Hashes über alle 5 Sprachen IDENTISCH (Zahlen können nicht
+auseinanderlaufen). Playwright 5 Seiten × 2 Viewports sauber.
+Merke: Bevor ein Playwright-„fehlt" als Fehler gilt, prüfen ob das Feld
+überhaupt gerendert wird — nicht jedes Datenfeld landet im HTML.
