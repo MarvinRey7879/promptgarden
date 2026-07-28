@@ -2601,3 +2601,38 @@ Fundstelle im Wortlaut ansehen.
 
 Build 0, Deploy 2b95ab74, i18n-Parität 0 Probleme, Playwright 3 Sprachen
 sauber.
+
+## It. 260 — 28.07.2026, 04:46 UTC — Addon-Audit über die Registry-API
+Poll sauber, Smoke 4/4. MCP weiterhin nur `2026-07-28-RC`.
+
+**Audit Addons (16), erstmals — Artefakt-Ansatz statt READMEs:** alle
+GitHub-Repos über die API abgefragt (Archivierung, Umbenennung, Sterne).
+Ergebnis: **kein Repo archiviert, keine Umbenennung, alle erreichbar.**
+
+Zwei echte Befunde bei Graphify:
+1. `source.title` nannte `safishamsi/graphify`, URL und echtes Repo sind
+   `Graphify-Labs/graphify`. API bestätigt „Moved Permanently" — der Titel
+   nannte also einen Eigentümer, den das Repo nicht mehr hat.
+2. Sterne „83.100+" gegen heute 97.256 = 17 % zu niedrig, und der einzige
+   Eintrag überhaupt mit „+"-Suffix.
+
+Dabei die Ursache gefunden, warum das überhaupt auffällt: `stars` WIRD
+gerendert (`AddonFilter.tsx:128`), der Stichtag-Vermerk `note` dagegen
+NICHT — Leser sehen die Zahlen also ohne Datum, als wären sie aktuell. Also
+alle 14 Sternwerte frisch aus der API gezogen (Rest lag bei 0–3 %, harmlos)
+und den Vermerk auf 28.07. gesetzt.
+
+⚠️ Eigener Stolperstein: Mein Datums-Regex traf nur das deutsche Format;
+EN/ES/FR/ZH behielten still den 12.07. Erst beim Nachsehen aufgefallen —
+jetzt je Sprache im dort verwendeten Format ersetzt (ZH: „截至 2026.07.28").
+Wieder dasselbe Muster: eine Ersetzung ohne Blick auf die anderen Sprachen
+greift nur da, wo ich hingeschaut habe.
+
+Bewusste Entscheidung, offen protokolliert: `obsidian-graph-context` hatte
+`stars: null` und zeigt jetzt „2". Das ist der echte Wert; wer zwischen
+Addons wählt, sollte sehen, dass dieses bei 2 Sternen steht, während die
+Nachbarn im Zehntausenderbereich liegen. Sichtbar machen statt verschweigen.
+
+Build 0, Deploy 5b35ab87. i18n-Parität 0; stars/url-Hash über alle 5
+Sprachen identisch. Playwright 3 Sprachen × 2 Viewports: neue Werte live,
+alter Sternwert und alter Repo-Name nirgends mehr.
