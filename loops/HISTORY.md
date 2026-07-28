@@ -2636,3 +2636,46 @@ Nachbarn im Zehntausenderbereich liegen. Sichtbar machen statt verschweigen.
 Build 0, Deploy 5b35ab87. i18n-Parität 0; stars/url-Hash über alle 5
 Sprachen identisch. Playwright 3 Sprachen × 2 Viewports: neue Werte live,
 alter Sternwert und alter Repo-Name nirgends mehr.
+
+## It. 261 — 28.07.2026, 05:54 UTC — Benchmark-Glossar: 4 unerklärte Namen ergänzt
+Poll sauber, Smoke 4/4. MCP weiterhin nur `2026-07-28-RC`.
+
+**Audit benchmarks (10), erstmals:** Die Einträge sind rein beschreibend
+(measures/runBy/url/caveat) und enthalten BEWUSST keine Punktetabellen — es
+gibt darin also nichts, was veralten kann. Gut gebaut, nichts zu tun.
+Der sinnvolle Check war ein anderer: Welche Benchmark-Namen nennt der übrige
+Content, ohne dass das Glossar sie erklärt? **Vier echte Lücken**:
+Frontier-Bench, GDPval-AA (beide in `vergleiche` beim Opus-5-Eintrag),
+GPQA Diamond (Qwen3.7-Max), BrowseComp (Kimi K3).
+
+⚠️ Zwei davon hatte ICH gestern eingeführt (It.258, Opus-5-Eintrag). Bevor
+ich Glossareinträge für womöglich erfundene Namen anlege, an Anthropics
+Ankündigung geprüft: beide echt und dort direkt verlinkt
+(frontierbench.ai, artificialanalysis.ai/evaluations/gdpval-aa). Mein Satz
+stimmt also — aber die Lücke hatte ich mitverursacht.
+
+Agent recherchierte alle vier an Primärquellen (frontierbench.ai +
+harbor-framework/frontier-bench, AA-Leaderboard + openai.com/index/gdpval,
+arXiv 2311.12022 + idavidrein/gpqa, openai.com/index/browsecomp via
+r.jina.ai wegen 403). Feldsatz exakt wie die Nachbarn, keine Punktzahlen.
+Wertvollster Teil sind die caveats: GDPval-AA-Zahlen sind NICHT mit OpenAIs
+eigenen GDPval-Zahlen vergleichbar (dort menschliche Branchenexperten, hier
+LLM-Richter in blinden Paarvergleichen, Elo an menschlicher Basislinie 1000
+verankert); und Anbieter nennen oft nur „GPQA" ohne die schwerere
+Diamond-Teilmenge zu benennen — genau das steht auf unserer Qwen-Zeile.
+
+⚠️ ZWEI eigene Fehlalarme in dieser Iteration (Nr. 7 und 8 der Serie):
+1. „HLE" schien in prompts vorzukommen — es steckte in FEHLERBESCHREIBUNG.
+   Case-sensitive Teilstring-Suche über deutsche Großschreibung.
+2. Meine Übersetzungsprüfung verlangte die Zahl „220" in allen Sprachen —
+   die stand nie im deutschen Original (der Eintrag enthält bewusst GAR
+   KEINE Zahlen). Ich hatte sie in der Übersetzer-Anweisung genannt, obwohl
+   sie im Text fehlte; der Agent hat korrekt übersetzt was dastand.
+Beide Male galt wieder: erst die Fundstelle im Wortlaut lesen.
+Umgekehrt einmal zugunsten des Agenten: Ich zweifelte am „LLM-Richter", weil
+die Leaderboard-Seite oben nur „blind pairwise comparisons" sagt — weiter
+unten steht wörtlich „the two outputs are anonymized and an LLM judge picks
+a winner". Agent hatte recht, mein erster Grep war zu grob.
+
+Build 0, Deploy 4b6bafdb. 14 Benchmarks je Sprache, id/url-Hash über alle 5
+identisch, i18n-Parität 0. Playwright 3 Sprachen × 2 Viewports sauber.
