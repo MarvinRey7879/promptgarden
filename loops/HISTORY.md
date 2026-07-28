@@ -2726,3 +2726,49 @@ Der Teil über KOMMERZIELLE Produkte war korrekt und blieb unangetastet.
 Build 0, Deploy 62fb4967. i18n-Parität 0.
 Merke: Bevor ein „fehlt auf der Seite" gilt, prüfen ob der Text hinter einem
 Umschalter (Detailstufe, Tab, Accordion) liegt.
+
+## It. 263 — 28.07.2026, 08:40 UTC — Kapitel-Faktencheck: 1 Inversion überlebt an 5 Stellen
+Poll sauber, Smoke 4/4. MCP weiterhin nur `2026-07-28-RC`.
+
+**Muster aus It.262 angewandt:** statt 111 Kapitel flächig zu lesen,
+mechanisch die gefiltert, die ÜBERPRÜFBARE Anbieter-Aussagen enthalten
+(Anbietername + standardmäßig/kostenlos/Limit/Recht/Preis/Frist) → 43 von
+111. Davon die 8 mit dem höchsten Schadenspotenzial an zwei Sonnet-Agenten,
+bewusst NUR mit Befund-Auftrag, ohne Schreibrechte.
+
+**Paket A (rate-limits, caching, batch-processing, api-keys): 0 Befunde.**
+Selbst stichprobenhaft gegengeprüft an platform.claude.com/docs/pricing —
+1,25× (5-Min-Cache-Write), 2× (1h), 0,1× (Cache-Hit) und wörtlich „These
+multipliers stack with … the Batch API discount" bestätigt. Auch 90-Tage-
+Rotation, Token-Bucket, Acceleration Limits halten. Nichts geändert.
+**Paket B: 3 von 4 sauber** (projekt-deployen, computer-use, model-routing).
+
+🔴 **Der Fund — und er ist eine EIGENE Nachlässigkeit:** In `was-ist-antigravity`
+stand dieselbe invertierte Aussage, die ich in It.258 auf der Vergleichsseite
+schon korrigiert hatte: Drittmodelle (Claude Sonnet/Opus 4.6, GPT-OSS-120b)
+gebe es „erst/nur ab Google AI Ultra". Tatsächlich: verfügbar auf Free,
+Google AI Plus, Pro UND Ultra — der EINZIGE Plan ohne sie ist Enterprise.
+Am Original erneut bestätigt (antigravity.google/docs/models, Tabelle mit
+✅✅✅❌).
+
+Der Agent sah 2 Stellen (er hatte nur die Kapitel). Mein eigener Grep über
+den GESAMTEN Content fand **5**: entries `body` (inkl. Überschrift „Sogar
+Claude auf Ultra"), `bodyDetail`, `example` — und ZWEI auf der
+Vergleichsseite, die ich in It.258 selbst angefasst hatte:
+`imTool.standard` („ab Ultra kommen Drittmodelle") und eine
+Modellempfehlung mit `wahl: "Claude Opus/Sonnet 4.6 (nur Ultra)"`.
+Ursache: In It.258 habe ich den Content nach ENTFERNTEN BEFEHLEN gegrept,
+aber nicht nach dieser Aussage. → **Neue Regel: nach jeder Korrektur einer
+Sachaussage den kompletten Content nach GENAU DIESER Aussage durchsuchen,
+nicht nur die gerade bearbeitete Datei.**
+Alle 5 Stellen ×5 Sprachen korrigiert; commands.json trug die Aussage
+bereits korrekt (aus Batch 11).
+
+⚠️ Fehlalarm Nr. 11: Restbestand-Suche meldete commands.zh — dort steht
+„仅在 Free、Google AI Plus、Google AI Pro 和 Google AI Ultra 账号上可用",
+also KORREKT (Ultra ist das letzte Listenelement, nicht die Bedingung).
+Wortlaut gelesen statt reagiert.
+
+Build 0, Deploy 95ae49fc. i18n-Parität 0. Playwright 4 Seiten in 3 Sprachen
+inkl. 🔬-Detailstufe: keine „nur ab Ultra"-Aussage mehr, Enterprise-Ausnahme
+überall genannt.
