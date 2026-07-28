@@ -2560,3 +2560,44 @@ Ratio-Hashes über alle 5 Sprachen IDENTISCH (Zahlen können nicht
 auseinanderlaufen). Playwright 5 Seiten × 2 Viewports sauber.
 Merke: Bevor ein Playwright-„fehlt" als Fehler gilt, prüfen ob das Feld
 überhaupt gerendert wird — nicht jedes Datenfeld landet im HTML.
+
+## It. 259 — 28.07.2026, 03:35 UTC — Fehlerseiten-Audit (Freispruch) + Opus-4.8-Präzisierung
+Poll sauber, Smoke 4/4. MCP weiterhin nur `2026-07-28-RC`.
+
+**Audit /fehler/ (24 Seiten), erstmals:** mechanischer Abgleich aller
+Slash-Nennungen gegen die korrigierte commands.json — 15 genannte Befehle,
+**alle existieren**, keine toten Verweise. Danach die zwei Seiten mit dem
+höchsten Verfallsrisiko im Volltext geprüft
+(`model-not-found-or-deprecated`, `tool-use-concurrency-...`): beide halten
+stand. Grund: Sie sind bewusst so geschrieben, dass sie KEINE aktuellen
+Modellnamen festschreiben, und Versionshinweise stehen als historischer
+Kontext („falls du eine Version vor 2.1.156 nutzt") — das altert nicht.
+Die eine prüfbare Zahl („mindestens 60 Tage Vorlauf") wörtlich in Anthropics
+Deprecation-Policy bestätigt: „at least 60 days' notice". Nichts geändert —
+Anti-Padding.
+
+🔎 Der Fund kam als NEBENPRODUKT: Ich bin der unbelegten Behauptung des
+It.258-Agenten nachgegangen, Anthropic führe Opus 4.8 unter „Legacy models".
+**Stimmt nicht** — kein solches Label, Opus 4.8 steht NICHT in der
+Deprecation-Tabelle, kein Retirement-Datum. Gut, dass ich `opus48Anpassung`
+damals nicht übernommen hatte. Wahr ist aber: Opus 4.8 fehlt in der
+Hauptvergleichstabelle der Modellübersicht (dort Fable 5 / Opus 5 / Sonnet 5
+/ Haiku 4.5) und Anthropic hat einen Abschnitt „Migrating to Claude Opus 5".
+Unsere Seite empfahl Opus 4.8 weiter für „komplexe Architektur-Entscheidungen
+und großes Refactoring" — exakt die Rolle, die Opus 5 zum GLEICHEN Preis
+übernommen hat. Jetzt sauber getrennt: abgelöst ≠ abgekündigt, in allen 5
+Sprachen, plus Migrationsleitfaden als Quelle. Der Übersetzer-Prompt hat die
+Unterscheidung ausdrücklich eingefordert (deprecated/retirement date je
+Sprache) — in allen vier Sprachen korrekt umgesetzt.
+
+⚠️ EIGENER Fehlalarm Nr. 5 derselben Sorte: Mein Playwright-Check meldete
+„4.8 fälschlich als deprecated", weil das Wort im Text vorkommt — im Satz
+„deprecated ist es aber NICHT". Regex sah das Wort, nicht die Verneinung.
+Prüfmuster um einen Negativ-Lookahead ergänzt, danach sauber.
+Muster festhalten: meine eigenen groben Prüfmuster produzieren zuverlässig
+Fehlalarme (ZH-Wortzahl, ZH-Längenverhältnis, Datumskonvention, nicht
+gerendertes Feld, jetzt Verneinung) — vor jedem „Fehler gefunden" erst die
+Fundstelle im Wortlaut ansehen.
+
+Build 0, Deploy 2b95ab74, i18n-Parität 0 Probleme, Playwright 3 Sprachen
+sauber.
