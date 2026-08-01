@@ -2772,3 +2772,57 @@ Wortlaut gelesen statt reagiert.
 Build 0, Deploy 95ae49fc. i18n-Parität 0. Playwright 4 Seiten in 3 Sprachen
 inkl. 🔬-Detailstufe: keine „nur ab Ultra"-Aussage mehr, Enterprise-Ausnahme
 überall genannt.
+
+## It. 264 — 01.08.2026, 13:14 UTC — Wiederaufnahme nach 4 Tagen Pause
+Loop war von Marvin am 28.07. gestoppt worden. Poll: 0 Bugs/Feedback/Notes.
+🔴 **Traffic**: views_7d **7**, Besucher_7d **5**. Letzter Tag mit überhaupt
+einem Aufruf: 29.07. (1). Der 30.07., 31.07. und 01.08. stehen auf null.
+Das ist keine Abnahme mehr, sondern Stille.
+
+**MCP-Finalspec ist erschienen** — Tag `2026-07-28`, `prerelease:false`,
+published 2026-07-28T16:47:49Z. Exakt am Datum im Tag-Namen, wie aus dem
+Vorgängerzyklus abgeleitet. Lag 4 Tage unbemerkt.
+Inhalt selbst am Changelog gegengeprüft, alle Kernaussagen wörtlich belegt:
+„Make MCP stateless: remove the `initialize`/`notifications/initialized`
+handshake", „Remove protocol-level sessions and the `Mcp-Session-Id` header",
+MRTR ersetzt server-initiierte Requests (`roots/list`,
+`sampling/createMessage`, `elicitation/create`), Tasks → eigene Extension,
+Roots/Sampling/Logging + HTTP+SSE deprecated, DCR → CIMD, und „a minimum
+twelve-month deprecation window" aus der Lifecycle-Policy.
+
+🔴 **Formulierung vor Veröffentlichung korrigiert** (Anthropic-Vorfall vom
+30.07.): Der Entwurf legte nahe, Claude-Modelle seien aus einer isolierten
+Testumgebung AUSGEBROCHEN. Anthropic zieht ausdrücklich die Gegen-Linie:
+„Whereas OpenAI's models exploited a novel vulnerability to escape isolation,
+the Claude models evaluated here accessed the internet via an open path" —
+Ursache war „a misunderstanding between us and our evaluation partner",
+während der Prompt den Modellen sagte, sie hätten keinen Internetzugang.
+Unterschied: Modell durchbricht Abschottung vs. es gab keine. Meldung sagt es
+jetzt explizit („Ein Ausbruch war es nicht"), Übersetzer-Prompt hat den Satz
+als Pflicht markiert, in allen 4 Sprachen erhalten (zh sogar mit
+„隔离本身其实并不存在"). Alle übrigen Fakten (141.006 Läufe, Irregular,
+Opus 4.7 + Mythos 5 + internes Testmodell, schwache Passwörter, Stopp aller
+Cyber-Evals, Datum „Jul 30, 2026") wörtlich bestätigt.
+
+**Neue Regel angewandt** (aus It.263): Spec-Version gesprungen → gesamten
+Content nach der alten Version durchsucht. Zwei Kapitelquellen
+(`human-in-the-loop`, `mcp-sicherheit`) zeigten noch auf
+`specification/2025-06-18/server/tools` — zwei Versionen alt. Auf
+`2026-07-28` umgestellt, ×5, NACHDEM geprüft war, dass die neue Seite den
+Abschnitt „Security Considerations" mit derselben Substanz trägt.
+Der Feed-Eintrag, der den RC-Blogpost zitiert, blieb unangetastet — er
+handelte damals vom RC, das ist historisch korrekt.
+
+Feed +6 (MCP-Final, Anthropic-Vorfall, Grok 4.5 in Copilot, Copilot Code
+Review mit Skills/MCP GA, npm Publish-Time-Malware-Scanning, VS-Code-Juli).
+Agent verwarf 5 Kandidaten (zu banal, außerhalb Fenster, nur UI-Kleinkram).
+x.ai-403 als reines Bot-Blocking entlarvt (Seite existiert, per r.jina.ai
+bestätigt). **Digest-Fenster für Mo 03.08.: 9 Meldungen aus 4 Kategorien**
+(vorher 3 aus 3).
+
+📱 **Neue Marvin-Direktive**: Alles was ihn braucht → AskUserQuestion, nicht
+als Fließtext (er ist mobil). Memory `feedback_ask_via_question_format_mobile`.
+Erste Anwendung: 4 offene Punkte gebündelt gefragt → „Nichts davon jetzt".
+
+Build 0, Deploy 5f155b1b. i18n-Parität 0. Live: alle 6 Meldungen im HTML,
+RSS trägt sie, Spec-URL auf 2026-07-28 umgestellt.
